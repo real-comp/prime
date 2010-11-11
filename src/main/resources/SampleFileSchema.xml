@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<file-schema name="prop" version="1.1">
+
+
+    <view class="com.realcomp.data.view.tx.travis.TravisPersonView.class"/>
+
+
+    <parser class="com.realcomp.data.record.parser.DelimitedFileParser" delimiter="tab"
+            skipLeading="1" skipTrailing="1"/>
+
+    <!-- apply these converters to every field -->    
+    <preops>
+        <!-- operations to perform to all fields, before any field specific operations -->
+        <trim/>
+    </preops>
+    <postops>
+        <!-- operations to perform to all fields, after any field specific operations -->
+        <replace regex=":" replacement="-"/>
+    </postops>
+        
+    
+    
+    <!-- For variable formatted records, use a regex classifier to determine which format
+         to use -->
+    <classifier id="a" regex="[a-z]{300}">
+        <field name="id"/>
+        <field name="name">
+            <validateLength min="20" max="25"/>
+            <trim/>
+        </field>
+        <field name="address"/>
+        <field name="city"/>
+        <field name="state"/>
+    </classifier>
+
+    <field name="id"/>
+    <field name="name">
+        <validateLength min="20" max="25"/>
+        <trim/>
+    </field>
+    <field name="address"/>
+    <field name="city"/>
+    <field name="state"/>
+    <field name="zip5" type="int">
+
+    </field>
+    <field name="zip4"/>
+    <field name="price" type="double">
+        <validateDoubleRange min="0" max="300"/>
+    </field>
+
+
+</file-schema>
