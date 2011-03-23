@@ -1,24 +1,30 @@
 
 package com.realcomp.data;
 
+import java.io.Serializable;
+
 /**
  *
  * @author krenfro
  */
-public class IntegerField extends Field<Integer>{
+public class IntegerField extends Field<Integer> implements Serializable{
 
     protected final DataType type = DataType.INTEGER;
     protected Integer value;
     protected String name;
 
-    public IntegerField(){
+    protected IntegerField(){
+    }
+
+    public IntegerField(Integer value){
+        if (value == null)
+            throw new IllegalArgumentException("value is null");
+        this.value = value;
     }
 
     public IntegerField(String name, Integer value){
-        if (value == null)
-            throw new IllegalArgumentException("value is null");
+        this(value);
         this.name = name;
-        this.value = value;
     }
 
     @Override

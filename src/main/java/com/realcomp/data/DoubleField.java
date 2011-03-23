@@ -1,15 +1,31 @@
 
 package com.realcomp.data;
 
+import java.io.Serializable;
+
 /**
  *
  * @author krenfro
  */
-public class DoubleField extends Field<Double>{
+public class DoubleField extends Field<Double> implements Serializable{
 
     protected final DataType type = DataType.DOUBLE;
     protected Double value;
     protected String name;
+
+    protected DoubleField(){
+    }
+
+    public DoubleField(Double value){
+        if (value == null)
+            throw new IllegalArgumentException("value is null");
+        this.value = value;
+    }
+
+    public DoubleField(String name, Double value){
+        this(value);
+        this.name = name;
+    }
 
     @Override
     public String getName(){

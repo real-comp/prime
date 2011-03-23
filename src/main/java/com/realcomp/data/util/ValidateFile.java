@@ -1,10 +1,12 @@
 package com.realcomp.data.util;
 
+import com.realcomp.data.schema.XStreamFactory;
 import com.realcomp.data.conversion.ConversionException;
 import com.realcomp.data.record.Record;
 import com.realcomp.data.record.parser.RecordParser;
 import com.realcomp.data.schema.FileSchema;
 import com.realcomp.data.schema.SchemaException;
+import com.realcomp.data.schema.SchemaFactory;
 import com.realcomp.data.validation.ValidationException;
 import com.thoughtworks.xstream.XStream;
 import java.io.FileInputStream;
@@ -21,18 +23,15 @@ public class ValidateFile {
 
     private static final Logger logger =  Logger.getLogger(ValidateFile.class.getName());
 
-    private XStream xstream;
+    
     private FileSchema schema;
     
     public ValidateFile(){
-
-        xstream = new XStreamFactory().build();        
     }
 
 
     public void setSchema(InputStream in) throws IOException{
-
-        schema = (FileSchema) xstream.fromXML(in);
+        schema = SchemaFactory.buildFileSchema(in);
     }
 
     public void validate(InputStream in) throws 

@@ -1,12 +1,20 @@
 package com.realcomp.data;
 
+import java.io.Serializable;
+
 /**
  *
  * @author krenfro
  */
-public final class NullField extends Field<String>{
+public final class NullField extends Field<String> implements Serializable{
 
     protected String name;
+
+    public NullField(){}
+
+    public NullField(String name){
+        this.name = name;
+    }
 
     @Override
     public String getName(){
@@ -37,4 +45,19 @@ public final class NullField extends Field<String>{
     public Field get(String key) {
         return this;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        return hash;
+    }    
 }

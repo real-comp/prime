@@ -1,15 +1,31 @@
 
 package com.realcomp.data;
 
+import java.io.Serializable;
+
 /**
  *
  * @author krenfro
  */
-public class StringField extends Field<String>{
+public class StringField extends Field<String> implements Serializable{
 
     protected final DataType type = DataType.STRING;
     protected String value;
     protected String name;
+
+    protected StringField(){
+    }
+
+    public StringField(String value){
+        if (value == null)
+            throw new IllegalArgumentException("value is null");
+        this.value = value;
+    }
+
+    public StringField(String name, String value){
+        this(value);
+        this.name = name;
+    }
 
     @Override
     public String getName(){

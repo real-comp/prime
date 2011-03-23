@@ -158,9 +158,18 @@ public abstract class BaseFileParser implements RecordParser{
             throws ValidationException, ConversionException{
 
         String original = data;
-        data = operate(schema.getBeforeOperations(), data, recordId);
-        data = operate(schemaField.getOperations(), data, recordId);
-        data = operate(schema.getAfterOperations(), data, recordId);
+        try{
+            data = operate(schema.getBeforeOperations(), data, recordId);
+            data = operate(schemaField.getOperations(), data, recordId);
+            data = operate(schema.getAfterOperations(), data, recordId);
+        }
+        catch(ValidationException ex){
+            throw new ValidationException(schemaField.getName() + " " + ex.getMessage(), ex);
+        }
+        catch(ConversionException ex){
+            throw new ConversionException(schemaField.getName() + " " + ex.getMessage(), ex);
+        }
+        
         return FieldFactory.create(schemaField.getType(), data);
     }
 
@@ -186,15 +195,15 @@ public abstract class BaseFileParser implements RecordParser{
                 Severity severity = ((Validator) op).getSeverity();
                 switch(severity){
                     case LOW:
-                        log.log(Level.INFO, "{0} in [{1}]",
+                        log.log(Level.INFO, "{0} in record [{1}]",
                                 new Object[]{ex.getMessage(), recordIdentifier});
                         break;
                     case MEDIUM:
-                        log.log(Level.WARNING, "{0} in [{1}]",
+                        log.log(Level.WARNING, "{0} in record [{1}]",
                                 new Object[]{ex.getMessage(), recordIdentifier});
                         break;
                     case HIGH:
-                        log.log(Level.SEVERE, "{0} in [{1}]",
+                        log.log(Level.SEVERE, "{0} in record [{1}]",
                                 new Object[]{ex.getMessage(), recordIdentifier});
                         break;
                 }

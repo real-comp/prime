@@ -1,15 +1,31 @@
 
 package com.realcomp.data;
 
+import java.io.Serializable;
+
 /**
  *
  * @author krenfro
  */
-public class FloatField extends Field<Float>{
+public class FloatField extends Field<Float> implements Serializable{
 
     protected final DataType type = DataType.FLOAT;
     protected Float value;
     protected String name;
+
+    protected FloatField(){
+    }
+
+    public FloatField(Float value){
+        if (value == null)
+            throw new IllegalArgumentException("value is null");
+        this.value = value;
+    }
+
+    public FloatField(String name, Float value){
+        this(value);
+        this.name = name;
+    }
 
     @Override
     public String getName(){

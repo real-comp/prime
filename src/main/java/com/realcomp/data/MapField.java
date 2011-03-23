@@ -1,5 +1,6 @@
 package com.realcomp.data;
 
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -10,13 +11,24 @@ import java.util.Set;
  *
  * @author krenfro
  */
-public class MapField extends Field<Map<String,Field>> implements Map<String,Field>{
+public class MapField extends Field<Map<String,Field>> implements Map<String,Field>, Serializable{
 
     protected Map<String,Field> wrapped;
     protected String name;
 
-    public MapField(){
+    protected MapField(){
         wrapped = new HashMap<String,Field>();
+    }
+
+    public MapField(Map<String,Field> value){
+        if (value == null)
+            throw new IllegalArgumentException("value is null");
+        this.wrapped = value;
+    }
+
+    public MapField(String name, Map<String,Field> value){
+        this(value);
+        this.name = name;
     }
 
     @Override
@@ -111,6 +123,22 @@ public class MapField extends Field<Map<String,Field>> implements Map<String,Fie
         wrapped = value;
     }
 
-    
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        final MapField other = (MapField) obj;
+        if (this.wrapped != other.wrapped && (this.wrapped == null || !this.wrapped.equals(other.wrapped)))
+            return false;
+        return true;
+    }
 
+    @Override
+    public int hashCode() {
+        int hash = 3;
+        hash = 97 * hash + (this.wrapped != null ? this.wrapped.hashCode() : 0);
+        return hash;
+    }
 }

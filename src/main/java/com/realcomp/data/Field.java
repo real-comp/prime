@@ -1,10 +1,12 @@
 package com.realcomp.data;
 
+import java.io.Serializable;
+
 /**
  *
  * @author krenfro
  */
-public abstract class Field<T> {
+public abstract class Field<T>  implements Serializable{
 
     public abstract String getName();
 

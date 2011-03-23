@@ -1,5 +1,6 @@
 package com.realcomp.data;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -10,13 +11,24 @@ import java.util.ListIterator;
  *
  * @author krenfro
  */
-public class ListField extends Field<List<Field>> implements List<Field> {
+public class ListField extends Field<List<Field>> implements List<Field>, Serializable {
 
     protected List<Field> wrapped;
     protected String name;
 
-    public ListField(){
+    protected ListField(){
         wrapped = new ArrayList<Field>();
+    }
+
+    public ListField(List<Field> value){
+        if (value == null)
+            throw new IllegalArgumentException("value is null");
+        this.wrapped = value;
+    }
+
+    public ListField(String name, List<Field> value){
+        this(value);
+        this.name = name;
     }
 
     @Override
@@ -172,4 +184,22 @@ public class ListField extends Field<List<Field>> implements List<Field> {
         }
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        final ListField other = (ListField) obj;
+        if (this.wrapped != other.wrapped && (this.wrapped == null || !this.wrapped.equals(other.wrapped)))
+            return false;
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 19 * hash + (this.wrapped != null ? this.wrapped.hashCode() : 0);
+        return hash;
+    }
 }

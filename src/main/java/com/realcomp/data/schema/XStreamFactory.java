@@ -1,4 +1,4 @@
-package com.realcomp.data.util;
+package com.realcomp.data.schema;
 
 import com.realcomp.data.annotation.Converter;
 import com.realcomp.data.annotation.Validator;

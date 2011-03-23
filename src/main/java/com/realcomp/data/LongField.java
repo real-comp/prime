@@ -1,15 +1,31 @@
 
 package com.realcomp.data;
 
+import java.io.Serializable;
+
 /**
  *
  * @author krenfro
  */
-public class LongField extends Field<Long>{
+public class LongField extends Field<Long> implements Serializable{
 
     protected final DataType type = DataType.LONG;
     protected Long value;
     protected String name;
+
+    protected LongField(){
+    }
+
+    public LongField(Long value){
+        if (value == null)
+            throw new IllegalArgumentException("value is null");
+        this.value = value;
+    }
+
+    public LongField(String name, Long value){
+        this(value);
+        this.name = name;
+    }
 
     @Override
     public String getName(){

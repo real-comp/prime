@@ -40,7 +40,7 @@ public class DelimitedFileParser extends BaseFileParser{
         reader = new BufferedReader(new InputStreamReader(in));
         switch(delimiter){
             case TAB:
-                parser = new CSVParser('\t');
+                parser = new CSVParser('\t', '\u0000');
                 break;
             case CSV:
                 parser = new CSVParser();
