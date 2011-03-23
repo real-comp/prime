@@ -20,7 +20,15 @@ import java.io.InputStream;
  */
 public interface RecordParser {
 
+    /**
+     * If a Validator logs a warning above this threshold, then the warning is thrown as
+     * a ValidationException. By default, Validators log at Severity.MEDIUM, so all
+     * validation failures are simply logged.  This mechanism, along with adjustable
+     * Validator severity, allow for configurations where some validations are more
+     * important than others.
+     */
     public static final Severity DEFAULT_VALIDATION_THREASHOLD = Severity.HIGH;
+
 
    /**
      * Read and return the next Record, or null if there are no more.
@@ -70,6 +78,12 @@ public interface RecordParser {
      * instead of logged. not null
      */
     void setValidationExceptionThreshold(Severity severity);
+
+    /**
+     *
+     * @return number of records read; not including skipped records.
+     */
+    long getCount();
 
 
 }

@@ -155,7 +155,7 @@ public class FixedFileParserTest {
         schema.addSchemaField(new SchemaField("double", DataType.DOUBLE, 5));
         schema.addSchemaField(new SchemaField("string", DataType.STRING, 1));
 
-        schema.addPostop(new Trim());
+        schema.addAfterOperation(new Trim());
         return schema;
     }
 

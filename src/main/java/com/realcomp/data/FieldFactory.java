@@ -41,16 +41,20 @@ public class FieldFactory {
                     f.setValue(value);
                     return f;
                 case INTEGER:
-                    f.setValue(Integer.parseInt(value));
+                    if (!value.isEmpty())
+                        f.setValue(Integer.parseInt(value));
                     return f;
                 case FLOAT:
-                    f.setValue(Float.parseFloat(value));
+                    if (!value.isEmpty())
+                        f.setValue(Float.parseFloat(value));
                     return f;
                 case LONG:
-                    f.setValue(Long.parseLong(value));
+                    if (!value.isEmpty())
+                        f.setValue(Long.parseLong(value));
                     return f;
                 case DOUBLE:
-                    f.setValue(Double.parseDouble(value));
+                    if (!value.isEmpty())
+                        f.setValue(Double.parseDouble(value));
                     return f;
                 case NULL:
                     return f;

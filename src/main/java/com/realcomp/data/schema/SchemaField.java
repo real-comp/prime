@@ -14,7 +14,6 @@ import java.util.List;
  *
  * @author krenfro
  */
-//@XStreamConverter(SchemaFieldConverter.class)
 @XStreamAlias("field")
 public class SchemaField {
 
@@ -104,6 +103,8 @@ public class SchemaField {
     }
 
     public DataType getType() {
+        if (type == null)
+            type = DataType.STRING;
         return type;
     }
 

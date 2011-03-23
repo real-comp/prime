@@ -1,15 +1,9 @@
 package com.realcomp.data.schema;
 
 
-import com.realcomp.data.validation.Severity;
 import com.realcomp.data.validation.field.DoubleRangeValidator;
 import com.realcomp.data.schema.xml.OperationConverter;
-import com.realcomp.data.record.parser.FixedFileParser;
-import com.realcomp.data.record.parser.RecordParser;
 import com.realcomp.data.record.parser.DelimitedFileParser;
-import java.util.regex.Pattern;
-import java.util.List;
-import java.util.ArrayList;
 import com.realcomp.data.conversion.Replace;
 import com.realcomp.data.conversion.UpperCase;
 import com.realcomp.data.conversion.Trim;
@@ -90,8 +84,8 @@ public class XStreamFileSchemaTest {
         area.addOperation(validator);
         schema.addSchemaField(area);
 
-        schema.addPreop(new UpperCase());
-        schema.addPostop(new Trim());
+        schema.addBeforeOperation(new UpperCase());
+        schema.addAfterOperation(new Trim());
 
         Classifier classifier = new Classifier("recordtypeb", ".{19}");
         classifier.addSchemaField(new SchemaField("pid", DataType.LONG, 10));
@@ -100,7 +94,7 @@ public class XStreamFileSchemaTest {
         schema.addClassifier(classifier);
 
         DelimitedFileParser parser = new DelimitedFileParser();
-        parser.setType(DelimitedFileParser.Type.TAB);        
+        parser.setDelimiter(DelimitedFileParser.Delimiter.TAB);
         schema.setParser(parser);
 
         return schema;
@@ -113,8 +107,11 @@ public class XStreamFileSchemaTest {
         System.out.println(xml);
 
         FileSchema deserialized = (FileSchema) xstream.fromXML(xml);
-        assertEquals(1, deserialized.getPostops().size());
-        deserialized.getPostops().get(0).getClass().equals(Trim.class);
+        assertEquals(1, deserialized.getAfterOperations().size());
+        deserialized.getAfterOperations().get(0).getClass().equals(Trim.class);
+        assertEquals(5, deserialized.getSchemaFields().size());
+        assertEquals(DataType.LONG, deserialized.getSchemaFields().get(0).getType());
+        assertEquals(DataType.STRING, deserialized.getSchemaFields().get(1).getType());
 
         assertTrue(getSchema().equals(deserialized));
     }

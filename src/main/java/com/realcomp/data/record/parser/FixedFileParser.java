@@ -21,13 +21,15 @@ public class FixedFileParser extends BaseFileParser{
 
 
     protected BufferedReader reader;
+    protected boolean leadingRecordsSkipped = false;
 
 
     @Override
     public void open(InputStream in){
         close();
         super.open(in);
-        reader = new BufferedReader(new InputStreamReader(in));        
+        reader = new BufferedReader(new InputStreamReader(in));
+        leadingRecordsSkipped = false;
     }
 
     @Override
@@ -43,13 +45,27 @@ public class FixedFileParser extends BaseFileParser{
         if (schema == null)
             throw new IllegalStateException("schema not specified");
 
+         if (!leadingRecordsSkipped){
+            executeBeforeFirstOperations();
+            for (int x = 0; x < super.getSkipLeading(); x++)
+                reader.readLine();
+            leadingRecordsSkipped = true;
+        }
+
+        Record record = null;
         String data = reader.readLine();
         if (data != null){
             List<SchemaField> fields = schema.classify(data);            
             String[] parsed = parse(data, schema.classify(data));
-            return loadRecord(fields, parsed);            
+            record = loadRecord(fields, parsed);
         }
-        return null;
+
+        if (record != null)
+            count++;
+        else
+            executeAfterLastOperations();
+        
+        return record;
     }
 
     protected String[] parse(String record, List<SchemaField> fields) throws ValidationException, SchemaException{

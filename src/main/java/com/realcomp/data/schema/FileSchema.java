@@ -2,9 +2,7 @@ package com.realcomp.data.schema;
 
 import com.realcomp.data.Operation;
 import com.realcomp.data.record.parser.RecordParser;
-import com.realcomp.data.schema.xml.DataViewConverter;
 import com.realcomp.data.schema.xml.RecordParserConverter;
-import com.realcomp.data.view.DataView;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
 import com.thoughtworks.xstream.annotations.XStreamConverter;
@@ -28,8 +26,11 @@ public class FileSchema {
     @XStreamConverter(RecordParserConverter.class)
     protected RecordParser parser;
 
-    protected List<Operation> preops;
-    protected List<Operation> postops;
+
+    protected List<Operation> beforeFirst;
+    protected List<Operation> before;
+    protected List<Operation> after;
+    protected List<Operation> afterLast;
     protected List<SchemaField> fields;
 
 
@@ -41,6 +42,8 @@ public class FileSchema {
     }
 
     public RecordParser getParser() {
+        if (parser != null)
+            parser.setSchema(this);
         return parser;
     }
 
@@ -48,6 +51,7 @@ public class FileSchema {
         if (parser == null)
             throw new IllegalArgumentException("parser is null");
         this.parser = parser;
+        this.parser.setSchema(this);
     }
 
     public List<Classifier> getClassifiers() {
@@ -174,80 +178,166 @@ public class FileSchema {
      * finished, or null if none specified.
      *
      */
-    public List<Operation> getPostops() {
-        return postops;
+    public List<Operation> getAfterOperations() {
+        return after;
     }
 
     /**
      * Set all Operations to perform on all fields after all field specific operations are finished.
-     * @param postops null will clear existing list
+     * @param after null will clear existing list
      */
-    public void setPostops(List<Operation> postops) {
+    public void setAfterOperations(List<Operation> after) {
 
-        if (postops == null){
-            this.postops = null;
+        if (after == null){
+            this.after = null;
         }
         else{
-            if (this.postops != null)
-                this.postops.clear();
-            for (Operation op: postops)
-                addPostop(op);
+            if (this.after != null)
+                this.after.clear();
+            for (Operation op: after)
+                addAfterOperation(op);
         }
     }
 
     /**
-     * Add an Operation to the postop operations group, to be run after all field specific
+     * Add an Operation to the after operations group, to be run after all field specific
      * Operations are performed.
      * @param op not null
      */
-    public void addPostop(Operation op){
+    public void addAfterOperation(Operation op){
         if (op == null)
             throw new IllegalArgumentException("op is null");
-        if (postops == null)
-            postops = new ArrayList<Operation>();
+        if (after == null)
+            after = new ArrayList<Operation>();
 
-        this.postops.add(op);
+        this.after.add(op);
     }
+
+
+
+    /**
+     * @return all Operations to perform after all records have been processed, or null
+     * if none specified.
+     *
+     */
+    public List<Operation> getAfterLastOperations() {
+        return afterLast;
+    }
+
+    /**
+     * Set all Operations to perform after all records have been processed.
+     * @param afterLast null will clear existing list
+     */
+    public void setAfterLastOperations(List<Operation> afterLast) {
+
+        if (afterLast == null){
+            this.afterLast = null;
+        }
+        else{
+            if (this.afterLast != null)
+                this.afterLast.clear();
+            for (Operation op: afterLast)
+                addAfterOperation(op);
+        }
+    }
+
+    /**
+     * Add an Operation to the afterLast operations group, to be run after all records
+     * have been processed.
+     * @param op not null
+     */
+    public void addAfterLastOperation(Operation op){
+        if (op == null)
+            throw new IllegalArgumentException("op is null");
+        if (afterLast == null)
+            afterLast = new ArrayList<Operation>();
+
+        this.afterLast.add(op);
+    }
+
+
 
     /**
      *
      * @return all Operations to perform on all fields before any field specific Operations are
      * performed, or null if none specified.
      */
-    public List<Operation> getPreops() {
-        return preops;
+    public List<Operation> getBeforeOperations() {
+        return before;
     }
 
     /**
      * Set all Operations to perform on all fields before any field specific Operations are
      * performed.
-     * @param preops null will clear list
+     * @param before null will clear list
      */
-    public void setPreops(List<Operation> preops) {
-        if (preops == null){
-            this.preops = null;
+    public void setBeforeOperations(List<Operation> before) {
+        if (before == null){
+            this.before = null;
         }
         else{
-            if (this.preops != null)
-                this.preops.clear();
-            for (Operation op: preops)
-                addPreop(op);
+            if (this.before != null)
+                this.before.clear();
+            for (Operation op: before)
+                addBeforeOperation(op);
         }
     }
 
     /**
-     * Add an Operation to the preop operations group, to be run before all field specific
+     * Add an Operation to the before operations group, to be run before all field specific
      * Operations are performed.
      * @param op not null
      */
-    public void addPreop(Operation op){
+    public void addBeforeOperation(Operation op){
         if (op == null)
             throw new IllegalArgumentException("op is null");
 
-        if (preops == null)
-            preops = new ArrayList<Operation>();
-        this.preops.add(op);
+        if (before == null)
+            before = new ArrayList<Operation>();
+        this.before.add(op);
     }
+
+
+
+    /**
+     *
+     * @return all Operations to perform before any records are processed, or null
+     * if none specified.
+     */
+    public List<Operation> getBeforeFirstOperations() {
+        return beforeFirst;
+    }
+
+    /**
+     * Set all Operations to perform before any records are processed.
+     * @param beforeFirst null will clear list
+     */
+    public void setBeforeFirstOperations(List<Operation> beforeFirst) {
+        if (beforeFirst == null){
+            this.beforeFirst = null;
+        }
+        else{
+            if (this.beforeFirst != null)
+                this.beforeFirst.clear();
+            for (Operation op: beforeFirst)
+                addBeforeFirstOperation(op);
+        }
+    }
+
+    /**
+     * Add an Operation to the beforeFirst operations group, to be run before any records
+     * are processed.
+     * @param op not null
+     */
+    public void addBeforeFirstOperation(Operation op){
+        if (op == null)
+            throw new IllegalArgumentException("op is null");
+
+        if (beforeFirst == null)
+            beforeFirst = new ArrayList<Operation>();
+        this.beforeFirst.add(op);
+    }
+
 
     /**
      * @return optional version for this Schema, or null.
@@ -284,9 +374,13 @@ public class FileSchema {
             return false;
         if (this.parser != other.parser && (this.parser == null || !this.parser.equals(other.parser)))
             return false;
-        if (this.preops != other.preops && (this.preops == null || !this.preops.equals(other.preops)))
+        if (this.before != other.before && (this.before == null || !this.before.equals(other.before)))
             return false;
-        if (this.postops != other.postops && (this.postops == null || !this.postops.equals(other.postops)))
+        if (this.after != other.after && (this.after == null || !this.after.equals(other.after)))
+            return false;
+        if (this.beforeFirst != other.beforeFirst && (this.beforeFirst == null || !this.beforeFirst.equals(other.beforeFirst)))
+            return false;
+        if (this.afterLast != other.afterLast && (this.afterLast == null || !this.afterLast.equals(other.afterLast)))
             return false;
         if (this.fields != other.fields && (this.fields == null || !this.fields.equals(other.fields)))
             return false;
@@ -301,8 +395,10 @@ public class FileSchema {
         hash = 67 * hash + (this.name != null ? this.name.hashCode() : 0);
         hash = 67 * hash + (this.version != null ? this.version.hashCode() : 0);
         hash = 67 * hash + (this.parser != null ? this.parser.hashCode() : 0);
-        hash = 67 * hash + (this.preops != null ? this.preops.hashCode() : 0);
-        hash = 67 * hash + (this.postops != null ? this.postops.hashCode() : 0);
+        hash = 67 * hash + (this.before != null ? this.before.hashCode() : 0);
+        hash = 67 * hash + (this.after != null ? this.after.hashCode() : 0);
+        hash = 67 * hash + (this.beforeFirst != null ? this.beforeFirst.hashCode() : 0);
+        hash = 67 * hash + (this.afterLast != null ? this.afterLast.hashCode() : 0);
         hash = 67 * hash + (this.fields != null ? this.fields.hashCode() : 0);
         hash = 67 * hash + (this.classifiers != null ? this.classifiers.hashCode() : 0);
         return hash;

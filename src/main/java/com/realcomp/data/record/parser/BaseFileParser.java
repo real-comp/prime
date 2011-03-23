@@ -11,6 +11,7 @@ import com.realcomp.data.schema.SchemaField;
 import com.realcomp.data.validation.Severity;
 import com.realcomp.data.validation.ValidationException;
 import com.realcomp.data.validation.Validator;
+import com.realcomp.data.validation.file.RecordCountValidator;
 import java.io.InputStream;
 import java.util.List;
 import java.util.logging.Level;
@@ -30,6 +31,7 @@ public abstract class BaseFileParser implements RecordParser{
     protected Severity validationExceptionThreshold = DEFAULT_VALIDATION_THREASHOLD;
     protected int skipLeading = 0;
     protected int skipTrailing = 0;
+    protected long count;
     
     @Override
     public Severity getValidationExceptionThreshold() {
@@ -84,11 +86,37 @@ public abstract class BaseFileParser implements RecordParser{
         if (in == null)
             throw new IllegalArgumentException("in is null");
         this.in = in;
+        count = 0;
+        
     }
 
     @Override
     public void close(){
         IOUtils.closeQuietly(in);
+    }
+
+    protected void executeAfterLastOperations() throws ValidationException, ConversionException{
+        
+        if (schema != null){
+            List<Operation> afterLast = schema.getAfterLastOperations();
+            if (afterLast != null){
+                for (Operation op: afterLast){
+                    operate(op, "" + this.getCount(), "AFTER LAST RECORD");
+                }
+            }
+        }
+    }
+
+    protected void executeBeforeFirstOperations() throws ValidationException, ConversionException{
+
+        if (schema != null){
+            List<Operation> afterLast = schema.getBeforeFirstOperations();
+            if (afterLast != null){
+                for (Operation op: afterLast){
+                    operate(op, "" + this.getCount(), "BEFORE FIRST RECORD");
+                }
+            }
+        }
     }
     
     @Override
@@ -130,11 +158,9 @@ public abstract class BaseFileParser implements RecordParser{
             throws ValidationException, ConversionException{
 
         String original = data;
-
-        data = operate(schema.getPreops(), data, recordId);
+        data = operate(schema.getBeforeOperations(), data, recordId);
         data = operate(schemaField.getOperations(), data, recordId);
-        data = operate(schema.getPostops(), data, recordId);
-
+        data = operate(schema.getAfterOperations(), data, recordId);
         return FieldFactory.create(schemaField.getType(), data);
     }
 
@@ -212,6 +238,12 @@ public abstract class BaseFileParser implements RecordParser{
             id = id.concat(data[x]);
         }
         return id;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public long getCount(){
+        return count;
     }
 
     @Override

@@ -6,12 +6,10 @@ import com.realcomp.data.schema.FileSchema;
 import com.realcomp.data.DataType;
 import java.io.ByteArrayInputStream;
 import com.realcomp.data.record.Record;
-import com.realcomp.data.record.parser.DelimitedFileParser.Type;
+import com.realcomp.data.record.parser.DelimitedFileParser.Delimiter;
 import com.realcomp.data.schema.SchemaField;
 import java.io.InputStream;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -58,14 +56,14 @@ public class DelimitedFileParserTest {
 
         
         DelimitedFileParser instance = new DelimitedFileParser();
-        assertEquals(Type.TAB, instance.getType());
-        instance.setType(Type.CSV);
-        assertEquals(Type.CSV, instance.getType());
-        instance.setType(Type.TAB);
-        assertEquals(Type.TAB, instance.getType());
+        assertEquals(Delimiter.TAB, instance.getDelimiter());
+        instance.setDelimiter(Delimiter.CSV);
+        assertEquals(Delimiter.CSV, instance.getDelimiter());
+        instance.setDelimiter(Delimiter.TAB);
+        assertEquals(Delimiter.TAB, instance.getDelimiter());
 
         try{
-            instance.setType(null);
+            instance.setDelimiter(null);
             fail("should have thrown IllegalArgumentException");
         }
         catch(IllegalArgumentException expected){}
@@ -74,21 +72,21 @@ public class DelimitedFileParserTest {
     @Test
     public void testTypes(){
 
-        assertEquals(Type.TAB, Type.parse("tab"));
-        assertEquals(Type.TAB, Type.parse("TAB"));
-        assertEquals(Type.TAB, Type.parse("tabbed"));
-        assertEquals(Type.TAB, Type.parse("TABBED"));
-        assertEquals(Type.CSV, Type.parse("csv"));
-        assertEquals(Type.CSV, Type.parse("CSV"));
+        assertEquals(Delimiter.TAB, Delimiter.parse("tab"));
+        assertEquals(Delimiter.TAB, Delimiter.parse("TAB"));
+        assertEquals(Delimiter.TAB, Delimiter.parse("tabbed"));
+        assertEquals(Delimiter.TAB, Delimiter.parse("TABBED"));
+        assertEquals(Delimiter.CSV, Delimiter.parse("csv"));
+        assertEquals(Delimiter.CSV, Delimiter.parse("CSV"));
 
         try{
-            Type.parse(null);
+            Delimiter.parse(null);
             fail("should have thrown IllegalArgumentException");
         }
         catch(IllegalArgumentException expected){}
 
         try{
-            Type.parse("asdf");
+            Delimiter.parse("asdf");
             fail("should have thrown IllegalArgumentException");
         }
         catch(IllegalArgumentException expected){}
@@ -102,7 +100,7 @@ public class DelimitedFileParserTest {
         String data = "a\tb\tc";
         instance.open(new ByteArrayInputStream(data.getBytes()));
         try{
-            instance.setType(Type.CSV);
+            instance.setDelimiter(Delimiter.CSV);
             fail("should have thrown IllegalStateException");
         }
         catch(IllegalStateException expected){}
@@ -137,7 +135,7 @@ public class DelimitedFileParserTest {
     public void testCSV() throws Exception {
 
         DelimitedFileParser instance = new DelimitedFileParser();
-        instance.setType(Type.CSV);
+        instance.setDelimiter(Delimiter.CSV);
         String data = "\"a123\",\"b123\",\"c123\"";
         instance.open(new ByteArrayInputStream(data.getBytes()));
         instance.setSchema(get3FieldSchema());

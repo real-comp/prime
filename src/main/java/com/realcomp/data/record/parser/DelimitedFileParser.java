@@ -21,11 +21,12 @@ import org.apache.commons.io.IOUtils;
  */
 public class DelimitedFileParser extends BaseFileParser{
 
-    public static final Type DEFAULT_TYPE=Type.TAB;
+    public static final Delimiter DEFAULT_TYPE=Delimiter.TAB;
 
-    protected Type type = Type.TAB;
+    protected Delimiter delimiter = Delimiter.TAB;
     protected BufferedReader reader;
     protected CSVParser parser;
+    protected boolean leadingRecordsSkipped = false;
     
     public DelimitedFileParser(){
     }
@@ -34,9 +35,10 @@ public class DelimitedFileParser extends BaseFileParser{
     public void open(InputStream in){
 
         close();
+        leadingRecordsSkipped = false;
         super.open(in);
         reader = new BufferedReader(new InputStreamReader(in));
-        switch(type){
+        switch(delimiter){
             case TAB:
                 parser = new CSVParser('\t');
                 break;
@@ -53,32 +55,32 @@ public class DelimitedFileParser extends BaseFileParser{
         super.close();
     }
 
-    public enum Type{
+    public enum Delimiter{
         CSV, TAB;
 
-        public static Type parse(String type){
+        public static Delimiter parse(String delimiter){
 
-            if (type == null)
-                throw new IllegalArgumentException("type is null");
+            if (delimiter == null)
+                throw new IllegalArgumentException("delimiter is null");
             
-            if (type.equalsIgnoreCase("tab") || type.equalsIgnoreCase("tabbed"))
+            if (delimiter.equalsIgnoreCase("tab") || delimiter.equalsIgnoreCase("tabbed") || delimiter.equalsIgnoreCase("\t"))
                 return TAB;
-            else if (type.equalsIgnoreCase("csv"))
+            else if (delimiter.equalsIgnoreCase("csv") || delimiter.equals(","))
                 return CSV;
-            throw new IllegalArgumentException("invalid type: " + type);
+            throw new IllegalArgumentException("invalid delimiter: " + delimiter);
         }
     }
 
-    public Type getType() {
-        return type;
+    public Delimiter getDelimiter() {
+        return delimiter;
     }
 
-    public void setType(Type type) {
-        if (type == null)
-            throw new IllegalArgumentException("type is null");
+    public void setDelimiter(Delimiter delimiter) {
+        if (delimiter == null)
+            throw new IllegalArgumentException("delimiter is null");
         if (reader != null)
-            throw new IllegalStateException("already open. unable to change type.");
-        this.type = type;
+            throw new IllegalStateException("already open. unable to change delimiter.");
+        this.delimiter = delimiter;
     }
     
     @Override
@@ -87,12 +89,29 @@ public class DelimitedFileParser extends BaseFileParser{
         if (schema == null)
             throw new IllegalStateException("schema not specified");
 
+        if (super.getSkipTrailing() > 0)
+            throw new IllegalStateException("skipTrailing is not yet supported by this parser.");
+
+        if (!leadingRecordsSkipped){
+            executeBeforeFirstOperations();
+            for (int x = 0; x < super.getSkipLeading(); x++)
+                reader.readLine();
+            leadingRecordsSkipped = true;
+        }
+
+        Record record = null;
         String data = reader.readLine();
         if (data != null){
             List<SchemaField> fields = schema.classify(data);
-            return loadRecord(fields, parser.parseLine(data));
+            record = loadRecord(fields, parser.parseLine(data));
         }
-        return null;
+
+        if (record != null)
+            count++;
+        else
+            executeAfterLastOperations();
+        
+        return record;
     }
 
     @Override
@@ -102,7 +121,7 @@ public class DelimitedFileParser extends BaseFileParser{
         if (getClass() != obj.getClass())
             return false;
         final DelimitedFileParser other = (DelimitedFileParser) obj;
-        if (this.type != other.type)
+        if (this.delimiter != other.delimiter)
             return false;
         return true;
     }
@@ -110,7 +129,7 @@ public class DelimitedFileParser extends BaseFileParser{
     @Override
     public int hashCode() {
         int hash = 7;
-        hash = 53 * hash + (this.type != null ? this.type.hashCode() : 0);
+        hash = 53 * hash + (this.delimiter != null ? this.delimiter.hashCode() : 0);
         return hash;
     }
     
