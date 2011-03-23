@@ -8,6 +8,8 @@ import com.realcomp.data.schema.xml.OperationConverter;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.reflections.Configuration;
 import org.reflections.Reflections;
 import org.reflections.util.ClasspathHelper;
@@ -21,7 +23,7 @@ public class XStreamFactory {
 
 
     public XStream build(){
-        
+
         //use reflection to find all Validatior and Converter annotated classes.
         Configuration conf = new ConfigurationBuilder()
             .setUrls(ClasspathHelper.getUrlsForPackagePrefix("com.realcomp"));
