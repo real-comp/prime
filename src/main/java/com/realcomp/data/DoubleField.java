@@ -8,8 +8,10 @@ import java.io.Serializable;
  * @author krenfro
  */
 public class DoubleField extends Field<Double> implements Serializable{
+    
+    private static final long serialVersionUID = 1L;
 
-    protected final DataType type = DataType.DOUBLE;
+    protected transient final DataType type = DataType.DOUBLE;
     protected Double value;
     protected String name;
 

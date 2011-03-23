@@ -7,7 +7,8 @@ import java.io.Serializable;
  * @author krenfro
  */
 public final class NullField extends Field<String> implements Serializable{
-
+    
+    private static final long serialVersionUID = 1L;
     protected String name;
 
     public NullField(){}

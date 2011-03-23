@@ -9,7 +9,9 @@ import java.io.Serializable;
  */
 public class FloatField extends Field<Float> implements Serializable{
 
-    protected final DataType type = DataType.FLOAT;
+    private static final long serialVersionUID = 1L;
+
+    protected transient final DataType type = DataType.FLOAT;
     protected Float value;
     protected String name;
 

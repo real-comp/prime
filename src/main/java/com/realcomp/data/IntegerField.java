@@ -9,7 +9,9 @@ import java.io.Serializable;
  */
 public class IntegerField extends Field<Integer> implements Serializable{
 
-    protected final DataType type = DataType.INTEGER;
+    private static final long serialVersionUID = 1L;
+
+    protected transient final DataType type = DataType.INTEGER;
     protected Integer value;
     protected String name;
 

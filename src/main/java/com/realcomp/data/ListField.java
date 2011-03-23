@@ -13,6 +13,8 @@ import java.util.ListIterator;
  */
 public class ListField extends Field<List<Field>> implements List<Field>, Serializable {
 
+    private static final long serialVersionUID = 1L;
+
     protected List<Field> wrapped;
     protected String name;
 

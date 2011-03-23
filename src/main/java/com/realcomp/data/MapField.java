@@ -13,6 +13,8 @@ import java.util.Set;
  */
 public class MapField extends Field<Map<String,Field>> implements Map<String,Field>, Serializable{
 
+    private static final long serialVersionUID = 1L;
+
     protected Map<String,Field> wrapped;
     protected String name;
 

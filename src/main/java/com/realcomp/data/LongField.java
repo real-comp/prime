@@ -9,7 +9,9 @@ import java.io.Serializable;
  */
 public class LongField extends Field<Long> implements Serializable{
 
-    protected final DataType type = DataType.LONG;
+    private static final long serialVersionUID = 1L;
+
+    protected transient final DataType type = DataType.LONG;
     protected Long value;
     protected String name;
 

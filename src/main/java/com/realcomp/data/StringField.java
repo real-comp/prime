@@ -1,4 +1,3 @@
-
 package com.realcomp.data;
 
 import java.io.Serializable;
@@ -9,7 +8,9 @@ import java.io.Serializable;
  */
 public class StringField extends Field<String> implements Serializable{
 
-    protected final DataType type = DataType.STRING;
+    private static final long serialVersionUID = 1L;
+
+    protected transient final DataType type = DataType.STRING;
     protected String value;
     protected String name;
 
