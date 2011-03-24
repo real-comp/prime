@@ -6,7 +6,7 @@
     <view class="com.realcomp.data.view.tx.travis.TravisPersonView.class"/>
 
 
-    <parser class="com.realcomp.data.record.parser.DelimitedFileParser" delimiter="tab"
+    <reader class="com.realcomp.data.record.parser.DelimitedFileReader" delimiter="tab"
             skipLeading="1" skipTrailing="1"/>
 
     <!-- apply these converters to every field -->    
@@ -34,7 +34,7 @@
         <field name="state"/>
     </classifier>
 
-    <field name="id"/>
+    <field name="id" id="true"/>
     <field name="name">
         <validateLength min="20" max="25"/>
         <trim/>

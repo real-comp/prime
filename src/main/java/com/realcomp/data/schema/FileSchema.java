@@ -1,8 +1,10 @@
 package com.realcomp.data.schema;
 
 import com.realcomp.data.Operation;
-import com.realcomp.data.record.parser.RecordParser;
-import com.realcomp.data.schema.xml.RecordParserConverter;
+import com.realcomp.data.record.reader.RecordReader;
+import com.realcomp.data.record.writer.RecordWriter;
+import com.realcomp.data.schema.xml.RecordReaderConverter;
+import com.realcomp.data.schema.xml.RecordWriterConverter;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
 import com.thoughtworks.xstream.annotations.XStreamConverter;
@@ -23,9 +25,11 @@ public class FileSchema {
     @XStreamAsAttribute
     protected String version;
 
-    @XStreamConverter(RecordParserConverter.class)
-    protected RecordParser parser;
+    @XStreamConverter(RecordReaderConverter.class)
+    protected RecordReader reader;
 
+    @XStreamConverter(RecordWriterConverter.class)
+    protected RecordWriter writer;
 
     protected List<Operation> beforeFirst;
     protected List<Operation> before;
@@ -39,19 +43,33 @@ public class FileSchema {
 
     public FileSchema(){
         fields = new ArrayList<SchemaField>();
+        classifiers = new ArrayList<Classifier>();
     }
 
-    public RecordParser getParser() {
-        if (parser != null)
-            parser.setSchema(this);
-        return parser;
+    public RecordReader getReader() throws SchemaException{
+        if (reader != null)
+            reader.setSchema(this);
+        return reader;
     }
 
-    public void setParser(RecordParser parser) {
-        if (parser == null)
-            throw new IllegalArgumentException("parser is null");
-        this.parser = parser;
-        this.parser.setSchema(this);
+    public void setReader(RecordReader reader) throws SchemaException {
+        if (reader == null)
+            throw new IllegalArgumentException("reader is null");
+        this.reader = reader;
+        this.reader.setSchema(this);
+    }
+
+    public RecordWriter getWriter() throws SchemaException {
+        if (writer != null)
+            writer.setSchema(this);
+        return writer;
+    }
+
+    public void setWriter(RecordWriter writer) throws SchemaException{
+        if (writer == null)
+            throw new IllegalArgumentException("writer is null");
+        this.writer = writer;
+        this.writer.setSchema(this);
     }
 
     public List<Classifier> getClassifiers() {
@@ -112,7 +130,7 @@ public class FileSchema {
      *
      * @return all SchemaFields defined for this Schema
      */
-    public List<SchemaField> getSchemaFields() {
+    public List<SchemaField> getFields() {
         return fields;
     }
 
@@ -120,7 +138,7 @@ public class FileSchema {
      * @param fields not null nor empty.
      * @throws SchemaException if there is already a field with the same name as one of the fields
      */
-    public void setSchemaFields(List<SchemaField> fields) throws SchemaException{
+    public void setFields(List<SchemaField> fields) throws SchemaException{
         if (fields == null)
             throw new IllegalArgumentException("fields is null");
         if (fields.isEmpty())
@@ -128,7 +146,7 @@ public class FileSchema {
 
         this.fields.clear();
         for (SchemaField field: fields)
-            addSchemaField(field);
+            addField(field);
     }
 
     /**
@@ -136,7 +154,7 @@ public class FileSchema {
      * @param field
      * @throws SchemaException if there is already a field with the same name
      */
-    public void addSchemaField(SchemaField field) throws SchemaException{
+    public void addField(SchemaField field) throws SchemaException{
         if (field == null)
             throw new IllegalArgumentException("field is null");
 
@@ -372,7 +390,9 @@ public class FileSchema {
             return false;
         if ((this.version == null) ? (other.version != null) : !this.version.equals(other.version))
             return false;
-        if (this.parser != other.parser && (this.parser == null || !this.parser.equals(other.parser)))
+        if (this.reader != other.reader && (this.reader == null || !this.reader.equals(other.reader)))
+            return false;
+        if (this.writer != other.writer && (this.writer == null || !this.writer.equals(other.writer)))
             return false;
         if (this.before != other.before && (this.before == null || !this.before.equals(other.before)))
             return false;
@@ -394,7 +414,8 @@ public class FileSchema {
         int hash = 7;
         hash = 67 * hash + (this.name != null ? this.name.hashCode() : 0);
         hash = 67 * hash + (this.version != null ? this.version.hashCode() : 0);
-        hash = 67 * hash + (this.parser != null ? this.parser.hashCode() : 0);
+        hash = 67 * hash + (this.reader != null ? this.reader.hashCode() : 0);
+        hash = 67 * hash + (this.writer != null ? this.writer.hashCode() : 0);
         hash = 67 * hash + (this.before != null ? this.before.hashCode() : 0);
         hash = 67 * hash + (this.after != null ? this.after.hashCode() : 0);
         hash = 67 * hash + (this.beforeFirst != null ? this.beforeFirst.hashCode() : 0);

@@ -15,6 +15,7 @@ public class ListField extends Field<List<Field>> implements List<Field>, Serial
 
     private static final long serialVersionUID = 1L;
 
+    protected static final DataType type = DataType.LIST;
     protected List<Field> wrapped;
     protected String name;
 
@@ -161,7 +162,7 @@ public class ListField extends Field<List<Field>> implements List<Field>, Serial
 
     @Override
     public DataType getType() {
-        return DataType.LIST;
+        return type;
     }
 
     @Override
@@ -174,6 +175,11 @@ public class ListField extends Field<List<Field>> implements List<Field>, Serial
         if (value == null)
             throw new IllegalArgumentException("value is null");
         wrapped = value;
+    }
+
+    @Override
+    public String toString(){
+        return wrapped.toString();
     }
 
     @Override

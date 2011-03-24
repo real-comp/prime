@@ -1,4 +1,4 @@
-package com.realcomp.data.record.parser;
+package com.realcomp.data.record.writer;
 
 import com.realcomp.data.conversion.ConversionException;
 import com.realcomp.data.record.Record;
@@ -7,18 +7,19 @@ import com.realcomp.data.schema.SchemaException;
 import com.realcomp.data.validation.Severity;
 import com.realcomp.data.validation.ValidationException;
 import java.io.IOException;
-import java.io.InputStream;
+import java.io.OutputStream;
 
 
 /**
- * Parses records from an input stream.
+ * Writes records to an output stream.
+ * Any Classifier(s) in a schema are ignored.
  *
  * Note:
- * Implementors should ensure that their RecordParser has a default empty constructor.
+ * Implementors should ensure that their RecordWriter has a default empty constructor.
  *
  * @author krenfro
  */
-public interface RecordParser {
+public interface RecordWriter {
 
     /**
      * If a Validator logs a warning above this threshold, then the warning is thrown as
@@ -31,33 +32,31 @@ public interface RecordParser {
 
 
    /**
-     * Read and return the next Record, or null if there are no more.
-     * @return the next Record, or null if no more records.
+     * write a Record
+     * @param record the Record to write; not null
      * @throws IOException
      */
-    Record next() throws IOException, ValidationException, ConversionException, SchemaException;
+    void write(Record record)
+            throws IOException, ValidationException, ConversionException, SchemaException;
 
     /**
-     * Close open resources. Should be invoked when you are done with the RecordParser.
+     * Close open resources. Should be invoked when you are done with the RecordWriter.
      */
     void close();
 
     /**
-     * Open an InputStream for parsing. May be invoked multiple times with new input as needed.
-     * close() is automatically invoked before each open();
-     *
-     *
-     * @param in InputStream to parse. Not null
+     * @param out OutputStream to write to. Not null
      */
-    void open(InputStream in);
+    void open(OutputStream out);
 
 
     /**
      * Set the schema that the RecordParser should use to create Records.
      * 
      * @param schema
+     * @throws SchemaException
      */
-    void setSchema(FileSchema schema);
+    void setSchema(FileSchema schema) throws SchemaException;
 
     /**
      *
@@ -81,7 +80,7 @@ public interface RecordParser {
 
     /**
      *
-     * @return number of records read; not including skipped records.
+     * @return number of records written
      */
     long getCount();
 

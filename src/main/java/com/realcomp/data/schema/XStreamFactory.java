@@ -9,26 +9,35 @@ import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
 import java.util.Set;
 import java.util.logging.Level;
+import java.util.logging.LogManager;
 import java.util.logging.Logger;
+import java.util.logging.LoggingMXBean;
 import org.reflections.Configuration;
 import org.reflections.Reflections;
 import org.reflections.util.ClasspathHelper;
 import org.reflections.util.ConfigurationBuilder;
-
 /**
  *
  * @author krenfro
  */
 public class XStreamFactory {
 
+    public static Logger log = Logger.getLogger(XStreamFactory.class.getName());
 
     public XStream build(){
+
+        
 
         //use reflection to find all Validatior and Converter annotated classes.
         Configuration conf = new ConfigurationBuilder()
             .setUrls(ClasspathHelper.getUrlsForPackagePrefix("com.realcomp"));
             //.setScanners(new TypeElementsScanner());
 
+        //turn off INFO logging of Reflections
+        Logger.getLogger(Reflections.class.getName());
+        LoggingMXBean mxBean = LogManager.getLoggingMXBean();
+        mxBean.setLoggerLevel(Reflections.class.getName(), Level.WARNING.getName());
+        
         Reflections reflections = new Reflections(conf);
         Set<Class<?>> validators = reflections.getTypesAnnotatedWith(Validator.class);
         Set<Class<?>> converters = reflections.getTypesAnnotatedWith(Converter.class);

@@ -1,4 +1,4 @@
-package com.realcomp.data.record.parser;
+package com.realcomp.data.record.reader;
 
 import com.realcomp.data.Field;
 import com.realcomp.data.FieldFactory;
@@ -7,11 +7,12 @@ import com.realcomp.data.conversion.ConversionException;
 import com.realcomp.data.conversion.Converter;
 import com.realcomp.data.record.Record;
 import com.realcomp.data.schema.FileSchema;
+import com.realcomp.data.schema.SchemaException;
 import com.realcomp.data.schema.SchemaField;
 import com.realcomp.data.validation.Severity;
 import com.realcomp.data.validation.ValidationException;
 import com.realcomp.data.validation.Validator;
-import com.realcomp.data.validation.file.RecordCountValidator;
+import com.thoughtworks.xstream.annotations.XStreamOmitField;
 import java.io.InputStream;
 import java.util.List;
 import java.util.logging.Level;
@@ -22,15 +23,17 @@ import org.apache.commons.io.IOUtils;
  *
  * @author krenfro
  */
-public abstract class BaseFileParser implements RecordParser{
+public abstract class BaseFileReader implements RecordReader{
 
-    protected static final Logger log = Logger.getLogger(BaseFileParser.class.getName());
+    protected static final Logger log = Logger.getLogger(BaseFileReader.class.getName());
 
     protected InputStream in;
     protected FileSchema schema;
     protected Severity validationExceptionThreshold = DEFAULT_VALIDATION_THREASHOLD;
     protected int skipLeading = 0;
     protected int skipTrailing = 0;
+
+    @XStreamOmitField
     protected long count;
     
     @Override
@@ -113,14 +116,14 @@ public abstract class BaseFileParser implements RecordParser{
             List<Operation> afterLast = schema.getBeforeFirstOperations();
             if (afterLast != null){
                 for (Operation op: afterLast){
-                    operate(op, "" + this.getCount(), "BEFORE FIRST RECORD");
+                    operate(op, "", "BEFORE FIRST RECORD");
                 }
             }
         }
     }
     
     @Override
-    public void setSchema(FileSchema schema) {
+    public void setSchema(FileSchema schema) throws SchemaException{
         this.schema = schema;
     }
 
@@ -261,7 +264,7 @@ public abstract class BaseFileParser implements RecordParser{
             return false;
         if (getClass() != obj.getClass())
             return false;
-        final BaseFileParser other = (BaseFileParser) obj;
+        final BaseFileReader other = (BaseFileReader) obj;
         if (this.schema != other.schema && (this.schema == null || !this.schema.equals(other.schema)))
             return false;
         if (this.validationExceptionThreshold != other.validationExceptionThreshold)

@@ -3,7 +3,7 @@ package com.realcomp.data.util;
 import com.realcomp.data.schema.XStreamFactory;
 import com.realcomp.data.conversion.ConversionException;
 import com.realcomp.data.record.Record;
-import com.realcomp.data.record.parser.RecordParser;
+import com.realcomp.data.record.reader.RecordReader;
 import com.realcomp.data.schema.FileSchema;
 import com.realcomp.data.schema.SchemaException;
 import com.realcomp.data.schema.SchemaFactory;
@@ -37,16 +37,11 @@ public class ValidateFile {
     public void validate(InputStream in) throws 
             IOException, ConversionException, SchemaException, ValidationException{
 
-        RecordParser parser = schema.getParser();
-        parser.open(in);
-        Record record = parser.next();
-
-        while (record != null){
-            record = parser.next();
+        RecordReader reader = schema.getReader();
+        reader.open(in);
+        while (reader.next() != null){
         }
     }
-
-    
 
 
     public static void main(String[] args){

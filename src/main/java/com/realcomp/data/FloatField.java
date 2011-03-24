@@ -11,7 +11,7 @@ public class FloatField extends Field<Float> implements Serializable{
 
     private static final long serialVersionUID = 1L;
 
-    protected transient final DataType type = DataType.FLOAT;
+    protected static final DataType type = DataType.FLOAT;
     protected Float value;
     protected String name;
 
@@ -55,6 +55,11 @@ public class FloatField extends Field<Float> implements Serializable{
             throw new IllegalArgumentException("value is null");
         this.value = value;
     }
+
+    @Override
+    public String toString(){
+        return value.toString();
+    }
     
     @Override
     public Field get(String key) {
@@ -68,8 +73,6 @@ public class FloatField extends Field<Float> implements Serializable{
         if (getClass() != obj.getClass())
             return false;
         final FloatField other = (FloatField) obj;
-        if (this.type != other.type)
-            return false;
         if (this.value != other.value && (this.value == null || !this.value.equals(other.value)))
             return false;
         return true;
@@ -78,7 +81,6 @@ public class FloatField extends Field<Float> implements Serializable{
     @Override
     public int hashCode() {
         int hash = 5;
-        hash = 67 * hash + (this.type != null ? this.type.hashCode() : 0);
         hash = 67 * hash + (this.value != null ? this.value.hashCode() : 0);
         return hash;
     }

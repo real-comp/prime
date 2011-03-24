@@ -30,6 +30,9 @@ public class SchemaField {
     @XStreamAsAttribute
     protected int length;
 
+    @XStreamAsAttribute
+    protected boolean id;
+
     public SchemaField(){
     }
 
@@ -114,6 +117,19 @@ public class SchemaField {
         this.type = type;
     }
 
+    /**
+     *
+     * @return true if the field is considered an 'id' of a Record; else false
+     */
+    public boolean isId() {
+        return id;
+    }
+
+
+    public void setId(boolean id) {
+        this.id = id;
+    }
+    
     @Override
     public String toString() {
         return name;
@@ -134,16 +150,20 @@ public class SchemaField {
             return false;
         if (this.length != other.length)
             return false;
+        if (this.id != other.id)
+            return false;
         return true;
     }
 
     @Override
     public int hashCode() {
-        int hash = 5;
+        int hash = 7;
         hash = 59 * hash + (this.name != null ? this.name.hashCode() : 0);
         hash = 59 * hash + (this.type != null ? this.type.hashCode() : 0);
         hash = 59 * hash + (this.operations != null ? this.operations.hashCode() : 0);
         hash = 59 * hash + this.length;
+        hash = 59 * hash + (this.id ? 1 : 0);
         return hash;
     }
+    
 }

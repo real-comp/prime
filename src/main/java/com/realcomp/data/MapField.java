@@ -15,6 +15,7 @@ public class MapField extends Field<Map<String,Field>> implements Map<String,Fie
 
     private static final long serialVersionUID = 1L;
 
+    protected static final DataType type = DataType.MAP;
     protected Map<String,Field> wrapped;
     protected String name;
 
@@ -110,7 +111,7 @@ public class MapField extends Field<Map<String,Field>> implements Map<String,Fie
 
     @Override
     public DataType getType() {
-        return DataType.MAP;
+        return type;
     }
 
     @Override
@@ -123,6 +124,11 @@ public class MapField extends Field<Map<String,Field>> implements Map<String,Fie
         if (value == null)
             throw new IllegalArgumentException("value is null");
         wrapped = value;
+    }
+
+    @Override
+    public String toString(){
+        return wrapped.toString();
     }
 
     @Override

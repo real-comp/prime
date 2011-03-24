@@ -11,7 +11,7 @@ public class DoubleField extends Field<Double> implements Serializable{
     
     private static final long serialVersionUID = 1L;
 
-    protected transient final DataType type = DataType.DOUBLE;
+    protected static final DataType type = DataType.DOUBLE;
     protected Double value;
     protected String name;
 
@@ -62,14 +62,17 @@ public class DoubleField extends Field<Double> implements Serializable{
     }
 
     @Override
+    public String toString(){
+        return value.toString();
+    }
+
+    @Override
     public boolean equals(Object obj) {
         if (obj == null)
             return false;
         if (getClass() != obj.getClass())
             return false;
         final DoubleField other = (DoubleField) obj;
-        if (this.type != other.type)
-            return false;
         if (this.value != other.value && (this.value == null || !this.value.equals(other.value)))
             return false;
         return true;
@@ -78,7 +81,6 @@ public class DoubleField extends Field<Double> implements Serializable{
     @Override
     public int hashCode() {
         int hash = 5;
-        hash = 67 * hash + (this.type != null ? this.type.hashCode() : 0);
         hash = 67 * hash + (this.value != null ? this.value.hashCode() : 0);
         return hash;
     }    

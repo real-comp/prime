@@ -10,7 +10,7 @@ public class StringField extends Field<String> implements Serializable{
 
     private static final long serialVersionUID = 1L;
 
-    protected transient final DataType type = DataType.STRING;
+    protected static final DataType type = DataType.STRING;
     protected String value;
     protected String name;
 
@@ -72,8 +72,6 @@ public class StringField extends Field<String> implements Serializable{
         if (getClass() != obj.getClass())
             return false;
         final StringField other = (StringField) obj;
-        if (this.type != other.type)
-            return false;
         if ((this.value == null) ? (other.value != null) : !this.value.equals(other.value))
             return false;
         return true;
@@ -82,7 +80,6 @@ public class StringField extends Field<String> implements Serializable{
     @Override
     public int hashCode() {
         int hash = 7;
-        hash = 67 * hash + (this.type != null ? this.type.hashCode() : 0);
         hash = 67 * hash + (this.value != null ? this.value.hashCode() : 0);
         return hash;
     }

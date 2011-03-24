@@ -3,7 +3,7 @@ package com.realcomp.data.schema;
 
 import com.realcomp.data.validation.field.DoubleRangeValidator;
 import com.realcomp.data.schema.xml.OperationConverter;
-import com.realcomp.data.record.parser.DelimitedFileParser;
+import com.realcomp.data.record.reader.DelimitedFileReader;
 import com.realcomp.data.conversion.Replace;
 import com.realcomp.data.conversion.UpperCase;
 import com.realcomp.data.conversion.Trim;
@@ -67,22 +67,22 @@ public class XStreamFileSchemaTest {
         FileSchema schema = new FileSchema();
         schema.setName("test");
         schema.setVersion("1.0");
-        schema.addSchemaField(new SchemaField("pid", DataType.LONG, 10));
+        schema.addField(new SchemaField("pid", DataType.LONG, 10));
 
         SchemaField owner = new SchemaField("owner", DataType.STRING, 20);
         Replace replace = new Replace(":", "-");
         owner.addOperation(replace);
         
-        schema.addSchemaField(owner);
-        schema.addSchemaField(new SchemaField("zip", DataType.INTEGER, 5));
-        schema.addSchemaField(new SchemaField("value", DataType.FLOAT, 7));
+        schema.addField(owner);
+        schema.addField(new SchemaField("zip", DataType.INTEGER, 5));
+        schema.addField(new SchemaField("value", DataType.FLOAT, 7));
 
         SchemaField area = new SchemaField("area", DataType.DOUBLE);
         DoubleRangeValidator validator = new DoubleRangeValidator();
         validator.setMin(1000);
         validator.setMax(2000);
         area.addOperation(validator);
-        schema.addSchemaField(area);
+        schema.addField(area);
 
         schema.addBeforeOperation(new UpperCase());
         schema.addAfterOperation(new Trim());
@@ -93,9 +93,9 @@ public class XStreamFileSchemaTest {
         classifier.addSchemaField(new SchemaField("zip4", DataType.INTEGER, 4));
         schema.addClassifier(classifier);
 
-        DelimitedFileParser parser = new DelimitedFileParser();
-        parser.setDelimiter(DelimitedFileParser.Delimiter.TAB);
-        schema.setParser(parser);
+        DelimitedFileReader reader = new DelimitedFileReader();
+        reader.setDelimiter(DelimitedFileReader.Delimiter.TAB);
+        schema.setReader(reader);
 
         return schema;
     }
@@ -109,9 +109,9 @@ public class XStreamFileSchemaTest {
         FileSchema deserialized = (FileSchema) xstream.fromXML(xml);
         assertEquals(1, deserialized.getAfterOperations().size());
         deserialized.getAfterOperations().get(0).getClass().equals(Trim.class);
-        assertEquals(5, deserialized.getSchemaFields().size());
-        assertEquals(DataType.LONG, deserialized.getSchemaFields().get(0).getType());
-        assertEquals(DataType.STRING, deserialized.getSchemaFields().get(1).getType());
+        assertEquals(5, deserialized.getFields().size());
+        assertEquals(DataType.LONG, deserialized.getFields().get(0).getType());
+        assertEquals(DataType.STRING, deserialized.getFields().get(1).getType());
 
         assertTrue(getSchema().equals(deserialized));
     }

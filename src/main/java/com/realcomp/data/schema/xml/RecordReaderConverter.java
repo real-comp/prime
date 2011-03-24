@@ -1,17 +1,12 @@
 package com.realcomp.data.schema.xml;
 
-import com.realcomp.data.record.parser.RecordParser;
+import com.realcomp.data.record.reader.RecordReader;
 import com.thoughtworks.xstream.converters.ConversionException;
 import com.thoughtworks.xstream.converters.Converter;
 import com.thoughtworks.xstream.converters.MarshallingContext;
 import com.thoughtworks.xstream.converters.UnmarshallingContext;
 import com.thoughtworks.xstream.io.HierarchicalStreamReader;
 import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
-import java.beans.BeanInfo;
-import java.beans.IntrospectionException;
-import java.beans.Introspector;
-import java.beans.PropertyDescriptor;
-import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -21,23 +16,25 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * Uses xStream, JavaBeans and reflection to dynamically serialize/de-serialize a RecordParser
+ * Uses xStream, JavaBeans and reflection to dynamically serialize/de-serialize a RecordReader
  * 
  * @author krenfro
  */
-public class RecordParserConverter extends PropertyReader implements Converter{
+public class RecordReaderConverter extends PropertyReader implements Converter{
     
     private Set<String> ignoredProperties;
 
-    public RecordParserConverter(){
+    public RecordReaderConverter(){
         ignoredProperties = new HashSet<String>();
         ignoredProperties.add("class");
         ignoredProperties.add("schema");
+        ignoredProperties.add("count");
+        ignoredProperties.add("beforeFirstOperationsRun");
     }
 
     @Override
     public boolean canConvert(Class type){
-        return RecordParser.class.isAssignableFrom(type);
+        return RecordReader.class.isAssignableFrom(type);
     }
 
 
@@ -48,7 +45,7 @@ public class RecordParserConverter extends PropertyReader implements Converter{
                 writer.addAttribute(entry.getKey(), entry.getValue().toString());
         }
         catch (DynamicPropertyException ex) {
-            Logger.getLogger(RecordParserConverter.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(RecordReaderConverter.class.getName()).log(Level.SEVERE, null, ex);
             throw new ConversionException(ex);
         }
     }
@@ -58,7 +55,7 @@ public class RecordParserConverter extends PropertyReader implements Converter{
 
        try {
             Class parserClass = Class.forName(reader.getAttribute("class"));
-            RecordParser parser = (RecordParser) parserClass.newInstance();
+            RecordReader parser = (RecordReader) parserClass.newInstance();
             PropertyWriter writer = new PropertyWriter();
             Map<String,String> properties = new HashMap<String,String>();
             Iterator<String> itr = reader.getAttributeNames();
@@ -108,7 +105,7 @@ public class RecordParserConverter extends PropertyReader implements Converter{
 
         if (valid){
             if (name.equals("validationExceptionThreshold"))
-                if (value.toString().equals(RecordParser.DEFAULT_VALIDATION_THREASHOLD.toString()))
+                if (value.toString().equals(RecordReader.DEFAULT_VALIDATION_THREASHOLD.toString()))
                     valid = false;
         }
         

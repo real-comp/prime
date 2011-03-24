@@ -1,4 +1,4 @@
-package com.realcomp.data.record.parser;
+package com.realcomp.data.record.reader;
 
 import com.realcomp.data.schema.SchemaException;
 import com.realcomp.data.validation.ValidationException;
@@ -6,7 +6,7 @@ import com.realcomp.data.schema.FileSchema;
 import com.realcomp.data.DataType;
 import java.io.ByteArrayInputStream;
 import com.realcomp.data.record.Record;
-import com.realcomp.data.record.parser.DelimitedFileParser.Delimiter;
+import com.realcomp.data.record.reader.DelimitedFileReader.Delimiter;
 import com.realcomp.data.schema.SchemaField;
 import java.io.InputStream;
 import java.util.List;
@@ -17,9 +17,9 @@ import static org.junit.Assert.*;
  *
  * @author krenfro
  */
-public class DelimitedFileParserTest {
+public class DelimitedFileReaderTest {
 
-    public DelimitedFileParserTest() {
+    public DelimitedFileReaderTest() {
     }
 
 
@@ -29,7 +29,7 @@ public class DelimitedFileParserTest {
     @Test
     public void testOpenClose() {
 
-        DelimitedFileParser instance = new DelimitedFileParser();
+        DelimitedFileReader instance = new DelimitedFileReader();
         InputStream in = null;
         try{
             instance.open(in);
@@ -55,7 +55,7 @@ public class DelimitedFileParserTest {
     public void testGetType() {
 
         
-        DelimitedFileParser instance = new DelimitedFileParser();
+        DelimitedFileReader instance = new DelimitedFileReader();
         assertEquals(Delimiter.TAB, instance.getDelimiter());
         instance.setDelimiter(Delimiter.CSV);
         assertEquals(Delimiter.CSV, instance.getDelimiter());
@@ -96,7 +96,7 @@ public class DelimitedFileParserTest {
     @Test
     public void testNoTypeChangeAfterOpen(){
 
-        DelimitedFileParser instance = new DelimitedFileParser();
+        DelimitedFileReader instance = new DelimitedFileReader();
         String data = "a\tb\tc";
         instance.open(new ByteArrayInputStream(data.getBytes()));
         try{
@@ -115,7 +115,7 @@ public class DelimitedFileParserTest {
     public void testNext() throws Exception {
 
 
-        DelimitedFileParser instance = new DelimitedFileParser();
+        DelimitedFileReader instance = new DelimitedFileReader();
         String data = "a\tb\tc\nd\te\tf";
         instance.open(new ByteArrayInputStream(data.getBytes()));
         instance.setSchema(get3FieldSchema());
@@ -134,7 +134,7 @@ public class DelimitedFileParserTest {
     @Test
     public void testCSV() throws Exception {
 
-        DelimitedFileParser instance = new DelimitedFileParser();
+        DelimitedFileReader instance = new DelimitedFileReader();
         instance.setDelimiter(Delimiter.CSV);
         String data = "\"a123\",\"b123\",\"c123\"";
         instance.open(new ByteArrayInputStream(data.getBytes()));
@@ -210,10 +210,10 @@ public class DelimitedFileParserTest {
     @Test
     public void testLoadRecord() throws Exception {
         
-        List<SchemaField> fields = get3FieldSchema().getSchemaFields();
+        List<SchemaField> fields = get3FieldSchema().getFields();
         
         String[] data = new String[]{"a123","b123","c123"};
-        DelimitedFileParser instance = new DelimitedFileParser();
+        DelimitedFileReader instance = new DelimitedFileReader();
         instance.setSchema(get3FieldSchema());
         Record result = instance.loadRecord(fields, data);
         assertEquals(3, result.size());
@@ -225,10 +225,10 @@ public class DelimitedFileParserTest {
     @Test
     public void testLoadRecordMissingFields() throws Exception {
 
-        List<SchemaField> fields = get3FieldSchema().getSchemaFields();
+        List<SchemaField> fields = get3FieldSchema().getFields();
 
         String[] data = new String[]{"a123","b123"};
-        DelimitedFileParser instance = new DelimitedFileParser();
+        DelimitedFileReader instance = new DelimitedFileReader();
         instance.setSchema(get3FieldSchema());
         try{
             instance.loadRecord(fields, data);
@@ -258,9 +258,9 @@ public class DelimitedFileParserTest {
         FileSchema schema = new FileSchema();
         schema.setName("test");
         schema.setVersion("0");
-        schema.addSchemaField(new SchemaField("a", DataType.STRING));
-        schema.addSchemaField(new SchemaField("b", DataType.STRING));
-        schema.addSchemaField(new SchemaField("c", DataType.STRING));
+        schema.addField(new SchemaField("a", DataType.STRING));
+        schema.addField(new SchemaField("b", DataType.STRING));
+        schema.addField(new SchemaField("c", DataType.STRING));
         return schema;
     }
 

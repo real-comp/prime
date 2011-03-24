@@ -9,6 +9,8 @@ import java.io.Serializable;
 public final class NullField extends Field<String> implements Serializable{
     
     private static final long serialVersionUID = 1L;
+
+    protected static final DataType type = DataType.NULL;
     protected String name;
 
     public NullField(){}
@@ -29,7 +31,7 @@ public final class NullField extends Field<String> implements Serializable{
 
     @Override
     public DataType getType() {
-        return DataType.NULL;
+        return type;
     }
 
     @Override
@@ -45,6 +47,11 @@ public final class NullField extends Field<String> implements Serializable{
     @Override
     public Field get(String key) {
         return this;
+    }
+
+    @Override
+    public String toString(){
+        return "";
     }
 
     @Override

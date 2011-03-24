@@ -1,7 +1,9 @@
-package com.realcomp.data.record.parser;
+package com.realcomp.data.record.reader;
 
 import com.realcomp.data.conversion.ConversionException;
 import com.realcomp.data.record.Record;
+import com.realcomp.data.schema.Classifier;
+import com.realcomp.data.schema.FileSchema;
 import com.realcomp.data.schema.SchemaException;
 import com.realcomp.data.schema.SchemaField;
 import com.realcomp.data.validation.Severity;
@@ -14,10 +16,11 @@ import java.util.List;
 import org.apache.commons.io.IOUtils;
 
 /**
- *
+ * There is an implicit Resize converter on all fields that runs after all 'after' operations.
+ * 
  * @author krenfro
  */
-public class FixedFileParser extends BaseFileParser{
+public class FixedFileReader extends BaseFileReader{
 
 
     protected BufferedReader reader;
@@ -40,12 +43,17 @@ public class FixedFileParser extends BaseFileParser{
     }
     
     @Override
-    public Record next() throws IOException, ValidationException, ConversionException, SchemaException{
+    public Record next()
+            throws IOException, ValidationException, ConversionException, SchemaException{
 
         if (schema == null)
             throw new IllegalStateException("schema not specified");
 
-         if (!leadingRecordsSkipped){
+        if (super.getSkipTrailing() > 0)
+            throw new IllegalStateException("skipTrailing is not yet supported by this reader.");
+
+
+        if (!leadingRecordsSkipped){
             executeBeforeFirstOperations();
             for (int x = 0; x < super.getSkipLeading(); x++)
                 reader.readLine();
@@ -68,14 +76,14 @@ public class FixedFileParser extends BaseFileParser{
         return record;
     }
 
-    protected String[] parse(String record, List<SchemaField> fields) throws ValidationException, SchemaException{
+    protected String[] parse(String record, List<SchemaField> fields)
+            throws ValidationException, SchemaException{
 
         if (fields == null)
             throw new IllegalArgumentException("fields is null");
         if (fields.isEmpty())
             throw new IllegalArgumentException("fields is empty");
 
-        ensureFieldLengthsSpecified(fields);
         int expectedLength = getExpectedLength(fields);
         int length = record.length();
 
@@ -100,7 +108,21 @@ public class FixedFileParser extends BaseFileParser{
         return result;
     }
 
-    protected void ensureFieldLengthsSpecified(List<SchemaField> fields) throws SchemaException{
+
+    @Override
+    public void setSchema(FileSchema schema) throws SchemaException {
+        ensureFieldLengthsSpecified(schema);
+        super.setSchema(schema);
+    }
+
+    protected void ensureFieldLengthsSpecified(FileSchema schema) throws SchemaException{
+        for (Classifier c: schema.getClassifiers())
+            ensureFieldLengthsSpecified(c.getFields());
+
+        ensureFieldLengthsSpecified(schema.getFields());
+    }
+    
+    protected void ensureFieldLengthsSpecified(List<SchemaField> fields) throws SchemaException{        
         for (SchemaField field: fields)
             if (field.getLength() <= 0)
                 throw new SchemaException("field length not specified for: " + field);

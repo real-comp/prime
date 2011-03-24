@@ -11,7 +11,7 @@ public class LongField extends Field<Long> implements Serializable{
 
     private static final long serialVersionUID = 1L;
 
-    protected transient final DataType type = DataType.LONG;
+    protected static final DataType type = DataType.LONG;
     protected Long value;
     protected String name;
 
@@ -62,14 +62,17 @@ public class LongField extends Field<Long> implements Serializable{
     }
 
     @Override
+    public String toString(){
+        return value.toString();
+    }
+
+    @Override
     public boolean equals(Object obj) {
         if (obj == null)
             return false;
         if (getClass() != obj.getClass())
             return false;
         final LongField other = (LongField) obj;
-        if (this.type != other.type)
-            return false;
         if (this.value != other.value && (this.value == null || !this.value.equals(other.value)))
             return false;
         return true;
@@ -78,7 +81,6 @@ public class LongField extends Field<Long> implements Serializable{
     @Override
     public int hashCode() {
         int hash = 5;
-        hash = 67 * hash + (this.type != null ? this.type.hashCode() : 0);
         hash = 67 * hash + (this.value != null ? this.value.hashCode() : 0);
         return hash;
     }

@@ -1,5 +1,6 @@
-package com.realcomp.data.record.parser;
+package com.realcomp.data.record.reader;
 
+import com.realcomp.data.record.reader.FixedFileReader;
 import com.realcomp.data.schema.SchemaException;
 import com.realcomp.data.validation.ValidationException;
 import com.realcomp.data.conversion.Trim;
@@ -16,9 +17,9 @@ import static org.junit.Assert.*;
  *
  * @author krenfro
  */
-public class FixedFileParserTest {
+public class FixedFileReaderTest {
 
-    public FixedFileParserTest() {
+    public FixedFileReaderTest() {
     }
 
     /**
@@ -27,7 +28,7 @@ public class FixedFileParserTest {
     @Test
     public void testOpenClose() {
 
-        FixedFileParser instance = new FixedFileParser();
+        FixedFileReader instance = new FixedFileReader();
         InputStream in = null;
         try{
             instance.open(in);
@@ -49,19 +50,19 @@ public class FixedFileParserTest {
     @Test
     public void testNotAllLengthsSepcified() throws Exception{
 
-        FixedFileParser instance = new FixedFileParser();
+        FixedFileReader instance = new FixedFileReader();
         String data = "a\tb\tc";
         instance.open(new ByteArrayInputStream(data.getBytes()));
 
         FileSchema schema = new FileSchema();
         schema.setName("test");
         schema.setVersion("0");
-        schema.addSchemaField(new SchemaField("a", DataType.STRING, 1));
-        schema.addSchemaField(new SchemaField("b", DataType.STRING, 2));
-        schema.addSchemaField(new SchemaField("c", DataType.STRING)); //<-- missing length
-        instance.setSchema(schema);
+        schema.addField(new SchemaField("a", DataType.STRING, 1));
+        schema.addField(new SchemaField("b", DataType.STRING, 2));
+        schema.addField(new SchemaField("c", DataType.STRING)); //<-- missing length
+        
         try{
-            Record record = instance.next();
+            instance.setSchema(schema);
             fail("should have thrown SchemaException");
         }
         catch(SchemaException expected){}
@@ -77,7 +78,7 @@ public class FixedFileParserTest {
     @Test
     public void testNext() throws Exception {
 
-        FixedFileParser instance = new FixedFileParser();
+        FixedFileReader instance = new FixedFileReader();
         String data = "abcdef\nghijkl";
         instance.open(new ByteArrayInputStream(data.getBytes()));
         instance.setSchema(get3FieldSchema());
@@ -109,7 +110,7 @@ public class FixedFileParserTest {
     @Test
     public void testNumericSchema() throws Exception{
 
-        FixedFileParser instance = new FixedFileParser();
+        FixedFileReader instance = new FixedFileReader();
         String data = "    1    2    3    4a";
         instance.open(new ByteArrayInputStream(data.getBytes()));
         instance.setSchema(getNumericSchema());
@@ -138,9 +139,9 @@ public class FixedFileParserTest {
         FileSchema schema = new FileSchema();
         schema.setName("test");
         schema.setVersion("0");
-        schema.addSchemaField(new SchemaField("a", DataType.STRING, 1));
-        schema.addSchemaField(new SchemaField("b", DataType.STRING, 2));
-        schema.addSchemaField(new SchemaField("c", DataType.STRING, 3));
+        schema.addField(new SchemaField("a", DataType.STRING, 1));
+        schema.addField(new SchemaField("b", DataType.STRING, 2));
+        schema.addField(new SchemaField("c", DataType.STRING, 3));
 
         return schema;
     }
@@ -149,11 +150,11 @@ public class FixedFileParserTest {
         FileSchema schema = new FileSchema();
         schema.setName("test");
         schema.setVersion("0");
-        schema.addSchemaField(new SchemaField("int", DataType.INTEGER, 5));
-        schema.addSchemaField(new SchemaField("float", DataType.FLOAT, 5));
-        schema.addSchemaField(new SchemaField("long", DataType.LONG, 5));
-        schema.addSchemaField(new SchemaField("double", DataType.DOUBLE, 5));
-        schema.addSchemaField(new SchemaField("string", DataType.STRING, 1));
+        schema.addField(new SchemaField("int", DataType.INTEGER, 5));
+        schema.addField(new SchemaField("float", DataType.FLOAT, 5));
+        schema.addField(new SchemaField("long", DataType.LONG, 5));
+        schema.addField(new SchemaField("double", DataType.DOUBLE, 5));
+        schema.addField(new SchemaField("string", DataType.STRING, 1));
 
         schema.addAfterOperation(new Trim());
         return schema;
@@ -161,7 +162,7 @@ public class FixedFileParserTest {
 
     @Test
     public void testShortRecord() throws Exception{
-    FixedFileParser instance = new FixedFileParser();
+    FixedFileReader instance = new FixedFileReader();
         String shortByOneCharacter = "    1    2    3    4";
         instance.open(new ByteArrayInputStream(shortByOneCharacter.getBytes()));
         instance.setSchema(getNumericSchema());
@@ -176,7 +177,7 @@ public class FixedFileParserTest {
     @Test
     public void testLongRecord() throws Exception{
 
-        FixedFileParser instance = new FixedFileParser();
+        FixedFileReader instance = new FixedFileReader();
         String longByOneCharacter = "    1    2    3    4ab";
         instance.open(new ByteArrayInputStream(longByOneCharacter.getBytes()));
         instance.setSchema(getNumericSchema());
@@ -196,13 +197,13 @@ public class FixedFileParserTest {
         schema.setVersion("0");
         
         try{
-            schema.addSchemaField(new SchemaField("a", DataType.STRING, 0));
+            schema.addField(new SchemaField("a", DataType.STRING, 0));
             fail("should have thrown IllegalArgumentException");
         }
         catch(IllegalArgumentException expected){}
 
         try{
-            schema.addSchemaField(new SchemaField("a", DataType.STRING, -1));
+            schema.addField(new SchemaField("a", DataType.STRING, -1));
             fail("should have thrown IllegalArgumentException");
         }
         catch(IllegalArgumentException expected){}
