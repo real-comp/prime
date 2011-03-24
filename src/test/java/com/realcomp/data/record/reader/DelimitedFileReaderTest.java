@@ -6,7 +6,6 @@ import com.realcomp.data.schema.FileSchema;
 import com.realcomp.data.DataType;
 import java.io.ByteArrayInputStream;
 import com.realcomp.data.record.Record;
-import com.realcomp.data.record.reader.DelimitedFileReader.Delimiter;
 import com.realcomp.data.schema.SchemaField;
 import java.io.InputStream;
 import java.util.List;

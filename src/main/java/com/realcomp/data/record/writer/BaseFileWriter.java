@@ -103,7 +103,7 @@ public abstract class BaseFileWriter implements RecordWriter{
         return schema;
     }
 
-
+    
     @Override
     public void write(Record record)
             throws IOException, ValidationException, ConversionException{

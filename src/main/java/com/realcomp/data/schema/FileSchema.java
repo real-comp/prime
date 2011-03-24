@@ -37,7 +37,6 @@ public class FileSchema {
     protected List<Operation> afterLast;
     protected List<SchemaField> fields;
 
-
     @XStreamImplicit
     protected List<Classifier> classifiers;
 

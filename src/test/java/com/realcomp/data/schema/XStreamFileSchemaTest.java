@@ -1,6 +1,7 @@
 package com.realcomp.data.schema;
 
 
+import com.realcomp.data.record.reader.Delimiter;
 import com.realcomp.data.validation.field.DoubleRangeValidator;
 import com.realcomp.data.schema.xml.OperationConverter;
 import com.realcomp.data.record.reader.DelimitedFileReader;
@@ -94,7 +95,7 @@ public class XStreamFileSchemaTest {
         schema.addClassifier(classifier);
 
         DelimitedFileReader reader = new DelimitedFileReader();
-        reader.setDelimiter(DelimitedFileReader.Delimiter.TAB);
+        reader.setDelimiter(Delimiter.TAB);
         schema.setReader(reader);
 
         return schema;

@@ -152,6 +152,8 @@ public abstract class BaseFileReader implements RecordReader{
         for (int x = 0; x < data.length; x++){
             SchemaField field = fields.get(x);
             record.put(field.getName(), loadField(field, data[x], recordId));
+            if (field.isId())
+                record.addIdFieldName(field.getName());
         }
 
         return record;

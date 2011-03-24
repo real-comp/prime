@@ -3,6 +3,7 @@ package com.realcomp.data.record.writer;
 import au.com.bytecode.opencsv.CSVWriter;
 import com.realcomp.data.conversion.ConversionException;
 import com.realcomp.data.record.Record;
+import com.realcomp.data.record.reader.Delimiter;
 import com.realcomp.data.schema.SchemaField;
 import com.realcomp.data.validation.ValidationException;
 import java.io.BufferedWriter;
@@ -65,21 +66,6 @@ public class DelimitedFileWriter extends BaseFileWriter{
         super.close();
     }
 
-    public enum Delimiter{
-        CSV, TAB;
-
-        public static Delimiter parse(String delimiter){
-
-            if (delimiter == null)
-                throw new IllegalArgumentException("delimiter is null");
-            
-            if (delimiter.equalsIgnoreCase("tab") || delimiter.equalsIgnoreCase("tabbed") || delimiter.equalsIgnoreCase("\t"))
-                return TAB;
-            else if (delimiter.equalsIgnoreCase("csv") || delimiter.equals(","))
-                return CSV;
-            throw new IllegalArgumentException("invalid delimiter: " + delimiter);
-        }
-    }
 
     public Delimiter getDelimiter() {
         return delimiter;
@@ -100,6 +86,7 @@ public class DelimitedFileWriter extends BaseFileWriter{
         current.clear();
         super.write(record);
         writer.writeNext(current.toArray(new String[current.size()]));
+        writer.flush();
     }
 
 

@@ -34,12 +34,24 @@ public class ValidateFile {
         schema = SchemaFactory.buildFileSchema(in);
     }
 
-    public void validate(InputStream in) throws 
-            IOException, ConversionException, SchemaException, ValidationException{
+    public void validate(InputStream in) throws SchemaException, IOException, ValidationException, ConversionException {
 
         RecordReader reader = schema.getReader();
         reader.open(in);
-        while (reader.next() != null){
+        long lineNumber = 1;
+        try {
+            while (reader.next() != null){
+                lineNumber++;
+            }
+        }
+        catch (IOException ex) {
+            throw new IOException(ex.getMessage() + " at record " + lineNumber, ex);
+        }
+        catch (ValidationException ex) {
+            throw new ValidationException(ex.getMessage() + " at record " + lineNumber, ex);
+        }
+        catch (ConversionException ex) {
+            throw new ConversionException(ex.getMessage() + " at record " + lineNumber, ex);
         }
     }
 

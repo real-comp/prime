@@ -2,7 +2,7 @@ package com.realcomp.data;
 
 import java.io.Serializable;
 import java.util.Collection;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -11,22 +11,23 @@ import java.util.Set;
  *
  * @author krenfro
  */
-public class MapField extends Field<Map<String,Field>> implements Map<String,Field>, Serializable{
+public class MapField extends Field<Map<String,Field>> implements Map<String,Field>, Serializable {
 
     private static final long serialVersionUID = 1L;
 
     protected static final DataType type = DataType.MAP;
-    protected Map<String,Field> wrapped;
+    protected LinkedHashMap<String,Field> wrapped;
     protected String name;
 
     protected MapField(){
-        wrapped = new HashMap<String,Field>();
+        wrapped = new LinkedHashMap<String,Field>();
     }
 
     public MapField(Map<String,Field> value){
         if (value == null)
             throw new IllegalArgumentException("value is null");
-        this.wrapped = value;
+        this.wrapped = new LinkedHashMap<String,Field>();
+        this.wrapped.putAll(value);
     }
 
     public MapField(String name, Map<String,Field> value){
@@ -123,7 +124,8 @@ public class MapField extends Field<Map<String,Field>> implements Map<String,Fie
     public void setValue(Map<String, Field> value) {
         if (value == null)
             throw new IllegalArgumentException("value is null");
-        wrapped = value;
+        wrapped.clear();
+        wrapped.putAll(value);
     }
 
     @Override
@@ -149,4 +151,5 @@ public class MapField extends Field<Map<String,Field>> implements Map<String,Fie
         hash = 97 * hash + (this.wrapped != null ? this.wrapped.hashCode() : 0);
         return hash;
     }
+
 }
