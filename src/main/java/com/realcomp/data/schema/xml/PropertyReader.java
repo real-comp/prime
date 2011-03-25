@@ -6,7 +6,9 @@ import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Reads, dynamically, properties of a JavaBean.
@@ -15,6 +17,15 @@ import java.util.Map;
  */
 public class PropertyReader {
 
+    private Set<String> ignoredProperties;
+
+    public PropertyReader(){
+        ignoredProperties = new HashSet<String>();
+    }
+
+    public void addIgnoredProperty(String name){
+        ignoredProperties.add(name);
+    }
 
     /**
      * @param bean not null
@@ -65,8 +76,11 @@ public class PropertyReader {
     protected boolean isValidProperty(String name, Object value){
         if (name == null || value == null)
             return false;
+        if (ignoredProperties.contains(name))
+            return false;
         if (isDefaultValue(value))
             return false;
+
         return true;
     }
 

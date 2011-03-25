@@ -12,7 +12,6 @@ import com.realcomp.data.schema.SchemaField;
 import com.realcomp.data.validation.Severity;
 import com.realcomp.data.validation.ValidationException;
 import com.realcomp.data.validation.Validator;
-import com.thoughtworks.xstream.annotations.XStreamOmitField;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.List;

@@ -43,7 +43,7 @@ public class FixedFileReader extends BaseFileReader{
     }
     
     @Override
-    public Record next()
+    public Record read()
             throws IOException, ValidationException, ConversionException, SchemaException{
 
         if (schema == null)

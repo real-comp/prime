@@ -82,22 +82,22 @@ public class FixedFileReaderTest {
         String data = "abcdef\nghijkl";
         instance.open(new ByteArrayInputStream(data.getBytes()));
         instance.setSchema(get3FieldSchema());
-        Record record = instance.next();
+        Record record = instance.read();
         assertNotNull(record);
-        record = instance.next();
+        record = instance.read();
         assertNotNull(record);
-        record = instance.next();
+        record = instance.read();
         assertNull(record);
         instance.close();
 
         instance.open(new ByteArrayInputStream(data.getBytes()));
         instance.setSchema(get3FieldSchema());
-        record = instance.next();
+        record = instance.read();
         assertNotNull(record);
         assertEquals("a", record.get("a").getValue());
         assertEquals("bc", record.get("b").getValue());
         assertEquals("def", record.get("c").getValue());
-        record = instance.next();
+        record = instance.read();
         assertNotNull(record);
         assertEquals("g", record.get("a").getValue());
         assertEquals("hi", record.get("b").getValue());
@@ -114,7 +114,7 @@ public class FixedFileReaderTest {
         String data = "    1    2    3    4a";
         instance.open(new ByteArrayInputStream(data.getBytes()));
         instance.setSchema(getNumericSchema());
-        Record record = instance.next();
+        Record record = instance.read();
         assertNotNull(record);
         assertEquals(1, record.get("int").getValue());
         assertEquals(2f, record.get("float").getValue());
@@ -124,7 +124,7 @@ public class FixedFileReaderTest {
 
         data = "  001  2.000003 04.4a";
         instance.open(new ByteArrayInputStream(data.getBytes()));
-        record = instance.next();
+        record = instance.read();
         assertNotNull(record);
         assertEquals(1, record.get("int").getValue());
         assertEquals(2f, record.get("float").getValue());
@@ -168,7 +168,7 @@ public class FixedFileReaderTest {
         instance.setSchema(getNumericSchema());
 
         try{
-            Record record = instance.next();
+            Record record = instance.read();
             fail("should have thrown ValidationException");
         }
         catch(ValidationException expected){}
@@ -182,7 +182,7 @@ public class FixedFileReaderTest {
         instance.open(new ByteArrayInputStream(longByOneCharacter.getBytes()));
         instance.setSchema(getNumericSchema());
         try{
-            Record record = instance.next();
+            Record record = instance.read();
             fail("should have thrown ValidationException");
         }
         catch(ValidationException expected){}

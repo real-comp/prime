@@ -69,7 +69,7 @@ public class DelimitedFileReader extends BaseFileReader{
     }
     
     @Override
-    public Record next() throws IOException, ValidationException, ConversionException, SchemaException{
+    public Record read() throws IOException, ValidationException, ConversionException, SchemaException{
 
         if (schema == null)
             throw new IllegalStateException("schema not specified");

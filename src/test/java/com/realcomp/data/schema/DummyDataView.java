@@ -1,5 +1,6 @@
 package com.realcomp.data.schema;
 
+import com.realcomp.data.record.Record;
 import com.realcomp.data.view.DataView;
 import com.realcomp.data.view.*;
 
@@ -7,6 +8,7 @@ import com.realcomp.data.view.*;
  *
  * @author krenfro
  */
+
 public class DummyDataView implements DataView {
 
 
@@ -37,6 +39,11 @@ public class DummyDataView implements DataView {
         int hash = 3;
         hash = 53 * hash + (this.test != null ? this.test.hashCode() : 0);
         return hash;
+    }
+
+    @Override
+    public void parse(Record record) {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     

@@ -119,11 +119,11 @@ public class DelimitedFileReaderTest {
         instance.open(new ByteArrayInputStream(data.getBytes()));
         instance.setSchema(get3FieldSchema());
 
-        Record record = instance.next();
+        Record record = instance.read();
         assertNotNull(record);
-        record = instance.next();
+        record = instance.read();
         assertNotNull(record);
-        record = instance.next();
+        record = instance.read();
         assertNull(record);
         
         instance.close();
@@ -139,12 +139,12 @@ public class DelimitedFileReaderTest {
         instance.open(new ByteArrayInputStream(data.getBytes()));
         instance.setSchema(get3FieldSchema());
 
-        Record record = instance.next();
+        Record record = instance.read();
         assertNotNull(record);
         assertEquals("a123", record.get("a").getValue());
         assertEquals("b123", record.get("b").getValue());
         assertEquals("c123", record.get("c").getValue());
-        assertNull(instance.next());
+        assertNull(instance.read());
         instance.close();
 
         //embedded comma
@@ -152,12 +152,12 @@ public class DelimitedFileReaderTest {
         instance.open(new ByteArrayInputStream(data.getBytes()));
         instance.setSchema(get3FieldSchema());
 
-        record = instance.next();
+        record = instance.read();
         assertNotNull(record);
         assertEquals("a123", record.get("a").getValue());
         assertEquals("b1,23", record.get("b").getValue());
         assertEquals("c123", record.get("c").getValue());
-        assertNull(instance.next());
+        assertNull(instance.read());
         instance.close();
 
 
@@ -166,12 +166,12 @@ public class DelimitedFileReaderTest {
         instance.open(new ByteArrayInputStream(data.getBytes()));
         instance.setSchema(get3FieldSchema());
 
-        record = instance.next();
+        record = instance.read();
         assertNotNull(record);
         assertEquals("a123", record.get("a").getValue());
         assertEquals("b1,23", record.get("b").getValue());
         assertEquals("c123", record.get("c").getValue());
-        assertNull(instance.next());
+        assertNull(instance.read());
         instance.close();
 
          //embedded quote
@@ -179,12 +179,12 @@ public class DelimitedFileReaderTest {
         instance.open(new ByteArrayInputStream(data.getBytes()));
         instance.setSchema(get3FieldSchema());
 
-        record = instance.next();
+        record = instance.read();
         assertNotNull(record);
         assertEquals("a123", record.get("a").getValue());
         assertEquals("b1\"23", record.get("b").getValue());
         assertEquals("c123", record.get("c").getValue());
-        assertNull(instance.next());
+        assertNull(instance.read());
         instance.close();
 
         //embedded quote at end
@@ -192,12 +192,12 @@ public class DelimitedFileReaderTest {
         instance.open(new ByteArrayInputStream(data.getBytes()));
         instance.setSchema(get3FieldSchema());
 
-        record = instance.next();
+        record = instance.read();
         assertNotNull(record);
         assertEquals("a123", record.get("a").getValue());
         assertEquals("b123\"", record.get("b").getValue());
         assertEquals("c123", record.get("c").getValue());
-        assertNull(instance.next());
+        assertNull(instance.read());
         instance.close();
 
     }

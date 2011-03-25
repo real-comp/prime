@@ -56,8 +56,9 @@ public class DelimitedFileWriter extends BaseFileWriter{
     public void close(){
 
         try {
-            if (writer != null)
+            if (writer != null){
                 writer.close();
+            }
         }
         catch (IOException ex) {
             logger.log(Level.WARNING, null, ex);

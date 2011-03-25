@@ -1,5 +1,7 @@
 package com.realcomp.data.view;
 
+import com.realcomp.data.record.Record;
+
 /**
  *
  * @author krenfro
@@ -9,6 +11,7 @@ public class ProperName implements DataView {
     //TODO: FINISH ME
 
     private String test = "asdf";
+
 
     public String getTest() {
         return test;
@@ -47,6 +50,11 @@ public class ProperName implements DataView {
         int hash = 3;
         hash = 53 * hash + (this.test != null ? this.test.hashCode() : 0);
         return hash;
+    }
+
+    @Override
+    public void parse(Record record) {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     

@@ -35,7 +35,7 @@ public interface RecordReader {
      * @return the next Record, or null if no more records.
      * @throws IOException
      */
-    Record next() throws IOException, ValidationException, ConversionException, SchemaException;
+    Record read() throws IOException, ValidationException, ConversionException, SchemaException;
 
     /**
      * Close open resources. Should be invoked when you are done with the RecordReader.

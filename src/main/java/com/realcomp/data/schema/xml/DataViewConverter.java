@@ -10,19 +10,26 @@ import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Uses xStream, JavaBeans and reflection to dynamically serialize/de-serialize a DataView
+ * DataViews are optional, and if the class is not found on the classpath, a warning
+ * is logged.
  * 
  * @author krenfro
  */
 public class DataViewConverter implements Converter{
+
+    private static final Logger logger = Logger.getLogger(DataViewConverter.class.getName());
 
     private PropertyReader propertyReader;
     private PropertyWriter propertyWriter;
     
     public DataViewConverter(){
         propertyReader = new PropertyReader();
+        propertyReader.addIgnoredProperty("name");
         propertyWriter = new PropertyWriter();
     }
 
@@ -78,8 +85,10 @@ public class DataViewConverter implements Converter{
             throw new ConversionException(ex);
         }
         catch (ClassNotFoundException ex) {
-            throw new ConversionException(ex);
+            logger.log(Level.WARNING, "DataView class not found.", ex);
+            return null;
         }        
     }
+
 
 }

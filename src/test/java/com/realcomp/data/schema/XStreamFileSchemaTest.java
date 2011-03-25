@@ -97,6 +97,7 @@ public class XStreamFileSchemaTest {
         DelimitedFileReader reader = new DelimitedFileReader();
         reader.setDelimiter(Delimiter.TAB);
         schema.setReader(reader);
+        //schema.addView(new DummyDataView());
 
         return schema;
     }

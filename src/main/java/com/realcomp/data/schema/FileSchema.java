@@ -3,8 +3,10 @@ package com.realcomp.data.schema;
 import com.realcomp.data.Operation;
 import com.realcomp.data.record.reader.RecordReader;
 import com.realcomp.data.record.writer.RecordWriter;
+import com.realcomp.data.schema.xml.DataViewsConverter;
 import com.realcomp.data.schema.xml.RecordReaderConverter;
 import com.realcomp.data.schema.xml.RecordWriterConverter;
+import com.realcomp.data.view.DataView;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
 import com.thoughtworks.xstream.annotations.XStreamConverter;
@@ -40,9 +42,14 @@ public class FileSchema {
     @XStreamImplicit
     protected List<Classifier> classifiers;
 
+    @XStreamConverter(DataViewsConverter.class)
+    protected List<DataView> views;
+
+
     public FileSchema(){
         fields = new ArrayList<SchemaField>();
         classifiers = new ArrayList<Classifier>();
+        views = new ArrayList<DataView>();
     }
 
     public RecordReader getReader() throws SchemaException{
@@ -370,6 +377,31 @@ public class FileSchema {
         this.version = version;
     }
 
+    public List<DataView> getViews() {
+        return views;
+    }
+
+    public void setViews(List<DataView> views) {
+        if (views == null)
+            throw new IllegalArgumentException("view is null");
+        this.views.clear();
+        for (DataView view: views)
+            addView(view);
+    }
+
+    public void addView(DataView view){
+        if (view != null)
+            views.add(view);
+    }
+
+    public DataView getDataView(Class clazz){
+        for (DataView view: views){
+            if (view.getClass().isAssignableFrom(clazz))
+                return view;
+        }
+        return null;
+    }
+
     @Override
     public String toString(){
         StringBuilder s = new StringBuilder(name);
@@ -405,6 +437,8 @@ public class FileSchema {
             return false;
         if (this.classifiers != other.classifiers && (this.classifiers == null || !this.classifiers.equals(other.classifiers)))
             return false;
+        if (this.views != other.views && (this.views == null || !this.views.equals(other.views)))
+            return false;
         return true;
     }
 
@@ -421,6 +455,7 @@ public class FileSchema {
         hash = 67 * hash + (this.afterLast != null ? this.afterLast.hashCode() : 0);
         hash = 67 * hash + (this.fields != null ? this.fields.hashCode() : 0);
         hash = 67 * hash + (this.classifiers != null ? this.classifiers.hashCode() : 0);
+        hash = 67 * hash + (this.views != null ? this.views.hashCode() : 0);
         return hash;
     }
 

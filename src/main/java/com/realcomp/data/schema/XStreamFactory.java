@@ -4,6 +4,7 @@ import com.realcomp.data.annotation.Converter;
 import com.realcomp.data.annotation.Validator;
 import com.realcomp.data.schema.FileSchema;
 import com.realcomp.data.schema.SchemaField;
+import com.realcomp.data.schema.xml.DataViewConverter;
 import com.realcomp.data.schema.xml.OperationConverter;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
@@ -46,6 +47,7 @@ public class XStreamFactory {
         xstream.processAnnotations(FileSchema.class);
         xstream.processAnnotations(SchemaField.class);
         xstream.registerConverter(new OperationConverter());
+        xstream.registerConverter(new DataViewConverter());
 
         for (Class c: validators){
             Validator annotation = (Validator) c.getAnnotation(Validator.class);

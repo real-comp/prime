@@ -40,7 +40,7 @@ public class ValidateFile {
         reader.open(in);
         long lineNumber = 1;
         try {
-            while (reader.next() != null){
+            while (reader.read() != null){
                 lineNumber++;
             }
         }

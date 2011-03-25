@@ -22,15 +22,13 @@ import java.util.logging.Logger;
  */
 public class RecordReaderConverter extends PropertyReader implements Converter{
     
-    private Set<String> ignoredProperties;
-
     public RecordReaderConverter(){
-        ignoredProperties = new HashSet<String>();
-        ignoredProperties.add("class");
-        ignoredProperties.add("schema");
-        ignoredProperties.add("count");
-        ignoredProperties.add("beforeFirstOperationsRun");
-    }
+        super();
+        addIgnoredProperty("class");
+        addIgnoredProperty("schema");
+        addIgnoredProperty("count");
+        addIgnoredProperty("beforeFirstOperationsRun");
+   }
 
     @Override
     public boolean canConvert(Class type){
@@ -94,12 +92,6 @@ public class RecordReaderConverter extends PropertyReader implements Converter{
      */
     @Override
     public boolean isValidProperty(String name, Object value){
-
-
-        if (name.equals("class"))
-            return false;
-        if (name.equals("schema"))
-            return false;
         
         boolean valid = super.isValidProperty(name, value);
 
