@@ -8,12 +8,9 @@ import com.realcomp.data.schema.SchemaException;
 import com.realcomp.data.schema.SchemaField;
 import com.realcomp.data.validation.Severity;
 import com.realcomp.data.validation.ValidationException;
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.List;
-import org.apache.commons.io.IOUtils;
 
 /**
  * There is an implicit Resize converter on all fields that runs after all 'after' operations.
@@ -22,26 +19,16 @@ import org.apache.commons.io.IOUtils;
  */
 public class FixedFileReader extends BaseFileReader{
 
-
-    protected BufferedReader reader;
-    protected boolean leadingRecordsSkipped = false;
+    protected boolean beforeFirst = true;
 
 
     @Override
     public void open(InputStream in){
         close();
         super.open(in);
-        reader = new BufferedReader(new InputStreamReader(in));
-        leadingRecordsSkipped = false;
+        beforeFirst = true;
     }
 
-    @Override
-    public void close(){
-        if (reader != null)
-            IOUtils.closeQuietly(reader);
-        super.close();
-    }
-    
     @Override
     public Record read()
             throws IOException, ValidationException, ConversionException, SchemaException{
@@ -49,15 +36,9 @@ public class FixedFileReader extends BaseFileReader{
         if (schema == null)
             throw new IllegalStateException("schema not specified");
 
-        if (super.getSkipTrailing() > 0)
-            throw new IllegalStateException("skipTrailing is not yet supported by this reader.");
-
-
-        if (!leadingRecordsSkipped){
+        if (beforeFirst){
             executeBeforeFirstOperations();
-            for (int x = 0; x < super.getSkipLeading(); x++)
-                reader.readLine();
-            leadingRecordsSkipped = true;
+            beforeFirst = true;
         }
 
         Record record = null;

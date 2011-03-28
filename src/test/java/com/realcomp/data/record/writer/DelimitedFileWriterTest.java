@@ -1,5 +1,6 @@
 package com.realcomp.data.record.writer;
 
+import com.realcomp.data.record.io.Delimiter;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.File;

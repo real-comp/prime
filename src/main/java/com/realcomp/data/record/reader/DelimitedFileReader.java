@@ -1,17 +1,15 @@
 package com.realcomp.data.record.reader;
 
+import com.realcomp.data.record.io.Delimiter;
 import au.com.bytecode.opencsv.CSVParser;
 import com.realcomp.data.conversion.ConversionException;
 import com.realcomp.data.record.Record;
 import com.realcomp.data.schema.SchemaException;
 import com.realcomp.data.schema.SchemaField;
 import com.realcomp.data.validation.ValidationException;
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.List;
-import org.apache.commons.io.IOUtils;
 
 /**
  *
@@ -24,9 +22,8 @@ public class DelimitedFileReader extends BaseFileReader{
     public static final Delimiter DEFAULT_TYPE=Delimiter.TAB;
 
     protected Delimiter delimiter = Delimiter.TAB;
-    protected BufferedReader reader;
     protected CSVParser parser;
-    protected boolean leadingRecordsSkipped = false;
+    protected boolean beforeFirst = true;
     
     public DelimitedFileReader(){
     }
@@ -35,9 +32,8 @@ public class DelimitedFileReader extends BaseFileReader{
     public void open(InputStream in){
 
         close();
-        leadingRecordsSkipped = false;
         super.open(in);
-        reader = new BufferedReader(new InputStreamReader(in));
+        beforeFirst = true;
         switch(delimiter){
             case TAB:
                 parser = new CSVParser('\t', '\u0000');
@@ -46,13 +42,6 @@ public class DelimitedFileReader extends BaseFileReader{
                 parser = new CSVParser();
                 break;
         }
-    }
-
-    @Override
-    public void close(){
-        if (reader != null)
-            IOUtils.closeQuietly(reader);
-        super.close();
     }
 
     
@@ -74,14 +63,9 @@ public class DelimitedFileReader extends BaseFileReader{
         if (schema == null)
             throw new IllegalStateException("schema not specified");
 
-        if (super.getSkipTrailing() > 0)
-            throw new IllegalStateException("skipTrailing is not yet supported by this reader.");
-
-        if (!leadingRecordsSkipped){
+        if (beforeFirst){
             executeBeforeFirstOperations();
-            for (int x = 0; x < super.getSkipLeading(); x++)
-                reader.readLine();
-            leadingRecordsSkipped = true;
+            beforeFirst = false;
         }
 
         Record record = null;

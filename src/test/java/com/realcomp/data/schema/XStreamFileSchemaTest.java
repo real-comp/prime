@@ -1,7 +1,7 @@
 package com.realcomp.data.schema;
 
 
-import com.realcomp.data.record.reader.Delimiter;
+import com.realcomp.data.record.io.Delimiter;
 import com.realcomp.data.validation.field.DoubleRangeValidator;
 import com.realcomp.data.schema.xml.OperationConverter;
 import com.realcomp.data.record.reader.DelimitedFileReader;

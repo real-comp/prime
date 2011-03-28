@@ -1,4 +1,4 @@
-package com.realcomp.data.record.reader;
+package com.realcomp.data.record.io;
 
 
 public enum Delimiter{

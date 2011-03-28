@@ -3,7 +3,7 @@ package com.realcomp.data.record.writer;
 import au.com.bytecode.opencsv.CSVWriter;
 import com.realcomp.data.conversion.ConversionException;
 import com.realcomp.data.record.Record;
-import com.realcomp.data.record.reader.Delimiter;
+import com.realcomp.data.record.io.Delimiter;
 import com.realcomp.data.schema.SchemaField;
 import com.realcomp.data.validation.ValidationException;
 import java.io.BufferedWriter;

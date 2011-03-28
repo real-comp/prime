@@ -14,6 +14,7 @@ import com.realcomp.data.validation.ValidationException;
 import com.realcomp.data.validation.Validator;
 import com.thoughtworks.xstream.annotations.XStreamOmitField;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -27,7 +28,7 @@ public abstract class BaseFileReader implements RecordReader{
 
     protected static final Logger log = Logger.getLogger(BaseFileReader.class.getName());
 
-    protected InputStream in;
+    protected SkippingBufferedReader reader;
     protected FileSchema schema;
     protected Severity validationExceptionThreshold = DEFAULT_VALIDATION_THREASHOLD;
     protected int skipLeading = 0;
@@ -62,6 +63,8 @@ public abstract class BaseFileReader implements RecordReader{
         if (skipLeading < 0)
             throw new IllegalArgumentException(
                     String.format("skipLeading out of range: %s < 0", skipLeading));
+        if (reader != null)
+            throw new IllegalArgumentException("Cannot setSkipLeading after open()");
         this.skipLeading = skipLeading;
     }
 
@@ -81,6 +84,8 @@ public abstract class BaseFileReader implements RecordReader{
         if (skipTrailing < 0)
             throw new IllegalArgumentException(
                     String.format("skipTrailing out of range: %s < 0", skipTrailing));
+        if (reader != null)
+            throw new IllegalArgumentException("Cannot setSkipTrailing after open()");
         this.skipTrailing = skipTrailing;
     }
     
@@ -88,14 +93,15 @@ public abstract class BaseFileReader implements RecordReader{
     public void open(InputStream in){
         if (in == null)
             throw new IllegalArgumentException("in is null");
-        this.in = in;
+        reader = new SkippingBufferedReader(new InputStreamReader(in));
+        reader.setSkipLeading(skipLeading);
+        reader.setSkipTrailing(skipTrailing);
         count = 0;
-        
     }
 
     @Override
     public void close(){
-        IOUtils.closeQuietly(in);
+        IOUtils.closeQuietly(reader);
     }
 
     protected void executeAfterLastOperations() throws ValidationException, ConversionException{

@@ -1,5 +1,6 @@
 package com.realcomp.data.record.reader;
 
+import com.realcomp.data.record.io.Delimiter;
 import com.realcomp.data.schema.SchemaException;
 import com.realcomp.data.validation.ValidationException;
 import com.realcomp.data.schema.FileSchema;
