@@ -8,6 +8,7 @@ import com.realcomp.data.DataType;
 import java.io.ByteArrayInputStream;
 import com.realcomp.data.record.Record;
 import com.realcomp.data.schema.SchemaField;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import org.junit.Test;
@@ -27,7 +28,7 @@ public class DelimitedFileReaderTest {
      * Test of open method, of class DelimitedFileParser.
      */
     @Test
-    public void testOpenClose() {
+    public void testOpenClose() throws IOException, SchemaException {
 
         DelimitedFileReader instance = new DelimitedFileReader();
         InputStream in = null;
@@ -41,6 +42,7 @@ public class DelimitedFileReaderTest {
         instance.close();
 
         String data = "a\tb\tc";
+        instance.setSchema(get3FieldSchema());
         instance.open(new ByteArrayInputStream(data.getBytes()));
         instance.close();
         instance.close();
@@ -94,10 +96,11 @@ public class DelimitedFileReaderTest {
 
 
     @Test
-    public void testNoTypeChangeAfterOpen(){
+    public void testNoTypeChangeAfterOpen() throws IOException, SchemaException{
 
         DelimitedFileReader instance = new DelimitedFileReader();
         String data = "a\tb\tc";
+        instance.setSchema(get3FieldSchema());
         instance.open(new ByteArrayInputStream(data.getBytes()));
         try{
             instance.setDelimiter(Delimiter.CSV);
@@ -117,8 +120,9 @@ public class DelimitedFileReaderTest {
 
         DelimitedFileReader instance = new DelimitedFileReader();
         String data = "a\tb\tc\nd\te\tf";
-        instance.open(new ByteArrayInputStream(data.getBytes()));
         instance.setSchema(get3FieldSchema());
+        instance.open(new ByteArrayInputStream(data.getBytes()));
+        
 
         Record record = instance.read();
         assertNotNull(record);
@@ -137,8 +141,9 @@ public class DelimitedFileReaderTest {
         DelimitedFileReader instance = new DelimitedFileReader();
         instance.setDelimiter(Delimiter.CSV);
         String data = "\"a123\",\"b123\",\"c123\"";
-        instance.open(new ByteArrayInputStream(data.getBytes()));
         instance.setSchema(get3FieldSchema());
+        instance.open(new ByteArrayInputStream(data.getBytes()));
+        
 
         Record record = instance.read();
         assertNotNull(record);
@@ -164,8 +169,9 @@ public class DelimitedFileReaderTest {
 
         //embedded comma
         data = "\"a123\",\"b1,23\",\"c123\"";
-        instance.open(new ByteArrayInputStream(data.getBytes()));
         instance.setSchema(get3FieldSchema());
+        instance.open(new ByteArrayInputStream(data.getBytes()));
+        
 
         record = instance.read();
         assertNotNull(record);
@@ -177,8 +183,9 @@ public class DelimitedFileReaderTest {
 
          //embedded quote
         data = "\"a123\",\"b1\"\"23\",\"c123\"";
-        instance.open(new ByteArrayInputStream(data.getBytes()));
         instance.setSchema(get3FieldSchema());
+        instance.open(new ByteArrayInputStream(data.getBytes()));
+        
 
         record = instance.read();
         assertNotNull(record);
@@ -190,9 +197,9 @@ public class DelimitedFileReaderTest {
 
         //embedded quote at end
         data = "\"a123\",\"b123\"\"\",\"c123\"";
-        instance.open(new ByteArrayInputStream(data.getBytes()));
         instance.setSchema(get3FieldSchema());
-
+        instance.open(new ByteArrayInputStream(data.getBytes()));
+        
         record = instance.read();
         assertNotNull(record);
         assertEquals("a123", record.get("a").getValue());
@@ -204,20 +211,6 @@ public class DelimitedFileReaderTest {
     }
 
 
-    /**
-     * Test of loadRecord method, of class DelimitedFileParser.
-     */
-    @Test
-    public void testLoadRecord() throws Exception {
-        
-        List<SchemaField> fields = get3FieldSchema().getFields();
-        
-        String[] data = new String[]{"a123","b123","c123"};
-        DelimitedFileReader instance = new DelimitedFileReader();
-        instance.setSchema(get3FieldSchema());
-        Record result = instance.loadRecord(fields, data);
-        assertEquals(3, result.size());
-    }
 
      /**
      * Test of loadRecord method, of class DelimitedFileParser.

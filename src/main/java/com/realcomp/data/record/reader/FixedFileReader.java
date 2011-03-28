@@ -23,9 +23,8 @@ public class FixedFileReader extends BaseFileReader{
 
 
     @Override
-    public void open(InputStream in){
-        close();
-        super.open(in);
+    public void open(InputStream in, FileSchema schema) throws IOException, SchemaException{
+        super.open(in, schema);
         beforeFirst = true;
     }
 

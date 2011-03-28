@@ -5,8 +5,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
 import com.thoughtworks.xstream.annotations.XStreamConverter;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  *
@@ -19,10 +19,10 @@ public class Table {
     protected String name;    
     
     @XStreamImplicit
-    protected List<Key> keys;
+    protected Set<SchemaField> keys;
 
     @XStreamConverter(RelationalSchemaConverter.class)
-    protected List<Table> tables;
+    protected Set<Table> tables;
     
     protected transient Table parent;
 
@@ -55,86 +55,53 @@ public class Table {
         this.name = name;
     }
 
-    public List<Key> getKeys() {
+    public Set<SchemaField> getKeys(){
         return keys;
     }
 
-    public void setKeys(List<Key> keys) throws SchemaException {
-        if (keys == null){
-            this.keys = null;
-        }
-        else{
-            if (this.keys != null)
-                this.keys.clear();
-            for (Key k: keys)
-                addKey(k);
-        }
-
+    public void setKeys(Set<SchemaField> keys) throws SchemaException {
+        this.keys = keys;
     }
 
-    public void addKey(Key key) throws SchemaException{
+
+    public void addKey(SchemaField key) throws SchemaException{
         if (key == null)
             throw new IllegalArgumentException("key is null");
-        verifyUniqueKeyName(key.getName());
+
         if (keys == null)
-            keys = new ArrayList<Key>();
-        keys.add(key);
+            keys = new HashSet<SchemaField>();
+        if (!keys.add(key)){
+            throw new SchemaException(
+                String.format(
+                    "A key field with name [%s] is already defined in %s",
+                    name,
+                    this.toString()));
+        }
     }
-
-
-    public List<Table> getTables() {
+    
+    public Set<Table> getTables() {
         return tables;
     }
 
-    public void setTables(List<Table> tables) throws SchemaException {
-
-        if (tables == null){
-            this.tables = null;
-        }
-        else{
-            if (this.tables != null)
-                this.tables.clear();
-            for (Table t: tables)
-                addTable(t);
-        }
+    public void setTables(Set<Table> tables) throws SchemaException {
+        this.tables = tables;
     }
 
     public void addTable(Table table) throws SchemaException{
         if (table == null)
             throw new IllegalArgumentException("table is null");
 
-        verifyUniqueTableName(table.getName());
         if (tables == null)
-            tables = new ArrayList<Table>();
+            tables = new HashSet<Table>();
         table.setParent(this);
-        tables.add(table);
-    }
-
-    protected void verifyUniqueTableName(String name) throws SchemaException{
-        if (tables != null){
-            for (Table t: tables)
-                if (t.getName().equals(name))
-                     throw new SchemaException(
-                        String.format(
-                            "A table with name [%s] is already defined in %s",
-                            name,
-                            this.toString()));
+        if (!tables.add(table)){
+            throw new SchemaException(
+                String.format(
+                    "A table with name [%s] is already defined in %s",
+                    name,
+                    this.toString()));
         }
     }
-
-
-     protected void verifyUniqueKeyName(String name) throws SchemaException{
-        if (keys != null){
-            for (Key k: keys)
-                if (k.getName().equals(name))
-                     throw new SchemaException(
-                        String.format(
-                            "A key with name [%s] is already defined in %s",
-                            name,
-                            this.toString()));
-        }
-    }
-
 
     @Override
     public String toString(){

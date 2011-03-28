@@ -1,19 +1,12 @@
 package com.realcomp.data.schema.xml;
 
-import com.realcomp.data.schema.ForeignKey;
-import com.realcomp.data.schema.Key;
-import com.realcomp.data.schema.RelationalSchema;
-import com.realcomp.data.schema.SchemaException;
-import com.realcomp.data.schema.Table;
 import com.realcomp.data.view.DataView;
-import com.thoughtworks.xstream.converters.ConversionException;
 import com.thoughtworks.xstream.converters.Converter;
 import com.thoughtworks.xstream.converters.MarshallingContext;
 import com.thoughtworks.xstream.converters.UnmarshallingContext;
 import com.thoughtworks.xstream.io.HierarchicalStreamReader;
 import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 /**

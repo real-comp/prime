@@ -1,6 +1,8 @@
 package com.realcomp.data.record;
 
+import com.realcomp.data.Field;
 import com.realcomp.data.MapField;
+import com.realcomp.data.schema.SchemaField;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -18,67 +20,63 @@ import java.util.List;
 public class Record extends MapField implements Serializable{
 
     private static final long serialVersionUID = 1L;
-    protected List<String> idFieldNames;
+    protected List<SchemaField> keyFields;
 
     public Record(){
-        idFieldNames = new ArrayList<String>();
-    }
-
-    public List<String> getIdFieldNames() {
-        return idFieldNames;
-    }
-
-    public void setIdFieldNames(List<String> idFieldNames) {
-        if (idFieldNames == null)
-            throw new IllegalArgumentException("idFieldNames is null");
-        this.idFieldNames = idFieldNames;
-    }
-
-    /**
-     * Some fields in a record may be the unique identifier for the record.
-     * You can set these here to get special help in toString()
-     * @param name
-     */
-    public void addIdFieldName(String name){
-        if (name == null)
-            throw new IllegalArgumentException("name is null");
-        idFieldNames.add(name);
     }
 
     /**
      *
-     * @return the Id of the record as identified by the Id field names property of this class,
-     * or the value of the first field if none were set, or null if there are no fields.
+     * @param keyFields List of <i>Key</i> SchemaFields or nulls
      */
-    public String getId(){
-
-        String id = null;
-        if (!wrapped.isEmpty()){
-            if (idFieldNames.isEmpty()){
-                id = wrapped.values().iterator().next().getValue().toString();
-            }
-            else{
-                StringBuilder s = new StringBuilder();
-                boolean needsDelimiter = false;
-                for (String name: idFieldNames){
-                    if (needsDelimiter)
-                        s.append("|");
-                    s.append(get(name).getValue().toString());
-                    needsDelimiter = true;
-                }
-                id = s.toString();
-            }
-        }
-
-        return id;
+    public Record(List<SchemaField> keyFields){
+        this.keyFields = keyFields;
     }
 
     /**
-     * @return the id of the record, or super.toString() if no id is available.
+     *
+     * @return the value of the <i>key</i> fields for this Record, or null if unknown.
+     */
+    public List<String> getKey(){
+
+        List<String> key = null;
+        if (keyFields != null && !wrapped.isEmpty()){
+            key = new ArrayList<String>();
+            for (SchemaField field: keyFields)
+                key.add(wrapped.get(field.getName()).getValue().toString());
+        }
+
+        return key;
+    }
+
+    
+    /**
+     * @return the key fields of this Record delimited by a colon, or
+     * the value of the first two fields if no key fields defined.
      */
     @Override
     public String toString(){
-        String id = getId();
-        return id == null ? super.toString() : id;
+        List<String> key = getKey();
+        StringBuilder s = new StringBuilder();
+        boolean needDelimiter = false;
+
+        if (key == null){
+            //no key defined, use value of first 2 fields
+            key = new ArrayList<String>();
+            for (Field f: wrapped.values()){
+                if (key.size() >= 2)
+                    break;
+
+                key.add(f.getValue().toString());
+            }
+        }
+        
+        for (String k: key){
+            if (needDelimiter)
+                s.append(":");
+            s.append(k);
+        }
+        
+        return s.toString();
     }
 }

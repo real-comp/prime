@@ -1,5 +1,6 @@
 package com.realcomp.data.schema;
 
+import com.realcomp.data.MultiFieldOperation;
 import com.realcomp.data.Operation;
 import com.realcomp.data.record.reader.RecordReader;
 import com.realcomp.data.record.writer.RecordWriter;
@@ -310,11 +311,14 @@ public class FileSchema {
     /**
      * Add an Operation to the before operations group, to be run before all field specific
      * Operations are performed.
-     * @param op not null
+     * @param op not null, not a MultiFieldOperation
      */
     public void addBeforeOperation(Operation op){
         if (op == null)
             throw new IllegalArgumentException("op is null");
+        if (op instanceof MultiFieldOperation)
+            throw new IllegalArgumentException(
+                    "You cannot specify a MultiFieldOperation as a 'before' operation");
 
         if (before == null)
             before = new ArrayList<Operation>();
@@ -351,11 +355,14 @@ public class FileSchema {
     /**
      * Add an Operation to the beforeFirst operations group, to be run before any records
      * are processed.
-     * @param op not null
+     * @param op not null, not a MultiFieldOperation
      */
     public void addBeforeFirstOperation(Operation op){
         if (op == null)
             throw new IllegalArgumentException("op is null");
+        if (op instanceof MultiFieldOperation)
+            throw new IllegalArgumentException(
+                    "You cannot specify a MultiFieldOperation as a 'beforeFirst' operation");
 
         if (beforeFirst == null)
             beforeFirst = new ArrayList<Operation>();
@@ -400,6 +407,14 @@ public class FileSchema {
                 return view;
         }
         return null;
+    }
+
+    public boolean isKeyField(SchemaField field){
+        for (Operation op: field.getOperations()){
+            if (op instanceof com.realcomp.data.validation.field.Key)
+                return true;
+        }
+        return false;
     }
 
     @Override
@@ -458,7 +473,4 @@ public class FileSchema {
         hash = 67 * hash + (this.views != null ? this.views.hashCode() : 0);
         return hash;
     }
-
-
-    
 }

@@ -1,9 +1,8 @@
 package com.realcomp.data.schema.xml;
 
-import com.realcomp.data.schema.ForeignKey;
-import com.realcomp.data.schema.Key;
 import com.realcomp.data.schema.RelationalSchema;
 import com.realcomp.data.schema.SchemaException;
+import com.realcomp.data.schema.SchemaField;
 import com.realcomp.data.schema.Table;
 import com.realcomp.data.view.DataView;
 import com.thoughtworks.xstream.converters.ConversionException;
@@ -104,9 +103,13 @@ public class RelationalSchemaConverter implements Converter{
         return table;
     }
 
-    protected Key readKey(HierarchicalStreamReader reader){
+    protected SchemaField readKey(HierarchicalStreamReader reader){
         String name = reader.getAttribute("name");
-        return reader.getNodeName().equals("key") ? new Key(name) : new ForeignKey(name);
+        //SchemaField field = new SchemaField();
+        //return reader.getNodeName().equals("key") ? new Key(name) : new ForeignKey(name);
+
+        //TODO
+        return null;
     }
 
 
@@ -138,12 +141,13 @@ public class RelationalSchemaConverter implements Converter{
         if (table != null){
             writer.startNode("table");
             writer.addAttribute("name", table.getName());
-            writeKeys(table.getKeys(), writer);
-            writeTables(table.getTables(), writer);
+//            writeKeys(table.getKeys(), writer);
+            //writeTables(table.getTables(), writer);
             writer.endNode();
         }
     }
 
+    /*
     protected void writeKeys(List<Key> keys, HierarchicalStreamWriter writer){
         if (keys != null){
             for (Key key: keys)
@@ -159,4 +163,6 @@ public class RelationalSchemaConverter implements Converter{
             writer.endNode();
         }
     }
+     * 
+     */
 }

@@ -17,6 +17,7 @@ public class XStreamRelationalSchemaTest {
 
     private XStream xstream;
 
+    /*
     @Before
     public void init(){
 
@@ -88,6 +89,8 @@ public class XStreamRelationalSchemaTest {
         assertEquals(parent, parent.getTables().get(0).getParent());
         assertTrue(getSchema().equals(deserialized));
     }
+     * 
+     */
 
     
 }

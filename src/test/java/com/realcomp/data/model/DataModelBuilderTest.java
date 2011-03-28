@@ -3,10 +3,11 @@
 
 package com.realcomp.data.model;
 
+import com.realcomp.data.validation.field.Key;
+import com.realcomp.data.schema.SchemaField;
 import com.realcomp.data.IntegerField;
 import java.util.ArrayList;
 import com.realcomp.data.schema.SchemaException;
-import com.realcomp.data.schema.Key;
 import com.realcomp.data.schema.Table;
 import com.realcomp.data.record.Record;
 import com.realcomp.data.schema.RelationalSchema;
@@ -61,7 +62,9 @@ public class DataModelBuilderTest {
         schema.setVersion("1.0");
 
         Table data = new Table("data");
-        data.addKey(new Key("id"));
+        SchemaField field = new SchemaField();
+        field.addOperation(new Key());
+        data.addKey(field);
         schema.addTable(data);
 
         return schema;

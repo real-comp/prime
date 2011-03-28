@@ -30,9 +30,6 @@ public class SchemaField {
     @XStreamAsAttribute
     protected int length;
 
-    @XStreamAsAttribute
-    protected boolean id;
-
     public SchemaField(){
     }
 
@@ -52,8 +49,8 @@ public class SchemaField {
 
     public SchemaField(String name, DataType type, int length){
         this(name, type);
-        if (length <= 0)
-            throw new IllegalArgumentException("length <= 0");
+        if (length < 0)
+            throw new IllegalArgumentException("length < 0");
         this.length = length;
     }
 
@@ -116,19 +113,6 @@ public class SchemaField {
             throw new IllegalArgumentException("type is null");
         this.type = type;
     }
-
-    /**
-     *
-     * @return true if the field is considered an 'id' of a Record; else false
-     */
-    public boolean isId() {
-        return id;
-    }
-
-
-    public void setId(boolean id) {
-        this.id = id;
-    }
     
     @Override
     public String toString() {
@@ -150,8 +134,6 @@ public class SchemaField {
             return false;
         if (this.length != other.length)
             return false;
-        if (this.id != other.id)
-            return false;
         return true;
     }
 
@@ -162,7 +144,6 @@ public class SchemaField {
         hash = 59 * hash + (this.type != null ? this.type.hashCode() : 0);
         hash = 59 * hash + (this.operations != null ? this.operations.hashCode() : 0);
         hash = 59 * hash + this.length;
-        hash = 59 * hash + (this.id ? 1 : 0);
         return hash;
     }
     

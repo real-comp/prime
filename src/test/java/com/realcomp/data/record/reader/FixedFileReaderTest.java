@@ -9,6 +9,7 @@ import com.realcomp.data.schema.FileSchema;
 import java.io.ByteArrayInputStream;
 import com.realcomp.data.record.Record;
 import com.realcomp.data.schema.SchemaField;
+import java.io.IOException;
 import java.io.InputStream;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -26,7 +27,7 @@ public class FixedFileReaderTest {
      * Test of open method, of class DelimitedFileParser.
      */
     @Test
-    public void testOpenClose() {
+    public void testOpenClose() throws IOException, SchemaException {
 
         FixedFileReader instance = new FixedFileReader();
         InputStream in = null;
@@ -39,7 +40,15 @@ public class FixedFileReaderTest {
         instance.close();
         instance.close();
 
-        String data = "a\tb\tc";
+        FileSchema schema = new FileSchema();
+        schema.setName("test");
+        schema.setVersion("0");
+        schema.addField(new SchemaField("a", DataType.STRING, 1));
+        schema.addField(new SchemaField("b", DataType.STRING, 1));
+        schema.addField(new SchemaField("c", DataType.STRING, 1));
+
+        String data = "abc";
+        instance.setSchema(schema);
         instance.open(new ByteArrayInputStream(data.getBytes()));
         instance.close();
         instance.close();
@@ -51,8 +60,9 @@ public class FixedFileReaderTest {
     public void testNotAllLengthsSepcified() throws Exception{
 
         FixedFileReader instance = new FixedFileReader();
+
         String data = "a\tb\tc";
-        instance.open(new ByteArrayInputStream(data.getBytes()));
+        
 
         FileSchema schema = new FileSchema();
         schema.setName("test");
@@ -63,6 +73,7 @@ public class FixedFileReaderTest {
         
         try{
             instance.setSchema(schema);
+            instance.open(new ByteArrayInputStream(data.getBytes()));
             fail("should have thrown SchemaException");
         }
         catch(SchemaException expected){}
@@ -80,8 +91,9 @@ public class FixedFileReaderTest {
 
         FixedFileReader instance = new FixedFileReader();
         String data = "abcdef\nghijkl";
-        instance.open(new ByteArrayInputStream(data.getBytes()));
         instance.setSchema(get3FieldSchema());
+        instance.open(new ByteArrayInputStream(data.getBytes()));
+        
         Record record = instance.read();
         assertNotNull(record);
         record = instance.read();
@@ -90,8 +102,9 @@ public class FixedFileReaderTest {
         assertNull(record);
         instance.close();
 
+        
         instance.open(new ByteArrayInputStream(data.getBytes()));
-        instance.setSchema(get3FieldSchema());
+        
         record = instance.read();
         assertNotNull(record);
         assertEquals("a", record.get("a").getValue());
@@ -112,8 +125,9 @@ public class FixedFileReaderTest {
 
         FixedFileReader instance = new FixedFileReader();
         String data = "    1    2    3    4a";
-        instance.open(new ByteArrayInputStream(data.getBytes()));
         instance.setSchema(getNumericSchema());
+        instance.open(new ByteArrayInputStream(data.getBytes()));
+        
         Record record = instance.read();
         assertNotNull(record);
         assertEquals(1, record.get("int").getValue());
@@ -164,8 +178,9 @@ public class FixedFileReaderTest {
     public void testShortRecord() throws Exception{
     FixedFileReader instance = new FixedFileReader();
         String shortByOneCharacter = "    1    2    3    4";
-        instance.open(new ByteArrayInputStream(shortByOneCharacter.getBytes()));
         instance.setSchema(getNumericSchema());
+        instance.open(new ByteArrayInputStream(shortByOneCharacter.getBytes()));
+        
 
         try{
             Record record = instance.read();
@@ -179,8 +194,9 @@ public class FixedFileReaderTest {
 
         FixedFileReader instance = new FixedFileReader();
         String longByOneCharacter = "    1    2    3    4ab";
-        instance.open(new ByteArrayInputStream(longByOneCharacter.getBytes()));
         instance.setSchema(getNumericSchema());
+        instance.open(new ByteArrayInputStream(longByOneCharacter.getBytes()));
+        
         try{
             Record record = instance.read();
             fail("should have thrown ValidationException");
@@ -196,11 +212,9 @@ public class FixedFileReaderTest {
         schema.setName("test");
         schema.setVersion("0");
         
-        try{
-            schema.addField(new SchemaField("a", DataType.STRING, 0));
-            fail("should have thrown IllegalArgumentException");
-        }
-        catch(IllegalArgumentException expected){}
+        //zero length ok
+        schema.addField(new SchemaField("a", DataType.STRING, 0));
+            
 
         try{
             schema.addField(new SchemaField("a", DataType.STRING, -1));

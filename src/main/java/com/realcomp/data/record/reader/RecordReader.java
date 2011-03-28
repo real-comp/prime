@@ -48,12 +48,13 @@ public interface RecordReader {
      *
      *
      * @param in InputStream to parse. Not null
+     * @param fileSchema
      */
-    void open(InputStream in);
+    void open(InputStream in, FileSchema fileSchema) throws IOException, SchemaException;
 
 
     /**
-     * Set the schema that the RecordREader should use to create Records.
+     * Set the schema that the RecordReader should use to create Records.
      * 
      * @param schema
      * @throws SchemaException
