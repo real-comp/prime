@@ -76,6 +76,7 @@ public class ValidateFile {
             validator.validate(in);
         }
         catch (Exception ex) {
+            ex.printStackTrace();
             logger.log(Level.SEVERE, ex.getMessage());
             System.exit(1);
         }

@@ -2,8 +2,6 @@ package com.realcomp.data.schema;
 
 import com.realcomp.data.annotation.Converter;
 import com.realcomp.data.annotation.Validator;
-import com.realcomp.data.schema.FileSchema;
-import com.realcomp.data.schema.SchemaField;
 import com.realcomp.data.schema.xml.DataViewConverter;
 import com.realcomp.data.schema.xml.OperationConverter;
 import com.thoughtworks.xstream.XStream;
@@ -23,11 +21,7 @@ import org.reflections.util.ConfigurationBuilder;
  */
 public class XStreamFactory {
 
-    public static Logger log = Logger.getLogger(XStreamFactory.class.getName());
-
     public XStream build(){
-
-        
 
         //use reflection to find all Validatior and Converter annotated classes.
         Configuration conf = new ConfigurationBuilder()

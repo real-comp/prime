@@ -136,6 +136,10 @@ public abstract class BaseFileReader implements RecordReader{
 
     @Override
     public void setSchema(FileSchema schema) throws SchemaException{
+
+        if (schema == null)
+            throw new IllegalArgumentException("schema is null");
+        
         this.schema = schema;
         recordFactory = new RecordFactory(schema);
     }
