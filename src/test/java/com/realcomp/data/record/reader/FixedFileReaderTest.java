@@ -72,8 +72,8 @@ public class FixedFileReaderTest {
         schema.addField(new SchemaField("c", DataType.STRING)); //<-- missing length
         
         try{
-            instance.setSchema(schema);
             instance.open(new ByteArrayInputStream(data.getBytes()));
+            instance.setSchema(schema);
             fail("should have thrown SchemaException");
         }
         catch(SchemaException expected){}

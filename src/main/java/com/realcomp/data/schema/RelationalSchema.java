@@ -1,11 +1,16 @@
 package com.realcomp.data.schema;
 
+import com.realcomp.data.schema.SchemaException;
+import com.realcomp.data.schema.Table;
 import com.realcomp.data.schema.xml.RelationalSchemaConverter;
 import com.realcomp.data.view.DataView;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamConverter;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  *
@@ -17,7 +22,7 @@ public class RelationalSchema {
 
     protected String name;
     protected String version;
-    protected List<Table> tables;
+    protected Set<Table> tables;
     protected List<DataView> views;
 
     public String getName() {
@@ -63,11 +68,11 @@ public class RelationalSchema {
         views.add(view);
     }
 
-    public List<Table> getTables() {
+    public Set<Table> getTables() {
         return tables;
     }
 
-    public void setTables(List<Table> tables) throws SchemaException {
+    public void setTables(Collection<Table> tables) throws SchemaException {
         if (tables == null){
             this.tables = null;
         }
@@ -83,24 +88,17 @@ public class RelationalSchema {
         if (table == null)
             throw new IllegalArgumentException("table is null");
         
-        verifyUniqueName(table.getName());
         if (tables == null)
-            tables = new ArrayList<Table>();        
-        tables.add(table);
-    }
-
-    protected void verifyUniqueName(String name) throws SchemaException{        
-        if (tables != null){
-            for (Table t: tables)
-                if (t.getName().equals(name))
-                     throw new SchemaException(
-                        String.format(
-                            "A table with name [%s] is already defined in schema [%s].",
-                            name,
-                            this.toString()));
+            tables = new HashSet<Table>();
+        
+        if (!tables.add(table)){
+             throw new SchemaException(
+                String.format(
+                    "A table with name [%s] is already defined in schema [%s].",
+                    name,
+                    this.toString()));
         }
     }
-
 
     @Override
     public String toString(){
@@ -130,11 +128,12 @@ public class RelationalSchema {
 
     @Override
     public int hashCode() {
-        int hash = 7;
-        hash = 79 * hash + (this.name != null ? this.name.hashCode() : 0);
-        hash = 79 * hash + (this.version != null ? this.version.hashCode() : 0);
-        hash = 79 * hash + (this.tables != null ? this.tables.hashCode() : 0);
-        hash = 79 * hash + (this.views != null ? this.views.hashCode() : 0);
+        int hash = 5;
+        hash = 53 * hash + (this.name != null ? this.name.hashCode() : 0);
+        hash = 53 * hash + (this.version != null ? this.version.hashCode() : 0);
+        hash = 53 * hash + (this.tables != null ? this.tables.hashCode() : 0);
+        hash = 53 * hash + (this.views != null ? this.views.hashCode() : 0);
         return hash;
     }
+
 }

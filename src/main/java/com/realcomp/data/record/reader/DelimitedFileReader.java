@@ -27,9 +27,9 @@ public class DelimitedFileReader extends BaseFileReader{
     protected boolean beforeFirst = true;
     
     @Override
-    public void open(InputStream in, FileSchema schema) throws IOException, SchemaException{
+    public void open(InputStream in) throws IOException{
 
-        super.open(in, schema);
+        super.open(in);
         beforeFirst = true;
         switch(delimiter){
             case TAB:

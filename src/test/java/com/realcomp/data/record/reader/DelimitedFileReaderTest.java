@@ -26,6 +26,8 @@ public class DelimitedFileReaderTest {
 
     /**
      * Test of open method, of class DelimitedFileParser.
+     * @throws IOException
+     * @throws SchemaException
      */
     @Test
     public void testOpenClose() throws IOException, SchemaException {
@@ -42,8 +44,9 @@ public class DelimitedFileReaderTest {
         instance.close();
 
         String data = "a\tb\tc";
-        instance.setSchema(get3FieldSchema());
+        
         instance.open(new ByteArrayInputStream(data.getBytes()));
+        instance.setSchema(get3FieldSchema());
         instance.close();
         instance.close();
 

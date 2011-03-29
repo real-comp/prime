@@ -37,7 +37,7 @@ public class ValidateFile {
     public void validate(InputStream in) throws SchemaException, IOException, ValidationException, ConversionException {
 
         RecordReader reader = schema.getReader();
-        reader.open(in, schema);
+        reader.open(in);
         long lineNumber = 1;
         try {
             while (reader.read() != null){

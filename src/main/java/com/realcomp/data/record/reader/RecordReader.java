@@ -31,10 +31,13 @@ public interface RecordReader {
 
 
    /**
-     * Read and return the next Record, or null if there are no more.
-     * @return the next Record, or null if no more records.
-     * @throws IOException
-     */
+    * Read and return the next Record, or null if there are no more.
+    * @return the next Record, or null if no more records.
+    * @throws IOException
+    * @throws ValidationException
+    * @throws ConversionException
+    * @throws SchemaException
+    */
     Record read() throws IOException, ValidationException, ConversionException, SchemaException;
 
     /**
@@ -46,12 +49,10 @@ public interface RecordReader {
      * Open an InputStream for reading. May be invoked multiple times with new input as needed.
      * close() is automatically invoked before each open();
      *
-     *
      * @param in InputStream to parse. Not null
-     * @param fileSchema
+     * @throws IOException
      */
-    void open(InputStream in, FileSchema fileSchema) throws IOException, SchemaException;
-
+    void open(InputStream in) throws IOException;
 
     /**
      * Set the schema that the RecordReader should use to create Records.

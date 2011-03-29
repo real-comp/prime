@@ -1,5 +1,8 @@
 package com.realcomp.data.schema.xml;
 
+import com.realcomp.data.DataType;
+import com.realcomp.data.schema.ForeignKeyField;
+import com.realcomp.data.schema.KeyField;
 import com.realcomp.data.schema.RelationalSchema;
 import com.realcomp.data.schema.SchemaException;
 import com.realcomp.data.schema.SchemaField;
@@ -12,6 +15,7 @@ import com.thoughtworks.xstream.converters.UnmarshallingContext;
 import com.thoughtworks.xstream.io.HierarchicalStreamReader;
 import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -105,11 +109,7 @@ public class RelationalSchemaConverter implements Converter{
 
     protected SchemaField readKey(HierarchicalStreamReader reader){
         String name = reader.getAttribute("name");
-        //SchemaField field = new SchemaField();
-        //return reader.getNodeName().equals("key") ? new Key(name) : new ForeignKey(name);
-
-        //TODO
-        return null;
+        return reader.getNodeName().equals("key") ? new KeyField(name) : new ForeignKeyField(name);
     }
 
 
@@ -129,7 +129,7 @@ public class RelationalSchemaConverter implements Converter{
     }
 
 
-    protected void writeTables(List<Table> tables, HierarchicalStreamWriter writer){
+    protected void writeTables(Collection<Table> tables, HierarchicalStreamWriter writer){
         if (tables != null){
             for (Table table: tables)
                 writeTable(table, writer);
@@ -141,28 +141,25 @@ public class RelationalSchemaConverter implements Converter{
         if (table != null){
             writer.startNode("table");
             writer.addAttribute("name", table.getName());
-//            writeKeys(table.getKeys(), writer);
-            //writeTables(table.getTables(), writer);
+            writeKeys(table.getKeys(), writer);
+            writeTables(table.getTables(), writer);
             writer.endNode();
         }
     }
 
-    /*
-    protected void writeKeys(List<Key> keys, HierarchicalStreamWriter writer){
+    protected void writeKeys(Collection<SchemaField> keys, HierarchicalStreamWriter writer){
         if (keys != null){
-            for (Key key: keys)
+            for (SchemaField key: keys)
                 writeKey(key, writer);
         }
     }
 
 
-    protected void writeKey(Key key, HierarchicalStreamWriter writer){
+    protected void writeKey(SchemaField key, HierarchicalStreamWriter writer){
         if (key != null){
-            writer.startNode(key instanceof ForeignKey ? "foreign" : "key");
+            writer.startNode(key instanceof ForeignKeyField ? "foreign" : "key");
             writer.addAttribute("name", key.getName());
             writer.endNode();
         }
     }
-     * 
-     */
 }

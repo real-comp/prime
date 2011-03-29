@@ -53,18 +53,13 @@ public class RecordFactory {
     protected FileSchema schema;
     protected RecordFactoryWorker worker;
 
+    protected Severity validationExceptionThreshold = Severity.HIGH;
+
     public RecordFactory(FileSchema schema) throws ParsePlanException{
-        this(schema, Severity.HIGH);
-    }
-
-    public RecordFactory(FileSchema schema, Severity validationExceptionThreshold)
-            throws ParsePlanException{
-
+        
         if (schema == null)
             throw new IllegalArgumentException("schema is null");
-        if (validationExceptionThreshold == null)
-            throw new IllegalArgumentException("validationExceptionThreshold is null");
-
+        
         this.schema = schema;
         buildKeyFieldCache();
         buildParsePlan();
@@ -164,4 +159,13 @@ public class RecordFactory {
         return plan;
     }
 
+    public Severity getValidationExceptionThreshold() {
+        return validationExceptionThreshold;
+    }
+
+    public void setValidationExceptionThreshold(Severity validationExceptionThreshold) {
+        if (validationExceptionThreshold == null)
+            throw new IllegalArgumentException("validationExceptionThreshold == null");
+        this.validationExceptionThreshold = validationExceptionThreshold;
+    }
 }

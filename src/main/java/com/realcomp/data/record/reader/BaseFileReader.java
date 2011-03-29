@@ -2,7 +2,6 @@ package com.realcomp.data.record.reader;
 
 import com.realcomp.data.Operation;
 import com.realcomp.data.conversion.ConversionException;
-import com.realcomp.data.record.ParsePlanException;
 import com.realcomp.data.record.Record;
 import com.realcomp.data.record.RecordFactory;
 import com.realcomp.data.record.RecordFactoryWorker;
@@ -50,6 +49,8 @@ public abstract class BaseFileReader implements RecordReader{
     @Override
     public void setValidationExceptionThreshold(Severity severity) {
         this.validationExceptionThreshold = severity;
+        if (recordFactory != null)
+            recordFactory.setValidationExceptionThreshold(severity);
     }
 
     /**
@@ -95,7 +96,7 @@ public abstract class BaseFileReader implements RecordReader{
     }
     
     @Override
-    public void open(InputStream in, FileSchema schema) throws IOException, SchemaException{
+    public void open(InputStream in) throws IOException{
         if (in == null)
             throw new IllegalArgumentException("in is null");
 
@@ -104,7 +105,6 @@ public abstract class BaseFileReader implements RecordReader{
         reader.setSkipLeading(skipLeading);
         reader.setSkipTrailing(skipTrailing);
         count = 0;
-        setSchema(schema);
     }
 
     @Override
@@ -133,14 +133,13 @@ public abstract class BaseFileReader implements RecordReader{
             }
         }
     }
-    
-    
+
     @Override
     public void setSchema(FileSchema schema) throws SchemaException{
         this.schema = schema;
-        recordFactory = new RecordFactory(schema, validationExceptionThreshold);
+        recordFactory = new RecordFactory(schema);
     }
-
+    
     @Override
     public FileSchema getSchema() {
         return schema;

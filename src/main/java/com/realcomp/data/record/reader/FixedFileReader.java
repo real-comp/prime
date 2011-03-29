@@ -23,8 +23,9 @@ public class FixedFileReader extends BaseFileReader{
 
 
     @Override
-    public void open(InputStream in, FileSchema schema) throws IOException, SchemaException{
-        super.open(in, schema);
+    public void open(InputStream in) throws IOException{
+        
+        super.open(in);
         beforeFirst = true;
     }
 
@@ -54,6 +55,12 @@ public class FixedFileReader extends BaseFileReader{
             executeAfterLastOperations();
         
         return record;
+    }
+
+    @Override
+    public void setSchema(FileSchema schema) throws SchemaException{
+        ensureFieldLengthsSpecified(schema);
+        super.setSchema(schema);
     }
 
     protected String[] parse(String record, List<SchemaField> fields)
@@ -89,11 +96,6 @@ public class FixedFileReader extends BaseFileReader{
     }
 
 
-    @Override
-    public void setSchema(FileSchema schema) throws SchemaException {
-        ensureFieldLengthsSpecified(schema);
-        super.setSchema(schema);
-    }
 
     protected void ensureFieldLengthsSpecified(FileSchema schema) throws SchemaException{
         for (Classifier c: schema.getClassifiers())
