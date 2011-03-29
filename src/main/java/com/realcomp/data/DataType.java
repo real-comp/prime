@@ -11,6 +11,7 @@ public enum DataType {
     FLOAT,
     LONG,
     DOUBLE,
+    BOOLEAN,
     MAP,
     LIST,
     NULL;
