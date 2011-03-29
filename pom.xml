@@ -77,7 +77,7 @@
         <dependency>
             <groupId>com.realcomp</groupId>
             <artifactId>realcomp-data-annotations</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
+            <version>0.0.1</version>
         </dependency>
         <dependency>
             <groupId>commons-io</groupId>
