@@ -1,7 +1,6 @@
 package com.realcomp.data.conversion;
 
 import com.realcomp.data.MultiFieldOperation;
-import com.realcomp.data.Operation;
 import com.realcomp.data.record.Record;
 
 /**
