@@ -50,6 +50,23 @@ public class FieldFactoryTest {
         assertEquals(1.0d, FieldFactory.create(DataType.DOUBLE, "1").getValue());
         assertEquals(1.1d, FieldFactory.create(DataType.DOUBLE, "1.1").getValue());
 
+
+        assertEquals(true, FieldFactory.create(DataType.BOOLEAN, "true").getValue());
+        assertEquals(false, FieldFactory.create(DataType.BOOLEAN, "false").getValue());
+        assertEquals(true, FieldFactory.create(DataType.BOOLEAN, "True").getValue());
+        assertEquals(false, FieldFactory.create(DataType.BOOLEAN, "False").getValue());
+        assertEquals(true, FieldFactory.create(DataType.BOOLEAN, "T").getValue());
+        assertEquals(false, FieldFactory.create(DataType.BOOLEAN, "F").getValue());
+        assertEquals(true, FieldFactory.create(DataType.BOOLEAN, "Y").getValue());
+        assertEquals(false, FieldFactory.create(DataType.BOOLEAN, "N").getValue());
+        assertEquals(true, FieldFactory.create(DataType.BOOLEAN, "Yes").getValue());
+        assertEquals(false, FieldFactory.create(DataType.BOOLEAN, "No").getValue());
+        assertEquals(true, FieldFactory.create(DataType.BOOLEAN, "1").getValue());
+        assertEquals(false, FieldFactory.create(DataType.BOOLEAN, "0").getValue());
+
+        assertEquals(false, FieldFactory.create(DataType.BOOLEAN, "asdf").getValue());
+
+
         assertNull(FieldFactory.create(DataType.NULL, "ignored").getValue());
 
         try{
