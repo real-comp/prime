@@ -33,33 +33,7 @@ public class XStreamFileSchemaTest {
     @Before
     public void init(){
 
-
-        //use reflection to find all Validatior and Converter annotated classes.
-        Configuration conf = new ConfigurationBuilder()
-            .setUrls(ClasspathHelper.getUrlsForPackagePrefix("com.realcomp"));
-            //.setScanners(new TypeElementsScanner());
-
-        Reflections reflections = new Reflections(conf);
-        Set<Class<?>> validators = reflections.getTypesAnnotatedWith(Validator.class);
-        Set<Class<?>> converters = reflections.getTypesAnnotatedWith(Converter.class);
-        
-        xstream = new XStream(new DomDriver());
-        xstream.processAnnotations(FileSchema.class);
-        xstream.processAnnotations(SchemaField.class);
-
-        xstream.registerConverter(new OperationConverter());
-        
-        for (Class c: validators){
-            Validator annotation = (Validator) c.getAnnotation(Validator.class);
-            xstream.alias(annotation.value(), c);
-            xstream.processAnnotations(c);
-        }
-
-        for (Class c: converters){
-            Converter annotation = (Converter) c.getAnnotation(Converter.class);
-            xstream.alias(annotation.value(), c);
-            xstream.processAnnotations(c);
-        }
+        xstream = XStreamFactory.build();
         
     }
 
@@ -104,7 +78,7 @@ public class XStreamFileSchemaTest {
     
     @Test
     public void testSerialization() throws SchemaException{
-
+    
         String xml = xstream.toXML(getSchema());
         System.out.println(xml);
 

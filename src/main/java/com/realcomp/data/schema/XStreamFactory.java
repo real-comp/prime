@@ -21,7 +21,7 @@ import org.reflections.util.ConfigurationBuilder;
  */
 public class XStreamFactory {
 
-    public XStream build(){
+    public static XStream build(){
 
         //use reflection to find all Validatior and Converter annotated classes.
         Configuration conf = new ConfigurationBuilder()
