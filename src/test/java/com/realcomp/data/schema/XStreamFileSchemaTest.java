@@ -94,12 +94,19 @@ public class XStreamFileSchemaTest {
     }
 
     @Test
-    public void testDeserialization(){
+    public void testDeserialization() throws SchemaException{
 
-        SchemaFactory.buildFileSchema(XStreamFileSchemaTest.class.getResourceAsStream("test_1.schema"));
-        SchemaFactory.buildFileSchema(XStreamFileSchemaTest.class.getResourceAsStream("test_2.schema"));
-        SchemaFactory.buildFileSchema(XStreamFileSchemaTest.class.getResourceAsStream("test_3.schema"));
-        SchemaFactory.buildFileSchema(XStreamFileSchemaTest.class.getResourceAsStream("test_4.schema"));
+        FileSchema schema = SchemaFactory.buildFileSchema(XStreamFileSchemaTest.class.getResourceAsStream("test_1.schema"));
+        assertEquals(Delimiter.TAB, ((DelimitedFileReader) schema.getReader()).getDelimiter());
+        
+        schema = SchemaFactory.buildFileSchema(XStreamFileSchemaTest.class.getResourceAsStream("test_2.schema"));
+        assertEquals(Delimiter.CSV, ((DelimitedFileReader) schema.getReader()).getDelimiter());
+        
+        schema = SchemaFactory.buildFileSchema(XStreamFileSchemaTest.class.getResourceAsStream("test_3.schema"));
+        assertEquals(Delimiter.CSV, ((DelimitedFileReader) schema.getReader()).getDelimiter());
+
+        schema = SchemaFactory.buildFileSchema(XStreamFileSchemaTest.class.getResourceAsStream("test_4.schema"));
+        assertEquals(Delimiter.CSV, ((DelimitedFileReader) schema.getReader()).getDelimiter());
 
     }
 
