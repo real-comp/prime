@@ -1,5 +1,6 @@
 package com.realcomp.data;
 
+import com.realcomp.data.conversion.BooleanConverter;
 import com.realcomp.data.conversion.ConversionException;
 
 /**
@@ -8,6 +9,7 @@ import com.realcomp.data.conversion.ConversionException;
  */
 public class FieldFactory {
 
+    private static BooleanConverter booleanConverter = new BooleanConverter();
 
     public static Field create(DataType type){
 
@@ -17,6 +19,7 @@ public class FieldFactory {
             case FLOAT: return new FloatField();
             case LONG: return new LongField();
             case DOUBLE: return new DoubleField();
+            case BOOLEAN: return new BooleanField();
             case MAP: return new MapField();
             case LIST: return new ListField();
             case NULL: return new NullField();
@@ -55,6 +58,10 @@ public class FieldFactory {
                 case DOUBLE:
                     if (!value.isEmpty())
                         f.setValue(Double.parseDouble(value));
+                    return f;
+                case BOOLEAN:
+                    if (!value.isEmpty())
+                        f.setValue(Boolean.parseBoolean(booleanConverter.convert(value)));
                     return f;
                 case NULL:
                     return f;

@@ -18,14 +18,14 @@ import java.util.logging.Logger;
  * 
  * @author krenfro
  */
-public class RecordReaderConverter extends PropertyReader implements Converter{
+public class RecordReaderConverter extends DynamicPropertyGetter implements Converter{
     
     public RecordReaderConverter(){
         super();
         addIgnoredProperty("class");
         addIgnoredProperty("schema");
         addIgnoredProperty("count");
-        addIgnoredProperty("beforeFirstOperationsRun");
+        addIgnoredProperty("beforeFirst");
    }
 
     @Override
@@ -37,7 +37,7 @@ public class RecordReaderConverter extends PropertyReader implements Converter{
     @Override
     public void marshal(Object o, HierarchicalStreamWriter writer, MarshallingContext mc) {
         try {
-            for(Map.Entry<String,Object> entry: read(o).entrySet())
+            for(Map.Entry<String,Object> entry: getProperties(o).entrySet())
                 writer.addAttribute(entry.getKey(), entry.getValue().toString());
         }
         catch (DynamicPropertyException ex) {
@@ -47,22 +47,24 @@ public class RecordReaderConverter extends PropertyReader implements Converter{
     }
 
     @Override
-    public Object unmarshal(HierarchicalStreamReader reader, UnmarshallingContext uc) {
+    public Object unmarshal(HierarchicalStreamReader stream, UnmarshallingContext uc) {
 
        try {
-            Class parserClass = Class.forName(reader.getAttribute("class"));
-            RecordReader parser = (RecordReader) parserClass.newInstance();
-            PropertyWriter writer = new PropertyWriter();
+            Class readerClass = Class.forName(stream.getAttribute("class"));
+            RecordReader reader = (RecordReader) readerClass.newInstance();
+            DynamicPropertySetter propSetter = new DynamicPropertySetter();
+            propSetter.addIgnoredProperty("class");
             Map<String,String> properties = new HashMap<String,String>();
-            Iterator<String> itr = reader.getAttributeNames();
+            Iterator<String> itr = stream.getAttributeNames();
             while(itr.hasNext()){
                 String name = itr.next();
-                String value = reader.getAttribute(name);
-                if (value != null)
+                String value = stream.getAttribute(name);
+                if (value != null){
                     properties.put(name, value);
+                }
             }
-            writer.write(parser, properties);
-            return parser;
+            propSetter.setProperties(reader, properties);
+            return reader;
         }
         catch (DynamicPropertyException ex) {
             throw new ConversionException(ex);

@@ -4,7 +4,6 @@ import com.realcomp.data.record.io.Delimiter;
 import au.com.bytecode.opencsv.CSVParser;
 import com.realcomp.data.conversion.ConversionException;
 import com.realcomp.data.record.Record;
-import com.realcomp.data.schema.FileSchema;
 import com.realcomp.data.schema.SchemaException;
 import com.realcomp.data.schema.SchemaField;
 import com.realcomp.data.validation.ValidationException;

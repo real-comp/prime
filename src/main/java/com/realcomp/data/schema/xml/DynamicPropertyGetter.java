@@ -15,11 +15,11 @@ import java.util.Set;
  *
  * @author krenfro
  */
-public class PropertyReader {
+public class DynamicPropertyGetter {
 
     private Set<String> ignoredProperties;
 
-    public PropertyReader(){
+    public DynamicPropertyGetter(){
         ignoredProperties = new HashSet<String>();
     }
 
@@ -32,7 +32,7 @@ public class PropertyReader {
      * @return all valid properties of the specified Object
      * @throws EncodingException
      */
-    public Map<String,Object> read(Object bean) throws DynamicPropertyException{
+    public Map<String,Object> getProperties(Object bean) throws DynamicPropertyException{
 
         if (bean == null)
             throw new IllegalArgumentException("javabean is null");

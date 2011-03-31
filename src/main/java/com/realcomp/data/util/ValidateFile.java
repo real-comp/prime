@@ -1,6 +1,6 @@
 package com.realcomp.data.util;
 
-import com.realcomp.data.schema.XStreamFactory;
+import com.realcomp.data.schema.xml.XStreamFactory;
 import com.realcomp.data.conversion.ConversionException;
 import com.realcomp.data.record.Record;
 import com.realcomp.data.record.reader.RecordReader;
@@ -76,6 +76,7 @@ public class ValidateFile {
             validator.validate(in);
         }
         catch (Exception ex) {
+            ex.printStackTrace();
             logger.log(Level.SEVERE, ex.getMessage());
             System.exit(1);
         }

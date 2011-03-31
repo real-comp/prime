@@ -80,20 +80,21 @@ public class FileSchema {
     }
 
     public List<Classifier> getClassifiers() {
+
+        if (classifiers == null)
+            classifiers = new ArrayList<Classifier>();
+
         return classifiers;
     }
 
     public void setClassifiers(List<Classifier> classifiers) throws SchemaException{
 
-        if (classifiers == null){
-            this.classifiers = null;
-        }
-        else{
-            if (this.classifiers != null)
-                this.classifiers.clear();
-            for (Classifier c: classifiers)
-                addClassifier(c);
-        }
+        if (classifiers == null)
+            throw new IllegalArgumentException("classifiers is null");
+        
+        this.classifiers.clear();
+        for (Classifier c: classifiers)
+            addClassifier(c);
     }
 
     public void addClassifier(Classifier classifier) throws SchemaException{
@@ -104,8 +105,6 @@ public class FileSchema {
         if (classifier.getFields().isEmpty())
             throw new SchemaException("no fields specified for the classifier");
 
-        if (classifiers == null)
-            classifiers = new ArrayList<Classifier>();
         classifiers.add(classifier);
     }
 
@@ -122,12 +121,9 @@ public class FileSchema {
         if (data == null)
             throw new IllegalArgumentException("data is null");
 
-        
-        if (classifiers != null){
-            for (Classifier c: classifiers){
-                if (c.supports(data))
-                    return c.getFields();
-            }
+        for (Classifier c: classifiers){
+            if (c.supports(data))
+                return c.getFields();
         }
 
         return fields;
@@ -138,6 +134,10 @@ public class FileSchema {
      * @return all SchemaFields defined for this Schema
      */
     public List<SchemaField> getFields() {
+
+        if (fields == null)
+            fields = new ArrayList<SchemaField>();
+        
         return fields;
     }
 
@@ -385,6 +385,10 @@ public class FileSchema {
     }
 
     public List<DataView> getViews() {
+
+        if (views == null)
+            views = new ArrayList<DataView>();
+
         return views;
     }
 
