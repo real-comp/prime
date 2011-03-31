@@ -1,9 +1,9 @@
-package com.realcomp.data.schema;
+package com.realcomp.data.schema.xml;
 
 import com.realcomp.data.annotation.Converter;
 import com.realcomp.data.annotation.Validator;
-import com.realcomp.data.schema.xml.DataViewConverter;
-import com.realcomp.data.schema.xml.OperationConverter;
+import com.realcomp.data.schema.FileSchema;
+import com.realcomp.data.schema.SchemaField;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
 import java.util.Set;
@@ -20,6 +20,8 @@ import org.reflections.util.ConfigurationBuilder;
  * @author krenfro
  */
 public class XStreamFactory {
+
+
 
     public static XStream build(){
 
@@ -42,6 +44,8 @@ public class XStreamFactory {
         xstream.processAnnotations(SchemaField.class);
         xstream.registerConverter(new OperationConverter());
         xstream.registerConverter(new DataViewConverter());
+        xstream.registerConverter(new DataTypeConverter());
+        xstream.registerConverter(new DelimiterConverter());
 
         for (Class c: validators){
             Validator annotation = (Validator) c.getAnnotation(Validator.class);

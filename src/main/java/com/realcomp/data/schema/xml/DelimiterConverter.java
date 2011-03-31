@@ -1,6 +1,7 @@
 package com.realcomp.data.schema.xml;
 
 import com.realcomp.data.DataType;
+import com.realcomp.data.record.io.Delimiter;
 import com.thoughtworks.xstream.converters.enums.EnumSingleValueConverter;
 
 /**
@@ -8,28 +9,26 @@ import com.thoughtworks.xstream.converters.enums.EnumSingleValueConverter;
  * 
  * @author krenfro
  */
-public class DataTypeConverter extends EnumSingleValueConverter{
+public class DelimiterConverter extends EnumSingleValueConverter{
 
-    public DataTypeConverter(){
-        super(DataType.class);
+    public DelimiterConverter(){
+        super(Delimiter.class);
     }
 
     @Override
     public boolean canConvert(Class type){
-        return type.isAssignableFrom(DataType.class);
+        return type.isAssignableFrom(Delimiter.class);
     }
+
 
     @Override
     public String toString(Object object){
-        return ((DataType) object).getDescription();
-
+        return ((Delimiter) object).toString();
     }
 
     @Override
-    public DataType fromString(String s){
-        return DataType.parse(s);
+    public Delimiter fromString(String s){
+        return Delimiter.parse(s);
     }
-
-
 
 }

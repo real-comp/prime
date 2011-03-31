@@ -24,13 +24,13 @@ public class DataViewConverter implements Converter{
 
     private static final Logger logger = Logger.getLogger(DataViewConverter.class.getName());
 
-    private PropertyReader propertyReader;
-    private PropertyWriter propertyWriter;
+    private DynamicPropertyGetter propertyReader;
+    private DynamicPropertySetter propertyWriter;
     
     public DataViewConverter(){
-        propertyReader = new PropertyReader();
+        propertyReader = new DynamicPropertyGetter();
         propertyReader.addIgnoredProperty("name");
-        propertyWriter = new PropertyWriter();
+        propertyWriter = new DynamicPropertySetter();
     }
 
     @Override
@@ -44,7 +44,7 @@ public class DataViewConverter implements Converter{
 
         try {
             writer.startNode("view");
-            for(Map.Entry<String,Object> entry: propertyReader.read(o).entrySet()){
+            for(Map.Entry<String,Object> entry: propertyReader.getProperties(o).entrySet()){
 
                 if (entry.getValue() instanceof Class)
                     writer.addAttribute(entry.getKey(), ((Class)entry.getValue()).getName().toString());
@@ -72,7 +72,7 @@ public class DataViewConverter implements Converter{
                 if (!name.equals("class") && value != null)
                     properties.put(name, value);
             }
-            propertyWriter.write(dataView, properties);
+            propertyWriter.setProperties(dataView, properties);
             return dataView;
         }
         catch (DynamicPropertyException ex) {

@@ -1,0 +1,26 @@
+<file-schema name="test" version="1.0">
+  <reader class="com.realcomp.data.record.reader.DelimitedFileReader" delimiter="TAB"/>
+  <before>
+    <upperCase/>
+  </before>
+  <after>
+    <trim/>
+  </after>
+  <fields>
+    <field name="pid" type="long" length="10"/>
+    <field name="owner" type="string" length="20">
+      <replace regex=":" replacement="-"/>
+    </field>
+    <field name="zip" type="int" length="5"/>
+    <field name="value" type="float" length="7"/>
+    <field name="area" type="double" length="0">
+      <validateDoubleRange max="2000.0" min="1000.0"/>
+    </field>
+  </fields>
+  <classifier id="recordtypeb" regex=".{19}">
+    <field name="pid" type="long" length="10"/>
+    <field name="zip5" type="int" length="5"/>
+    <field name="zip4" type="int" length="4"/>
+  </classifier>
+  <views/>
+</file-schema>

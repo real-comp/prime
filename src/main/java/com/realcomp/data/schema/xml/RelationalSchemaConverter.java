@@ -1,6 +1,5 @@
 package com.realcomp.data.schema.xml;
 
-import com.realcomp.data.DataType;
 import com.realcomp.data.schema.ForeignKeyField;
 import com.realcomp.data.schema.KeyField;
 import com.realcomp.data.schema.RelationalSchema;

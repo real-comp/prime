@@ -2,8 +2,9 @@ package com.realcomp.data.record.io;
 
 
 public enum Delimiter{
-    CSV, TAB;
 
+    CSV, TAB;
+    
     public static Delimiter parse(String delimiter){
 
         if (delimiter == null)

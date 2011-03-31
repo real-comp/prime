@@ -1,6 +1,7 @@
 package com.realcomp.data.schema;
 
 
+import com.realcomp.data.schema.xml.XStreamFactory;
 import com.realcomp.data.record.io.Delimiter;
 import com.realcomp.data.validation.field.DoubleRangeValidator;
 import com.realcomp.data.schema.xml.OperationConverter;
@@ -90,6 +91,16 @@ public class XStreamFileSchemaTest {
         assertEquals(DataType.STRING, deserialized.getFields().get(1).getType());
 
         assertTrue(getSchema().equals(deserialized));
+    }
+
+    @Test
+    public void testDeserialization(){
+
+        SchemaFactory.buildFileSchema(XStreamFileSchemaTest.class.getResourceAsStream("test_1.schema"));
+        SchemaFactory.buildFileSchema(XStreamFileSchemaTest.class.getResourceAsStream("test_2.schema"));
+        SchemaFactory.buildFileSchema(XStreamFileSchemaTest.class.getResourceAsStream("test_3.schema"));
+        SchemaFactory.buildFileSchema(XStreamFileSchemaTest.class.getResourceAsStream("test_4.schema"));
+
     }
 
     
