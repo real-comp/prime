@@ -10,9 +10,7 @@ public class StringField extends Field<String> implements Serializable{
 
     private static final long serialVersionUID = 1L;
 
-    protected static final DataType type = DataType.STRING;
     protected String value;
-    protected String name;
 
     protected StringField(){
     }
@@ -29,18 +27,8 @@ public class StringField extends Field<String> implements Serializable{
     }
 
     @Override
-    public String getName(){
-        return name;
-    }
-
-    @Override
-    public void setName(String name){
-        this.name = name;
-    }
-
-    @Override
     public DataType getType() {
-        return type;
+        return DataType.STRING;
     }
 
     @Override
@@ -53,11 +41,6 @@ public class StringField extends Field<String> implements Serializable{
         if (value == null)
             throw new IllegalArgumentException("value is null");
         this.value = value;
-    }
-
-    @Override
-    public Field get(String key) {
-        throw new UnsupportedOperationException("Not supported for Field type [String].");
     }
 
     @Override

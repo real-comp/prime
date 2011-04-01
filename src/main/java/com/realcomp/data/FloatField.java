@@ -11,9 +11,7 @@ public class FloatField extends Field<Float> implements Serializable{
 
     private static final long serialVersionUID = 1L;
 
-    protected static final DataType type = DataType.FLOAT;
     protected Float value;
-    protected String name;
 
     protected FloatField(){
     }
@@ -29,19 +27,10 @@ public class FloatField extends Field<Float> implements Serializable{
         this.name = name;
     }
 
-    @Override
-    public String getName(){
-        return name;
-    }
-
-    @Override
-    public void setName(String name){
-        this.name = name;
-    }
 
     @Override
     public DataType getType() {
-        return type;
+        return DataType.FLOAT;
     }
 
     @Override
@@ -61,11 +50,6 @@ public class FloatField extends Field<Float> implements Serializable{
         return value.toString();
     }
     
-    @Override
-    public Field get(String key) {
-        throw new UnsupportedOperationException("Not supported for Field type [Float].");
-    }
-
     @Override
     public boolean equals(Object obj) {
         if (obj == null)

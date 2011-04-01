@@ -10,9 +10,6 @@ public final class NullField extends Field<String> implements Serializable{
     
     private static final long serialVersionUID = 1L;
 
-    protected static final DataType type = DataType.NULL;
-    protected String name;
-
     public NullField(){}
 
     public NullField(String name){
@@ -20,18 +17,8 @@ public final class NullField extends Field<String> implements Serializable{
     }
 
     @Override
-    public String getName(){
-        return name;
-    }
-
-    @Override
-    public void setName(String name){
-        this.name = name;
-    }
-
-    @Override
     public DataType getType() {
-        return type;
+        return DataType.NULL;
     }
 
     @Override
@@ -44,7 +31,6 @@ public final class NullField extends Field<String> implements Serializable{
         throw new UnsupportedOperationException("Set not supported for NullField.");
     }
 
-    @Override
     public Field get(String key) {
         return this;
     }

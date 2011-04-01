@@ -15,31 +15,31 @@ public class KeyFieldIntrospector {
     /**
      *
      * @param fields
-     * @return List of <i>Key</i> SchemaFields, or null if none specified.
+     * @return List of <i>Key</i> field names, or null if none specified.
      */
-    public static List<SchemaField> getKeyFields(Collection<SchemaField> fields){
+    public static List<String> getKeyFieldnames(Collection<SchemaField> fields){
 
-        List<SchemaField> keys = null;
+        List<String> keys = null;
         for (SchemaField field: fields){
             if (isKey(field)){
                 if (keys == null)
-                    keys = new ArrayList<SchemaField>();
+                    keys = new ArrayList<String>();
 
-                keys.add(field);
+                keys.add(field.getName());
             }
         }
         return keys;
     }
 
-    public static List<SchemaField> getForeignKeyFields(Collection<SchemaField> fields){
+    public static List<String> getForeignKeyFieldnames(Collection<SchemaField> fields){
         
-        List<SchemaField> keys = null;
+        List<String> keys = null;
         for (SchemaField field: fields){
             if (isForeignKey(field)){
                 if (keys == null)
-                    keys = new ArrayList<SchemaField>();
+                    keys = new ArrayList<String>();
 
-                keys.add(field);
+                keys.add(field.getName());
             }
         }
         return keys;

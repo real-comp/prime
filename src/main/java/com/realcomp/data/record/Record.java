@@ -3,34 +3,41 @@ package com.realcomp.data.record;
 import com.realcomp.data.Field;
 import com.realcomp.data.MapField;
 import com.realcomp.data.schema.SchemaField;
+import com.realcomp.data.validation.record.RecordValidator;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 
 /**
- * Simply a MapField with support for the setting of 'id' field names.
- * A record may have more than one 'id' field.  These fields
- * are used to construct a record 'id' that may be useful.
- * By default, the 'id' is the value of the first field in the map.
- * Typically, a field is marked as id="true" in the schema.
+ * A collection of zero or more Fields.
+ * 
+ * Simply a MapField with support for the setting of 'key' field names.
+ * A record may have more than one 'key' field.  These fields
+ * are used to construct a record 'key' that may be useful.
+ * By default, the 'key' is the value of the first field in the map.
+ * Typically, a field is marked with a key validator in the schema.
  *
  * @author krenfro
  */
 public class Record extends MapField implements Serializable{
 
     private static final long serialVersionUID = 1L;
-    protected List<SchemaField> keyFields;
+    protected List<String> keys;
 
     public Record(){
     }
 
     /**
      *
-     * @param keyFields List of <i>Key</i> SchemaFields or nulls
+     * @param keys the names of the fields that constitute the <i>key</i> for this Record.
      */
-    public Record(List<SchemaField> keyFields){
-        this.keyFields = keyFields;
+    public Record(Collection<String> keys){
+        if (keys != null){
+            this.keys = new ArrayList<String>();
+            this.keys.addAll(keys);
+        }
     }
 
     /**
@@ -40,10 +47,10 @@ public class Record extends MapField implements Serializable{
     public List<String> getKey(){
 
         List<String> key = null;
-        if (keyFields != null && !wrapped.isEmpty()){
+        if (keys != null && !wrapped.isEmpty()){
             key = new ArrayList<String>();
-            for (SchemaField field: keyFields)
-                key.add(wrapped.get(field.getName()).getValue().toString());
+            for (String fieldname: keys)
+                key.add(wrapped.get(fieldname).getValue().toString());
         }
 
         return key;

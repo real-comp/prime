@@ -1,10 +1,6 @@
 package com.realcomp.data.schema;
 
 
-import com.realcomp.data.validation.field.ForeignKey;
-import com.realcomp.data.validation.field.Key;
-import com.realcomp.data.view.ProperName;
-import com.realcomp.data.view.person.PersonView;
 import org.junit.Before;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;

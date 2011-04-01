@@ -6,7 +6,7 @@ import com.realcomp.data.schema.RelationalSchema;
 import com.realcomp.data.schema.SchemaException;
 import com.realcomp.data.schema.SchemaField;
 import com.realcomp.data.schema.Table;
-import com.realcomp.data.view.DataView;
+import com.realcomp.data.trait.ViewFactory;
 import com.thoughtworks.xstream.converters.ConversionException;
 import com.thoughtworks.xstream.converters.Converter;
 import com.thoughtworks.xstream.converters.MarshallingContext;
@@ -25,10 +25,10 @@ import java.util.List;
  */
 public class RelationalSchemaConverter implements Converter{
 
-    private DataViewConverter dataViewConverter;
+    private ViewFactoryConverter dataViewConverter;
     
     public RelationalSchemaConverter(){
-        dataViewConverter = new DataViewConverter();
+        dataViewConverter = new ViewFactoryConverter();
     }
 
     @Override
@@ -59,7 +59,7 @@ public class RelationalSchemaConverter implements Converter{
                 reader.moveDown();
 
                 if (reader.getNodeName().equals("view")){
-                    schema.addView((DataView) dataViewConverter.unmarshal(reader, uc));
+                    schema.addView((ViewFactory) dataViewConverter.unmarshal(reader, uc));
                 }
                 else{
                     Table table = readTable(reader);
@@ -113,16 +113,16 @@ public class RelationalSchemaConverter implements Converter{
 
 
     protected void writeViews(
-            List<DataView> views, HierarchicalStreamWriter writer, MarshallingContext mc){
+            List<ViewFactory> views, HierarchicalStreamWriter writer, MarshallingContext mc){
 
         if (views != null){
-            for (DataView view: views)
+            for (ViewFactory view: views)
                 writeView(view, writer, mc);
         }
     }
 
     protected void writeView(
-            DataView view, HierarchicalStreamWriter writer, MarshallingContext mc){
+            ViewFactory view, HierarchicalStreamWriter writer, MarshallingContext mc){
 
         dataViewConverter.marshal(view, writer, null);
     }

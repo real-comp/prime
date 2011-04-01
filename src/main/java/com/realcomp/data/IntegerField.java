@@ -11,9 +11,7 @@ public class IntegerField extends Field<Integer> implements Serializable{
 
     private static final long serialVersionUID = 1L;
 
-    protected static final DataType type = DataType.INTEGER;
     protected Integer value;
-    protected String name;
 
     protected IntegerField(){
     }
@@ -29,19 +27,10 @@ public class IntegerField extends Field<Integer> implements Serializable{
         this.name = name;
     }
 
-    @Override
-    public String getName(){
-        return name;
-    }
-
-    @Override
-    public void setName(String name){
-        this.name = name;
-    }
 
     @Override
     public DataType getType() {
-        return type;
+        return DataType.INTEGER;
     }
 
     @Override
@@ -54,11 +43,6 @@ public class IntegerField extends Field<Integer> implements Serializable{
         if (value == null)
             throw new IllegalArgumentException("value is null");
         this.value = value;
-    }
-
-    @Override
-    public Field get(String key) {
-        throw new UnsupportedOperationException("Not supported for Field type [Integer].");
     }
 
     @Override

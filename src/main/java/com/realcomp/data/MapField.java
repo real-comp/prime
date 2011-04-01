@@ -15,9 +15,7 @@ public class MapField extends Field<Map<String,Field>> implements Map<String,Fie
 
     private static final long serialVersionUID = 1L;
 
-    protected static final DataType type = DataType.MAP;
     protected LinkedHashMap<String,Field> wrapped;
-    protected String name;
 
     protected MapField(){
         wrapped = new LinkedHashMap<String,Field>();
@@ -32,16 +30,6 @@ public class MapField extends Field<Map<String,Field>> implements Map<String,Fie
 
     public MapField(String name, Map<String,Field> value){
         this(value);
-        this.name = name;
-    }
-
-    @Override
-    public String getName(){
-        return name;
-    }
-
-    @Override
-    public void setName(String name){
         this.name = name;
     }
  
@@ -70,7 +58,6 @@ public class MapField extends Field<Map<String,Field>> implements Map<String,Fie
         return wrapped.get(key);
     }
 
-    @Override
     public Field get(String key) {
         return wrapped.get(key);
     }
@@ -112,7 +99,7 @@ public class MapField extends Field<Map<String,Field>> implements Map<String,Fie
 
     @Override
     public DataType getType() {
-        return type;
+        return DataType.MAP;
     }
 
     @Override

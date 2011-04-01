@@ -1,12 +1,13 @@
-package com.realcomp.data.view;
+package com.realcomp.data.trait.common;
 
 import com.realcomp.data.record.Record;
+import com.realcomp.data.trait.Trait;
 
 /**
  *
  * @author krenfro
  */
-public class ProperName implements DataView {
+public class ProperNameTrait implements Trait {
 
     //TODO: FINISH ME
 
@@ -39,7 +40,7 @@ public class ProperName implements DataView {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        final ProperName other = (ProperName) obj;
+        final ProperNameTrait other = (ProperNameTrait) obj;
         if ((this.test == null) ? (other.test != null) : !this.test.equals(other.test))
             return false;
         return true;
@@ -51,12 +52,6 @@ public class ProperName implements DataView {
         hash = 53 * hash + (this.test != null ? this.test.hashCode() : 0);
         return hash;
     }
-
-    @Override
-    public void parse(Record record) {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
     
 
 }

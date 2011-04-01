@@ -40,7 +40,8 @@
         <trim/>
     </field>
     <field name="address"/>
-    <field name="city"/>
+    <field name="city">
+        <converter class="com.ralcomp.data.conversion.Trim"/>
     <field name="state"/>
     <field name="zip5" type="int">
 

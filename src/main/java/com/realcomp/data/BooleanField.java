@@ -11,9 +11,7 @@ public class BooleanField extends Field<Boolean> implements Serializable{
 
     private static final long serialVersionUID = 1L;
 
-    protected static final DataType type = DataType.BOOLEAN;
     protected Boolean value;
-    protected String name;
 
     protected BooleanField(){
     }
@@ -30,18 +28,8 @@ public class BooleanField extends Field<Boolean> implements Serializable{
     }
 
     @Override
-    public String getName(){
-        return name;
-    }
-
-    @Override
-    public void setName(String name){
-        this.name = name;
-    }
-
-    @Override
     public DataType getType() {
-        return type;
+        return DataType.BOOLEAN;
     }
 
     @Override
@@ -55,12 +43,7 @@ public class BooleanField extends Field<Boolean> implements Serializable{
             throw new IllegalArgumentException("value is null");
         this.value = value;
     }
-
-    @Override
-    public Field get(String key) {
-        throw new UnsupportedOperationException("Not supported for Field type [Integer].");
-    }
-
+    
     @Override
     public String toString(){
         return value.toString();

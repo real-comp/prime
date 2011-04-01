@@ -1,15 +1,15 @@
 package com.realcomp.data.schema;
 
 import com.realcomp.data.record.Record;
-import com.realcomp.data.view.DataView;
-import com.realcomp.data.view.*;
+import com.realcomp.data.trait.ViewFactory;
+import com.realcomp.data.trait.*;
 
 /**
  *
  * @author krenfro
  */
 
-public class DummyDataView implements DataView {
+public class DummyDataView implements ViewFactory {
 
 
     private String test = "asdf";

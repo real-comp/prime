@@ -11,9 +11,7 @@ public class LongField extends Field<Long> implements Serializable{
 
     private static final long serialVersionUID = 1L;
 
-    protected static final DataType type = DataType.LONG;
     protected Long value;
-    protected String name;
 
     protected LongField(){
     }
@@ -30,18 +28,8 @@ public class LongField extends Field<Long> implements Serializable{
     }
 
     @Override
-    public String getName(){
-        return name;
-    }
-
-    @Override
-    public void setName(String name){
-        this.name = name;
-    }
-
-    @Override
     public DataType getType() {
-        return type;
+        return DataType.LONG;
     }
 
     @Override
@@ -54,11 +42,6 @@ public class LongField extends Field<Long> implements Serializable{
         if (value == null)
             throw new IllegalArgumentException("value is null");
         this.value = value;
-    }
-
-    @Override
-    public Field get(String key) {
-        throw new UnsupportedOperationException("Not supported for Field type [Long].");
     }
 
     @Override

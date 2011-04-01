@@ -4,10 +4,11 @@ import com.realcomp.data.MultiFieldOperation;
 import com.realcomp.data.Operation;
 import com.realcomp.data.record.reader.RecordReader;
 import com.realcomp.data.record.writer.RecordWriter;
-import com.realcomp.data.schema.xml.DataViewsConverter;
+import com.realcomp.data.schema.xml.ViewFactoriesConverter;
 import com.realcomp.data.schema.xml.RecordReaderConverter;
 import com.realcomp.data.schema.xml.RecordWriterConverter;
-import com.realcomp.data.view.DataView;
+import com.realcomp.data.schema.xml.ViewFactoryConverter;
+import com.realcomp.data.view.ViewFactory;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
 import com.thoughtworks.xstream.annotations.XStreamConverter;
@@ -43,14 +44,12 @@ public class FileSchema {
     @XStreamImplicit
     protected List<Classifier> classifiers;
 
-    @XStreamConverter(DataViewsConverter.class)
-    protected List<DataView> views;
-
+    @XStreamConverter(ViewFactoryConverter.class)
+    protected List<ViewFactory> viewFactories;
 
     public FileSchema(){
         fields = new ArrayList<SchemaField>();
         classifiers = new ArrayList<Classifier>();
-        views = new ArrayList<DataView>();
     }
 
     public RecordReader getReader() throws SchemaException{
@@ -129,6 +128,21 @@ public class FileSchema {
         return fields;
     }
 
+
+    public SchemaField getField(String name){
+        
+        if (name == null)
+            throw new IllegalArgumentException("name is null");
+        if (fields == null)
+            return null;
+
+        for (SchemaField field: fields)
+            if (field.getName().equals(name))
+                return field;
+
+        return null;
+    }
+        
     /**
      *
      * @return all SchemaFields defined for this Schema
@@ -384,34 +398,30 @@ public class FileSchema {
         this.version = version;
     }
 
-    public List<DataView> getViews() {
-
-        if (views == null)
-            views = new ArrayList<DataView>();
-
-        return views;
+    public List<ViewFactory> getViewFactories() {
+        if (viewFactories == null)
+            viewFactories = new ArrayList<ViewFactory>();
+        
+        return viewFactories;
     }
 
-    public void setViews(List<DataView> views) {
-        if (views == null)
-            throw new IllegalArgumentException("view is null");
-        this.views.clear();
-        for (DataView view: views)
-            addView(view);
+    public void setViewFactories(List<ViewFactory> viewFactories) {
+        if (viewFactories == null)
+            throw new IllegalArgumentException("viewFactories is null");
+        
+        this.viewFactories = null;
+        for (ViewFactory factory: viewFactories)
+            addViewFactory(factory);
     }
 
-    public void addView(DataView view){
-        if (view != null)
-            views.add(view);
+    public void addViewFactory(ViewFactory factory){
+        if (factory == null)
+            throw new IllegalArgumentException("factory is null");
+        if (viewFactories == null)
+            viewFactories = new ArrayList<ViewFactory>();
+        viewFactories.add(factory);
     }
-
-    public DataView getDataView(Class clazz){
-        for (DataView view: views){
-            if (view.getClass().isAssignableFrom(clazz))
-                return view;
-        }
-        return null;
-    }
+            
 
     public boolean isKeyField(SchemaField field){
         for (Operation op: field.getOperations()){
@@ -444,11 +454,11 @@ public class FileSchema {
             return false;
         if (this.writer != other.writer && (this.writer == null || !this.writer.equals(other.writer)))
             return false;
+        if (this.beforeFirst != other.beforeFirst && (this.beforeFirst == null || !this.beforeFirst.equals(other.beforeFirst)))
+            return false;
         if (this.before != other.before && (this.before == null || !this.before.equals(other.before)))
             return false;
         if (this.after != other.after && (this.after == null || !this.after.equals(other.after)))
-            return false;
-        if (this.beforeFirst != other.beforeFirst && (this.beforeFirst == null || !this.beforeFirst.equals(other.beforeFirst)))
             return false;
         if (this.afterLast != other.afterLast && (this.afterLast == null || !this.afterLast.equals(other.afterLast)))
             return false;
@@ -456,7 +466,7 @@ public class FileSchema {
             return false;
         if (this.classifiers != other.classifiers && (this.classifiers == null || !this.classifiers.equals(other.classifiers)))
             return false;
-        if (this.views != other.views && (this.views == null || !this.views.equals(other.views)))
+        if (this.viewFactories != other.viewFactories && (this.viewFactories == null || !this.viewFactories.equals(other.viewFactories)))
             return false;
         return true;
     }
@@ -464,17 +474,17 @@ public class FileSchema {
     @Override
     public int hashCode() {
         int hash = 7;
-        hash = 67 * hash + (this.name != null ? this.name.hashCode() : 0);
-        hash = 67 * hash + (this.version != null ? this.version.hashCode() : 0);
-        hash = 67 * hash + (this.reader != null ? this.reader.hashCode() : 0);
-        hash = 67 * hash + (this.writer != null ? this.writer.hashCode() : 0);
-        hash = 67 * hash + (this.before != null ? this.before.hashCode() : 0);
-        hash = 67 * hash + (this.after != null ? this.after.hashCode() : 0);
-        hash = 67 * hash + (this.beforeFirst != null ? this.beforeFirst.hashCode() : 0);
-        hash = 67 * hash + (this.afterLast != null ? this.afterLast.hashCode() : 0);
-        hash = 67 * hash + (this.fields != null ? this.fields.hashCode() : 0);
-        hash = 67 * hash + (this.classifiers != null ? this.classifiers.hashCode() : 0);
-        hash = 67 * hash + (this.views != null ? this.views.hashCode() : 0);
+        hash = 43 * hash + (this.name != null ? this.name.hashCode() : 0);
+        hash = 43 * hash + (this.version != null ? this.version.hashCode() : 0);
+        hash = 43 * hash + (this.reader != null ? this.reader.hashCode() : 0);
+        hash = 43 * hash + (this.writer != null ? this.writer.hashCode() : 0);
+        hash = 43 * hash + (this.beforeFirst != null ? this.beforeFirst.hashCode() : 0);
+        hash = 43 * hash + (this.before != null ? this.before.hashCode() : 0);
+        hash = 43 * hash + (this.after != null ? this.after.hashCode() : 0);
+        hash = 43 * hash + (this.afterLast != null ? this.afterLast.hashCode() : 0);
+        hash = 43 * hash + (this.fields != null ? this.fields.hashCode() : 0);
+        hash = 43 * hash + (this.classifiers != null ? this.classifiers.hashCode() : 0);
+        hash = 43 * hash + (this.viewFactories != null ? this.viewFactories.hashCode() : 0);
         return hash;
     }
 }

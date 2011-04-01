@@ -16,17 +16,18 @@ import java.util.List;
 import java.util.Map;
 
 /**
- *
+ * Creates Records from a String[] using a FileSchema.
+ * 
  * @author krenfro
  */
 public class RecordFactory {
 
     /**
-     * Stores the list of KeyFields for a particular list of SchemaFields.
+     * Stores the list of key fieldnames for a particular list of SchemaFields.
      * When classifiers are used, the keys for a record may change.  The
      * computation of key fields is expensive, so this caches that information.
      */
-    protected Map<List<SchemaField>, List<SchemaField>> keyFieldCache;
+    protected Map<List<SchemaField>, List<String>> keyFieldCache;
 
     /**
      * The list of key fields for schemas that do not make use of classifiers.
@@ -34,7 +35,7 @@ public class RecordFactory {
      * have the same key fields for every record.
      * This is an optimization to limit the use of keyFieldCache
      */
-    protected List<SchemaField> keyFields;
+    protected List<String> keyFields;
 
     /**
      * Cache of the parse plan for each unique list of SchemaFields.
@@ -75,6 +76,7 @@ public class RecordFactory {
                     fields.size() + " != " + data.length,
                     Severity.HIGH);
 
+
         Record record = new Record(getKeyFields(fields));
         
         int index = 0;
@@ -86,6 +88,7 @@ public class RecordFactory {
             record.put(field.getName(), field);
         }
 
+        
         return record;
     }
 
@@ -112,14 +115,14 @@ public class RecordFactory {
 
     protected final void buildKeyFieldCache(){
 
-        keyFields = KeyFieldIntrospector.getKeyFields(schema.getFields());
-
+        List<String> keyFields = KeyFieldIntrospector.getKeyFieldnames(schema.getFields());
+        
         //there are classifiers, so I need to use the slower keyFieldCache
         if (!schema.getClassifiers().isEmpty()){
-            keyFieldCache = new HashMap<List<SchemaField>, List<SchemaField>>();
+            keyFieldCache = new HashMap<List<SchemaField>, List<String>>();
             keyFieldCache.put(schema.getFields(), keyFields);
             for (Classifier c: schema.getClassifiers())
-                keyFieldCache.put(c.getFields(), KeyFieldIntrospector.getKeyFields(c.getFields()));
+                keyFieldCache.put(c.getFields(), KeyFieldIntrospector.getKeyFieldnames(c.getFields()));
         }
     }
 
@@ -141,9 +144,9 @@ public class RecordFactory {
      * @param fields
      * @return the <i>key</i> fields from the list of fields.
      */
-    protected List<SchemaField> getKeyFields(List<SchemaField> fields){
+    protected List<String> getKeyFields(List<SchemaField> fields){
 
-        List<SchemaField> keys = keyFields;
+        List<String> keys = keyFields;
         if (keyFieldCache != null)
             keys = keyFieldCache.get(fields);
         

@@ -4,22 +4,13 @@ package com.realcomp.data.schema;
 import com.realcomp.data.schema.xml.XStreamFactory;
 import com.realcomp.data.record.io.Delimiter;
 import com.realcomp.data.validation.field.DoubleRangeValidator;
-import com.realcomp.data.schema.xml.OperationConverter;
 import com.realcomp.data.record.reader.DelimitedFileReader;
 import com.realcomp.data.conversion.Replace;
 import com.realcomp.data.conversion.UpperCase;
 import com.realcomp.data.conversion.Trim;
 import org.junit.Before;
 import com.realcomp.data.DataType;
-import com.realcomp.data.annotation.Converter;
-import com.realcomp.data.annotation.Validator;
 import com.thoughtworks.xstream.XStream;
-import com.thoughtworks.xstream.io.xml.DomDriver;
-import java.util.Set;
-import org.reflections.Configuration;
-import org.reflections.Reflections;
-import org.reflections.util.ClasspathHelper;
-import org.reflections.util.ConfigurationBuilder;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -109,6 +100,16 @@ public class XStreamFileSchemaTest {
         assertEquals(Delimiter.CSV, ((DelimitedFileReader) schema.getReader()).getDelimiter());
 
     }
+
+
+    @Test
+    public void testSampleSchema() throws SchemaException{
+
+        FileSchema schema = SchemaFactory.buildFileSchema(XStreamFileSchemaTest.class.getResourceAsStream("test_1.schema"));
+        SchemaField field = schema.getField("stuff");
+        assertTrue(field.getOperations().contains(new Trim()));
+    }
+
 
     
 }

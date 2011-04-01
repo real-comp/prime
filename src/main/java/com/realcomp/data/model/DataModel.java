@@ -2,7 +2,6 @@ package com.realcomp.data.model;
 
 import com.realcomp.data.Field;
 import com.realcomp.data.record.Record;
-import com.realcomp.data.view.DataView;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -75,13 +74,13 @@ public class DataModel{
      * @return a DataView instance for the specified DataView class
      * @throws IllegalArgumentException if the DataView class is null or not supported by this model.
      */
-    public DataView getDataView(Class<DataView> dataViewClass){
+    public ViewFactory getDataView(Class<ViewFactory> dataViewClass){
 
         if (dataViewClass == null)
             throw new IllegalArgumentException("dataViewClass is null");
 
         try {
-            Class<DataView> implementation = getImplementation(dataViewClass);
+            Class<ViewFactory> implementation = getImplementation(dataViewClass);
             if (implementation == null)
                 throw new IllegalArgumentException(
                         "dataView is not supported: " + dataViewClass.getName());
@@ -104,7 +103,7 @@ public class DataModel{
      * @param dataViewClass not null
      * @return a DataView class or null
      */
-    protected Class<DataView> getImplementation(Class<DataView> dataViewClass){
+    protected Class<ViewFactory> getImplementation(Class<ViewFactory> dataViewClass){
 
         if (dataViewClass == null)
             throw new IllegalArgumentException("dataViewClass is null");
@@ -115,7 +114,7 @@ public class DataModel{
         for (String className : dataViewClassNames) {
             try {
                 @SuppressWarnings("unchecked")
-                Class<DataView> c = (Class<DataView>) Class.forName(className, true, null);
+                Class<ViewFactory> c = (Class<ViewFactory>) Class.forName(className, true, null);
                 if (c.isAssignableFrom(dataViewClass))
                     return c;
             }
@@ -138,7 +137,7 @@ public class DataModel{
      * @param dataViewClass not null
      * @return true if this DataModel supports the specified DataView; else false
      */
-    public boolean supports(Class<DataView> dataViewClass) {
+    public boolean supports(Class<ViewFactory> dataViewClass) {
 
         if (dataViewClass == null)
             throw new IllegalArgumentException("dataViewClass is null");

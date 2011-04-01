@@ -15,9 +15,7 @@ public class ListField extends Field<List<Field>> implements List<Field>, Serial
 
     private static final long serialVersionUID = 1L;
 
-    protected static final DataType type = DataType.LIST;
     protected List<Field> wrapped;
-    protected String name;
 
     protected ListField(){
         wrapped = new ArrayList<Field>();
@@ -31,16 +29,6 @@ public class ListField extends Field<List<Field>> implements List<Field>, Serial
 
     public ListField(String name, List<Field> value){
         this(value);
-        this.name = name;
-    }
-
-    @Override
-    public String getName(){
-        return name;
-    }
-
-    @Override
-    public void setName(String name){
         this.name = name;
     }
 
@@ -162,7 +150,7 @@ public class ListField extends Field<List<Field>> implements List<Field>, Serial
 
     @Override
     public DataType getType() {
-        return type;
+        return DataType.LIST;
     }
 
     @Override
@@ -182,7 +170,6 @@ public class ListField extends Field<List<Field>> implements List<Field>, Serial
         return wrapped.toString();
     }
 
-    @Override
     public Field get(String key) {
         try{
             return wrapped.get(Integer.valueOf(key));

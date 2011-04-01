@@ -11,9 +11,7 @@ public class DoubleField extends Field<Double> implements Serializable{
     
     private static final long serialVersionUID = 1L;
 
-    protected static final DataType type = DataType.DOUBLE;
     protected Double value;
-    protected String name;
 
     protected DoubleField(){
     }
@@ -30,18 +28,8 @@ public class DoubleField extends Field<Double> implements Serializable{
     }
 
     @Override
-    public String getName(){
-        return name;
-    }
-
-    @Override
-    public void setName(String name){
-        this.name = name;
-    }
-
-    @Override
     public DataType getType() {
-        return type;
+        return DataType.DOUBLE;
     }
 
     @Override
@@ -56,11 +44,6 @@ public class DoubleField extends Field<Double> implements Serializable{
         this.value = value;
     }
     
-    @Override
-    public Field get(String key) {
-        throw new UnsupportedOperationException("Not supported for Field type [Double].");
-    }
-
     @Override
     public String toString(){
         return value.toString();

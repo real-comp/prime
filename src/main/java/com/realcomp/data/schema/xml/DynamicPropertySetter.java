@@ -81,31 +81,31 @@ public class DynamicPropertySetter {
                         setter.invoke(bean, value);
                         success = true;
                     }
-                    else if(parameterType == Integer.class) {
+                    else if(parameterType == Integer.class || parameterType.getName().equals("int")) {
                         setter.invoke(bean, Integer.valueOf(value));
                         success = true;
                     }
-                    else if (parameterType == Float.class) {
+                    else if (parameterType == Float.class || parameterType.getName().equals("float")) {
                         setter.invoke(bean, Float.valueOf(value));
                         success = true;
                     }
-                    else if (parameterType == Double.class) {
+                    else if (parameterType == Double.class || parameterType.getName().equals("double")) {
                         setter.invoke(bean, Double.valueOf(value));
                         success = true;
                     }
-                    else if (parameterType == Long.class) {
+                    else if (parameterType == Long.class || parameterType.getName().equals("long")) {
                         setter.invoke(bean, Long.valueOf(value));
                         success = true;
                     }
-                    else if (parameterType == Short.class) {
+                    else if (parameterType == Short.class || parameterType.getName().equals("short")) {
                         setter.invoke(bean, Short.valueOf(value));
                         success = true;
                     }
-                    else if (parameterType == Boolean.class) {
+                    else if (parameterType == Boolean.class || parameterType.getName().equals("boolean")) {
                         setter.invoke(bean, Boolean.valueOf(value));
                         success = true;
                     }
-                    else if (parameterType == Character.class && value.length() == 1) {
+                    else if ((parameterType == Character.class || parameterType.getName().equals("char")) && value.length() == 1) {
                         setter.invoke(bean, Character.valueOf(value.charAt(0)));
                         success = true;
                     }

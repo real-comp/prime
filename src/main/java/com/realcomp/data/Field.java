@@ -6,15 +6,27 @@ package com.realcomp.data;
  */
 public abstract class Field<T>{
 
-    public abstract String getName();
+    protected String name;
 
-    public abstract void setName(String name);
+    public String getName(){
+        return name;
+    }
 
+    /**
+     * @param name the name of the Field; not null
+     */
+    public void setName(String name){
+        if (name == null)
+            throw new IllegalArgumentException("name is null");
+        this.name = name;
+    }
+
+    /**
+     * @return the DataType for this Field
+     */
     public abstract DataType getType();
 
     public abstract T getValue();
 
     public abstract void setValue(T value);
-
-    public abstract Field get(String key);
 }

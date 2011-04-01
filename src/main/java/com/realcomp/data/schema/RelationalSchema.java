@@ -1,9 +1,7 @@
 package com.realcomp.data.schema;
 
-import com.realcomp.data.schema.SchemaException;
-import com.realcomp.data.schema.Table;
 import com.realcomp.data.schema.xml.RelationalSchemaConverter;
-import com.realcomp.data.view.DataView;
+import com.realcomp.data.trait.ViewFactory;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamConverter;
 import java.util.ArrayList;
@@ -23,7 +21,7 @@ public class RelationalSchema {
     protected String name;
     protected String version;
     protected Set<Table> tables;
-    protected List<DataView> views;
+    protected List<ViewFactory> views;
 
     public String getName() {
         return name;
@@ -43,28 +41,28 @@ public class RelationalSchema {
         this.version = version;
     }
 
-    public List<DataView> getViews() {
+    public List<ViewFactory> getViews() {
         return views;
     }
 
-    public void setViews(List<DataView> views) throws SchemaException {
+    public void setViews(List<ViewFactory> views) throws SchemaException {
         if (views == null){
             this.views = null;
         }
         else{
             if (this.views != null)
                 this.views.clear();
-            for (DataView d: views)
+            for (ViewFactory d: views)
                 addView(d);
         }
     }
 
-    public void addView(DataView view) throws SchemaException{
+    public void addView(ViewFactory view) throws SchemaException{
         if (view == null)
             throw new IllegalArgumentException("view is null");
 
         if (views == null)
-            views = new ArrayList<DataView>();
+            views = new ArrayList<ViewFactory>();
         views.add(view);
     }
 
