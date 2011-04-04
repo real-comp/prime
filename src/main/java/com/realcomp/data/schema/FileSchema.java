@@ -4,17 +4,20 @@ import com.realcomp.data.MultiFieldOperation;
 import com.realcomp.data.Operation;
 import com.realcomp.data.record.reader.RecordReader;
 import com.realcomp.data.record.writer.RecordWriter;
-import com.realcomp.data.schema.xml.ViewFactoriesConverter;
 import com.realcomp.data.schema.xml.RecordReaderConverter;
 import com.realcomp.data.schema.xml.RecordWriterConverter;
-import com.realcomp.data.schema.xml.ViewFactoryConverter;
-import com.realcomp.data.view.ViewFactory;
+import com.realcomp.data.schema.xml.ViewReadersConverter;
+import com.realcomp.data.view.ViewReader;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
 import com.thoughtworks.xstream.annotations.XStreamConverter;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -22,6 +25,8 @@ import java.util.List;
  */
 @XStreamAlias("file-schema")
 public class FileSchema {
+
+    protected static final Logger logger = Logger.getLogger(FileSchema.class.getName());
 
     @XStreamAsAttribute
     protected String name;
@@ -44,8 +49,8 @@ public class FileSchema {
     @XStreamImplicit
     protected List<Classifier> classifiers;
 
-    @XStreamConverter(ViewFactoryConverter.class)
-    protected List<ViewFactory> viewFactories;
+    @XStreamConverter(ViewReadersConverter.class)
+    protected List<Class> viewReaders;
 
     public FileSchema(){
         fields = new ArrayList<SchemaField>();
@@ -58,14 +63,70 @@ public class FileSchema {
         return reader;
     }
 
-    public void setReader(RecordReader reader) throws SchemaException {
+    public ViewReader getViewReader(Class clazz) throws SchemaException{
+        if (viewReaders == null)
+            throw new SchemaException("No ViewReader defined for class: " + clazz.getName());
+        if (reader == null)
+            throw new SchemaException("A reader must be defined for ViewReader instantiation");
+        
+        for (Class c: viewReaders){
+
+            ViewReader vr = instantiateViewReader(c);
+            if (vr != null && vr.supports(clazz))
+                return vr;
+        }
+
+        throw new SchemaException("No ViewReader available for " + clazz.getName());
+    }
+
+    private ViewReader instantiateViewReader(Class clazz){
+
+        ViewReader vr = null;
+
+        try {
+            Constructor constructor = clazz.getConstructor(RecordReader.class);
+            vr = (ViewReader) constructor.newInstance(reader);
+        }
+        catch (NoSuchMethodException ex) {
+            
+            try {
+                //try default constructor
+                vr = (ViewReader) clazz.newInstance();
+            }
+            catch (InstantiationException ex1) {
+                logger.log(Level.WARNING, "Unable to instantiate " + clazz, ex);
+            }
+            catch (IllegalAccessException ex1) {
+                logger.log(Level.WARNING, "Unable to instantiate " + clazz, ex);
+            }
+        }
+        catch (SecurityException ex) {
+            logger.log(Level.WARNING, "Unable to instantiate " + clazz, ex);
+        }
+        catch (InstantiationException ex) {
+            logger.log(Level.WARNING, "Unable to instantiate " + clazz, ex);
+        }
+        catch (IllegalAccessException ex) {
+            logger.log(Level.WARNING, "Unable to instantiate " + clazz, ex);
+        }
+        catch (IllegalArgumentException ex) {
+            logger.log(Level.WARNING, "Unable to instantiate " + clazz, ex);
+        }
+        catch (InvocationTargetException ex) {
+            logger.log(Level.WARNING, "Unable to instantiate " + clazz, ex);
+        }
+
+        return vr;
+    }
+
+    public void setReader(RecordReader reader) throws SchemaException{
         if (reader == null)
             throw new IllegalArgumentException("reader is null");
         this.reader = reader;
         this.reader.setSchema(this);
     }
 
-    public RecordWriter getWriter() throws SchemaException {
+    public RecordWriter getWriter() throws SchemaException{
         if (writer != null)
             writer.setSchema(this);
         return writer;
@@ -397,29 +458,29 @@ public class FileSchema {
     public void setVersion(String version) {
         this.version = version;
     }
-
-    public List<ViewFactory> getViewFactories() {
-        if (viewFactories == null)
-            viewFactories = new ArrayList<ViewFactory>();
+    
+    public List<Class> getViewReaders() {
+        if (viewReaders == null)
+            viewReaders = new ArrayList<Class>();
         
-        return viewFactories;
+        return viewReaders;
     }
 
-    public void setViewFactories(List<ViewFactory> viewFactories) {
-        if (viewFactories == null)
-            throw new IllegalArgumentException("viewFactories is null");
+    public void setViewReaders(List<Class> viewReaders) {
+        if (viewReaders == null)
+            throw new IllegalArgumentException("viewReaders is null");
         
-        this.viewFactories = null;
-        for (ViewFactory factory: viewFactories)
-            addViewFactory(factory);
+        this.viewReaders = new ArrayList<Class>();
+        for (Class clazz: viewReaders)
+            addViewReader(clazz);
     }
 
-    public void addViewFactory(ViewFactory factory){
-        if (factory == null)
-            throw new IllegalArgumentException("factory is null");
-        if (viewFactories == null)
-            viewFactories = new ArrayList<ViewFactory>();
-        viewFactories.add(factory);
+    public void addViewReader(Class clazz){
+        if (clazz == null)
+            throw new IllegalArgumentException("clazz is null");
+        if (viewReaders == null)
+            viewReaders = new ArrayList<Class>();
+        viewReaders.add(clazz);
     }
             
 
@@ -466,25 +527,25 @@ public class FileSchema {
             return false;
         if (this.classifiers != other.classifiers && (this.classifiers == null || !this.classifiers.equals(other.classifiers)))
             return false;
-        if (this.viewFactories != other.viewFactories && (this.viewFactories == null || !this.viewFactories.equals(other.viewFactories)))
+        if (this.viewReaders != other.viewReaders && (this.viewReaders == null || !this.viewReaders.equals(other.viewReaders)))
             return false;
         return true;
     }
 
     @Override
     public int hashCode() {
-        int hash = 7;
-        hash = 43 * hash + (this.name != null ? this.name.hashCode() : 0);
-        hash = 43 * hash + (this.version != null ? this.version.hashCode() : 0);
-        hash = 43 * hash + (this.reader != null ? this.reader.hashCode() : 0);
-        hash = 43 * hash + (this.writer != null ? this.writer.hashCode() : 0);
-        hash = 43 * hash + (this.beforeFirst != null ? this.beforeFirst.hashCode() : 0);
-        hash = 43 * hash + (this.before != null ? this.before.hashCode() : 0);
-        hash = 43 * hash + (this.after != null ? this.after.hashCode() : 0);
-        hash = 43 * hash + (this.afterLast != null ? this.afterLast.hashCode() : 0);
-        hash = 43 * hash + (this.fields != null ? this.fields.hashCode() : 0);
-        hash = 43 * hash + (this.classifiers != null ? this.classifiers.hashCode() : 0);
-        hash = 43 * hash + (this.viewFactories != null ? this.viewFactories.hashCode() : 0);
+        int hash = 3;
+        hash = 19 * hash + (this.name != null ? this.name.hashCode() : 0);
+        hash = 19 * hash + (this.version != null ? this.version.hashCode() : 0);
+        hash = 19 * hash + (this.reader != null ? this.reader.hashCode() : 0);
+        hash = 19 * hash + (this.writer != null ? this.writer.hashCode() : 0);
+        hash = 19 * hash + (this.beforeFirst != null ? this.beforeFirst.hashCode() : 0);
+        hash = 19 * hash + (this.before != null ? this.before.hashCode() : 0);
+        hash = 19 * hash + (this.after != null ? this.after.hashCode() : 0);
+        hash = 19 * hash + (this.afterLast != null ? this.afterLast.hashCode() : 0);
+        hash = 19 * hash + (this.fields != null ? this.fields.hashCode() : 0);
+        hash = 19 * hash + (this.classifiers != null ? this.classifiers.hashCode() : 0);
+        hash = 19 * hash + (this.viewReaders != null ? this.viewReaders.hashCode() : 0);
         return hash;
     }
 }

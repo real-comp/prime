@@ -1,7 +1,6 @@
 package com.realcomp.data.schema;
 
 import com.realcomp.data.schema.xml.RelationalSchemaConverter;
-import com.realcomp.data.trait.ViewFactory;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamConverter;
 import java.util.ArrayList;
@@ -21,7 +20,7 @@ public class RelationalSchema {
     protected String name;
     protected String version;
     protected Set<Table> tables;
-    protected List<ViewFactory> views;
+    //protected List<ViewFactory> views;
 
     public String getName() {
         return name;
@@ -40,6 +39,7 @@ public class RelationalSchema {
     public void setVersion(String version) {
         this.version = version;
     }
+    /*
 
     public List<ViewFactory> getViews() {
         return views;
@@ -66,6 +66,8 @@ public class RelationalSchema {
         views.add(view);
     }
 
+     * 
+     */
     public Set<Table> getTables() {
         return tables;
     }
@@ -119,8 +121,8 @@ public class RelationalSchema {
             return false;
         if (this.tables != other.tables && (this.tables == null || !this.tables.equals(other.tables)))
             return false;
-        if (this.views != other.views && (this.views == null || !this.views.equals(other.views)))
-            return false;
+   //     if (this.views != other.views && (this.views == null || !this.views.equals(other.views)))
+   //         return false;
         return true;
     }
 
@@ -130,7 +132,7 @@ public class RelationalSchema {
         hash = 53 * hash + (this.name != null ? this.name.hashCode() : 0);
         hash = 53 * hash + (this.version != null ? this.version.hashCode() : 0);
         hash = 53 * hash + (this.tables != null ? this.tables.hashCode() : 0);
-        hash = 53 * hash + (this.views != null ? this.views.hashCode() : 0);
+    //    hash = 53 * hash + (this.views != null ? this.views.hashCode() : 0);
         return hash;
     }
 

@@ -1,6 +1,7 @@
 package com.realcomp.data.schema;
 
 
+import com.realcomp.data.view.ExampleViewReader;
 import com.realcomp.data.schema.xml.XStreamFactory;
 import com.realcomp.data.record.io.Delimiter;
 import com.realcomp.data.validation.field.DoubleRangeValidator;
@@ -63,7 +64,8 @@ public class XStreamFileSchemaTest {
         DelimitedFileReader reader = new DelimitedFileReader();
         reader.setDelimiter(Delimiter.TAB);
         schema.setReader(reader);
-        //schema.addView(new DummyDataView());
+
+        schema.addViewReader(ExampleViewReader.class);
 
         return schema;
     }
@@ -87,16 +89,20 @@ public class XStreamFileSchemaTest {
     @Test
     public void testDeserialization() throws SchemaException{
 
-        FileSchema schema = SchemaFactory.buildFileSchema(XStreamFileSchemaTest.class.getResourceAsStream("test_1.schema"));
+        FileSchema schema = SchemaFactory.buildFileSchema(
+                XStreamFileSchemaTest.class.getResourceAsStream("test_1.schema"));
         assertEquals(Delimiter.TAB, ((DelimitedFileReader) schema.getReader()).getDelimiter());
         
-        schema = SchemaFactory.buildFileSchema(XStreamFileSchemaTest.class.getResourceAsStream("test_2.schema"));
+        schema = SchemaFactory.buildFileSchema(
+                XStreamFileSchemaTest.class.getResourceAsStream("test_2.schema"));
         assertEquals(Delimiter.CSV, ((DelimitedFileReader) schema.getReader()).getDelimiter());
         
-        schema = SchemaFactory.buildFileSchema(XStreamFileSchemaTest.class.getResourceAsStream("test_3.schema"));
+        schema = SchemaFactory.buildFileSchema(
+                XStreamFileSchemaTest.class.getResourceAsStream("test_3.schema"));
         assertEquals(Delimiter.CSV, ((DelimitedFileReader) schema.getReader()).getDelimiter());
 
-        schema = SchemaFactory.buildFileSchema(XStreamFileSchemaTest.class.getResourceAsStream("test_4.schema"));
+        schema = SchemaFactory.buildFileSchema(
+                XStreamFileSchemaTest.class.getResourceAsStream("test_4.schema"));
         assertEquals(Delimiter.CSV, ((DelimitedFileReader) schema.getReader()).getDelimiter());
 
     }
@@ -105,8 +111,9 @@ public class XStreamFileSchemaTest {
     @Test
     public void testSampleSchema() throws SchemaException{
 
-        FileSchema schema = SchemaFactory.buildFileSchema(XStreamFileSchemaTest.class.getResourceAsStream("test_1.schema"));
-        SchemaField field = schema.getField("stuff");
+        FileSchema schema = SchemaFactory.buildFileSchema(
+                XStreamFileSchemaTest.class.getResourceAsStream("test_1.schema"));
+        SchemaField field = schema.getField("data");
         assertTrue(field.getOperations().contains(new Trim()));
     }
 

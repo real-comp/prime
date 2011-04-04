@@ -6,7 +6,6 @@ import com.realcomp.data.schema.FileSchema;
 import com.realcomp.data.schema.SchemaException;
 import com.realcomp.data.validation.Severity;
 import com.realcomp.data.validation.ValidationException;
-import com.realcomp.data.view.View;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -40,9 +39,6 @@ public interface RecordReader {
     * @throws SchemaException
     */
     Record read() throws IOException, ValidationException, ConversionException, SchemaException;
-
-    
-    View readAs(Class dataViewClass) throws IOException, ValidationException, ConversionException, SchemaException;
     
 
     /**

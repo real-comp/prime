@@ -22,5 +22,4 @@
     <field name="zip5" type="int" length="5"/>
     <field name="zip4" type="int" length="4"/>
   </classifier>
-  <views/>
 </file-schema>

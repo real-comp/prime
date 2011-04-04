@@ -6,7 +6,6 @@ import com.realcomp.data.schema.RelationalSchema;
 import com.realcomp.data.schema.SchemaException;
 import com.realcomp.data.schema.SchemaField;
 import com.realcomp.data.schema.Table;
-import com.realcomp.data.trait.ViewFactory;
 import com.thoughtworks.xstream.converters.ConversionException;
 import com.thoughtworks.xstream.converters.Converter;
 import com.thoughtworks.xstream.converters.MarshallingContext;
@@ -25,10 +24,8 @@ import java.util.List;
  */
 public class RelationalSchemaConverter implements Converter{
 
-    private ViewFactoryConverter dataViewConverter;
     
     public RelationalSchemaConverter(){
-        dataViewConverter = new ViewFactoryConverter();
     }
 
     @Override
@@ -42,7 +39,7 @@ public class RelationalSchemaConverter implements Converter{
         RelationalSchema schema = (RelationalSchema) o;
         writer.addAttribute("name", schema.getName());
         writer.addAttribute("version", schema.getVersion());
-        writeViews(schema.getViews(), writer, mc);
+  //      writeViews(schema.getViews(), writer, mc);
         writeTables(schema.getTables(), writer);
     }
 
@@ -58,14 +55,14 @@ public class RelationalSchemaConverter implements Converter{
             while (reader.hasMoreChildren()){
                 reader.moveDown();
 
-                if (reader.getNodeName().equals("view")){
-                    schema.addView((ViewFactory) dataViewConverter.unmarshal(reader, uc));
-                }
-                else{
+              //  if (reader.getNodeName().equals("view")){
+               //     schema.addView((ViewFactory) dataViewConverter.unmarshal(reader, uc));
+              //  }
+              //  else{
                     Table table = readTable(reader);
                     if (table != null)
                         tables.add(table);
-                }
+             //   }
                 reader.moveUp();
             }
 
@@ -111,7 +108,7 @@ public class RelationalSchemaConverter implements Converter{
         return reader.getNodeName().equals("key") ? new KeyField(name) : new ForeignKeyField(name);
     }
 
-
+/*
     protected void writeViews(
             List<ViewFactory> views, HierarchicalStreamWriter writer, MarshallingContext mc){
 
@@ -127,6 +124,8 @@ public class RelationalSchemaConverter implements Converter{
         dataViewConverter.marshal(view, writer, null);
     }
 
+ * 
+ */
 
     protected void writeTables(Collection<Table> tables, HierarchicalStreamWriter writer){
         if (tables != null){

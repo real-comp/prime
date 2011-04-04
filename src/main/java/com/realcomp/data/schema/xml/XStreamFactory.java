@@ -43,7 +43,6 @@ public class XStreamFactory {
         xstream.processAnnotations(FileSchema.class);
         xstream.processAnnotations(SchemaField.class);
         xstream.registerConverter(new OperationConverter());
-        xstream.registerConverter(new ViewFactoryConverter());
         xstream.registerConverter(new DataTypeConverter());
         xstream.registerConverter(new DelimiterConverter());
 

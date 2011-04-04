@@ -1,5 +1,9 @@
 <file-schema name="test" version="1.0">
-  <reader class="com.realcomp.data.record.reader.DelimitedFileReader" delimiter="TAB" skipLeading="1"/>
+  <reader class="com.realcomp.data.record.reader.DelimitedFileReader"
+          delimiter="TAB"
+          skipLeading="1"/>
+
+
   <before>
     <upperCase/>
   </before>
@@ -16,7 +20,7 @@
     <field name="area" type="double" length="0">
       <validateDoubleRange max="2000.0" min="1000.0"/>
     </field>
-    <field name="stuff" length="10">
+    <field name="data" length="10">
       <converter class="com.realcomp.data.conversion.Trim"/>
     </field>
   </fields>
@@ -25,5 +29,4 @@
     <field name="zip5" type="int" length="5"/>
     <field name="zip4" type="int" length="4"/>
   </classifier>
-  <views/>
 </file-schema>

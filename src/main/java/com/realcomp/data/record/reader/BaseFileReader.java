@@ -12,8 +12,6 @@ import com.realcomp.data.schema.SchemaException;
 import com.realcomp.data.schema.SchemaField;
 import com.realcomp.data.validation.Severity;
 import com.realcomp.data.validation.ValidationException;
-import com.realcomp.data.view.View;
-import com.realcomp.data.view.ViewFactory;
 import com.thoughtworks.xstream.annotations.XStreamOmitField;
 import java.io.IOException;
 import java.io.InputStream;
@@ -41,19 +39,6 @@ public abstract class BaseFileReader implements RecordReader{
     protected long count;
 
     public BaseFileReader(){
-    }
-
-
-    @Override
-    public View readAs(Class clazz) throws IOException, ValidationException, ConversionException, SchemaException{
-        Record record = read();
-        if (record != null){
-            for (ViewFactory factory: schema.getViewFactories())
-                if (factory.isBuildable(clazz))
-                    return factory.build(record);
-
-        }
-        return null;
     }
 
     

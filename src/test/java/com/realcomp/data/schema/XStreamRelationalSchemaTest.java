@@ -65,7 +65,6 @@ public class XStreamRelationalSchemaTest {
         prop.addTable(propEnt);
         schema.addTable(prop);
 
-        schema.addView(new DummyDataView());
 
 
         return schema;
