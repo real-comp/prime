@@ -9,6 +9,7 @@ import com.realcomp.data.schema.SchemaException;
 import com.realcomp.data.schema.SchemaFactory;
 import com.realcomp.data.validation.ValidationException;
 import com.thoughtworks.xstream.XStream;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -32,6 +33,16 @@ public class ValidateFile {
 
     public void setSchema(InputStream in) throws IOException{
         schema = SchemaFactory.buildFileSchema(in);
+    }
+
+    public void setSchema(FileSchema schema){
+        if (schema == null)
+            throw new IllegalArgumentException("schema is null");
+        this.schema = schema;
+    }
+
+    public void validate(File file) throws SchemaException, IOException, ValidationException, ConversionException{
+        validate(new FileInputStream(file));
     }
 
     public void validate(InputStream in) throws SchemaException, IOException, ValidationException, ConversionException {
