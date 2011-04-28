@@ -30,6 +30,7 @@ public class DelimitedFileWriter extends BaseFileWriter{
     protected BufferedWriter buff;
     protected CSVWriter writer;
     protected List<String> current;
+    protected boolean header = false;
     
     public DelimitedFileWriter(){
         current = new ArrayList<String>();
@@ -84,6 +85,14 @@ public class DelimitedFileWriter extends BaseFileWriter{
     public void write(Record record)
             throws IOException, ValidationException, ConversionException{
 
+        //optionally write header record
+        if (beforeFirstOperationsRun && header){
+            current.clear();
+            super.write(getHeader());
+            writer.writeNext(current.toArray(new String[current.size()]));
+            writer.flush();
+        }
+        
         current.clear();
         super.write(record);
         writer.writeNext(current.toArray(new String[current.size()]));
@@ -91,13 +100,28 @@ public class DelimitedFileWriter extends BaseFileWriter{
     }
 
 
+    protected Record getHeader(){
+        Record record = new Record();
+        for(SchemaField field: schema.getFields())
+            record.put(field.getName(), field.getName());
+        return record;
+    }
+
     @Override
     protected void write(Record record, SchemaField field)
             throws ValidationException, ConversionException, IOException{
 
         current.add(toString(record, field));
     }
-    
+
+    public boolean isHeader() {
+        return header;
+    }
+
+    public void setHeader(boolean header) {
+        this.header = header;
+    }
+
 
     @Override
     public boolean equals(Object obj) {
@@ -108,14 +132,16 @@ public class DelimitedFileWriter extends BaseFileWriter{
         final DelimitedFileWriter other = (DelimitedFileWriter) obj;
         if (this.delimiter != other.delimiter)
             return false;
+        if (this.header != other.header)
+            return false;
         return true;
     }
 
     @Override
     public int hashCode() {
-        int hash = 7;
-        hash = 53 * hash + (this.delimiter != null ? this.delimiter.hashCode() : 0);
+        int hash = 3;
+        hash = 47 * hash + (this.delimiter != null ? this.delimiter.hashCode() : 0);
+        hash = 47 * hash + (this.header ? 1 : 0);
         return hash;
     }
-    
 }
