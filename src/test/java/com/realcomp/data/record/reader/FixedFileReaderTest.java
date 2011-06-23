@@ -107,14 +107,14 @@ public class FixedFileReaderTest {
         
         record = instance.read();
         assertNotNull(record);
-        assertEquals("a", record.get("a").getValue());
-        assertEquals("bc", record.get("b").getValue());
-        assertEquals("def", record.get("c").getValue());
+        assertEquals("a", record.get("a"));
+        assertEquals("bc", record.get("b"));
+        assertEquals("def", record.get("c"));
         record = instance.read();
         assertNotNull(record);
-        assertEquals("g", record.get("a").getValue());
-        assertEquals("hi", record.get("b").getValue());
-        assertEquals("jkl", record.get("c").getValue());        
+        assertEquals("g", record.get("a"));
+        assertEquals("hi", record.get("b"));
+        assertEquals("jkl", record.get("c"));        
         instance.close();
 
     }
@@ -130,21 +130,21 @@ public class FixedFileReaderTest {
         
         Record record = instance.read();
         assertNotNull(record);
-        assertEquals(1, record.get("int").getValue());
-        assertEquals(2f, record.get("float").getValue());
-        assertEquals(3l, record.get("long").getValue());
-        assertEquals(4d, record.get("double").getValue());
-        assertEquals("a", record.get("string").getValue());
+        assertEquals(1, record.get("int"));
+        assertEquals(2f, record.get("float"));
+        assertEquals(3l, record.get("long"));
+        assertEquals(4d, record.get("double"));
+        assertEquals("a", record.get("string"));
 
         data = "  001  2.000003 04.4a";
         instance.open(new ByteArrayInputStream(data.getBytes()));
         record = instance.read();
         assertNotNull(record);
-        assertEquals(1, record.get("int").getValue());
-        assertEquals(2f, record.get("float").getValue());
-        assertEquals(3l, record.get("long").getValue());
-        assertEquals(4.4d, record.get("double").getValue());
-        assertEquals("a", record.get("string").getValue());
+        assertEquals(1, record.get("int"));
+        assertEquals(2f, record.get("float"));
+        assertEquals(3l, record.get("long"));
+        assertEquals(4.4d, record.get("double"));
+        assertEquals("a", record.get("string"));
         
         instance.close();
     }

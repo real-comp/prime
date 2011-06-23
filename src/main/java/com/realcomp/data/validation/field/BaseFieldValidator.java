@@ -24,4 +24,23 @@ public abstract class BaseFieldValidator implements FieldValidator {
         return severity;
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        final BaseFieldValidator other = (BaseFieldValidator) obj;
+        if (this.severity != other.severity)
+            return false;
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 5;
+        hash = 67 * hash + (this.severity != null ? this.severity.hashCode() : 0);
+        return hash;
+    }
+
 }

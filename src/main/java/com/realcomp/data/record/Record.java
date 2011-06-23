@@ -1,42 +1,43 @@
 package com.realcomp.data.record;
 
-import com.realcomp.data.BooleanField;
-import com.realcomp.data.DoubleField;
-import com.realcomp.data.Field;
-import com.realcomp.data.FloatField;
-import com.realcomp.data.IntegerField;
-import com.realcomp.data.LongField;
-import com.realcomp.data.MapField;
-import com.realcomp.data.StringField;
+import com.realcomp.data.DataType;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
 
 /**
- * A collection of zero or more Fields.
  * <p>
- * Simply a MapField with support for the setting of 'key' field names.
  * A record may have more than one 'key' field.  These fields
  * are used to construct a record 'key' that may be useful.
  * By default, the 'key' is the value of the first field in the map.
  * Typically, a field is marked with a key validator in the schema.
  * </p>
- * <p>
- * There are a series of helpful <i>put</i> methods that hide the *Field objects.
- * (e.g., put(String key, String value))
- *
- * </p>
  *
  * @author krenfro
  */
-public class Record extends MapField implements Serializable{
+public class Record implements Serializable{
 
-    private static final long serialVersionUID = 1L;
+
     protected List<String> keys;
+    protected Map<String,Object> data;
 
     public Record(){
+        data = new HashMap<String,Object>();
+    }
+
+    public Record(Record copy){
+        data = new HashMap<String,Object>();
+        data.putAll(copy.data);
+        if (copy.keys != null){
+            keys = new ArrayList<String>();
+            keys.addAll(copy.keys);
+        }
     }
 
     /**
@@ -44,6 +45,7 @@ public class Record extends MapField implements Serializable{
      * @param keys the names of the fields that constitute the <i>key</i> for this Record.
      */
     public Record(Collection<String> keys){
+        this();
         if (keys != null){
             this.keys = new ArrayList<String>();
             this.keys.addAll(keys);
@@ -57,90 +59,109 @@ public class Record extends MapField implements Serializable{
     public List<String> getKey(){
 
         List<String> key = null;
-        if (keys != null && !wrapped.isEmpty()){
+        if (keys != null && !data.isEmpty()){
             key = new ArrayList<String>();
-            for (String fieldname: keys)
-                key.add(wrapped.get(fieldname).getValue().toString());
+            for (String fieldname: keys){
+                Object value = data.get(fieldname);
+                key.add(value == null ? "NULL" : value.toString());
+            }
         }
 
         return key;
     }
 
 
-    /**
-     * Convenience method to for very common operation of adding a String
-     * value to a Record.
-     * @param key
-     * @param value
-     * @return previous value.
-     */
-    public String put(String key, String value){
-        StringField existing = (StringField) super.put(key, new StringField(value));
-        return existing == null ? null : existing.getValue();
+    public boolean containsKey(String key){
+        return data.containsKey(key);
     }
 
-    /**
-     * Convenience method to for very common operation of adding an Integer
-     * value to a Record.
-     * @param key
-     * @param value
-     * @return previous value
-     */
-    public Integer put(String key, Integer value){
-        IntegerField existing = (IntegerField) super.put(key, new IntegerField(value));
-        return existing == null ? null : existing.getValue();
+    public Set<String> keySet(){
+        return data.keySet();
     }
 
-    /**
-     * Convenience method to for very common operation of adding an Float
-     * value to a Record.
-     * @param key
-     * @param value
-     * @return previous value
-     */
-    public Float put(String key, Float value){
-        FloatField existing = (FloatField) super.put(key, new FloatField(value));
-        return existing == null ? null : existing.getValue();
-    }
-
-    /**
-     * Convenience method to for very common operation of adding an Long
-     * value to a Record.
-     * @param key
-     * @param value
-     * @return previous value
-     */
-    public Long put(String key, Long value){
-        LongField existing = (LongField) super.put(key, new LongField(value));
-        return existing == null ? null : existing.getValue();
-    }
-
-    /**
-     * Convenience method to for very common operation of adding an Double
-     * value to a Record.
-     * @param key
-     * @param value
-     * @return previous value
-     */
-    public Double put(String key, Double value){
-        DoubleField existing = (DoubleField) super.put(key, new DoubleField(value));
-        return existing == null ? null : existing.getValue();
-    }
-
-    /**
-     * Convenience method to for very common operation of adding an Boolean
-     * value to a Record.
-     * @param key
-     * @param value
-     * @return previous value
-     */
-    public Boolean put(String key, Boolean value){
-        BooleanField existing = (BooleanField) super.put(key, new BooleanField(value));
-        return existing == null ? null : existing.getValue();
+    public Collection<Object> values(){
+        return data.values();
     }
 
 
+
+    public boolean isEmpty(){
+        return data.isEmpty();
+    }
     
+    public Set<Entry<String,Object>> entrySet(){
+        return data.entrySet();
+    }
+
+
+    public Object put(String key, Object value){
+
+        if (value == null){
+            return put(key, (String) null);
+        }
+        else{
+            DataType type = DataType.get(value);
+            switch(type){
+                case STRING:
+                    return put(key, (String) value);
+                case INTEGER:
+                    return put(key, (Integer) value);
+                case FLOAT:
+                    return put(key, (Float) value);
+                case LONG:
+                    return put(key, (Long) value);
+                case DOUBLE:
+                    return put(key, (Double) value);
+                case BOOLEAN:
+                    return put(key, (Boolean) value);
+                case LIST:
+                    return put(key, (List) value);
+                case MAP:
+                    return put(key, (Map) value);
+            }
+        }
+
+        return get(key);
+    }
+
+    public Object put(String key, String value){
+        return value == null ? data.remove(key) : data.put(key, value);
+    }
+
+    public Object put(String key, Integer value){
+        return value == null ? data.remove(key) : data.put(key, value);
+    }
+
+    public Object put(String key, Float value){
+        return value == null ? data.remove(key) : data.put(key, value);
+    }
+
+    public Object put(String key, Long value){
+        return value == null ? data.remove(key) : data.put(key, value);
+    }
+
+    public Object put(String key, Double value){
+        return value == null ? data.remove(key) : data.put(key, value);
+    }
+
+    public Object put(String key, Boolean value){
+        return value == null ? data.remove(key) : data.put(key, value);
+    }
+
+    public Object put(String key, List value){
+        return value == null ? data.remove(key) : data.put(key, value);
+    }
+
+    public Object put(String key, Map value){
+        return value == null ? data.remove(key) : data.put(key, value);
+    }
+
+    public Object get(String key){
+        return data.get(key);
+    }
+
+
+
     /**
      * @return the key fields of this Record delimited by a colon, or
      * the value of the first two fields if no key fields defined.
@@ -154,20 +175,45 @@ public class Record extends MapField implements Serializable{
         if (key == null){
             //no key defined, use value of first 2 fields
             key = new ArrayList<String>();
-            for (Field f: wrapped.values()){
+            for (Object f: data.values()){
                 if (key.size() >= 2)
                     break;
 
-                key.add(f.getValue().toString());
+                key.add(f.toString());
             }
         }
-        
+
         for (String k: key){
             if (needDelimiter)
                 s.append(":");
             s.append(k);
+            needDelimiter = true;
         }
-        
+
         return s.toString();
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        final Record other = (Record) obj;
+        if (this.keys != other.keys && (this.keys == null || !this.keys.equals(other.keys)))
+            return false;
+        if (this.data != other.data && (this.data == null || !this.data.equals(other.data)))
+            return false;
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 3;
+        hash = 23 * hash + (this.keys != null ? this.keys.hashCode() : 0);
+        hash = 23 * hash + (this.data != null ? this.data.hashCode() : 0);
+        return hash;
+    }
+
+
 }

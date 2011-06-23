@@ -27,24 +27,6 @@ public class ViewReaderTest {
     public void testView() throws SchemaException, IOException, ValidationException, ConversionException{
 
 
-        FileSchema schema = new FileSchema();
-        schema.addViewReader(ExampleViewReader.class);
-        schema.addField(new SchemaField("data"));
-
-        DelimitedFileReader reader = new DelimitedFileReader();
-        schema.setReader(reader);        
-
-        reader.open(new ByteArrayInputStream("kyle\nbrandon".getBytes()));
-
-        ExampleViewReader viewReader = (ExampleViewReader) schema.getViewReader(ExampleView.class);
-
-        ExampleView v = viewReader.read();
-        assertEquals("kyle", v.getData());
-
-        v = viewReader.read();
-        assertEquals("brandon", v.getData());
-
-        viewReader.close();
     }
 
 }

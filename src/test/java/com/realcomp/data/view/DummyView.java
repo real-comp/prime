@@ -4,7 +4,7 @@ package com.realcomp.data.view;
  *
  * @author krenfro
  */
-public class ExampleView extends BaseRecordView{
+public class DummyView extends BaseRecordView{
 
 
     public String getValue(){

@@ -6,8 +6,10 @@ import com.realcomp.data.schema.FileSchema;
 import com.realcomp.data.schema.SchemaException;
 import com.realcomp.data.validation.Severity;
 import com.realcomp.data.validation.ValidationException;
+import com.realcomp.data.view.RecordView;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 
 
 /**
@@ -19,7 +21,8 @@ import java.io.InputStream;
  * @author krenfro
  */
 public interface RecordReader {
-
+    
+    
     /**
      * If a Validator logs a warning above this threshold, then the warning is thrown as
      * a ValidationException. By default, Validators log at Severity.MEDIUM, so all
@@ -39,7 +42,20 @@ public interface RecordReader {
     * @throws SchemaException
     */
     Record read() throws IOException, ValidationException, ConversionException, SchemaException;
-    
+
+
+    /**
+     * Read and return the next Record, wrapped in a RecordView
+     * 
+     * @param clazz the class to return. Must be a RecordView.
+     * @return the RecordView, or null if there are no more available.
+     * @throws IOException
+     * @throws ValidationException
+     * @throws ConversionException
+     * @throws SchemaException
+     */
+    RecordView read(Class clazz) throws IOException, ValidationException, ConversionException, SchemaException;
+
 
     /**
      * Close open resources. Should be invoked when you are done with the RecordReader.
@@ -90,4 +106,22 @@ public interface RecordReader {
     long getCount();
 
 
+    /**
+     * @param clazz a RecordView class
+     * @return true if this reader supports reading instances of the provided RecordView class
+     */
+    boolean supports(Class clazz);
+
+    /**
+     * Set all the RecordView class names this reader supports.
+     * @param viewClassNames All the view class names this reader supports
+     * @throws IllegalArgumentException if one of the view classes specified was not found.
+     */
+    void setViews(List<String> viewClassNames);
+    
+    /**
+     *
+     * @return list of RecordView class names this reader supports. never null
+     */
+    List<String> getViews();
 }

@@ -1,10 +1,11 @@
 package com.realcomp.data.record.writer;
 
-import com.realcomp.data.DataType;
-import com.realcomp.data.Field;
 import com.realcomp.data.Operation;
 import com.realcomp.data.conversion.ConversionException;
 import com.realcomp.data.conversion.Converter;
+import com.realcomp.data.conversion.MultiFieldConverter;
+import com.realcomp.data.record.AfterLastRecord;
+import com.realcomp.data.record.BeforeFirstRecord;
 import com.realcomp.data.record.Record;
 import com.realcomp.data.schema.FileSchema;
 import com.realcomp.data.schema.SchemaException;
@@ -12,6 +13,7 @@ import com.realcomp.data.schema.SchemaField;
 import com.realcomp.data.validation.Severity;
 import com.realcomp.data.validation.ValidationException;
 import com.realcomp.data.validation.Validator;
+import com.realcomp.data.view.RecordView;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.List;
@@ -32,6 +34,13 @@ public abstract class BaseFileWriter implements RecordWriter{
     protected Severity validationExceptionThreshold = DEFAULT_VALIDATION_THREASHOLD;
     protected long count;
     protected boolean beforeFirstOperationsRun = false;
+    
+    public BaseFileWriter(){
+    }
+    
+    public BaseFileWriter(BaseFileWriter copy){
+        validationExceptionThreshold = copy.validationExceptionThreshold;
+    }
     
     @Override
     public Severity getValidationExceptionThreshold() {
@@ -74,7 +83,7 @@ public abstract class BaseFileWriter implements RecordWriter{
             List<Operation> afterLast = schema.getAfterLastOperations();
             if (afterLast != null){
                 for (Operation op: afterLast){
-                    operate(op, "" + this.getCount(), "AFTER LAST RECORD");
+                    operate(op, "" + this.getCount(), new AfterLastRecord());
                 }
             }
         }
@@ -83,10 +92,10 @@ public abstract class BaseFileWriter implements RecordWriter{
     protected void executeBeforeFirstOperations() throws ValidationException, ConversionException{
 
         if (schema != null){
-            List<Operation> afterLast = schema.getBeforeFirstOperations();
-            if (afterLast != null){
-                for (Operation op: afterLast){
-                    operate(op, "", "BEFORE FIRST RECORD");
+            List<Operation> beforeFirst = schema.getBeforeFirstOperations();
+            if (beforeFirst != null){
+                for (Operation op: beforeFirst){
+                    operate(op, "", new BeforeFirstRecord());
                 }
             }
         }
@@ -102,6 +111,12 @@ public abstract class BaseFileWriter implements RecordWriter{
         return schema;
     }
 
+    @Override
+    public void write(RecordView recordView)
+        throws IOException, ValidationException, ConversionException{
+
+        write(recordView.getRecord());
+    }
     
     @Override
     public void write(Record record)
@@ -121,6 +136,7 @@ public abstract class BaseFileWriter implements RecordWriter{
         count++;
     }
 
+ 
     protected void write(Record record, List<SchemaField> fields)
             throws ValidationException, ConversionException, IOException{
 
@@ -136,16 +152,15 @@ public abstract class BaseFileWriter implements RecordWriter{
     protected String toString(Record record, SchemaField schemaField)
             throws ValidationException, ConversionException{
 
-        Field field = record.get(schemaField.getName());
+        Object value = record.get(schemaField.getName());
         String data = "";
-        if (field != null && field.getType() != DataType.NULL)
-            data = field.toString();
+        if (value != null)
+            data = value.toString();
         
-        String recordId = "";
         try{
-            data = operate(schema.getBeforeOperations(), data, recordId);
-            data = operate(schemaField.getOperations(), data, recordId);
-            data = operate(schema.getAfterOperations(), data, recordId);
+            data = operate(schema.getBeforeOperations(), data, record);
+            data = operate(schemaField.getOperations(), data, record);
+            data = operate(schema.getAfterOperations(), data, record);
         }
         catch(ValidationException ex){
             throw new ValidationException(schemaField.getName() + " " + ex.getMessage(), ex);
@@ -157,17 +172,17 @@ public abstract class BaseFileWriter implements RecordWriter{
         return data;
     }
 
-    protected String operate(List<Operation> operations, String data, String recordIdentifier) 
+    protected String operate(List<Operation> operations, String data, Record record)
             throws ConversionException, ValidationException{
         
         if (operations == null)
             return data;
         for (Operation op: operations)
-            data = operate(op, data, recordIdentifier);
+            data = operate(op, data, record);
         return data;
     }
 
-    protected String operate(Operation op, String data, String recordIdentifier)
+    protected String operate(Operation op, String data, Record record)
                 throws ConversionException, ValidationException{
 
         if (op instanceof Validator){
@@ -176,27 +191,31 @@ public abstract class BaseFileWriter implements RecordWriter{
             }
             catch (ValidationException ex) {
                 Severity severity = ((Validator) op).getSeverity();
-                switch(severity){
-                    case LOW:
-                        log.log(Level.INFO, "{0} in record [{1}]",
-                                new Object[]{ex.getMessage(), recordIdentifier});
-                        break;
-                    case MEDIUM:
-                        log.log(Level.WARNING, "{0} in record [{1}]",
-                                new Object[]{ex.getMessage(), recordIdentifier});
-                        break;
-                    case HIGH:
-                        log.log(Level.SEVERE, "{0} in record [{1}]",
-                                new Object[]{ex.getMessage(), recordIdentifier});
-                        break;
-                }
 
                 if (severity.ordinal() >= validationExceptionThreshold.ordinal())
                     throw ex;
+                
+                switch(severity){
+                    case LOW:
+                        log.log(Level.INFO, "{0} in record [{1}]",
+                                new Object[]{ex.getMessage(), record.toString()});
+                        break;
+                    case MEDIUM:
+                        log.log(Level.WARNING, "{0} in record [{1}]",
+                                new Object[]{ex.getMessage(), record.toString()});
+                        break;
+                    case HIGH:
+                        log.log(Level.SEVERE, "{0} in record [{1}]",
+                                new Object[]{ex.getMessage(), record.toString()});
+                        break;
+                }
             }
         }
         else if (op instanceof Converter){
             data = ((Converter) op).convert(data);
+        }
+        else if (op instanceof MultiFieldConverter){
+            data = ((MultiFieldConverter) op).convert(data, record);
         }
         else{
             throw new IllegalStateException("Unhandled operator: " + op.getClass().getName());

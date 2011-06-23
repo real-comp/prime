@@ -17,13 +17,26 @@ import java.util.List;
  * 
  * @author krenfro
  */
-public class DelimitedFileReader extends BaseFileReader{
+public class DelimitedFileReader extends BaseFileReader implements Cloneable{
 
     public static final Delimiter DEFAULT_TYPE=Delimiter.TAB;
 
     protected Delimiter delimiter = Delimiter.TAB;
     protected CSVParser parser;
     protected boolean beforeFirst = true;
+    
+    public DelimitedFileReader(){
+        super();
+    }
+    
+    /**
+     * Construct an un-opened copy of a DelimitedFileReader.
+     * @param copy 
+     */
+    public DelimitedFileReader(DelimitedFileReader copy){
+        super(copy);
+        delimiter = copy.delimiter;
+    }
     
     @Override
     public void open(InputStream in) throws IOException{

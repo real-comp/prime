@@ -121,15 +121,15 @@ public class DelimitedFileWriterTest {
         temp.deleteOnExit();
         writer.open(new FileOutputStream(temp));
         writer.setSchema(get3FieldSchema());
-
+        
         String data = "\"a123\",\"b123\",\"c123\"";
         reader.open(new ByteArrayInputStream(data.getBytes()));
 
         Record a = reader.read();
         assertNotNull(a);
-        assertEquals("a123", a.get("a").getValue());
-        assertEquals("b123", a.get("b").getValue());
-        assertEquals("c123", a.get("c").getValue());
+        assertEquals("a123", a.get("a"));
+        assertEquals("b123", a.get("b"));
+        assertEquals("c123", a.get("c"));
 
         writer.write(a);
         writer.write(a);
@@ -148,6 +148,27 @@ public class DelimitedFileWriterTest {
         reader.close();
     }
 
+
+    @Test
+    public void testClassification() throws SchemaException{
+
+        FileSchema schema = get3FieldSchema();
+        Record good = new Record();
+        good.put("a", "1");
+        good.put("b", "2");
+        good.put("c", "3");
+
+        assertTrue(schema.getFields().equals(schema.classify(good)));
+        
+        Record bad = new Record();
+        bad.put("foo","bar");
+
+        try{
+            schema.getFields().equals(schema.classify(bad));
+            fail("should have thrown SchemaException");
+        }
+        catch(SchemaException ok){}
+    }
 
 
     protected FileSchema get3FieldSchema() throws SchemaException{

@@ -20,4 +20,5 @@ public class RequiredValidator extends BaseFieldValidator {
             throw new ValidationException("required", "", getSeverity());
     }
 
+    
 }

@@ -16,13 +16,12 @@ import java.util.List;
 public class ParsePlan {
 
     protected List<SchemaField> fields;
-
+    
     public ParsePlan(List<SchemaField> in) throws ParsePlanException{
 
         this.fields = new ArrayList<SchemaField>();
         createParsePlan(in);
     }
-
     
     protected final void createParsePlan(List<SchemaField> in) throws ParsePlanException{
 
@@ -76,7 +75,7 @@ public class ParsePlan {
         List<String> fieldNames = new ArrayList<String>();
         for (Operation op: field.getOperations()){
             if (op instanceof MultiFieldOperation){
-                fieldNames.addAll(((MultiFieldOperation) op).getFieldNames());
+                fieldNames.addAll(((MultiFieldOperation) op).getFields());
             }
         }
 

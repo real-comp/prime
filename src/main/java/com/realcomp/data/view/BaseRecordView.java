@@ -10,7 +10,13 @@ public class BaseRecordView implements RecordView{
     
     protected Record record;
 
-    public BaseRecordView(Record record){
+    @Override
+    public Record getRecord() {
+        return record;
+    }
+
+    @Override
+    public void setRecord(Record record) {
         if (record == null)
             throw new IllegalArgumentException("record is null");
         this.record = record;

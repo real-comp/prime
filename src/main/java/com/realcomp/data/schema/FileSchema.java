@@ -2,21 +2,18 @@ package com.realcomp.data.schema;
 
 import com.realcomp.data.MultiFieldOperation;
 import com.realcomp.data.Operation;
+import com.realcomp.data.record.Record;
 import com.realcomp.data.record.reader.RecordReader;
 import com.realcomp.data.record.writer.RecordWriter;
 import com.realcomp.data.schema.xml.RecordReaderConverter;
 import com.realcomp.data.schema.xml.RecordWriterConverter;
-import com.realcomp.data.schema.xml.ViewReadersConverter;
-import com.realcomp.data.view.ViewReader;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
 import com.thoughtworks.xstream.annotations.XStreamConverter;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -49,74 +46,38 @@ public class FileSchema {
     @XStreamImplicit
     protected List<Classifier> classifiers;
 
-    @XStreamConverter(ViewReadersConverter.class)
-    protected List<Class> viewReaders;
 
     public FileSchema(){
         fields = new ArrayList<SchemaField>();
         classifiers = new ArrayList<Classifier>();
     }
 
+    public FileSchema(FileSchema copy) throws SchemaException{
+        fields = new ArrayList<SchemaField>();
+        classifiers = new ArrayList<Classifier>();
+        this.name = copy.name;
+        this.version = copy.version;
+
+        try{
+            reader = copy.getReader();
+            writer = copy.getWriter();
+        }
+        catch(SchemaException ignored){
+        }
+        
+        setFields(copy.getFields());
+        setClassifiers(copy.getClassifiers());
+        setBeforeFirstOperations(copy.getBeforeFirstOperations());
+        setBeforeOperations(copy.getBeforeOperations());
+        setAfterLastOperations(copy.getAfterLastOperations());
+        setAfterOperations(copy.getAfterOperations());
+     
+    }
+
     public RecordReader getReader() throws SchemaException{
         if (reader != null)
             reader.setSchema(this);
         return reader;
-    }
-
-    public ViewReader getViewReader(Class clazz) throws SchemaException{
-        if (viewReaders == null)
-            throw new SchemaException("No ViewReader defined for class: " + clazz.getName());
-        if (reader == null)
-            throw new SchemaException("A reader must be defined for ViewReader instantiation");
-        
-        for (Class c: viewReaders){
-
-            ViewReader vr = instantiateViewReader(c);
-            if (vr != null && vr.supports(clazz))
-                return vr;
-        }
-
-        throw new SchemaException("No ViewReader available for " + clazz.getName());
-    }
-
-    private ViewReader instantiateViewReader(Class clazz){
-
-        ViewReader vr = null;
-
-        try {
-            Constructor constructor = clazz.getConstructor(RecordReader.class);
-            vr = (ViewReader) constructor.newInstance(reader);
-        }
-        catch (NoSuchMethodException ex) {
-            
-            try {
-                //try default constructor
-                vr = (ViewReader) clazz.newInstance();
-            }
-            catch (InstantiationException ex1) {
-                logger.log(Level.WARNING, "Unable to instantiate " + clazz, ex);
-            }
-            catch (IllegalAccessException ex1) {
-                logger.log(Level.WARNING, "Unable to instantiate " + clazz, ex);
-            }
-        }
-        catch (SecurityException ex) {
-            logger.log(Level.WARNING, "Unable to instantiate " + clazz, ex);
-        }
-        catch (InstantiationException ex) {
-            logger.log(Level.WARNING, "Unable to instantiate " + clazz, ex);
-        }
-        catch (IllegalAccessException ex) {
-            logger.log(Level.WARNING, "Unable to instantiate " + clazz, ex);
-        }
-        catch (IllegalArgumentException ex) {
-            logger.log(Level.WARNING, "Unable to instantiate " + clazz, ex);
-        }
-        catch (InvocationTargetException ex) {
-            logger.log(Level.WARNING, "Unable to instantiate " + clazz, ex);
-        }
-
-        return vr;
     }
 
     public void setReader(RecordReader reader) throws SchemaException{
@@ -189,6 +150,43 @@ public class FileSchema {
         return fields;
     }
 
+    /**
+     * Classify a record and return the layout (List of SchemaFields) that match.
+     * If multiple SchemaFields are defined that contain Fields named in the Record,
+     * then the layout defined first in the Schema will be returned.
+     *
+     * @param record
+     * @return
+     * @throws SchemaException if no defined layout supports the Record
+     */
+    public List<SchemaField> classify(Record record) throws SchemaException{
+        if (record == null)
+            throw new IllegalArgumentException("record is null");
+
+        List<SchemaField> result = null;
+
+        for (Classifier c: classifiers){
+            if (c.supports(record)){
+                if (result == null)
+                    result = c.getFields();
+                else if (result.size() < c.getFields().size())
+                    result = c.getFields();
+            }
+        }
+
+        if (result == null){
+            Classifier defaultClassifier = new Classifier();
+            defaultClassifier.setFields(fields);
+            if (defaultClassifier.supports(record))
+                result = fields;
+        }
+
+        if (result == null)
+            throw new SchemaException("Unable to find layout that supports Record: " + record);
+
+        return result;
+    }
+
 
     public SchemaField getField(String name){
         
@@ -241,7 +239,7 @@ public class FileSchema {
             throw new IllegalArgumentException("field is null");
 
         verifyUniqueName(field.getName());
-        fields.add(field);        
+        fields.add(new SchemaField(field));
     }
 
     protected void verifyUniqueName(String name) throws SchemaException{
@@ -457,32 +455,7 @@ public class FileSchema {
      */
     public void setVersion(String version) {
         this.version = version;
-    }
-    
-    public List<Class> getViewReaders() {
-        if (viewReaders == null)
-            viewReaders = new ArrayList<Class>();
-        
-        return viewReaders;
-    }
-
-    public void setViewReaders(List<Class> viewReaders) {
-        if (viewReaders == null)
-            throw new IllegalArgumentException("viewReaders is null");
-        
-        this.viewReaders = new ArrayList<Class>();
-        for (Class clazz: viewReaders)
-            addViewReader(clazz);
-    }
-
-    public void addViewReader(Class clazz){
-        if (clazz == null)
-            throw new IllegalArgumentException("clazz is null");
-        if (viewReaders == null)
-            viewReaders = new ArrayList<Class>();
-        viewReaders.add(clazz);
-    }
-            
+    }           
 
     public boolean isKeyField(SchemaField field){
         for (Operation op: field.getOperations()){
@@ -527,8 +500,6 @@ public class FileSchema {
             return false;
         if (this.classifiers != other.classifiers && (this.classifiers == null || !this.classifiers.equals(other.classifiers)))
             return false;
-        if (this.viewReaders != other.viewReaders && (this.viewReaders == null || !this.viewReaders.equals(other.viewReaders)))
-            return false;
         return true;
     }
 
@@ -545,7 +516,6 @@ public class FileSchema {
         hash = 19 * hash + (this.afterLast != null ? this.afterLast.hashCode() : 0);
         hash = 19 * hash + (this.fields != null ? this.fields.hashCode() : 0);
         hash = 19 * hash + (this.classifiers != null ? this.classifiers.hashCode() : 0);
-        hash = 19 * hash + (this.viewReaders != null ? this.viewReaders.hashCode() : 0);
         return hash;
     }
 }

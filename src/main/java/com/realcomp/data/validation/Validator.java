@@ -1,4 +1,3 @@
-
 package com.realcomp.data.validation;
 
 import com.realcomp.data.Operation;

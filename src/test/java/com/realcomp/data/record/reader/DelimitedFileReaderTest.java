@@ -150,9 +150,9 @@ public class DelimitedFileReaderTest {
 
         Record record = instance.read();
         assertNotNull(record);
-        assertEquals("a123", record.get("a").getValue());
-        assertEquals("b123", record.get("b").getValue());
-        assertEquals("c123", record.get("c").getValue());
+        assertEquals("a123", record.get("a"));
+        assertEquals("b123", record.get("b"));
+        assertEquals("c123", record.get("c"));
         assertNull(instance.read());
         instance.close();
 
@@ -163,9 +163,9 @@ public class DelimitedFileReaderTest {
 
         record = instance.read();
         assertNotNull(record);
-        assertEquals("a123", record.get("a").getValue());
-        assertEquals("b1,23", record.get("b").getValue());
-        assertEquals("c123", record.get("c").getValue());
+        assertEquals("a123", record.get("a"));
+        assertEquals("b1,23", record.get("b"));
+        assertEquals("c123", record.get("c"));
         assertNull(instance.read());
         instance.close();
 
@@ -178,9 +178,9 @@ public class DelimitedFileReaderTest {
 
         record = instance.read();
         assertNotNull(record);
-        assertEquals("a123", record.get("a").getValue());
-        assertEquals("b1,23", record.get("b").getValue());
-        assertEquals("c123", record.get("c").getValue());
+        assertEquals("a123", record.get("a"));
+        assertEquals("b1,23", record.get("b"));
+        assertEquals("c123", record.get("c"));
         assertNull(instance.read());
         instance.close();
 
@@ -192,9 +192,9 @@ public class DelimitedFileReaderTest {
 
         record = instance.read();
         assertNotNull(record);
-        assertEquals("a123", record.get("a").getValue());
-        assertEquals("b1\"23", record.get("b").getValue());
-        assertEquals("c123", record.get("c").getValue());
+        assertEquals("a123", record.get("a"));
+        assertEquals("b1\"23", record.get("b"));
+        assertEquals("c123", record.get("c"));
         assertNull(instance.read());
         instance.close();
 
@@ -205,9 +205,9 @@ public class DelimitedFileReaderTest {
         
         record = instance.read();
         assertNotNull(record);
-        assertEquals("a123", record.get("a").getValue());
-        assertEquals("b123\"", record.get("b").getValue());
-        assertEquals("c123", record.get("c").getValue());
+        assertEquals("a123", record.get("a"));
+        assertEquals("b123\"", record.get("b"));
+        assertEquals("c123", record.get("c"));
         assertNull(instance.read());
         instance.close();
 

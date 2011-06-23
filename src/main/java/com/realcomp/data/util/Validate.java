@@ -1,14 +1,11 @@
 package com.realcomp.data.util;
 
-import com.realcomp.data.schema.xml.XStreamFactory;
 import com.realcomp.data.conversion.ConversionException;
-import com.realcomp.data.record.Record;
 import com.realcomp.data.record.reader.RecordReader;
 import com.realcomp.data.schema.FileSchema;
 import com.realcomp.data.schema.SchemaException;
 import com.realcomp.data.schema.SchemaFactory;
 import com.realcomp.data.validation.ValidationException;
-import com.thoughtworks.xstream.XStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -20,14 +17,14 @@ import java.util.logging.Logger;
  * Validates a file against a schema
  * @author krenfro
  */
-public class ValidateFile {
+public class Validate {
 
-    private static final Logger logger =  Logger.getLogger(ValidateFile.class.getName());
+    private static final Logger logger =  Logger.getLogger(Validate.class.getName());
 
-    
+
     private FileSchema schema;
-    
-    public ValidateFile(){
+
+    public Validate(){
     }
 
 
@@ -69,21 +66,21 @@ public class ValidateFile {
 
     public static void main(String[] args){
 
-        if (args.length <= 1 || args[0].equalsIgnoreCase("-h") || args[0].equals("--help")) {
+        if (args.length < 1 || args[0].equalsIgnoreCase("-h") || args[0].equals("--help")) {
             System.err.println("Usage: ");
-            System.err.println("  ValidateFile <schema> [file]");
+            System.err.println("  Validate <schema> [file]");
             System.exit(1);
         }
 
         try {
-            ValidateFile validator = new ValidateFile();
+            Validate validator = new Validate();
             validator.setSchema(new FileInputStream(args[0]));
             InputStream in = null;
             if (args.length == 2)
                 in = new FileInputStream(args[1]);
             else
                 in = System.in;
-            
+
             validator.validate(in);
         }
         catch (Exception ex) {

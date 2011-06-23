@@ -1,6 +1,7 @@
 package com.realcomp.data.schema;
 
 import com.realcomp.data.Operation;
+import com.realcomp.data.validation.field.ForeignKey;
 import com.realcomp.data.validation.field.Key;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -31,7 +32,7 @@ public class KeyFieldIntrospector {
         return keys;
     }
 
-    public static List<String> getForeignKeyFieldnames(Collection<SchemaField> fields){
+    public static List<String> getForeignKeyFi3eldnames(Collection<SchemaField> fields){
         
         List<String> keys = null;
         for (SchemaField field: fields){
@@ -61,7 +62,7 @@ public class KeyFieldIntrospector {
 
         if (field.getOperations() != null){
             for (Operation op: field.getOperations()){
-                if (op instanceof Key)
+                if (op instanceof ForeignKey)
                     return true;
             }
         }

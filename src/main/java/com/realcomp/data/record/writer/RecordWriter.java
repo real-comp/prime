@@ -6,6 +6,7 @@ import com.realcomp.data.schema.FileSchema;
 import com.realcomp.data.schema.SchemaException;
 import com.realcomp.data.validation.Severity;
 import com.realcomp.data.validation.ValidationException;
+import com.realcomp.data.view.RecordView;
 import java.io.IOException;
 import java.io.OutputStream;
 
@@ -38,6 +39,15 @@ public interface RecordWriter {
      */
     void write(Record record)
             throws IOException, ValidationException, ConversionException, SchemaException;
+
+    /**
+     * write a RecordView
+     * @param view the RecordView to write; not null
+     * @throws IOException
+     */
+    void write(RecordView view)
+            throws IOException, ValidationException, ConversionException, SchemaException;
+
 
     /**
      * Close open resources. Should be invoked when you are done with the RecordWriter.

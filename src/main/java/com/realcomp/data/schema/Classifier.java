@@ -1,5 +1,6 @@
 package com.realcomp.data.schema;
 
+import com.realcomp.data.record.Record;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
@@ -25,8 +26,11 @@ public class Classifier {
     @XStreamImplicit
     protected List<SchemaField> fields;
 
+    protected transient List<String> fieldNames;
+
     protected Classifier(){
         fields = new ArrayList<SchemaField>();
+        fieldNames = new ArrayList<String>();
     }
 
     public Classifier(String id, String regex){
@@ -90,6 +94,7 @@ public class Classifier {
             throw new IllegalArgumentException("fields is empty");
 
         this.fields.clear();
+        this.fieldNames.clear();
         for(SchemaField field: fields)
             addSchemaField(field);
     }
@@ -102,22 +107,14 @@ public class Classifier {
         if (field == null)
             throw new IllegalArgumentException("field is null");
 
-        if (isNameAlreadyUsed(field.getName()))
+        if (fieldNames.contains(field.getName()))
             throw new IllegalArgumentException(
                     String.format("A field with name [%s] is already defined.", field.getName()));
 
         fields.add(field);
+        fieldNames.add(field.getName());
     }
 
-    protected boolean isNameAlreadyUsed(String name){
-        if (name == null)
-            throw new IllegalArgumentException("name is null");
-
-        for (SchemaField existing: fields)
-            if (name.equals(existing.getName()))
-                return true;
-        return false;
-    }
 
     /**
      *
@@ -128,6 +125,10 @@ public class Classifier {
         if (pattern == null)
             pattern = Pattern.compile(regex);
         return pattern.matcher(data).matches();
+    }
+
+    public boolean supports(Record record){
+        return fieldNames.containsAll(record.keySet());
     }
 
     @Override

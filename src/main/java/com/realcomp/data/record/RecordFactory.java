@@ -1,12 +1,12 @@
 package com.realcomp.data.record;
 
-import com.realcomp.data.Field;
 import com.realcomp.data.Operation;
 import com.realcomp.data.conversion.ConversionException;
 import com.realcomp.data.conversion.MissingFieldException;
 import com.realcomp.data.schema.Classifier;
 import com.realcomp.data.schema.FileSchema;
 import com.realcomp.data.schema.KeyFieldIntrospector;
+import com.realcomp.data.schema.SchemaException;
 import com.realcomp.data.schema.SchemaField;
 import com.realcomp.data.validation.Severity;
 import com.realcomp.data.validation.ValidationException;
@@ -14,10 +14,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Creates Records from a String[] using a FileSchema.
- * 
+ *
  * @author krenfro
  */
 public class RecordFactory {
@@ -25,7 +27,7 @@ public class RecordFactory {
     /**
      * Stores the list of key fieldnames for a particular list of SchemaFields.
      * When classifiers are used, the keys for a record may change.  The
-     * computation of key fields is expensive, so this caches that information.
+     * computation of key fields is expensive, so its cached.
      */
     protected Map<List<SchemaField>, List<String>> keyFieldCache;
 
@@ -57,17 +59,17 @@ public class RecordFactory {
     protected Severity validationExceptionThreshold = Severity.HIGH;
 
     public RecordFactory(FileSchema schema) throws ParsePlanException{
-        
+
         if (schema == null)
             throw new IllegalArgumentException("schema is null");
-        
+
         this.schema = schema;
         buildKeyFieldCache();
         buildParsePlan();
         worker = new RecordFactoryWorker(validationExceptionThreshold);
     }
     
-    public Record build(List<SchemaField> fields, String[] data) 
+    public Record build(List<SchemaField> fields, String[] data)
             throws ValidationException, ConversionException{
 
         if (fields.size() != data.length)
@@ -78,17 +80,25 @@ public class RecordFactory {
 
 
         Record record = new Record(getKeyFields(fields));
-        
+
         int index = 0;
         List<SchemaField> schemaFields = getParsePlan(fields).getFields();
         for (SchemaField schemaField: schemaFields){
             index = fields.indexOf(schemaField);
-            Field field = worker.build(
-                    schemaField, getOperations(schemaField), data[index], record);
-            record.put(field.getName(), field);
+            Object value = null;
+            try{
+                value = worker.build(
+                        schemaField, getOperations(schemaField), data[index], record);
+            }
+            catch (ConversionException e){
+                throw new ConversionException(
+                        e.getMessage() + " in field [" + schemaField + "]");
+            }
+
+            record.put(schemaField.getName(), value);
         }
 
-        
+
         return record;
     }
 
@@ -100,7 +110,7 @@ public class RecordFactory {
         List<Operation> temp = schema.getBeforeOperations();
         if (temp != null)
             operations.addAll(temp);
-        
+
         temp = field.getOperations();
         if (temp != null)
             operations.addAll(temp);
@@ -115,8 +125,8 @@ public class RecordFactory {
 
     protected final void buildKeyFieldCache(){
 
-        List<String> keyFields = KeyFieldIntrospector.getKeyFieldnames(schema.getFields());
-        
+        keyFields = KeyFieldIntrospector.getKeyFieldnames(schema.getFields());
+
         //there are classifiers, so I need to use the slower keyFieldCache
         if (!schema.getClassifiers().isEmpty()){
             keyFieldCache = new HashMap<List<SchemaField>, List<String>>();
@@ -137,7 +147,7 @@ public class RecordFactory {
                 parsePlanCache.put(c.getFields(), new ParsePlan(c.getFields()));
         }
     }
-    
+
     /**
      * A <i>key</i> field is identified as having a <i>Key</i> validator operation.
      *
@@ -149,7 +159,8 @@ public class RecordFactory {
         List<String> keys = keyFields;
         if (keyFieldCache != null)
             keys = keyFieldCache.get(fields);
-        
+
+
         return keys;
     }
 

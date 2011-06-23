@@ -3,10 +3,8 @@ package com.realcomp.data.schema;
 import com.realcomp.data.schema.xml.RelationalSchemaConverter;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamConverter;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -20,7 +18,6 @@ public class RelationalSchema {
     protected String name;
     protected String version;
     protected Set<Table> tables;
-    //protected List<ViewFactory> views;
 
     public String getName() {
         return name;
@@ -39,35 +36,8 @@ public class RelationalSchema {
     public void setVersion(String version) {
         this.version = version;
     }
-    /*
-
-    public List<ViewFactory> getViews() {
-        return views;
-    }
-
-    public void setViews(List<ViewFactory> views) throws SchemaException {
-        if (views == null){
-            this.views = null;
-        }
-        else{
-            if (this.views != null)
-                this.views.clear();
-            for (ViewFactory d: views)
-                addView(d);
-        }
-    }
-
-    public void addView(ViewFactory view) throws SchemaException{
-        if (view == null)
-            throw new IllegalArgumentException("view is null");
-
-        if (views == null)
-            views = new ArrayList<ViewFactory>();
-        views.add(view);
-    }
-
-     * 
-     */
+    
+    
     public Set<Table> getTables() {
         return tables;
     }
@@ -121,18 +91,15 @@ public class RelationalSchema {
             return false;
         if (this.tables != other.tables && (this.tables == null || !this.tables.equals(other.tables)))
             return false;
-   //     if (this.views != other.views && (this.views == null || !this.views.equals(other.views)))
-   //         return false;
         return true;
     }
 
     @Override
     public int hashCode() {
-        int hash = 5;
-        hash = 53 * hash + (this.name != null ? this.name.hashCode() : 0);
-        hash = 53 * hash + (this.version != null ? this.version.hashCode() : 0);
-        hash = 53 * hash + (this.tables != null ? this.tables.hashCode() : 0);
-    //    hash = 53 * hash + (this.views != null ? this.views.hashCode() : 0);
+        int hash = 7;
+        hash = 89 * hash + (this.name != null ? this.name.hashCode() : 0);
+        hash = 89 * hash + (this.version != null ? this.version.hashCode() : 0);
+        hash = 89 * hash + (this.tables != null ? this.tables.hashCode() : 0);
         return hash;
     }
 

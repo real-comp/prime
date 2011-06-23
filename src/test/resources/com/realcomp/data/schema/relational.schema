@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<relational-schema name="sample" version="1.0">
+
+    <table name="prop">
+        <table name="imp_info">            
+            <table name="imp_det">
+                <table name="imp_atr"/>
+            </table>
+        </table>
+        <table name="land_det"/>
+        <table name="prop_ent"/>
+    </table>
+    
+</relational-schema>

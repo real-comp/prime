@@ -6,6 +6,7 @@ import com.realcomp.data.validation.field.ForeignKey;
 /**
  *
  * @author krenfro
+ * * @deprecated Use the ForeignKey operation
  */
 public class ForeignKeyField extends SchemaField{
 

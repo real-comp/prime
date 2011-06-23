@@ -22,6 +22,14 @@ public class FixedFileReader extends BaseFileReader{
 
     protected boolean beforeFirst = true;
 
+    
+    public FixedFileReader(){
+        super();
+    }
+    
+    public FixedFileReader(FixedFileReader copy){
+        super(copy);
+    }
 
     @Override
     public void open(InputStream in) throws IOException{

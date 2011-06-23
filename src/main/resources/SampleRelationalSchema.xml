@@ -2,12 +2,10 @@
 
 <relational-schema name="tx_travis" version="1.0">
 
-    <view class="com.realcomp.data.view.tx.travis.TravisPersonView.class"/>
-
     <table name="prop">
         <key name="prop_id"/>
         
-        <table name="imp_info">            
+        <table name="imp_info">
             <foreign name="prop_id"/>
             <key name="imprv_id"/>
 
@@ -32,7 +30,6 @@
 
         <table name="prop_ent">
             <foreign name="prop_id"/>
-            <foreign name="prop_val_yr"/>
             <key name="entity_id"/>
         </table>
     </table>

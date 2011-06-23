@@ -11,12 +11,12 @@ public abstract class BaseMultiFieldConverter implements MultiFieldConverter{
     protected List<String> fieldNames;
 
     @Override
-    public List<String> getFieldNames() {
+    public List<String> getFields() {
         return fieldNames;
     }
 
     @Override
-    public void setFieldNames(List<String> fieldNames) {
+    public void setFields(List<String> fieldNames) {
         this.fieldNames = fieldNames;
     }
 

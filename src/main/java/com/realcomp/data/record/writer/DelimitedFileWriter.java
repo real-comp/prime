@@ -4,6 +4,9 @@ import au.com.bytecode.opencsv.CSVWriter;
 import com.realcomp.data.conversion.ConversionException;
 import com.realcomp.data.record.Record;
 import com.realcomp.data.record.io.Delimiter;
+import com.realcomp.data.schema.Classifier;
+import com.realcomp.data.schema.FileSchema;
+import com.realcomp.data.schema.SchemaException;
 import com.realcomp.data.schema.SchemaField;
 import com.realcomp.data.validation.ValidationException;
 import java.io.BufferedWriter;
@@ -27,13 +30,17 @@ public class DelimitedFileWriter extends BaseFileWriter{
     public static final Delimiter DEFAULT_TYPE=Delimiter.TAB;
 
     protected Delimiter delimiter = Delimiter.TAB;
-    protected BufferedWriter buff;
     protected CSVWriter writer;
     protected List<String> current;
     protected boolean header = false;
     
     public DelimitedFileWriter(){
         current = new ArrayList<String>();
+    }
+    
+    public DelimitedFileWriter(DelimitedFileWriter copy){
+        current = new ArrayList<String>();
+        delimiter = copy.delimiter;
     }
     
 
@@ -86,25 +93,56 @@ public class DelimitedFileWriter extends BaseFileWriter{
             throws IOException, ValidationException, ConversionException{
 
         //optionally write header record
-        if (beforeFirstOperationsRun && header){
+        if (!beforeFirstOperationsRun && header){
             current.clear();
-            super.write(getHeader());
-            writer.writeNext(current.toArray(new String[current.size()]));
-            writer.flush();
+            writeHeader();
         }
-        
+
         current.clear();
         super.write(record);
         writer.writeNext(current.toArray(new String[current.size()]));
         writer.flush();
     }
 
+    /**
+     * Write a header record, constructed from a Record.
+     * 
+     * @param record
+     * @throws IOException
+     * @throws ValidationException
+     * @throws ConversionException
+     */
+    protected void writeHeader() throws IOException, ValidationException, ConversionException{
+
+        //No operations should be run on the Record, so a temporary schema
+        // is created with no operations.
+        try {
+            FileSchema originalSchema = getSchema();
+            FileSchema headerSchema = new FileSchema(getSchema());
+            for (SchemaField f : headerSchema.getFields()){
+                f.setOperations(null);
+            }
+            for (Classifier c : headerSchema.getClassifiers())
+                for (SchemaField f : c.getFields())
+                    f.setOperations(null);
+
+
+            setSchema(headerSchema);
+            super.write(getHeader());
+            writer.writeNext(current.toArray(new String[current.size()]));
+            writer.flush();
+            setSchema(originalSchema); //put back the original schema
+        }
+        catch (SchemaException ex) {
+            throw new IOException("Unable to create temporary header schema: " + ex.getMessage());
+        }
+    }
 
     protected Record getHeader(){
-        Record record = new Record();
+        Record retVal = new Record();
         for(SchemaField field: schema.getFields())
-            record.put(field.getName(), field.getName());
-        return record;
+            retVal.put(field.getName(), field.getName());
+        return retVal;
     }
 
     @Override

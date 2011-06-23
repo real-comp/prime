@@ -9,6 +9,7 @@ import com.thoughtworks.xstream.annotations.XStreamConverter;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 /**
  *
@@ -16,7 +17,16 @@ import java.util.List;
  */
 @XStreamAlias("field")
 public class SchemaField {
-
+    
+    /**
+     * Some characters are discouraged for use in SchemaField names, as they
+     * have special meaning when processing Records.
+     * . (period) : delimiter used for nested Records. (e.g., "property.land.acres");
+     * [ ]        : open/close brackets are used to identify pieces of a Record.
+     *              (e.g., "property.entity[2].name")
+     */
+    public static final String[] INVALID_NAME_CHARACTERS = new String[]{".","[","]"};
+    
     @XStreamAsAttribute
     protected String name;
     
@@ -35,8 +45,7 @@ public class SchemaField {
 
     public SchemaField(String name){
         this();
-        if (name == null)
-            throw new IllegalArgumentException("name is null");
+        checkName(name);
         this.name = name;
     }
 
@@ -54,14 +63,41 @@ public class SchemaField {
         this.length = length;
     }
 
+    public SchemaField(SchemaField copy){
+        this.name = copy.name;
+        this.type = copy.type;
+        this.setOperations(copy.operations);
+        this.length = copy.length;
+    }
+
     public String getName() {
         return name;
     }
 
     public void setName(String name) {
-        if (name == null)
-            throw new IllegalArgumentException("name is null");
+        checkName(name);
         this.name = name;
+    }
+    
+    /**
+     * Ensure that the provided name is valid.
+     * A valid name:
+     * <ol>
+     *  <li>is not null</li>
+     *  <li>is not empty</li>
+     *  <li>does not contain and INVALID_NAME_CHARACTER</li>
+     * </ol>
+     * @param name 
+     * @throws IllegalArgumentException if the name is invalid.
+     */
+    protected void checkName(String name){
+        if (name == null)
+            throw new IllegalArgumentException("schema field name is null");
+        if (name.isEmpty())
+            throw new IllegalArgumentException("schema field name is empty");
+        for (String s: INVALID_NAME_CHARACTERS)
+            if (name.contains(s))
+                throw new IllegalArgumentException("schema field name contains invalid character: " + s);
     }
 
     public int getLength() {

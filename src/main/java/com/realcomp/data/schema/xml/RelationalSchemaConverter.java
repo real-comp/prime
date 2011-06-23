@@ -39,7 +39,6 @@ public class RelationalSchemaConverter implements Converter{
         RelationalSchema schema = (RelationalSchema) o;
         writer.addAttribute("name", schema.getName());
         writer.addAttribute("version", schema.getVersion());
-  //      writeViews(schema.getViews(), writer, mc);
         writeTables(schema.getTables(), writer);
     }
 
@@ -55,14 +54,9 @@ public class RelationalSchemaConverter implements Converter{
             while (reader.hasMoreChildren()){
                 reader.moveDown();
 
-              //  if (reader.getNodeName().equals("view")){
-               //     schema.addView((ViewFactory) dataViewConverter.unmarshal(reader, uc));
-              //  }
-              //  else{
-                    Table table = readTable(reader);
-                    if (table != null)
-                        tables.add(table);
-             //   }
+                Table table = readTable(reader);
+                if (table != null)
+                    tables.add(table);
                 reader.moveUp();
             }
 
@@ -92,10 +86,7 @@ public class RelationalSchemaConverter implements Converter{
         while(reader.hasMoreChildren()){
             reader.moveDown();
             if (reader.getNodeName().equals("table")){
-                table.addTable(readTable(table, reader));
-            }
-            else{
-                table.addKey(readKey(reader));
+                table.add(readTable(table, reader));
             }
             reader.moveUp();
         }
@@ -103,29 +94,6 @@ public class RelationalSchemaConverter implements Converter{
         return table;
     }
 
-    protected SchemaField readKey(HierarchicalStreamReader reader){
-        String name = reader.getAttribute("name");
-        return reader.getNodeName().equals("key") ? new KeyField(name) : new ForeignKeyField(name);
-    }
-
-/*
-    protected void writeViews(
-            List<ViewFactory> views, HierarchicalStreamWriter writer, MarshallingContext mc){
-
-        if (views != null){
-            for (ViewFactory view: views)
-                writeView(view, writer, mc);
-        }
-    }
-
-    protected void writeView(
-            ViewFactory view, HierarchicalStreamWriter writer, MarshallingContext mc){
-
-        dataViewConverter.marshal(view, writer, null);
-    }
-
- * 
- */
 
     protected void writeTables(Collection<Table> tables, HierarchicalStreamWriter writer){
         if (tables != null){
@@ -139,25 +107,10 @@ public class RelationalSchemaConverter implements Converter{
         if (table != null){
             writer.startNode("table");
             writer.addAttribute("name", table.getName());
-            writeKeys(table.getKeys(), writer);
-            writeTables(table.getTables(), writer);
+            //writeKeys(table.getKeys(), writer);
+            writeTables(table.getChildren(), writer);
             writer.endNode();
         }
     }
 
-    protected void writeKeys(Collection<SchemaField> keys, HierarchicalStreamWriter writer){
-        if (keys != null){
-            for (SchemaField key: keys)
-                writeKey(key, writer);
-        }
-    }
-
-
-    protected void writeKey(SchemaField key, HierarchicalStreamWriter writer){
-        if (key != null){
-            writer.startNode(key instanceof ForeignKeyField ? "foreign" : "key");
-            writer.addAttribute("name", key.getName());
-            writer.endNode();
-        }
-    }
 }

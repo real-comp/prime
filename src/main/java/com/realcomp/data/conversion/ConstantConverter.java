@@ -15,8 +15,7 @@ public class ConstantConverter implements Converter{
         if (value == null)
             throw new IllegalArgumentException("value is null");
 
-
-        return value;
+        return this.value;
     }
 
     public String getValue() {

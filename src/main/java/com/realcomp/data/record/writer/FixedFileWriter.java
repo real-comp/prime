@@ -25,6 +25,14 @@ public class FixedFileWriter extends BaseFileWriter{
     protected BufferedWriter writer;
 
 
+    public FixedFileWriter(){
+        super();
+    }
+    
+    public FixedFileWriter(FixedFileWriter copy){
+        super(copy);
+    }
+    
     @Override
     public void open(OutputStream out){
         close();

@@ -1,6 +1,5 @@
 package com.realcomp.data.record;
 
-import com.realcomp.data.Field;
 import com.realcomp.data.FieldFactory;
 import com.realcomp.data.Operation;
 import com.realcomp.data.conversion.ConversionException;
@@ -48,12 +47,10 @@ public class RecordFactoryWorker {
     }
     
 
-    public Field build(SchemaField field, List<Operation> operations, String data, Record record)
+    public Object build(SchemaField field, List<Operation> operations, String data, Record record)
             throws ConversionException, ValidationException, MissingFieldException{
 
-        Field retVal = FieldFactory.create(field.getType(), operate(operations, data, record));
-        retVal.setName(field.getName());
-        return retVal;
+        return FieldFactory.create(field.getType(), operate(operations, data, record));
     }
 
 

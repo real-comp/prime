@@ -31,58 +31,96 @@ public class XStreamRelationalSchemaTest {
 
 
         Table prop = new Table("prop");
-        prop.addKey(new KeyField("prop_id"));
+       // prop.addKey(new KeyField("prop_id"));
 
         Table impInfo = new Table("imp_info");
-        impInfo.addKey(new ForeignKeyField("prop_id"));
-        impInfo.addKey(new KeyField("impvr_id"));
+       // impInfo.addKey(new ForeignKeyField("prop_id"));
+       // impInfo.addKey(new KeyField("impvr_id"));
 
         Table impDet = new Table("imp_det");
-        impDet.addKey(new ForeignKeyField("prop_id"));
-        impDet.addKey(new ForeignKeyField("imprv_id"));
-        impDet.addKey(new KeyField("imprv_det_id"));
+       // impDet.addKey(new ForeignKeyField("prop_id"));
+       // impDet.addKey(new ForeignKeyField("imprv_id"));
+       // impDet.addKey(new KeyField("imprv_det_id"));
 
         Table impAtr = new Table("imp_atr");
-        impAtr.addKey(new ForeignKeyField("prop_id"));
-        impAtr.addKey(new ForeignKeyField("imprv_id"));
-        impAtr.addKey(new ForeignKeyField("imprv_det_id"));
-        impAtr.addKey(new KeyField("imprv_attr_id"));
+       // impAtr.addKey(new ForeignKeyField("prop_id"));
+       // impAtr.addKey(new ForeignKeyField("imprv_id"));
+       // impAtr.addKey(new ForeignKeyField("imprv_det_id"));
+       // impAtr.addKey(new KeyField("imprv_attr_id"));
 
-        impDet.addTable(impAtr);
-        impInfo.addTable(impDet);
+        impDet.add(impAtr);
+        impInfo.add(impDet);
 
         Table landDet = new Table("land_det");
-        landDet.addKey(new ForeignKeyField("prop_id"));
-        landDet.addKey(new KeyField("land_seg_id"));
+       // landDet.addKey(new ForeignKeyField("prop_id"));
+       // landDet.addKey(new KeyField("land_seg_id"));
 
         Table propEnt = new Table("prop_ent");
-        propEnt.addKey(new ForeignKeyField("prop_id"));
-        propEnt.addKey(new KeyField("prop_val_yr"));
-        propEnt.addKey(new KeyField("entity_id"));
+       // propEnt.addKey(new ForeignKeyField("prop_id"));
+       // propEnt.addKey(new KeyField("prop_val_yr"));
+       // propEnt.addKey(new KeyField("entity_id"));
 
-        prop.addTable(impInfo);
-        prop.addTable(landDet);
-        prop.addTable(propEnt);
+        prop.add(impInfo);
+        prop.add(landDet);
+        prop.add(propEnt);
         schema.addTable(prop);
-
-
 
         return schema;
     }
+    
+    
+    
+        
+    @Test
+    public void testFieldEquality() throws SchemaException{
+        
+        KeyField a = new KeyField("field");
+        KeyField b = new KeyField("field");        
+        assertEquals(a, b);
+        
+        ForeignKeyField c = new ForeignKeyField("f");
+        ForeignKeyField d = new ForeignKeyField("f");        
+        assertEquals(c, d);
+    }
+    
+    
+    @Test
+    public void testTableEquality() throws SchemaException{
+        
+        Table a = new Table("test");
+        Table b = new Table("test");        
+        assertEquals(a, b);
+        
+        Table c = new Table("child");
+        Table d = new Table("child");        
+        a.add(c);
+        b.add(d);        
+        assertEquals(a, b);
+    }
+    
+    
+        
+    @Test
+    public void testSchemeaEquality() throws SchemaException{
+        
+        RelationalSchema a = getSchema();
+        RelationalSchema b = getSchema();
+        assertEquals(a.getTables(), b.getTables());
+    }
+    
     
     @Test
     public void testSerialization() throws SchemaException{
 
         String xml = xstream.toXML(getSchema());
-        System.out.println(xml);
         RelationalSchema deserialized = (RelationalSchema) xstream.fromXML(xml);
         assertEquals(1, deserialized.getTables().size());
 
-
         Table prop = deserialized.getTables().iterator().next();
         assertNotNull(prop);
-        assertEquals(prop, prop.getTables().iterator().next().getParent());
-        //assertTrue(getSchema().equals(deserialized));
+        assertEquals(prop, prop.getChildren().iterator().next().getParent());
+        assertEquals(3, prop.getChildren().size());
+        assertTrue(getSchema().equals(deserialized));
     }
     
 }

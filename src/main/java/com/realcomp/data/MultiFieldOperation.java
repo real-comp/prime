@@ -9,6 +9,6 @@ import java.util.List;
  */
 public interface MultiFieldOperation extends Operation{
 
-    public List<String> getFieldNames();
-    public void setFieldNames(List<String> fieldNames);
+    public List<String> getFields();
+    public void setFields(List<String> fieldNames);
 }

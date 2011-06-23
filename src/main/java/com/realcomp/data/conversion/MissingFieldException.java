@@ -9,7 +9,8 @@ public class MissingFieldException extends ConversionException{
     private String fieldName;
 
     public MissingFieldException(String fieldName){
-        this.fieldName = fieldName;
+        super(fieldName);
+        this.fieldName = fieldName;        
     }
 
     public String getFieldName() {
