@@ -50,22 +50,22 @@ public class RecordFactoryWorker {
     public Object build(SchemaField field, List<Operation> operations, String data, Record record)
             throws ConversionException, ValidationException, MissingFieldException{
 
-        return FieldFactory.create(field.getType(), operate(operations, data, record));
+        return FieldFactory.create(field.getType(), operate(field.getName(), operations, data, record));
     }
 
 
-    protected String operate(List<Operation> operations, String data, Record record)
+    protected String operate(String fieldName, List<Operation> operations, String data, Record record)
             throws ConversionException, ValidationException, MissingFieldException{
 
         if (operations == null || operations.isEmpty())
             return data;
         for (Operation op: operations)
-            data = operate(op, data, record);
+            data = operate(fieldName, op, data, record);
 
         return data;
     }
 
-    protected String operate(Operation op, String data, Record record)
+    protected String operate(String fieldName, Operation op, String data, Record record)
                 throws ConversionException, ValidationException, MissingFieldException{
 
         String result = data;
@@ -79,16 +79,16 @@ public class RecordFactoryWorker {
                 Severity severity = ((Validator) op).getSeverity();
                 switch(severity){
                     case LOW:
-                        log.log(Level.INFO, "{0} in record [{1}]",
-                                new Object[]{ex.getMessage(), record.toString()});
+                        log.log(Level.INFO, "{0} for [{1}] in record [{2}]",
+                                new Object[]{ex.getMessage(), fieldName, record.toString()});
                         break;
                     case MEDIUM:
-                        log.log(Level.WARNING, "{0} in record [{1}]",
-                                new Object[]{ex.getMessage(), record.toString()});
+                        log.log(Level.WARNING, "{0} for [{1}] in record [{2}]",
+                                new Object[]{ex.getMessage(), fieldName, record.toString()});
                         break;
                     case HIGH:
-                        log.log(Level.SEVERE, "{0} in record [{1}]",
-                                new Object[]{ex.getMessage(), record.toString()});
+                        log.log(Level.SEVERE, "{0} for [{1}]  in record [{2}]",
+                                new Object[]{ex.getMessage(), fieldName, record.toString()});
                         break;
                 }
 
