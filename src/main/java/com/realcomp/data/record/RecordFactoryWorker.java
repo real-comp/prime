@@ -6,6 +6,7 @@ import com.realcomp.data.conversion.ConversionException;
 import com.realcomp.data.conversion.Converter;
 import com.realcomp.data.conversion.MissingFieldException;
 import com.realcomp.data.conversion.MultiFieldConverter;
+import com.realcomp.data.schema.FileSchema;
 import com.realcomp.data.schema.SchemaField;
 import com.realcomp.data.validation.Severity;
 import com.realcomp.data.validation.ValidationException;
@@ -23,7 +24,8 @@ public class RecordFactoryWorker {
     protected static final Logger log = Logger.getLogger(RecordFactoryWorker.class.getName());
 
     protected Severity validationExceptionThreshold;
-
+    protected FileSchema schema;
+    
     /**
      * If a Validator logs a warning above this threshold, then the warning is thrown as
      * a ValidationException. By default, Validators log at Severity.MEDIUM, so all
@@ -45,8 +47,15 @@ public class RecordFactoryWorker {
             throw new IllegalArgumentException("validationExceptionThreshold is null");
         this.validationExceptionThreshold = validationExceptionThreshold;
     }
-    
 
+    public FileSchema getSchema() {
+        return schema;
+    }
+
+    public void setSchema(FileSchema schema) {
+        this.schema = schema;
+    }
+    
     public Object build(SchemaField field, List<Operation> operations, String data, Record record)
             throws ConversionException, ValidationException, MissingFieldException{
 
@@ -80,15 +89,15 @@ public class RecordFactoryWorker {
                 switch(severity){
                     case LOW:
                         log.log(Level.INFO, "{0} for [{1}] in record [{2}]",
-                                new Object[]{ex.getMessage(), fieldName, record.toString()});
+                                new Object[]{ex.getMessage(), fieldName, schema.toString(record)});
                         break;
                     case MEDIUM:
                         log.log(Level.WARNING, "{0} for [{1}] in record [{2}]",
-                                new Object[]{ex.getMessage(), fieldName, record.toString()});
+                                new Object[]{ex.getMessage(), fieldName, schema.toString(record)});
                         break;
                     case HIGH:
                         log.log(Level.SEVERE, "{0} for [{1}]  in record [{2}]",
-                                new Object[]{ex.getMessage(), fieldName, record.toString()});
+                                new Object[]{ex.getMessage(), fieldName, schema.toString(record)});
                         break;
                 }
 

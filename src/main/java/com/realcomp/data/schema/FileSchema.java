@@ -7,14 +7,15 @@ import com.realcomp.data.record.reader.RecordReader;
 import com.realcomp.data.record.writer.RecordWriter;
 import com.realcomp.data.schema.xml.RecordReaderConverter;
 import com.realcomp.data.schema.xml.RecordWriterConverter;
+import com.realcomp.data.validation.ValidationException;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
 import com.thoughtworks.xstream.annotations.XStreamConverter;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
+import org.apache.commons.lang.StringUtils;
 
 /**
  *
@@ -464,6 +465,50 @@ public class FileSchema {
         }
         return false;
     }
+    
+    /**
+     * List of Strings pulled from Fields in a Record that are marked as 'Keys'.
+     * 
+     * @param record not null
+     * @return list of Key fields as Strings from the specified record. 
+     * @throws IllegalArgment
+     */
+    public List<String> getKeys(Record record) throws ValidationException{
+
+        List<String> key = new ArrayList<String>();
+        
+        for (SchemaField f: fields){
+            if (isKeyField(f)){
+                Object value = record.get(f.getName());
+                if (value == null)
+                    throw new ValidationException(
+                            String.format(
+                                "Unable to construct key for Record %s because it is missing a value for 'key' field [%s]",
+                                new Object[]{record.toString(), f.getName()}));
+                key.add(value.toString());
+            }
+        }
+        
+        return key;
+    }
+    
+    /**
+     * A superior Record.toString() that uses this schema's knowledge of the Record to 
+     * output a pipe "|" delimited string of the Record's keys, in the order defined
+     * in the schema.
+     * 
+     * If no keys are defined in the schema, then return Record.toString().
+     * 
+     * @see Record#toString()
+     * @param record
+     * @return Pipe delimited String of the Record's keys
+     * @throws ValidationException 
+     */
+    public String toString(Record record) throws ValidationException{
+        List<String> keys = getKeys(record);
+        return keys.isEmpty() ? record.toString() : StringUtils.join(keys, "|");
+    }
+     
 
     @Override
     public String toString(){

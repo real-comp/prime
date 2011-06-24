@@ -36,7 +36,8 @@ public class Filter {
     }
 
 
-    public void filter(InputStream in, OutputStream out) throws SchemaException, IOException, ConversionException {
+    public void filter(InputStream in, OutputStream out) 
+            throws SchemaException, IOException, ConversionException, ValidationException {
 
         RecordReader reader = inputSchema.getReader();
         if (reader == null)
@@ -55,7 +56,9 @@ public class Filter {
                 writer.write(record);
             }
             catch(ValidationException ex){
-                logger.log(Level.INFO, "filtered: {0} because: {1}", new Object[]{record.toString(), ex.getMessage()});
+                logger.log(Level.INFO, 
+                           "filtered: {0} because: {1}", 
+                           new Object[]{outputSchema.toString(record), ex.getMessage()});
             }
             record = getNextRecord(reader);
         }
@@ -64,14 +67,18 @@ public class Filter {
         reader.close();
     }
 
-    protected Record getNextRecord(RecordReader reader) throws IOException, SchemaException, ConversionException{
+    protected Record getNextRecord(RecordReader reader)
+            throws IOException, SchemaException, ConversionException{
 
         Record r = null;
         try {
             r = reader.read();
         }
         catch (ValidationException ex) {
-            logger.log(Level.INFO, "filtered input record because: {0}", new Object[]{ex.getMessage()});
+            logger.log(Level.INFO, 
+                       "filtered input record because: {0}", 
+                       new Object[]{ex.getMessage()});
+            
             return getNextRecord(reader);
         }
         return r;

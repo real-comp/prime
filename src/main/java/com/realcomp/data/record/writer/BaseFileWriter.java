@@ -198,15 +198,15 @@ public abstract class BaseFileWriter implements RecordWriter{
                 switch(severity){
                     case LOW:
                         log.log(Level.INFO, "{0} in record [{1}]",
-                                new Object[]{ex.getMessage(), record.toString()});
+                                new Object[]{ex.getMessage(), schema.toString(record)});
                         break;
                     case MEDIUM:
                         log.log(Level.WARNING, "{0} in record [{1}]",
-                                new Object[]{ex.getMessage(), record.toString()});
+                                new Object[]{ex.getMessage(), schema.toString(record)});
                         break;
                     case HIGH:
                         log.log(Level.SEVERE, "{0} in record [{1}]",
-                                new Object[]{ex.getMessage(), record.toString()});
+                                new Object[]{ex.getMessage(), schema.toString(record)});
                         break;
                 }
             }

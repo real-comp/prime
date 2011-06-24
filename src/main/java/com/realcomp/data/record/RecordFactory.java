@@ -6,7 +6,6 @@ import com.realcomp.data.conversion.MissingFieldException;
 import com.realcomp.data.schema.Classifier;
 import com.realcomp.data.schema.FileSchema;
 import com.realcomp.data.schema.KeyFieldIntrospector;
-import com.realcomp.data.schema.SchemaException;
 import com.realcomp.data.schema.SchemaField;
 import com.realcomp.data.validation.Severity;
 import com.realcomp.data.validation.ValidationException;
@@ -14,8 +13,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Creates Records from a String[] using a FileSchema.
@@ -67,6 +64,7 @@ public class RecordFactory {
         buildKeyFieldCache();
         buildParsePlan();
         worker = new RecordFactoryWorker(validationExceptionThreshold);
+        worker.setSchema(schema);
     }
     
     public Record build(List<SchemaField> fields, String[] data)
@@ -79,7 +77,7 @@ public class RecordFactory {
                     Severity.HIGH);
 
 
-        Record record = new Record(getKeyFields(fields));
+        Record record = new Record();
 
         int index = 0;
         List<SchemaField> schemaFields = getParsePlan(fields).getFields();
