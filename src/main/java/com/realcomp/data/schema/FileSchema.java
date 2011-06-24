@@ -462,25 +462,37 @@ public class FileSchema {
     }
     
     /**
+     * 
+     * @return all 'key' SchemaFields, in the order defined by this FileSchema
+     */
+    public List<SchemaField> getKeyFields(){
+        List<SchemaField> keyFields = new ArrayList<SchemaField>();
+        for (SchemaField f: fields){            
+            if (isKeyField(f))
+                keyFields.add(f);
+        }
+        
+        return keyFields;
+    }
+    
+    /**
      * List of Strings pulled from Fields in a Record that are marked as 'Keys'.
      * 
      * @param record not null
-     * @return list of Key fields as Strings from the specified record. 
+     * @return list of Key fields, as Strings, from the specified record. 
      */
     public List<String> getKeys(Record record){
 
         List<String> key = new ArrayList<String>();
         
-        for (SchemaField f: fields){            
-            if (isKeyField(f)){
-                Object value = record.get(f.getName());
-                
-                //Note: a key value may be NULL if the Record is not fully constructed.
-                //For example, if a ValidationException is thrown during Record creation, the
-                //Record creator may try to construct a helpful message using schema.toString(record).
-                if (value != null)
-                    key.add(value.toString());
-            }
+        for (SchemaField f: getKeyFields()){                       
+            Object value = record.get(f.getName());
+
+            //Note: a key value may be NULL if the Record is not fully constructed.
+            //For example, if a ValidationException is thrown during Record creation, the
+            //Record creator may try to construct a helpful message using schema.toString(record).
+            if (value != null)
+                key.add(value.toString());
         }
         
         return key;
