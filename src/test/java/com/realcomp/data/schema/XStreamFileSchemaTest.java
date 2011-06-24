@@ -81,7 +81,7 @@ public class XStreamFileSchemaTest {
 
         FileSchema deserialized = (FileSchema) xstream.fromXML(xml);
         assertEquals(1, deserialized.getAfterOperations().size());
-        deserialized.getAfterOperations().get(0).getClass().equals(Trim.class);
+        assertTrue(deserialized.getAfterOperations().get(0).getClass().equals(Trim.class));
         assertEquals(5, deserialized.getFields().size());
         assertEquals(DataType.LONG, deserialized.getFields().get(0).getType());
         assertEquals(DataType.STRING, deserialized.getFields().get(1).getType());

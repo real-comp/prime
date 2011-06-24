@@ -125,7 +125,7 @@ public class Record implements Serializable{
 
     /**
      * @see FileSchema#toString(Record)
-     * @return the first two fields of this Record delimited by a pipe "|".
+     * @return the first two fields of this Record delimited by a pipe "|"
      */
     @Override
     public String toString(){
@@ -136,7 +136,7 @@ public class Record implements Serializable{
                 s.append("|");
             s.append(f.toString());
         }
-
+        
         return s.toString();
     }
 

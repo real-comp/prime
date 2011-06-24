@@ -9,7 +9,6 @@ import com.thoughtworks.xstream.annotations.XStreamConverter;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
 
 /**
  *
@@ -41,6 +40,7 @@ public class SchemaField {
     protected int length;
 
     public SchemaField(){
+         operations = new ArrayList<Operation>();
     }
 
     public SchemaField(String name){
@@ -125,6 +125,8 @@ public class SchemaField {
      * @param operations Operations to perform for this field. null will clear any existing.
      */
     public void setOperations(List<Operation> operations) {
+        if (operations == null)
+            throw new IllegalArgumentException("operations is null");
         this.operations = operations;
     }
 
@@ -132,9 +134,6 @@ public class SchemaField {
         if (operation == null)
             throw new IllegalArgumentException("operation is null");
 
-        if (operations == null)
-            operations = new ArrayList<Operation>();
-        
         operations.add(operation);
     }
 
@@ -153,6 +152,19 @@ public class SchemaField {
     @Override
     public String toString() {
         return name;
+    }
+    
+    /**
+     * XStream does not invoke a constructor during de-serialization. It uses default
+     * JDK serialization.  This method allows me to do work that the default constructor
+     * does to ensure my object is de-serialized properly.
+     * @see java.io.ObjectInputStream
+     * @return this
+     */
+    private Object readResolve(){        
+        if (operations == null)
+            operations = new ArrayList<Operation>();
+        return this;
     }
 
     @Override

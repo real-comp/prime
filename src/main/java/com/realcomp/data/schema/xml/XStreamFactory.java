@@ -5,7 +5,6 @@ import com.realcomp.data.annotation.Validator;
 import com.realcomp.data.schema.FileSchema;
 import com.realcomp.data.schema.SchemaField;
 import com.thoughtworks.xstream.XStream;
-import com.thoughtworks.xstream.converters.collections.CollectionConverter;
 import com.thoughtworks.xstream.io.xml.DomDriver;
 import java.util.Set;
 import java.util.logging.Level;

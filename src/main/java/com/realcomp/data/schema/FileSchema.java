@@ -193,9 +193,7 @@ public class FileSchema {
         
         if (name == null)
             throw new IllegalArgumentException("name is null");
-        if (fields == null)
-            return null;
-
+        
         for (SchemaField field: fields)
             if (field.getName().equals(name))
                 return field;
@@ -209,9 +207,6 @@ public class FileSchema {
      */
     public List<SchemaField> getFields() {
 
-        if (fields == null)
-            fields = new ArrayList<SchemaField>();
-        
         return fields;
     }
 
@@ -471,21 +466,20 @@ public class FileSchema {
      * 
      * @param record not null
      * @return list of Key fields as Strings from the specified record. 
-     * @throws IllegalArgment
      */
-    public List<String> getKeys(Record record) throws ValidationException{
+    public List<String> getKeys(Record record){
 
         List<String> key = new ArrayList<String>();
         
-        for (SchemaField f: fields){
+        for (SchemaField f: fields){            
             if (isKeyField(f)){
                 Object value = record.get(f.getName());
-                if (value == null)
-                    throw new ValidationException(
-                            String.format(
-                                "Unable to construct key for Record %s because it is missing a value for 'key' field [%s]",
-                                new Object[]{record.toString(), f.getName()}));
-                key.add(value.toString());
+                
+                //Note: a key value may be NULL if the Record is not fully constructed.
+                //For example, if a ValidationException is thrown during Record creation, the
+                //Record creator may try to construct a helpful message using schema.toString(record).
+                if (value != null)
+                    key.add(value.toString());
             }
         }
         
@@ -502,9 +496,8 @@ public class FileSchema {
      * @see Record#toString()
      * @param record
      * @return Pipe delimited String of the Record's keys
-     * @throws ValidationException 
      */
-    public String toString(Record record) throws ValidationException{
+    public String toString(Record record){
         List<String> keys = getKeys(record);
         return keys.isEmpty() ? record.toString() : StringUtils.join(keys, "|");
     }

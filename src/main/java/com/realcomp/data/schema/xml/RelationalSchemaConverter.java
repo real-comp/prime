@@ -1,10 +1,7 @@
 package com.realcomp.data.schema.xml;
 
-import com.realcomp.data.schema.ForeignKeyField;
-import com.realcomp.data.schema.KeyField;
 import com.realcomp.data.schema.RelationalSchema;
 import com.realcomp.data.schema.SchemaException;
-import com.realcomp.data.schema.SchemaField;
 import com.realcomp.data.schema.Table;
 import com.thoughtworks.xstream.converters.ConversionException;
 import com.thoughtworks.xstream.converters.Converter;
