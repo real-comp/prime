@@ -34,6 +34,13 @@ public class Record implements Serializable{
         data = new HashMap<String,Object>();
         data.putAll(copy.data);
     }
+    
+    public Record(Map<String,Object> data){
+        if (data == null)
+            throw new IllegalArgumentException("data is null");
+        this.data = new HashMap<String,Object>();
+        this.data.putAll(data);
+    }
 
  
     public boolean containsKey(String key){
@@ -125,7 +132,7 @@ public class Record implements Serializable{
 
     /**
      * @see FileSchema#toString(Record)
-     * @return the first two fields of this Record delimited by a pipe "|"
+     * @return (up to) the first two fields of this Record delimited by a pipe "|"
      */
     @Override
     public String toString(){

@@ -33,21 +33,21 @@ public enum DataType {
         if (value == null)
             throw new IllegalArgumentException("value is null");
 
-        if (value.getClass().isAssignableFrom(String.class))
+        if (String.class.isAssignableFrom(value.getClass()))
             return STRING;
-        else if(value.getClass().isAssignableFrom(Integer.class))
+        else if (Integer.class.isAssignableFrom(value.getClass()))
             return INTEGER;
-        else if(value.getClass().isAssignableFrom(Float.class))
+        else if (Float.class.isAssignableFrom(value.getClass()))
             return FLOAT;
-        else if(value.getClass().isAssignableFrom(Long.class))
+        else if (Long.class.isAssignableFrom(value.getClass()))
             return LONG;
-        else if(value.getClass().isAssignableFrom(Double.class))
+        else if (Double.class.isAssignableFrom(value.getClass()))
             return DOUBLE;
-        else if(value.getClass().isAssignableFrom(Boolean.class))
+        else if (Boolean.class.isAssignableFrom(value.getClass()))
             return BOOLEAN;
-        else if(value.getClass().isAssignableFrom(List.class))
+        else if (List.class.isAssignableFrom(value.getClass()))
             return LIST;
-        else if(value.getClass().isAssignableFrom(Map.class))
+        else if (Map.class.isAssignableFrom(value.getClass()))
             return MAP;
 
         throw new IllegalArgumentException(

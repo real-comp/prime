@@ -461,6 +461,14 @@ public class FileSchema {
         return false;
     }
     
+    public boolean isForeignKeyField(SchemaField field){
+        for (Operation op: field.getOperations()){
+            if (op instanceof com.realcomp.data.validation.field.ForeignKey)
+                return true;
+        }
+        return false;
+    }
+    
     /**
      * 
      * @return all 'key' SchemaFields, in the order defined by this FileSchema
@@ -474,6 +482,24 @@ public class FileSchema {
         
         return keyFields;
     }
+    
+    
+    /**
+     * 
+     * @return all 'foreign key' SchemaFields, in the order defined by this FileSchema
+     */
+    public List<SchemaField> getForeignKeyFields(){
+        List<SchemaField> foreignKeyFields = new ArrayList<SchemaField>();
+        for (SchemaField f: fields){            
+            if (isForeignKeyField(f))
+                foreignKeyFields.add(f);
+        }
+        
+        return foreignKeyFields;
+    }
+    
+    
+    
     
     /**
      * List of Strings pulled from Fields in a Record that are marked as 'Keys'.

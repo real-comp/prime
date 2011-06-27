@@ -55,6 +55,10 @@ public class Table {
     public Set<Table> getChildren() {
         return children;
     }
+    
+    public boolean hasChildren(){
+        return children != null && !children.isEmpty();
+    }
 
     public void setChildren(Set<Table> tables) throws SchemaException {
         
