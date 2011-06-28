@@ -1,9 +1,7 @@
 package com.realcomp.data.schema;
 
 import com.realcomp.data.record.Record;
-import com.realcomp.data.schema.FileSchema;
-import com.realcomp.data.schema.RelationalSchema;
-import com.realcomp.data.schema.Table;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
@@ -12,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * Pretty print the keys of Record with indentation.
  * 
  * @author krenfro
  */
@@ -41,20 +40,20 @@ public class PrettyPrinter {
             addFileSchema(s);
     }
     
-    public void prettyPrint(Record record, OutputStream out){
+    public void prettyPrint(Record record, OutputStream out) throws IOException{
         
-        if (record == null)
-            throw new IllegalArgumentException("record is null");
-        if (relationalSchema == null)
-            throw new IllegalArgumentException("");
-        
-        Table primaryTable = relationalSchema.getTables().iterator().next();
-        Map<String,Object> map = new HashMap<String,Object>();
-        for (Map.Entry<String,Object> e: record.entrySet())
-            map.put(e.getKey(), e.getValue());
-        PrintWriter writer = new PrintWriter(new OutputStreamWriter(out));
-        prettyPrint(primaryTable, map, 0, writer);
-        writer.flush();
+        if (relationalSchema == null){
+            out.write(record.toString().getBytes());
+        }
+        else{
+            Table primaryTable = relationalSchema.getTables().iterator().next();
+            Map<String,Object> map = new HashMap<String,Object>();
+            for (Map.Entry<String,Object> e: record.entrySet())
+                map.put(e.getKey(), e.getValue());
+            PrintWriter writer = new PrintWriter(new OutputStreamWriter(out));
+            prettyPrint(primaryTable, map, 0, writer);
+            writer.flush();
+        }
     }
     
     private void prettyPrint(Table table, Map<String,Object> map, int indent, PrintWriter out){
