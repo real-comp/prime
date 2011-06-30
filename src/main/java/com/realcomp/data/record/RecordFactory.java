@@ -1,6 +1,7 @@
 package com.realcomp.data.record;
 
 import com.realcomp.data.Operation;
+import com.realcomp.data.conversion.Alias;
 import com.realcomp.data.conversion.ConversionException;
 import com.realcomp.data.conversion.MissingFieldException;
 import com.realcomp.data.schema.Classifier;
@@ -16,6 +17,8 @@ import java.util.Map;
 
 /**
  * Creates Records from a String[] using a FileSchema.
+ * The creation of this object is expensive, so you are encouraged to reuse instances as much
+ * as possible.
  *
  * @author krenfro
  */
@@ -49,10 +52,11 @@ public class RecordFactory {
      * to limit the use of the parsePlanCache.
      */
     protected ParsePlan parsePlan;
+    
+    protected Map<String,List<String>> aliases;
 
     protected FileSchema schema;
     protected RecordFactoryWorker worker;
-
     protected Severity validationExceptionThreshold = Severity.HIGH;
 
     public RecordFactory(FileSchema schema) throws ParsePlanException{
@@ -63,6 +67,7 @@ public class RecordFactory {
         this.schema = schema;
         buildKeyFieldCache();
         buildParsePlan();
+        buildAliases();
         worker = new RecordFactoryWorker(validationExceptionThreshold);
         worker.setSchema(schema);
     }
@@ -76,11 +81,10 @@ public class RecordFactory {
                     fields.size() + " != " + data.length,
                     Severity.HIGH);
 
-
         Record record = new Record();
-
         int index = 0;
         List<SchemaField> schemaFields = getParsePlan(fields).getFields();
+        
         for (SchemaField schemaField: schemaFields){
             index = fields.indexOf(schemaField);
             Object value = null;
@@ -94,13 +98,76 @@ public class RecordFactory {
             }
 
             record.put(schemaField.getName(), value);
+            addAliases(record, schemaField.getName(), value);
         }
 
 
         return record;
     }
+    
+    /**
+     * If aliases are defined for the field, add an entry to the specified record, 
+     * with the alias name as the key, and the provided value as the value.
+     * 
+     * @param record
+     * @param fieldName
+     * @param value 
+     */
+    protected void addAliases(Record record, String fieldName, Object value){
+        if (aliases.containsKey(fieldName)){
+            for (String alias: aliases.get(fieldName)){
+                record.put(alias, value);
+            }
+        }
+    }
+    
+    /**
+     * build the alias map for all fields in the schema.
+     */
+    protected final void buildAliases(){
+        aliases = new HashMap<String,List<String>>();
+        for (SchemaField field: schema.getFields()){
+            List<String> definedAliases = getAliases(field);
+            if (definedAliases != null)
+                aliases.put(field.getName(), definedAliases);
+        }
+    }
+    
+    /**
+     * Aliases are defined as Alias converters in the schema.
+     * 
+     * @param field
+     * @return all aliases for the specified field, or null if none defined.
+     * @see com.realcomp.data.conversion.Alias
+     */
+    protected List<String> getAliases(SchemaField field){
+        
+        List<String> retVal = null;
+        List<Operation> operations = field.getOperations();
+        if (operations != null){
+            for (Operation operation: operations){
+                if (operation instanceof Alias){
+                    String alias = ((Alias) operation).getName();
+                    if (alias != null){
+                        if (retVal == null)
+                             retVal = new ArrayList<String>();
+                        
+                        retVal.add(alias);
+                    }
+                }
+            }
+        }
+        
+        return retVal;
+    }
 
 
+    /**
+     * 
+     * @param field
+     * @return All operations for a field, including any <i>before</i> and <i>after</i> operations.
+     * @throws MissingFieldException 
+     */
     protected List<Operation> getOperations(SchemaField field)
             throws MissingFieldException{
 

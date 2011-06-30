@@ -10,7 +10,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-
 /**
  * <p>
  * A record may have more than one 'key' field.  These fields
@@ -21,57 +20,54 @@ import java.util.Set;
  *
  * @author krenfro
  */
-public class Record implements Serializable{
+public class Record implements Serializable {
 
+    protected Map<String, Object> data;
 
-    protected Map<String,Object> data;
-
-    public Record(){
-        data = new HashMap<String,Object>();
+    public Record() {
+        data = new HashMap<String, Object>();
     }
 
-    public Record(Record copy){
-        data = new HashMap<String,Object>();
+    public Record(Record copy) {
+        data = new HashMap<String, Object>();
         data.putAll(copy.data);
     }
-    
-    public Record(Map<String,Object> data){
+
+    public Record(Map<String, Object> data) {
         if (data == null)
             throw new IllegalArgumentException("data is null");
-        this.data = new HashMap<String,Object>();
+        this.data = new HashMap<String, Object>();
         this.data.putAll(data);
     }
 
- 
-    public boolean containsKey(String key){
+    public boolean containsKey(String key) {
         return data.containsKey(key);
     }
 
-    public Set<String> keySet(){
+    public Set<String> keySet() {
         return data.keySet();
     }
 
-    public Collection<Object> values(){
+    public Collection<Object> values() {
         return data.values();
     }
 
-    public boolean isEmpty(){
+    public boolean isEmpty() {
         return data.isEmpty();
     }
-    
-    public Set<Entry<String,Object>> entrySet(){
+
+    public Set<Entry<String, Object>> entrySet() {
         return data.entrySet();
     }
+    
+    public Object put(String key, Object value) {
 
-
-    public Object put(String key, Object value){
-
-        if (value == null){
+        if (value == null) {
             return put(key, (String) null);
         }
-        else{
+        else {
             DataType type = DataType.get(value);
-            switch(type){
+            switch (type) {
                 case STRING:
                     return put(key, (String) value);
                 case INTEGER:
@@ -94,56 +90,61 @@ public class Record implements Serializable{
         return get(key);
     }
 
-    public Object put(String key, String value){
+    public Object put(String key, String value) {
         return value == null ? data.remove(key) : data.put(key, value);
     }
 
-    public Object put(String key, Integer value){
+    public Object put(String key, Integer value) {
         return value == null ? data.remove(key) : data.put(key, value);
     }
 
-    public Object put(String key, Float value){
+    public Object put(String key, Float value) {
         return value == null ? data.remove(key) : data.put(key, value);
     }
 
-    public Object put(String key, Long value){
+    public Object put(String key, Long value) {
         return value == null ? data.remove(key) : data.put(key, value);
     }
 
-    public Object put(String key, Double value){
+    public Object put(String key, Double value) {
         return value == null ? data.remove(key) : data.put(key, value);
     }
 
-    public Object put(String key, Boolean value){
+    public Object put(String key, Boolean value) {
         return value == null ? data.remove(key) : data.put(key, value);
     }
 
-    public Object put(String key, List value){
+    public Object put(String key, List value) {
         return value == null ? data.remove(key) : data.put(key, value);
     }
 
-    public Object put(String key, Map value){
+    public Object put(String key, Map value) {
         return value == null ? data.remove(key) : data.put(key, value);
     }
 
-    public Object get(String key){
+    public Object get(String key) {
         return data.get(key);
     }
+    
+    public List<Object> resolve(String key){
+        return RecordValueResolver.resolve(data, key);
+    }
+    
 
     /**
      * @see FileSchema#toString(Record)
      * @return (up to) the first two fields of this Record delimited by a pipe "|"
      */
     @Override
-    public String toString(){
-        
+    public String toString() {
+
         StringBuilder s = new StringBuilder();
-        for (Object f: data.values()){
+        for (Object f : data.values()) {
             if (s.length() > 0)
                 s.append("|");
             s.append(f.toString());
         }
-        
+
         return s.toString();
     }
 
@@ -165,6 +166,4 @@ public class Record implements Serializable{
         hash = 23 * hash + (this.data != null ? this.data.hashCode() : 0);
         return hash;
     }
-
-
 }

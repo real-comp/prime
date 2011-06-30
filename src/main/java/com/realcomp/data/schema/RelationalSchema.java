@@ -1,14 +1,10 @@
 package com.realcomp.data.schema;
 
-import com.realcomp.data.record.Record;
 import com.realcomp.data.schema.xml.RelationalSchemaConverter;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamConverter;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 /**
