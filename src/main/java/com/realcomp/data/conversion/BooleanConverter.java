@@ -36,6 +36,15 @@ public class BooleanConverter implements Converter{
         return result.toString();
     }
 
+    @Override
+    public BooleanConverter copyOf(){
+        BooleanConverter copy = new BooleanConverter();
+        copy.setTruthy(truthy);
+        copy.setFalsy(falsy);
+        copy.caseSensitive = caseSensitive;
+        return copy;
+    }
+    
     private String addCommas(String value, boolean caseSensitive){
 
         if (caseSensitive)

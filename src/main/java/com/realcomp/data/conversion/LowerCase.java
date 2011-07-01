@@ -14,6 +14,11 @@ public class LowerCase implements Converter {
 
         return value.toLowerCase();
     }
+    
+    @Override
+    public LowerCase copyOf(){
+        return new LowerCase();
+    }
 
     @Override
     public boolean equals(Object other) {

@@ -19,7 +19,7 @@ public abstract class BaseMultiFieldConverter implements MultiFieldConverter{
     public void setFields(List<String> fieldNames) {
         this.fieldNames = fieldNames;
     }
-
+    
     @Override
     public boolean equals(Object obj) {
         if (obj == null)

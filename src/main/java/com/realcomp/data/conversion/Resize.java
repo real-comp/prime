@@ -24,6 +24,13 @@ public class Resize implements Converter {
             return StringUtils.rightPad(value, length).substring(0, length);
     }
 
+    @Override
+    public Resize copyOf(){
+        Resize copy = new Resize();
+        copy.length = length;
+        return copy;
+    }
+            
     public String getLength() {
         return Integer.toString(length);
     }

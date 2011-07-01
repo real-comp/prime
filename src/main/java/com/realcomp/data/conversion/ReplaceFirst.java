@@ -20,6 +20,14 @@ public class ReplaceFirst implements Converter {
         this.regex = regex;
         this.replacement = replacement;
     }
+    
+    @Override
+    public ReplaceFirst copyOf(){
+        ReplaceFirst copy = new ReplaceFirst();
+        copy.setRegex(regex);
+        copy.setReplacement(replacement);
+        return copy;
+    }
 
 
     @Override

@@ -27,6 +27,13 @@ public class Alias implements Converter{
     }
 
     @Override
+    public Alias copyOf(){
+        Alias copy = new Alias();
+        copy.setName(name);
+        return copy;
+    }
+        
+    @Override
     public boolean equals(Object obj) {
         if (obj == null)
             return false;

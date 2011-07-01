@@ -15,6 +15,14 @@ public class DoubleRangeValidator extends BaseFieldValidator {
     protected double max = Double.MAX_VALUE;
 
     @Override
+    public DoubleRangeValidator copyOf(){
+        DoubleRangeValidator copy = new DoubleRangeValidator();
+        copy.min = min;
+        copy.max = max;
+        return copy;
+    }
+    
+    @Override
     public void validate(String value) throws ValidationException{
         if (value == null)
             throw new IllegalArgumentException("value is null");

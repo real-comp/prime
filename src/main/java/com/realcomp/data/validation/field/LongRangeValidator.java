@@ -37,6 +37,14 @@ public class LongRangeValidator extends BaseFieldValidator {
             throw new ValidationException(ex.getMessage(), value, getSeverity());
         }
     }
+    
+    @Override
+    public LongRangeValidator copyOf(){
+        LongRangeValidator copy = new LongRangeValidator();
+        copy.min = min;
+        copy.max = max;
+        return copy;
+    }
 
     protected long parseLong(String value){
 

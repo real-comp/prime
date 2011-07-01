@@ -22,6 +22,14 @@ public class Replace implements Converter {
     }
 
     @Override
+    public Replace copyOf(){
+        Replace copy = new Replace();
+        copy.setRegex(regex);
+        copy.setReplacement(replacement);
+        return copy;
+    }
+    
+    @Override
     public String convert(String value) throws ConversionException{
         if (value == null)
             throw new IllegalArgumentException("value is null");

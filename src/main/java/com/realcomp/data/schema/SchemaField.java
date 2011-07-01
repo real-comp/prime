@@ -64,9 +64,12 @@ public class SchemaField {
     }
 
     public SchemaField(SchemaField copy){
+        
+        this();
         this.name = copy.name;
         this.type = copy.type;
-        this.setOperations(copy.operations);
+        for (Operation op: copy.operations)
+            operations.add(op.copyOf());
         this.length = copy.length;
     }
 
@@ -127,14 +130,19 @@ public class SchemaField {
     public void setOperations(List<Operation> operations) {
         if (operations == null)
             throw new IllegalArgumentException("operations is null");
-        this.operations = operations;
+        for (Operation op: operations)
+            addOperation(op);
     }
 
     public void addOperation(Operation operation){
         if (operation == null)
             throw new IllegalArgumentException("operation is null");
 
-        operations.add(operation);
+        operations.add(operation.copyOf());
+    }
+    
+    public void clearOperations(){
+        operations.clear();
     }
 
     public DataType getType() {

@@ -15,6 +15,11 @@ public class Round implements Converter {
     public Round(){
     }
 
+    @Override
+    public Round copyOf(){
+        return new Round();
+    }
+        
 
     @Override
     public String convert(String value) throws ConversionException{

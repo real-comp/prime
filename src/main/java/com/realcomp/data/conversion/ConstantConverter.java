@@ -17,6 +17,13 @@ public class ConstantConverter implements Converter{
 
         return this.value;
     }
+    
+    @Override
+    public ConstantConverter copyOf(){
+        ConstantConverter copy = new ConstantConverter();
+        copy.value = value;
+        return copy;
+    }
 
     public String getValue() {
         return value;

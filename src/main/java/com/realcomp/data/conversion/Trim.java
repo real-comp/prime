@@ -15,6 +15,12 @@ public class Trim implements Converter {
         return value.trim();
     }
 
+    
+    @Override
+    public Trim copyOf(){
+        return new Trim();
+    }
+    
     @Override
     public boolean equals(Object other) {
         return (other instanceof Trim);

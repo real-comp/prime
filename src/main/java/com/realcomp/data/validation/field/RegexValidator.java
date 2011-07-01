@@ -27,7 +27,13 @@ public class RegexValidator extends BaseFieldValidator {
                     value,
                     getSeverity());
         }
-        
+    }    
+    
+    @Override
+    public RegexValidator copyOf(){
+        RegexValidator copy = new RegexValidator();
+        copy.setRegex(regex);
+        return copy;
     }
 
     public String getRegex() {

@@ -12,16 +12,12 @@ public class SchemaFactory {
 
 
     public static FileSchema buildFileSchema(InputStream in){
-        XStream xstream = XStreamFactory.build();        
-        xstream.processAnnotations(RelationalSchema.class);
-        xstream.processAnnotations(Table.class);
+        XStream xstream = XStreamFactory.build();    
         return (FileSchema) xstream.fromXML(in);
     }
 
     public static RelationalSchema buildRelationalSchema(InputStream in){
-        XStream xstream = XStreamFactory.build();                
-        xstream.processAnnotations(RelationalSchema.class);
-        xstream.processAnnotations(Table.class);
+        XStream xstream = XStreamFactory.build();    
         return (RelationalSchema) xstream.fromXML(in);
     }
 }

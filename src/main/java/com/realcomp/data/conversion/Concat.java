@@ -30,7 +30,15 @@ public class Concat extends BaseMultiFieldConverter{
         }
         return retVal;
     }
-
+    
+    @Override
+    public Concat copyOf(){
+        Concat copy = new Concat();
+        copy.delimiter = delimiter;
+        copy.setFields(fieldNames);
+        return copy;
+    }
+    
     public String getDelimiter() {
         return delimiter;
     }

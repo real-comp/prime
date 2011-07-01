@@ -20,6 +20,13 @@ public class CurrentDate implements Converter{
         format = "yyyyMMdd";
         formatter = getFormatter(format);
     }
+    
+    @Override
+    public CurrentDate copyOf(){
+        CurrentDate copy = new CurrentDate();
+        copy.setFormat(format);
+        return copy;
+    }
 
     /**
      *

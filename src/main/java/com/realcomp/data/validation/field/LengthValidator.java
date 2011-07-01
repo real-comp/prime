@@ -34,6 +34,14 @@ public class LengthValidator extends BaseFieldValidator {
         }
     }
 
+    @Override
+    public LengthValidator copyOf(){
+        LengthValidator copy = new LengthValidator();
+        copy.min = min;
+        copy.max = max;
+        return copy;
+    }
+    
 
     public int getMax() {
         return max;

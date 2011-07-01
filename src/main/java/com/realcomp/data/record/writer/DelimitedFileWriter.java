@@ -119,13 +119,12 @@ public class DelimitedFileWriter extends BaseFileWriter{
         try {
             FileSchema originalSchema = getSchema();
             FileSchema headerSchema = new FileSchema(getSchema());
-            for (SchemaField f : headerSchema.getFields()){
-                f.setOperations(null);
+            for (SchemaField f: headerSchema.getFields()){
+                f.clearOperations();
             }
-            for (Classifier c : headerSchema.getClassifiers())
-                for (SchemaField f : c.getFields())
-                    f.setOperations(null);
-
+            for (Classifier c: headerSchema.getClassifiers())
+                for (SchemaField f: c.getFields())
+                    f.clearOperations();
 
             setSchema(headerSchema);
             super.write(getHeader());

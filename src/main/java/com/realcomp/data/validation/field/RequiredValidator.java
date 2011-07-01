@@ -19,6 +19,9 @@ public class RequiredValidator extends BaseFieldValidator {
         if (value.isEmpty())
             throw new ValidationException("required", "", getSeverity());
     }
-
     
+    @Override
+    public RequiredValidator copyOf(){
+        return new RequiredValidator();
+    }
 }

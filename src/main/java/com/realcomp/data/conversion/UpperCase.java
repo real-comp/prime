@@ -15,6 +15,12 @@ public class UpperCase implements Converter {
         return value.toUpperCase();
     }
 
+    
+    @Override
+    public UpperCase copyOf(){
+        return new UpperCase();
+    }
+    
     @Override
     public boolean equals(Object other) {
         return (other instanceof UpperCase);

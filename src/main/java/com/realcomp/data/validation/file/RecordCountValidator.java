@@ -47,6 +47,15 @@ public class RecordCountValidator extends BaseFieldValidator {
             throw new ValidationException(ex.getMessage(), value, getSeverity());
         }
     }
+    
+    
+    @Override
+    public RecordCountValidator copyOf(){
+        RecordCountValidator copy = new RecordCountValidator();
+        copy.min = min;
+        copy.max = max;
+        return copy;
+    }
 
 
 

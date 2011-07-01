@@ -3,7 +3,9 @@ package com.realcomp.data.schema.xml;
 import com.realcomp.data.annotation.Converter;
 import com.realcomp.data.annotation.Validator;
 import com.realcomp.data.schema.FileSchema;
+import com.realcomp.data.schema.RelationalSchema;
 import com.realcomp.data.schema.SchemaField;
+import com.realcomp.data.schema.Table;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
 import java.util.Set;
@@ -41,6 +43,8 @@ public class XStreamFactory {
 
         XStream xstream = new XStream(new DomDriver());
         xstream.processAnnotations(FileSchema.class);
+        xstream.processAnnotations(RelationalSchema.class);
+        xstream.processAnnotations(Table.class);
         xstream.processAnnotations(SchemaField.class);
         xstream.registerConverter(new OperationConverter());
         xstream.registerConverter(new DataTypeConverter());

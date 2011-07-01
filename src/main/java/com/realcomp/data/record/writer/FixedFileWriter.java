@@ -2,6 +2,7 @@ package com.realcomp.data.record.writer;
 
 import com.realcomp.data.conversion.ConversionException;
 import com.realcomp.data.record.Record;
+import com.realcomp.data.schema.Classifier;
 import com.realcomp.data.schema.FileSchema;
 import com.realcomp.data.schema.SchemaException;
 import com.realcomp.data.schema.SchemaField;
@@ -23,6 +24,7 @@ public class FixedFileWriter extends BaseFileWriter{
 
     protected static final Logger logger = Logger.getLogger(BaseFileWriter.class.getName());
     protected BufferedWriter writer;
+    protected boolean header = false;
 
 
     public FixedFileWriter(){
@@ -52,9 +54,57 @@ public class FixedFileWriter extends BaseFileWriter{
     public void write(Record record)
             throws IOException, ValidationException, ConversionException{
 
+        //optionally write header record
+        if (!beforeFirstOperationsRun && header){
+            writeHeader();
+        }
+        
         super.write(record);
         writer.newLine();
     }
+    
+    
+    /**
+     * Write a header record, constructed from a Record.
+     * 
+     * @param record
+     * @throws IOException
+     * @throws ValidationException
+     * @throws ConversionException
+     */
+    protected void writeHeader() throws IOException, ValidationException, ConversionException{
+
+        //No operations should be run on the Record, so a temporary schema
+        // is created with no operations.
+        try {
+            FileSchema originalSchema = getSchema();
+            FileSchema headerSchema = new FileSchema(getSchema());
+            for (SchemaField f : headerSchema.getFields()){
+                f.clearOperations();
+            }
+            for (Classifier c : headerSchema.getClassifiers())
+                for (SchemaField f : c.getFields())
+                    f.clearOperations();
+
+            setSchema(headerSchema);
+            super.write(getHeader());
+            writer.newLine();
+            writer.flush();
+            setSchema(originalSchema); //put back the original schema
+        }
+        catch (SchemaException ex) {
+            throw new IOException("Unable to create temporary header schema: " + ex.getMessage());
+        }
+    }
+    
+    
+    protected Record getHeader(){
+        Record retVal = new Record();
+        for(SchemaField field: schema.getFields())
+            retVal.put(field.getName(), field.getName());
+        return retVal;
+    }
+    
 
     @Override
     protected void write(Record record, SchemaField field)

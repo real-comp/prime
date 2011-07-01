@@ -27,4 +27,9 @@ public class ZipcodeValidator extends BaseFieldValidator {
                     getSeverity());
         }        
     }
+    
+    @Override
+    public ZipcodeValidator copyOf(){
+        return new ZipcodeValidator();
+    }
 }
