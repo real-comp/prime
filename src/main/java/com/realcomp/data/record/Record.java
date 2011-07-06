@@ -130,6 +130,15 @@ public class Record implements Serializable {
         return RecordValueResolver.resolve(data, key);
     }
     
+    public Object resolveFirst(String key){
+        List<Object> list = resolve(key);
+        if (list != null && !list.isEmpty())
+            return list.get(0);
+        else
+            return null;        
+    }
+    
+    
 
     /**
      * @see FileSchema#toString(Record)
