@@ -1,6 +1,5 @@
 package com.realcomp.data.util;
 
-import com.realcomp.data.schema.xml.XStreamFactory;
 import com.realcomp.data.conversion.ConversionException;
 import com.realcomp.data.record.Record;
 import com.realcomp.data.record.reader.RecordReader;
@@ -10,8 +9,6 @@ import com.realcomp.data.schema.SchemaException;
 import com.realcomp.data.schema.SchemaFactory;
 import com.realcomp.data.schema.SchemaField;
 import com.realcomp.data.validation.ValidationException;
-import com.thoughtworks.xstream.XStream;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;

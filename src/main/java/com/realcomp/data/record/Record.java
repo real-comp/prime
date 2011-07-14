@@ -22,6 +22,8 @@ import java.util.Set;
  */
 public class Record implements Serializable {
 
+    public static final long serialVersionUID = 2L;
+    
     protected Map<String, Object> data;
 
     public Record() {

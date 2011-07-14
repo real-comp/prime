@@ -33,6 +33,7 @@ public class FixedFileWriter extends BaseFileWriter{
     
     public FixedFileWriter(FixedFileWriter copy){
         super(copy);
+        header = copy.header;
     }
     
     @Override
