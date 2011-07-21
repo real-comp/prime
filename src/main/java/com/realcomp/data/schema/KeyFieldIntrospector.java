@@ -21,14 +21,12 @@ public class KeyFieldIntrospector {
     public static List<String> getKeyFieldnames(Collection<SchemaField> fields){
 
         List<String> keys = null;
-        if (fields != null){
-            for (SchemaField field: fields){
-                if (isKey(field)){
-                    if (keys == null)
-                        keys = new ArrayList<String>();
+        for (SchemaField field: fields){
+            if (isKey(field)){
+                if (keys == null)
+                    keys = new ArrayList<String>();
 
-                    keys.add(field.getName());
-                }
+                keys.add(field.getName());
             }
         }
         return keys;
