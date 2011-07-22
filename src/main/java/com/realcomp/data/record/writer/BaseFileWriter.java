@@ -1,6 +1,7 @@
 package com.realcomp.data.record.writer;
 
 import com.realcomp.data.Operation;
+import com.realcomp.data.conversion.Alias;
 import com.realcomp.data.conversion.ConversionException;
 import com.realcomp.data.conversion.Converter;
 import com.realcomp.data.conversion.MultiFieldConverter;
@@ -160,8 +161,24 @@ public abstract class BaseFileWriter implements RecordWriter{
 
         Object value = record.get(schemaField.getName());
         String data = "";
-        if (value != null)
+        if (value == null){
+            //try aliases
+            List<Operation> operations = schemaField.getOperations();
+            if (operations != null){
+                for (Operation op: operations){
+                    if (op instanceof Alias){
+                        value = record.get(((Alias) op).getName());
+                        if (value != null){
+                            data = value.toString();
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        else{
             data = value.toString();
+        }
         
         try{
             data = operate(schema.getBeforeOperations(), data, record);
