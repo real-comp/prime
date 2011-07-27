@@ -12,8 +12,10 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
 import com.thoughtworks.xstream.annotations.XStreamConverter;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
+import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.lang.StringUtils;
 
@@ -60,11 +62,18 @@ public class FileSchema {
         this.version = copy.version;
 
         try{
-            reader = copy.getReader();
-            writer = copy.getWriter();
+            //invoke reader/writer copy constructors appropriately
+            RecordReader r = copy.getReader();
+            if (r != null)
+                reader = r.getClass().getConstructor(r.getClass()).newInstance(r);
+            
+            RecordWriter w = copy.getWriter();
+            if (w != null)
+                writer = w.getClass().getConstructor(r.getClass()).newInstance(w);            
         }
-        catch(SchemaException ignored){
-        }
+        catch (Exception ex) {
+            throw new SchemaException(ex);
+        }  
         
         setFields(copy.getFields());
         setClassifiers(copy.getClassifiers());
