@@ -69,7 +69,7 @@ public class FileSchema {
             
             RecordWriter w = copy.getWriter();
             if (w != null)
-                writer = w.getClass().getConstructor(r.getClass()).newInstance(w);            
+                writer = w.getClass().getConstructor(w.getClass()).newInstance(w);            
         }
         catch (Exception ex) {
             throw new SchemaException(ex);
