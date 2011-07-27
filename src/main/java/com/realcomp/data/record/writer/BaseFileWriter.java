@@ -42,7 +42,8 @@ public abstract class BaseFileWriter implements RecordWriter{
     public BaseFileWriter(BaseFileWriter copy){
         validationExceptionThreshold = copy.validationExceptionThreshold;
         try{
-            schema = new FileSchema(copy.schema);
+            if (copy.schema != null)
+                schema = new FileSchema(copy.schema);
         }
         catch(SchemaException ex){
             throw new IllegalStateException(ex); //should never happen

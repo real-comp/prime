@@ -60,28 +60,12 @@ public class FileSchema {
         classifiers = new ArrayList<Classifier>();
         this.name = copy.name;
         this.version = copy.version;
-
-        try{
-            //invoke reader/writer copy constructors appropriately
-            RecordReader r = copy.getReader();
-            if (r != null)
-                reader = r.getClass().getConstructor(r.getClass()).newInstance(r);
-            
-            RecordWriter w = copy.getWriter();
-            if (w != null)
-                writer = w.getClass().getConstructor(w.getClass()).newInstance(w);            
-        }
-        catch (Exception ex) {
-            throw new SchemaException(ex);
-        }  
-        
         setFields(copy.getFields());
         setClassifiers(copy.getClassifiers());
         setBeforeFirstOperations(copy.getBeforeFirstOperations());
         setBeforeOperations(copy.getBeforeOperations());
         setAfterLastOperations(copy.getAfterLastOperations());
         setAfterOperations(copy.getAfterOperations());
-     
     }
 
     public RecordReader getReader() throws SchemaException{
