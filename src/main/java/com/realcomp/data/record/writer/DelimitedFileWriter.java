@@ -42,6 +42,7 @@ public class DelimitedFileWriter extends BaseFileWriter{
         super(copy);
         current = new ArrayList<String>();
         delimiter = copy.delimiter;
+        header = copy.header;
     }
     
 
