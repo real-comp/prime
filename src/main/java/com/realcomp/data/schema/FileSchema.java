@@ -7,12 +7,10 @@ import com.realcomp.data.record.reader.RecordReader;
 import com.realcomp.data.record.writer.RecordWriter;
 import com.realcomp.data.schema.xml.RecordReaderConverter;
 import com.realcomp.data.schema.xml.RecordWriterConverter;
-import com.realcomp.data.validation.ValidationException;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
 import com.thoughtworks.xstream.annotations.XStreamConverter;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
-import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -530,7 +528,30 @@ public class FileSchema {
      */
     public String toString(Record record){
         List<String> keys = getKeys(record);
-        return keys.isEmpty() ? record.toString() : StringUtils.join(keys, "|");
+        String retVal = null;
+        if (keys.isEmpty()){            
+            try {
+                StringBuilder s = new StringBuilder();
+                List<SchemaField> fields = classify(record);
+                boolean needDelimiter = false;
+                for (SchemaField field: classify(record)){
+                    if (needDelimiter)
+                        s.append("|");
+                    needDelimiter = true;
+                    s.append(record.get(field.getName()));
+                }
+                retVal = s.toString();
+            }
+            catch (SchemaException ex) {
+                retVal = record.toString(); //this shouldn't happen.
+            }
+            
+        }
+        else{
+            retVal = StringUtils.join(keys, "|");
+        }
+        
+        return retVal;
     }
      
 
