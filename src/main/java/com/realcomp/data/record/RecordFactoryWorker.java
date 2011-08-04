@@ -88,16 +88,16 @@ public class RecordFactoryWorker {
                 Severity severity = ((Validator) op).getSeverity();
                 switch(severity){
                     case LOW:
-                        log.log(Level.INFO, "{0} for [{1}] in record [{2}]",
-                                new Object[]{ex.getMessage(), fieldName, schema.toString(record)});
+                        log.log(Level.INFO, String.format("%s for [%s] in record [%s]",
+                                new Object[]{ex.getMessage(), fieldName, schema.toString(record)}));
                         break;
                     case MEDIUM:
-                        log.log(Level.WARNING, "{0} for [{1}] in record [{2}]",
-                                new Object[]{ex.getMessage(), fieldName, schema.toString(record)});
+                        log.log(Level.WARNING, String.format("%s for [%s] in record [%s]",
+                                new Object[]{ex.getMessage(), fieldName, schema.toString(record)}));
                         break;
                     case HIGH:
-                        log.log(Level.SEVERE, "{0} for [{1}]  in record [{2}]",
-                                new Object[]{ex.getMessage(), fieldName, schema.toString(record)});
+                        log.log(Level.SEVERE, String.format("%s for [%s] in record [%s]",
+                                new Object[]{ex.getMessage(), fieldName, schema.toString(record)}));
                         break;
                 }
 

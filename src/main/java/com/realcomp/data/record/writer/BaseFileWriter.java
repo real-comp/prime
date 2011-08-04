@@ -91,7 +91,7 @@ public abstract class BaseFileWriter implements RecordWriter{
             List<Operation> afterLast = schema.getAfterLastOperations();
             if (afterLast != null){
                 for (Operation op: afterLast){
-                    operate(op, "" + this.getCount(), new AfterLastRecord());
+                    operate("(after last record)", op, "" + this.getCount(), new AfterLastRecord());
                 }
             }
         }
@@ -103,7 +103,7 @@ public abstract class BaseFileWriter implements RecordWriter{
             List<Operation> beforeFirst = schema.getBeforeFirstOperations();
             if (beforeFirst != null){
                 for (Operation op: beforeFirst){
-                    operate(op, "", new BeforeFirstRecord());
+                    operate("(before first record)", op, "", new BeforeFirstRecord());
                 }
             }
         }
@@ -182,31 +182,47 @@ public abstract class BaseFileWriter implements RecordWriter{
         }
         
         try{
-            data = operate(schema.getBeforeOperations(), data, record);
-            data = operate(schemaField.getOperations(), data, record);
-            data = operate(schema.getAfterOperations(), data, record);
+            data = operate(schemaField.getName(), schema.getBeforeOperations(), data, record);
+            data = operate(schemaField.getName(), schemaField.getOperations(), data, record);
+            data = operate(schemaField.getName(), schema.getAfterOperations(), data, record);
         }
         catch(ValidationException ex){
-            throw new ValidationException(schemaField.getName() + " " + ex.getMessage(), ex);
+            String message = String.format(
+                    "{0} for [{1}] in record [%s]",
+                    new Object[]{ex.getMessage(), schemaField.getName(), schema.toString(record)});
+            throw new ValidationException(message, ex);
         }
         catch(ConversionException ex){
-            throw new ConversionException(schemaField.getName() + " " + ex.getMessage(), ex);
+            String message = String.format(
+                    "{0} for [{1}] in record [%s]",
+                    new Object[]{ex.getMessage(), schemaField.getName(), schema.toString(record)});
+            throw new ConversionException(message, ex);
         }
 
         return data;
     }
 
-    protected String operate(List<Operation> operations, String data, Record record)
+    protected String operate(SchemaField field, String data, Record record)
+            throws ConversionException, ValidationException{
+        
+        data = operate(field.getName(), schema.getBeforeOperations(), data, record);
+        data = operate(field.getName(), field.getOperations(), data, record);
+        data = operate(field.getName(), schema.getAfterOperations(), data, record);
+        return data;
+    }
+    
+    protected String operate(String fieldName, List<Operation> operations, String data, Record record)
             throws ConversionException, ValidationException{
         
         if (operations == null)
             return data;
         for (Operation op: operations)
-            data = operate(op, data, record);
+            data = operate(fieldName, op, data, record);
         return data;
     }
+    
 
-    protected String operate(Operation op, String data, Record record)
+    protected String operate(String fieldName, Operation op, String data, Record record)
                 throws ConversionException, ValidationException{
 
         if (op instanceof Validator){
@@ -221,16 +237,16 @@ public abstract class BaseFileWriter implements RecordWriter{
                 
                 switch(severity){
                     case LOW:
-                        log.log(Level.INFO, "{0} in record [{1}]",
-                                new Object[]{ex.getMessage(), schema.toString(record)});
+                        log.log(Level.INFO, String.format("%s for [%s] in record [%s]",
+                                new Object[]{ex.getMessage(), fieldName, schema.toString(record)}));
                         break;
                     case MEDIUM:
-                        log.log(Level.WARNING, "{0} in record [{1}]",
-                                new Object[]{ex.getMessage(), schema.toString(record)});
+                        log.log(Level.WARNING, String.format("%s for [%s] in record [%s]",
+                                new Object[]{ex.getMessage(), fieldName, schema.toString(record)}));
                         break;
                     case HIGH:
-                        log.log(Level.SEVERE, "{0} in record [{1}]",
-                                new Object[]{ex.getMessage(), schema.toString(record)});
+                        log.log(Level.SEVERE, String.format("%s for [%s] in record [%s]",
+                                new Object[]{ex.getMessage(), fieldName, schema.toString(record)}));
                         break;
                 }
             }

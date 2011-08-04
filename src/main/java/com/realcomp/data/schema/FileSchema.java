@@ -13,7 +13,6 @@ import com.thoughtworks.xstream.annotations.XStreamConverter;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.lang.StringUtils;
 
@@ -147,22 +146,25 @@ public class FileSchema {
      * If multiple SchemaFields are defined that contain Fields named in the Record,
      * then the layout defined first in the Schema will be returned.
      *
-     * @param record
+     * @param record not null
      * @return
      * @throws SchemaException if no defined layout supports the Record
      */
     public List<SchemaField> classify(Record record) throws SchemaException{
+        
         if (record == null)
             throw new IllegalArgumentException("record is null");
-
+        
         List<SchemaField> result = null;
 
-        for (Classifier c: classifiers){
-            if (c.supports(record)){
-                if (result == null)
-                    result = c.getFields();
-                else if (result.size() < c.getFields().size())
-                    result = c.getFields();
+        if (classifiers != null){
+            for (Classifier c: classifiers){
+                if (c.supports(record)){
+                    if (result == null)
+                        result = c.getFields();
+                    else if (result.size() < c.getFields().size())
+                        result = c.getFields();
+                }
             }
         }
 
@@ -532,13 +534,16 @@ public class FileSchema {
         if (keys.isEmpty()){            
             try {
                 StringBuilder s = new StringBuilder();
-                List<SchemaField> fields = classify(record);
+                List<SchemaField> schemaFields = record == null ? fields : classify(record);
                 boolean needDelimiter = false;
-                for (SchemaField field: classify(record)){
+                Object fieldValue = null;
+                for (SchemaField field: schemaFields){
                     if (needDelimiter)
                         s.append("|");
                     needDelimiter = true;
-                    s.append(record.get(field.getName()));
+                    fieldValue = record.get(field.getName());
+                    if (fieldValue != null)
+                        s.append(fieldValue.toString());
                 }
                 retVal = s.toString();
             }

@@ -1,9 +1,7 @@
 package com.realcomp.data.conversion;
 
-import com.realcomp.names.CompanyName;
 import com.realcomp.names.IndividualName;
 import com.realcomp.names.Name;
-import com.realcomp.names.NameFormatter;
 import com.realcomp.names.NameParser;
 import java.util.List;
 
