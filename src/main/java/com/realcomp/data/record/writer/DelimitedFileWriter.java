@@ -13,6 +13,7 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -45,19 +46,23 @@ public class DelimitedFileWriter extends BaseFileWriter{
         header = copy.header;
     }
     
-
     @Override
     public void open(OutputStream out){
+        open(out, Charset.defaultCharset());
+    }
+
+    @Override
+    public void open(OutputStream out, Charset charset){
 
         close();
-        super.open(out);
+        super.open(out, charset);
 
         switch(delimiter){
             case TAB:
-                writer = new CSVWriter(new BufferedWriter(new OutputStreamWriter(out)), '\t', '\u0000');
+                writer = new CSVWriter(new BufferedWriter(new OutputStreamWriter(out, charset)), '\t', '\u0000');
                 break;
             case CSV:
-                writer = new CSVWriter(new BufferedWriter(new OutputStreamWriter(out)));
+                writer = new CSVWriter(new BufferedWriter(new OutputStreamWriter(out, charset)));
                 break;
         }
     }

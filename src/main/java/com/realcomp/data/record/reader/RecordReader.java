@@ -9,6 +9,7 @@ import com.realcomp.data.validation.ValidationException;
 import com.realcomp.data.view.RecordView;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.Charset;
 import java.util.List;
 
 
@@ -70,6 +71,17 @@ public interface RecordReader {
      * @throws IOException
      */
     void open(InputStream in) throws IOException;
+    
+    
+    /**
+     * Open an InputStream for reading. May be invoked multiple times with new input as needed.
+     * close() is automatically invoked before each open();
+     *
+     * @param in InputStream to parse. Not null
+     * @param charset
+     * @throws IOException
+     */
+    void open(InputStream in, Charset charset) throws IOException;
 
     /**
      * Set the schema that the RecordReader should use to create Records.

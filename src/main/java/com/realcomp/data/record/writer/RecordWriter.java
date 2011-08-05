@@ -9,6 +9,7 @@ import com.realcomp.data.validation.ValidationException;
 import com.realcomp.data.view.RecordView;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.charset.Charset;
 
 
 /**
@@ -30,7 +31,7 @@ public interface RecordWriter {
      * important than others.
      */
     public static final Severity DEFAULT_VALIDATION_THREASHOLD = Severity.HIGH;
-
+    
 
    /**
      * write a Record
@@ -59,6 +60,8 @@ public interface RecordWriter {
      */
     void open(OutputStream out);
 
+    
+    void open(OutputStream out, Charset charset);
 
     /**
      * Set the schema that the RecordParser should use to create Records.

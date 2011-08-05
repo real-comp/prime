@@ -17,6 +17,7 @@ import com.realcomp.data.validation.Validator;
 import com.realcomp.data.view.RecordView;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.charset.Charset;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -31,6 +32,7 @@ public abstract class BaseFileWriter implements RecordWriter{
     protected static final Logger log = Logger.getLogger(BaseFileWriter.class.getName());
 
     protected OutputStream out;
+    protected Charset charset = Charset.defaultCharset();
     protected FileSchema schema;
     protected Severity validationExceptionThreshold = DEFAULT_VALIDATION_THREASHOLD;
     protected long count;
@@ -62,11 +64,20 @@ public abstract class BaseFileWriter implements RecordWriter{
     
     @Override
     public void open(OutputStream out){
+        open(out, Charset.defaultCharset());
+    }
+    
+    @Override
+    public void open(OutputStream out, Charset charset){
         if (out == null)
             throw new IllegalArgumentException("out is null");
+        if (charset == null)
+            charset = Charset.defaultCharset();
         this.out = out;
+        this.charset = charset;
         count = 0;        
     }
+
 
     @Override
     public void close(){
@@ -144,7 +155,7 @@ public abstract class BaseFileWriter implements RecordWriter{
         count++;
     }
 
- 
+    
     protected void write(Record record, List<SchemaField> fields)
             throws ValidationException, ConversionException, IOException{
 

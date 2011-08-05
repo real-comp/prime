@@ -18,6 +18,7 @@ import com.thoughtworks.xstream.annotations.XStreamOmitField;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -48,6 +49,8 @@ public abstract class BaseFileReader implements RecordReader{
 
     @XStreamOmitField
     protected List<Class> viewClasses;
+    
+    protected Charset charset = Charset.defaultCharset();
 
 
     public BaseFileReader(){
@@ -115,15 +118,23 @@ public abstract class BaseFileReader implements RecordReader{
 
     @Override
     public void open(InputStream in) throws IOException{
+        open(in, Charset.defaultCharset());
+    }
+    
+    @Override
+    public void open(InputStream in, Charset charset) throws IOException{
         if (in == null)
             throw new IllegalArgumentException("in is null");
+        if (charset == null)
+            charset = Charset.defaultCharset();
 
         close();
-        reader = new SkippingBufferedReader(new InputStreamReader(in));
+        reader = new SkippingBufferedReader(new InputStreamReader(in, charset));
         reader.setSkipLeading(skipLeading);
         reader.setSkipTrailing(skipTrailing);
         count = 0;
     }
+     
 
     @Override
     public void close(){

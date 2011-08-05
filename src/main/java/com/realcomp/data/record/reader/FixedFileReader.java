@@ -10,6 +10,7 @@ import com.realcomp.data.validation.Severity;
 import com.realcomp.data.validation.ValidationException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.Charset;
 import java.util.List;
 
 /**
@@ -33,10 +34,16 @@ public class FixedFileReader extends BaseFileReader{
 
     @Override
     public void open(InputStream in) throws IOException{
+        open(in, charset);
+    }
+    
+    @Override
+    public void open(InputStream in, Charset charset) throws IOException{
         
-        super.open(in);
+        super.open(in, charset);
         beforeFirst = true;
     }
+
 
     @Override
     public Record read()

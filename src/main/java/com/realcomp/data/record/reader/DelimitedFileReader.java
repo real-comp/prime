@@ -9,6 +9,7 @@ import com.realcomp.data.schema.SchemaField;
 import com.realcomp.data.validation.ValidationException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.Charset;
 import java.util.List;
 
 /**
@@ -41,7 +42,13 @@ public class DelimitedFileReader extends BaseFileReader implements Cloneable{
     @Override
     public void open(InputStream in) throws IOException{
 
-        super.open(in);
+        open(in, charset);
+    }
+    
+    @Override
+    public void open(InputStream in, Charset charset) throws IOException{
+
+        super.open(in, charset);
         beforeFirst = true;
         switch(delimiter){
             case TAB:
@@ -52,6 +59,7 @@ public class DelimitedFileReader extends BaseFileReader implements Cloneable{
                 break;
         }
     }
+    
 
     
     public Delimiter getDelimiter() {

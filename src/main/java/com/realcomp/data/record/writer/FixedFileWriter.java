@@ -11,6 +11,7 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.nio.charset.Charset;
 import java.util.List;
 import java.util.logging.Logger;
 import org.apache.commons.io.IOUtils;
@@ -38,10 +39,16 @@ public class FixedFileWriter extends BaseFileWriter{
     
     @Override
     public void open(OutputStream out){
-        close();
-        super.open(out);
-        writer = new BufferedWriter(new OutputStreamWriter(out));
+        open(out, Charset.defaultCharset());
     }
+    
+    @Override
+    public void open(OutputStream out, Charset charset){
+        close();
+        super.open(out, charset);
+        writer = new BufferedWriter(new OutputStreamWriter(out, charset));
+    }
+
 
     @Override
     public void close(){
