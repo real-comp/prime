@@ -23,6 +23,9 @@ public class DelimitedFileReader extends BaseFileReader implements Cloneable{
     public static final Delimiter DEFAULT_TYPE=Delimiter.TAB;
 
     protected Delimiter delimiter = Delimiter.TAB;
+    protected char quoteCharacter = CSVParser.DEFAULT_QUOTE_CHARACTER;
+    protected char escapeCharacter = CSVParser.DEFAULT_ESCAPE_CHARACTER;
+    protected boolean strictQuotes = CSVParser.DEFAULT_STRICT_QUOTES;
     protected CSVParser parser;
     protected boolean beforeFirst = true;
     
@@ -52,10 +55,10 @@ public class DelimitedFileReader extends BaseFileReader implements Cloneable{
         beforeFirst = true;
         switch(delimiter){
             case TAB:
-                parser = new CSVParser('\t', '\u0000');
+                parser = new CSVParser('\t', '\u0000', escapeCharacter, strictQuotes);
                 break;
             case CSV:
-                parser = new CSVParser();
+                parser = new CSVParser(CSVParser.DEFAULT_SEPARATOR, quoteCharacter, escapeCharacter, strictQuotes);
                 break;
         }
     }
@@ -100,6 +103,30 @@ public class DelimitedFileReader extends BaseFileReader implements Cloneable{
         return record;
     }
 
+    public char getEscapeCharacter() {
+        return escapeCharacter;
+    }
+
+    public void setEscapeCharacter(char escapeCharacter) {
+        this.escapeCharacter = escapeCharacter;
+    }
+
+    public char getQuoteCharacter() {
+        return quoteCharacter;
+    }
+
+    public void setQuoteCharacter(char quoteCharacter) {
+        this.quoteCharacter = quoteCharacter;
+    }
+
+    public boolean isStrictQuotes() {
+        return strictQuotes;
+    }
+
+    public void setStrictQuotes(boolean strictQuotes) {
+        this.strictQuotes = strictQuotes;
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (obj == null)
@@ -109,14 +136,25 @@ public class DelimitedFileReader extends BaseFileReader implements Cloneable{
         final DelimitedFileReader other = (DelimitedFileReader) obj;
         if (this.delimiter != other.delimiter)
             return false;
+        if (this.quoteCharacter != other.quoteCharacter)
+            return false;
+        if (this.escapeCharacter != other.escapeCharacter)
+            return false;
+        if (this.strictQuotes != other.strictQuotes)
+            return false;
         return true;
     }
 
     @Override
     public int hashCode() {
-        int hash = 7;
-        hash = 53 * hash + (this.delimiter != null ? this.delimiter.hashCode() : 0);
+        int hash = 5;
+        hash = 59 * hash + (this.delimiter != null ? this.delimiter.hashCode() : 0);
+        hash = 59 * hash + this.quoteCharacter;
+        hash = 59 * hash + this.escapeCharacter;
+        hash = 59 * hash + (this.strictQuotes ? 1 : 0);
         return hash;
     }
+    
+    
     
 }
