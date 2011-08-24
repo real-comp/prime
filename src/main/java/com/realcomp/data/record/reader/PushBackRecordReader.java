@@ -19,12 +19,12 @@ import java.util.Queue;
  * 
  * @author krenfro
  */
-public class PushbackRecordReader implements RecordReader{
+public class PushBackRecordReader implements RecordReader{
     
     private RecordReader reader;
     private Queue<Record> queue;
     
-    public PushbackRecordReader(RecordReader reader){
+    public PushBackRecordReader(RecordReader reader){
         queue = new LinkedList<Record>();
         this.reader = reader;
     }

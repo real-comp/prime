@@ -55,7 +55,7 @@
                     </execution>
                 </executions>
             </plugin>
-        </plugins>
+          </plugins>
         <pluginManagement>
             <plugins>
                 <!-- for annotation processing -->
