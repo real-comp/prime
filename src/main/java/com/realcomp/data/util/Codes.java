@@ -34,6 +34,8 @@ public class Codes{
     public Codes(Codes copy){
         this.codes = new Properties();
         this.codes.putAll(copy.codes);
+        this.description = copy.description;
+        this.logLevel = copy.logLevel;
     }
     
     public Codes(InputStream in) throws IOException{
@@ -83,10 +85,12 @@ public class Codes{
     
     public String translate(String code){
         String translation = codes.getProperty(code);
-        if (translation == null && (code != null && !code.isEmpty()))
+        if (translation == null && (code != null && !code.isEmpty())){
             logger.log(logLevel, 
                        "Missing transation for [{0}] in [{1}]", 
                        new Object[]{code, description});
+            translation = code;
+        }
         return translation;
     }
     
