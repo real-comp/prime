@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<rc:relational-schema 
+    xmlns:rc="http://www.real-comp.com/realcomp-data/schema/relational-schema/1.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.real-comp.com/realcomp-data/schema/relational-schema/1.0 http://www.real-comp.com/realcomp-data/schema/relational-schema/1.0/relational-schema.xsd"
+    name="odyessy" version="1.0">
+
+    <table name="property">
+        <table name="improvement">            
+            <table name="segment"/>
+        </table>
+        <table name="land"/>
+        <table name="owner"/>
+        <table name="sales"/>
+        <table name="mailing"/>
+    </table>
+    
+</rc:relational-schema>
