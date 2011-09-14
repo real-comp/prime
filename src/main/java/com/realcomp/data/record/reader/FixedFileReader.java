@@ -34,7 +34,7 @@ public class FixedFileReader extends BaseFileReader{
 
     @Override
     public void open(InputStream in) throws IOException{
-        open(in, charset);
+        open(in, Charset.forName(charset));
     }
     
     @Override

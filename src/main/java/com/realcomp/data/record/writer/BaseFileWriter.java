@@ -32,7 +32,7 @@ public abstract class BaseFileWriter implements RecordWriter{
     protected static final Logger log = Logger.getLogger(BaseFileWriter.class.getName());
 
     protected OutputStream out;
-    protected Charset charset = Charset.defaultCharset();
+    protected String charset = Charset.defaultCharset().name();
     protected FileSchema schema;
     protected Severity validationExceptionThreshold = DEFAULT_VALIDATION_THREASHOLD;
     protected long count;
@@ -64,7 +64,7 @@ public abstract class BaseFileWriter implements RecordWriter{
     
     @Override
     public void open(OutputStream out){
-        open(out, Charset.defaultCharset());
+        open(out, Charset.forName(charset));
     }
     
     @Override
@@ -74,7 +74,7 @@ public abstract class BaseFileWriter implements RecordWriter{
         if (charset == null)
             charset = Charset.defaultCharset();
         this.out = out;
-        this.charset = charset;
+        this.charset = charset.name();
         count = 0;        
     }
 
@@ -301,4 +301,15 @@ public abstract class BaseFileWriter implements RecordWriter{
         return count;
     }
 
+    @Override
+    public String getCharset() {
+        return charset;
+    }
+
+    @Override
+    public void setCharset(String charset) {
+        if (charset == null)
+            throw new IllegalArgumentException("charset is null");
+        this.charset = charset;
+    }
 }

@@ -136,4 +136,16 @@ public interface RecordReader {
      * @return list of RecordView class names this reader supports. never null
      */
     List<String> getViews();
+    
+    /**
+     * 
+     * @param name name of Charset
+     */
+    void setCharset(String name);
+    
+    /**
+     * 
+     * @return the current Charset to be used for reading. Not null. Default is platform dependent.
+     */
+    String getCharset();
 }

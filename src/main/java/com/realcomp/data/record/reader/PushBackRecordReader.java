@@ -99,5 +99,15 @@ public class PushBackRecordReader implements RecordReader{
     public List<String> getViews() {
         return reader.getViews();
     }
+
+    @Override
+    public void setCharset(String charset) {
+        reader.setCharset(charset);
+    }
+
+    @Override
+    public String getCharset() {
+        return reader.getCharset();
+    }
     
 }

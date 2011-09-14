@@ -45,7 +45,7 @@ public class DelimitedFileReader extends BaseFileReader implements Cloneable{
     @Override
     public void open(InputStream in) throws IOException{
 
-        open(in, charset);
+        open(in, Charset.forName(charset));
     }
     
     @Override

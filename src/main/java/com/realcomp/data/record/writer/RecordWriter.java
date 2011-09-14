@@ -97,5 +97,17 @@ public interface RecordWriter {
      */
     long getCount();
 
+    /**
+     * 
+     * @param charset 
+     */
+    void setCharset(String charset);
+    
+    /**
+     * 
+     * @return the name of the charset to be used for writing. Not Null. Default is platform dependent.
+     */
+    String getCharset();
+    
 
 }

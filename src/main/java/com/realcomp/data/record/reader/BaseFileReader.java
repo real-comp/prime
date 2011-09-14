@@ -22,7 +22,6 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.io.IOUtils;
 
@@ -50,8 +49,7 @@ public abstract class BaseFileReader implements RecordReader{
     @XStreamOmitField
     protected List<Class> viewClasses;
     
-    protected Charset charset = Charset.defaultCharset();
-
+    protected String charset = Charset.defaultCharset().name();    
 
     public BaseFileReader(){
     }
@@ -132,6 +130,7 @@ public abstract class BaseFileReader implements RecordReader{
         reader = new SkippingBufferedReader(new InputStreamReader(in, charset));
         reader.setSkipLeading(skipLeading);
         reader.setSkipTrailing(skipTrailing);
+        this.charset = charset.name();
         count = 0;
     }
      
@@ -283,6 +282,19 @@ public abstract class BaseFileReader implements RecordReader{
                 "RecordView class " + clazz.toString() + " is not supported.");
     }
 
+    @Override
+    public String getCharset() {
+        return charset;
+    }
+
+    @Override
+    public void setCharset(String charset) {
+        if (charset == null)
+            throw new IllegalArgumentException("charset is null");
+        this.charset = charset;
+    }
+
+    
     @Override
     public boolean equals(Object obj) {
         if (obj == null)
