@@ -8,6 +8,7 @@ import com.realcomp.data.schema.SchemaField;
 import com.realcomp.data.schema.Table;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
+import com.thoughtworks.xstream.io.xml.StaxDriver;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
@@ -41,7 +42,7 @@ public class XStreamFactory {
         Set<Class<?>> validators = reflections.getTypesAnnotatedWith(Validator.class);
         Set<Class<?>> converters = reflections.getTypesAnnotatedWith(Converter.class);
 
-        XStream xstream = new XStream(new DomDriver());
+        XStream xstream = new XStream(new StaxDriver());
         xstream.processAnnotations(FileSchema.class);
         xstream.processAnnotations(RelationalSchema.class);
         xstream.processAnnotations(Table.class);
