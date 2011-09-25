@@ -1,5 +1,6 @@
 package com.realcomp.data.record.writer;
 
+import java.io.IOException;
 import com.realcomp.data.record.io.Delimiter;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -30,7 +31,7 @@ public class DelimitedFileWriterTest {
      * Test of open method, of class DelimitedFileParser.
      */
     @Test
-    public void testOpenClose() {
+    public void testOpenClose() throws IOException{
 
         DelimitedFileWriter instance = new DelimitedFileWriter();
         OutputStream out = null;
@@ -90,7 +91,7 @@ public class DelimitedFileWriterTest {
 
 
     @Test
-    public void testNoTypeChangeAfterOpen(){
+    public void testNoTypeChangeAfterOpen() throws IOException{
 
         DelimitedFileWriter instance = new DelimitedFileWriter();
         String data = "a\tb\tc";

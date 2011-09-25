@@ -47,12 +47,12 @@ public class DelimitedFileWriter extends BaseFileWriter{
     }
     
     @Override
-    public void open(OutputStream out){
+    public void open(OutputStream out) throws IOException{
         open(out, Charset.defaultCharset());
     }
 
     @Override
-    public void open(OutputStream out, Charset charset){
+    public void open(OutputStream out, Charset charset) throws IOException{
 
         close();
         super.open(out, charset);

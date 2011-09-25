@@ -63,18 +63,16 @@ public abstract class BaseFileWriter implements RecordWriter{
     }
     
     @Override
-    public void open(OutputStream out){
+    public void open(OutputStream out) throws IOException{
         open(out, Charset.forName(charset));
     }
     
     @Override
-    public void open(OutputStream out, Charset charset){
+    public void open(OutputStream out, Charset charset) throws IOException{
         if (out == null)
             throw new IllegalArgumentException("out is null");
-        if (charset == null)
-            charset = Charset.defaultCharset();
         this.out = out;
-        this.charset = charset.name();
+        this.charset = charset == null ? Charset.defaultCharset().name() : charset.name();
         count = 0;        
     }
 

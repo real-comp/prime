@@ -57,11 +57,17 @@ public interface RecordWriter {
 
     /**
      * @param out OutputStream to write to. Not null
+     * @throws IOException  
      */
-    void open(OutputStream out);
+    void open(OutputStream out) throws IOException;
 
-    
-    void open(OutputStream out, Charset charset);
+    /**
+     * 
+     * @param out OutputStream to write to. Not null
+     * @param charset Character set to use when writing.
+     * @throws IOException 
+     */
+    void open(OutputStream out, Charset charset) throws IOException;
 
     /**
      * Set the schema that the RecordParser should use to create Records.
