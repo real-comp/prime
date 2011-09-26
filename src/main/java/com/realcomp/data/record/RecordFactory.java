@@ -246,5 +246,8 @@ public class RecordFactory {
         if (validationExceptionThreshold == null)
             throw new IllegalArgumentException("validationExceptionThreshold == null");
         this.validationExceptionThreshold = validationExceptionThreshold;
+        if (worker != null)
+            worker.setValidationExceptionThreshold(validationExceptionThreshold);
+        
     }
 }
