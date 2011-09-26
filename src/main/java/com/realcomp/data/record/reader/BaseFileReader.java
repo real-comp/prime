@@ -170,6 +170,7 @@ public abstract class BaseFileReader implements RecordReader{
 
         this.schema = schema;
         recordFactory = new RecordFactory(schema);
+        recordFactory.setValidationExceptionThreshold(validationExceptionThreshold);
     }
 
     @Override
