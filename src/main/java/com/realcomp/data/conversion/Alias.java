@@ -13,6 +13,13 @@ public class Alias implements Converter{
 
     protected String name;
     
+    public Alias(){
+    }
+    
+    public Alias(String name){
+        this.name = name;
+    }
+    
     @Override
     public String convert(String value) throws ConversionException{
         return value;
