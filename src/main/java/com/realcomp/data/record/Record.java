@@ -11,6 +11,9 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 /**
+ * 
+ * 
+ * 
  * <p>
  * A record may have more than one 'key' field.  These fields
  * are used to construct a record 'key' that may be useful.
@@ -65,7 +68,7 @@ public class Record implements Serializable {
     public Object put(String key, Object value) {
 
         if (value == null) {
-            return put(key, (String) null);
+            return data.remove(key);
         }
         else {
             DataType type = DataType.getDataType(value);

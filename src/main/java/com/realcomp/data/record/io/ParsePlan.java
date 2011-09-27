@@ -1,4 +1,4 @@
-package com.realcomp.data.record;
+package com.realcomp.data.record.io;
 
 import com.realcomp.data.MultiFieldOperation;
 import com.realcomp.data.Operation;

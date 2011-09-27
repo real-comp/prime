@@ -4,7 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- *
+ * A record key that references an item in a List. 
+ * e.g., "property.owner[1].name" would reference name field of the the 2nd item in the owner list.
+ * 
+ * 
  * @author krenfro
  */
 public class IndexedRecordKey {

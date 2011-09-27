@@ -4,7 +4,7 @@ package com.realcomp.data.schema;
 import com.realcomp.data.Operation;
 import com.realcomp.data.conversion.ReplaceFirst;
 import java.util.logging.Logger;
-import com.realcomp.data.record.ParsePlanException;
+import com.realcomp.data.record.io.ParsePlanException;
 import com.realcomp.data.conversion.Concat;
 import java.io.ByteArrayInputStream;
 import java.util.List;

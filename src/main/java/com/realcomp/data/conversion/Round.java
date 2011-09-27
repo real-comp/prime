@@ -25,39 +25,13 @@ public class Round extends SimpleConverter {
 
     @Override
     public Object convert(Object value) throws ConversionException{
+        
         if (value == null)
             throw new IllegalArgumentException("value is null");
         if (value.toString().isEmpty())
             return value;
         
-        switch (DataType.getDataType(value)){
-            
-            case DOUBLE:
-                return DataType.DOUBLE.coerce(value);
-        }
-        if (value instanceof Number){
-            
-            if (value instanceof Double){
-                
-            }
-            else if (value instanceof Float){
-                return Math.round((Float) value);
-            }
-            else if (value instanceof Long){
-                return value;
-            }
-            else if (value instanceof Integer){
-                return value;
-            }
-            else{
-                throw new ConversionException("Unable to round data of type: " + value.getClass().getName());
-            }
-        }
-        else{
-            return Long.toString(Math.round(Double.parseDouble(value.toString())));
-        }
-        
-        
+        return Math.round((Double) DataType.DOUBLE.coerce(value));
     }
 
 }

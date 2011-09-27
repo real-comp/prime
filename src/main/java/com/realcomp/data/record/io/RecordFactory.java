@@ -1,12 +1,12 @@
-package com.realcomp.data.record;
+package com.realcomp.data.record.io;
 
 import com.realcomp.data.Operation;
 import com.realcomp.data.conversion.Alias;
 import com.realcomp.data.conversion.ConversionException;
 import com.realcomp.data.conversion.MissingFieldException;
+import com.realcomp.data.record.Record;
 import com.realcomp.data.schema.Classifier;
 import com.realcomp.data.schema.FileSchema;
-import com.realcomp.data.schema.KeyFieldIntrospector;
 import com.realcomp.data.schema.SchemaField;
 import com.realcomp.data.validation.Severity;
 import com.realcomp.data.validation.ValidationException;

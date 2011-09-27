@@ -1,11 +1,11 @@
-package com.realcomp.data.record;
+package com.realcomp.data.record.io;
 
-import com.realcomp.data.FieldFactory;
 import com.realcomp.data.Operation;
 import com.realcomp.data.conversion.ConversionException;
 import com.realcomp.data.conversion.Converter;
 import com.realcomp.data.conversion.MissingFieldException;
 import com.realcomp.data.conversion.MultiFieldConverter;
+import com.realcomp.data.record.Record;
 import com.realcomp.data.schema.FileSchema;
 import com.realcomp.data.schema.SchemaField;
 import com.realcomp.data.validation.Severity;
@@ -59,7 +59,7 @@ public class RecordFactoryWorker {
     public Object build(SchemaField field, List<Operation> operations, Object data, Record record)
             throws ConversionException, ValidationException, MissingFieldException{
 
-        return FieldFactory.create(field.getType(), operate(field.getName(), operations, data, record));
+        return field.getType().coerce(operate(field.getName(), operations, data, record));
     }
 
 

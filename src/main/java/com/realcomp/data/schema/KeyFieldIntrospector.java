@@ -32,7 +32,7 @@ public class KeyFieldIntrospector {
         return keys;
     }
 
-    public static List<String> getForeignKeyFi3eldnames(Collection<SchemaField> fields){
+    public static List<String> getForeignKeyFieldnames(Collection<SchemaField> fields){
         
         List<String> keys = null;
         for (SchemaField field: fields){
