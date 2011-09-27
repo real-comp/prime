@@ -20,6 +20,8 @@ public class FieldFactory {
      */
     public static Object create(DataType type, String value) throws ConversionException{
 
+        return type.coerce(value);
+        
         Object result = null;
         try{
             switch(type){

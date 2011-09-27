@@ -5,12 +5,22 @@ package com.realcomp.data.conversion;
  * @author krenfro
  */
 @com.realcomp.data.annotation.Converter("constant")
-public class ConstantConverter implements Converter{
+public class ConstantConverter extends SimpleConverter{
 
-    protected String value = "";
+    protected Object value = "";
+    
+    public ConstantConverter(){
+        super();
+    }
+    
+    public ConstantConverter(Object value){
+        super();
+        this.value = value;
+    }
+    
 
     @Override
-    public String convert(String value) throws ConversionException{
+    public Object convert(Object value) throws ConversionException{
 
         if (value == null)
             throw new IllegalArgumentException("value is null");
@@ -20,16 +30,14 @@ public class ConstantConverter implements Converter{
     
     @Override
     public ConstantConverter copyOf(){
-        ConstantConverter copy = new ConstantConverter();
-        copy.value = value;
-        return copy;
+        return new ConstantConverter(value);
     }
 
-    public String getValue() {
+    public Object getValue() {
         return value;
     }
 
-    public void setValue(String value) {
+    public void setValue(Object value) {
         this.value = value;
     }
 

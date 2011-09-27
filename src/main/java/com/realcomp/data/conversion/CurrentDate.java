@@ -9,7 +9,7 @@ import java.util.Calendar;
  * @author krenfro
  */
 @com.realcomp.data.annotation.Converter("currentDate")
-public class CurrentDate implements Converter{
+public class CurrentDate extends ComplexConverter{
 
     protected static Calendar now = Calendar.getInstance();
 
@@ -17,15 +17,20 @@ public class CurrentDate implements Converter{
     protected DateFormat formatter;
     
     public CurrentDate(){
+        super();
         format = "yyyyMMdd";
+        formatter = getFormatter(format);
+    }
+    
+    public CurrentDate(String format){
+        super();
+        this.format = format;
         formatter = getFormatter(format);
     }
     
     @Override
     public CurrentDate copyOf(){
-        CurrentDate copy = new CurrentDate();
-        copy.setFormat(format);
-        return copy;
+        return new CurrentDate(format);
     }
 
     /**
@@ -35,7 +40,7 @@ public class CurrentDate implements Converter{
      * @throws ConversionException
      */
     @Override
-    public String convert(String value) throws ConversionException{
+    public Object convert(Object value) throws ConversionException{
         return formatter.format(now.getTime());
     }
 

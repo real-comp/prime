@@ -5,21 +5,27 @@ package com.realcomp.data.conversion;
  * @author krenfro
  */
 @com.realcomp.data.annotation.Converter("boolean")
-public class BooleanConverter implements Converter{
+public class BooleanConverter extends SimpleConverter{
 
     protected String truthy = ",TRUE,T,YES,Y,1,";
     protected String falsy = ",*,";
     protected boolean caseSensitive = false;
     
 
+    /**
+     * 
+     * @param value
+     * @return a Boolean
+     * @throws ConversionException 
+     */
     @Override
-    public String convert(String value) throws ConversionException{
+    public Object convert(Object value) throws ConversionException{
 
         if (value == null)
             throw new IllegalArgumentException("value is null");
 
         Boolean result = null;
-        String test = addCommas(value, caseSensitive);
+        String test = addCommas(value.toString(), caseSensitive);
         
         if (contains(truthy, test, caseSensitive ))
             result = Boolean.TRUE;
@@ -33,7 +39,7 @@ public class BooleanConverter implements Converter{
         if (result == null)
             throw new ConversionException("Unable to convert [" + value + "] to a boolean value");
         
-        return result.toString();
+        return result;
     }
 
     @Override

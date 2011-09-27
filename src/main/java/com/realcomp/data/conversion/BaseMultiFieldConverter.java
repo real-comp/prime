@@ -1,5 +1,8 @@
 package com.realcomp.data.conversion;
 
+import com.realcomp.data.DataType;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -8,6 +11,19 @@ import java.util.List;
  */
 public abstract class BaseMultiFieldConverter implements MultiFieldConverter{
 
+    
+    protected List<DataType> supportedTypes;
+
+    public BaseMultiFieldConverter(){
+        supportedTypes = new ArrayList<DataType>();
+        supportedTypes.add(DataType.STRING);
+        supportedTypes.add(DataType.BOOLEAN);
+        supportedTypes.add(DataType.INTEGER);
+        supportedTypes.add(DataType.FLOAT);
+        supportedTypes.add(DataType.DOUBLE);
+        supportedTypes.add(DataType.LONG);        
+    }
+    
     protected List<String> fieldNames;
 
     @Override
@@ -19,6 +35,16 @@ public abstract class BaseMultiFieldConverter implements MultiFieldConverter{
     public void setFields(List<String> fieldNames) {
         this.fieldNames = fieldNames;
     }
+    
+    /**
+     * 
+     * @return List of DataTypes supported by this converter. All Types except Map and List
+     */
+    @Override
+    public List<DataType> getSupportedTypes(){
+        return Collections.unmodifiableList(supportedTypes);
+    }
+    
     
     @Override
     public boolean equals(Object obj) {

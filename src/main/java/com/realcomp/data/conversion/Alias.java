@@ -9,19 +9,27 @@ package com.realcomp.data.conversion;
  * @author krenfro
  */
 @com.realcomp.data.annotation.Converter("alias")
-public class Alias implements Converter{
+public class Alias<DataType> extends ComplexConverter{
 
     protected String name;
     
     public Alias(){
+        super();
     }
     
     public Alias(String name){
+        super();
         this.name = name;
     }
     
+    /**
+     * 
+     * @param value
+     * @return simply returns the provided value without modification
+     * @throws ConversionException 
+     */
     @Override
-    public String convert(String value) throws ConversionException{
+    public Object convert(Object value) throws ConversionException{
         return value;
     }
 
@@ -35,9 +43,7 @@ public class Alias implements Converter{
 
     @Override
     public Alias copyOf(){
-        Alias copy = new Alias();
-        copy.setName(name);
-        return copy;
+        return new Alias(name);
     }
         
     @Override

@@ -12,9 +12,9 @@ public class Concat extends BaseMultiFieldConverter{
     protected String delimiter = "";
 
     @Override
-    public String convert(String value, Record record) throws ConversionException {
+    public Object convert(Object value, Record record) throws ConversionException {
 
-        String retVal = "".concat(value);
+        String retVal = "".concat(value.toString());
         boolean needDelimiter = false;
         for (String fieldName: fieldNames){
 

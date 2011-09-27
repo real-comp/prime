@@ -56,14 +56,14 @@ public class RecordFactoryWorker {
         this.schema = schema;
     }
     
-    public Object build(SchemaField field, List<Operation> operations, String data, Record record)
+    public Object build(SchemaField field, List<Operation> operations, Object data, Record record)
             throws ConversionException, ValidationException, MissingFieldException{
 
         return FieldFactory.create(field.getType(), operate(field.getName(), operations, data, record));
     }
 
 
-    protected String operate(String fieldName, List<Operation> operations, String data, Record record)
+    protected Object operate(String fieldName, List<Operation> operations, Object data, Record record)
             throws ConversionException, ValidationException, MissingFieldException{
 
         if (operations == null || operations.isEmpty())
@@ -74,10 +74,10 @@ public class RecordFactoryWorker {
         return data;
     }
 
-    protected String operate(String fieldName, Operation op, String data, Record record)
+    protected Object operate(String fieldName, Operation op, Object data, Record record)
                 throws ConversionException, ValidationException, MissingFieldException{
 
-        String result = data;
+        Object result = data;
 
 
         if (op instanceof Validator){

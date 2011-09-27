@@ -3,6 +3,7 @@ package com.realcomp.data.schema;
 import com.realcomp.data.schema.xml.DataTypeConverter;
 import com.realcomp.data.DataType;
 import com.realcomp.data.Operation;
+import com.realcomp.data.annotation.Validator;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
 import com.thoughtworks.xstream.annotations.XStreamConverter;
@@ -160,6 +161,50 @@ public class SchemaField {
             throw new IllegalArgumentException("type is null");
         this.type = type;
     }
+    
+    public Object applyOperations(Object data){
+        
+        for (Operation op: operations){
+            if (op instanceof Validator){
+                try {
+                    ((Validator) op).validate(data);
+                }
+                catch (ValidationException ex) {
+                    Severity severity = ((Validator) op).getSeverity();
+
+                    if (severity.ordinal() >= validationExceptionThreshold.ordinal())
+                        throw ex;
+
+                    switch(severity){
+                        case LOW:
+                            log.log(Level.INFO, String.format("%s for [%s] in record [%s]",
+                                    new Object[]{ex.getMessage(), fieldName, schema.toString(record)}));
+                            break;
+                        case MEDIUM:
+                            log.log(Level.WARNING, String.format("%s for [%s] in record [%s]",
+                                    new Object[]{ex.getMessage(), fieldName, schema.toString(record)}));
+                            break;
+                        case HIGH:
+                            log.log(Level.SEVERE, String.format("%s for [%s] in record [%s]",
+                                    new Object[]{ex.getMessage(), fieldName, schema.toString(record)}));
+                            break;
+                    }
+                }
+            }
+            else if (op instanceof Converter){
+                data = ((Converter) op).convert(data);
+            }
+            else if (op instanceof MultiFieldConverter){
+                data = ((MultiFieldConverter) op).convert(data, record);
+            }
+            else{
+                throw new IllegalStateException("Unhandled operator: " + op.getClass().getName());
+            }
+        }
+
+        return data;
+    }
+    
     
     @Override
     public String toString() {

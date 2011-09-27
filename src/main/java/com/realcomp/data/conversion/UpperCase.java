@@ -5,14 +5,14 @@ package com.realcomp.data.conversion;
  * @author krenfro
  */
 @com.realcomp.data.annotation.Converter("upperCase")
-public class UpperCase implements Converter {
+public class UpperCase extends SimpleConverter {
 
     @Override
-    public String convert(String value) throws ConversionException{
+    public Object convert(Object value) throws ConversionException{
         if (value == null)
             throw new IllegalArgumentException("value is null");
 
-        return value.toUpperCase();
+        return value.toString().toUpperCase();
     }
 
     

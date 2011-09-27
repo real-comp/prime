@@ -18,6 +18,7 @@ import com.realcomp.data.view.RecordView;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -165,6 +166,22 @@ public abstract class BaseFileWriter implements RecordWriter{
     protected abstract void write(Record record, SchemaField field)
        throws ValidationException, ConversionException, IOException;
 
+    
+    protected List<Alias> getAliases(SchemaField schemaField){
+        
+        List<Alias> aliases = new ArrayList<Alias>();        
+        List<Operation> operations = schemaField.getOperations();
+        
+        if (operations != null){
+            for (Operation op: operations){
+                if (op instanceof Alias){
+                    aliases.add((Alias) op);
+                }
+            }
+        }
+
+        return aliases;
+    }
 
     protected String toString(Record record, SchemaField schemaField)
             throws ValidationException, ConversionException{
@@ -173,16 +190,11 @@ public abstract class BaseFileWriter implements RecordWriter{
         String data = "";
         if (value == null){
             //try aliases
-            List<Operation> operations = schemaField.getOperations();
-            if (operations != null){
-                for (Operation op: operations){
-                    if (op instanceof Alias){
-                        value = record.get(((Alias) op).getName());
-                        if (value != null){
-                            data = value.toString();
-                            break;
-                        }
-                    }
+            for (Alias alias: getAliases(schemaField)){
+                value = record.get(alias.getName());
+                if (value != null){
+                    data = value.toString();
+                    break;
                 }
             }
         }

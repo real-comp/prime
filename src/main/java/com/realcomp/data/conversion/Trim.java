@@ -5,14 +5,14 @@ package com.realcomp.data.conversion;
  * @author krenfro
  */
 @com.realcomp.data.annotation.Converter("trim")
-public class Trim implements Converter {
+public class Trim extends SimpleConverter {
 
     @Override
-    public String convert(String value) throws ConversionException{
+    public Object convert(Object value) throws ConversionException{
         if (value == null)
             throw new IllegalArgumentException("value is null");
 
-        return value.trim();
+        return value.toString().trim();
     }
 
     

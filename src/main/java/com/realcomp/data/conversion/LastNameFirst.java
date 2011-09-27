@@ -21,16 +21,16 @@ import java.util.List;
  * @author krenfro
  */
 @com.realcomp.data.annotation.Converter("lastNameFirst")
-public class LastNameFirst implements Converter {
+public class LastNameFirst extends SimpleConverter {
 
     
     @Override
-    public String convert(String value) throws ConversionException{
+    public Object convert(Object value) throws ConversionException{
         if (value == null)
             throw new IllegalArgumentException("value is null");
 
-        List<Name> names = NameParser.parse(value);
-        String retVal = value;        
+        String retVal = value.toString();  
+        List<Name> names = NameParser.parse(retVal);              
         if (!names.isEmpty())
             retVal = NameFormatter.getLastNameFirst(names.get(0));
         return retVal;

@@ -9,15 +9,15 @@ import java.util.List;
  * @author krenfro
  */
 @com.realcomp.data.annotation.Converter("formatPhone")
-public class FormatPhone implements Converter {
+public class FormatPhone extends SimpleConverter {
 
     
     @Override
-    public String convert(String value) throws ConversionException{
+    public Object convert(Object value) throws ConversionException{
         if (value == null)
             throw new IllegalArgumentException("value is null");
         
-        Character[] digits = getDigits(value);
+        Character[] digits = getDigits(value.toString());
         StringBuilder phone = new StringBuilder();
         if (digits.length == 11){
             phone.append("(").append(digits[1]).append(digits[2]).append(digits[3]).append(") ");
@@ -56,4 +56,6 @@ public class FormatPhone implements Converter {
     public Operation copyOf() {
         return new FormatPhone();
     }
+    
+    
 }

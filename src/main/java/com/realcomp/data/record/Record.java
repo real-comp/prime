@@ -68,7 +68,7 @@ public class Record implements Serializable {
             return put(key, (String) null);
         }
         else {
-            DataType type = DataType.get(value);
+            DataType type = DataType.getDataType(value);
             switch (type) {
                 case STRING:
                     return put(key, (String) value);

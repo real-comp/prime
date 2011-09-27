@@ -14,16 +14,17 @@ import java.util.List;
  * @author krenfro
  */
 @com.realcomp.data.annotation.Converter("lastName")
-public class LastName implements Converter {
+public class LastName extends SimpleConverter {
 
     
     @Override
-    public String convert(String value) throws ConversionException{
+    public Object convert(Object value) throws ConversionException{
         if (value == null)
             throw new IllegalArgumentException("value is null");
 
-        List<Name> names = NameParser.parse(value);
-        String retVal = value;        
+        String retVal = value.toString();        
+        List<Name> names = NameParser.parse(retVal);
+        
         if (!names.isEmpty()){
             Name name = names.get(0);
             if (name instanceof IndividualName){
