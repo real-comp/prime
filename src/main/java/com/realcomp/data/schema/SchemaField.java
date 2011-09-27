@@ -9,12 +9,15 @@ import com.thoughtworks.xstream.annotations.XStreamConverter;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
 import java.util.ArrayList;
 import java.util.List;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  *
  * @author krenfro
  */
 @XStreamAlias("field")
+@XmlRootElement
 public class SchemaField {
     
     /**
@@ -27,6 +30,7 @@ public class SchemaField {
     public static final String[] INVALID_NAME_CHARACTERS = new String[]{".","[","]"};
     
     @XStreamAsAttribute
+    @XmlAttribute
     protected String name;
     
     @XStreamAsAttribute
