@@ -140,7 +140,7 @@ public class Record implements Serializable {
             return null;        
     }
     
-    
+      
 
     /**
      * @see FileSchema#toString(Record)
