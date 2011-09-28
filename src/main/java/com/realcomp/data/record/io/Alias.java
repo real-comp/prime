@@ -1,4 +1,7 @@
-package com.realcomp.data.conversion;
+package com.realcomp.data.record.io;
+
+import com.realcomp.data.conversion.ComplexConverter;
+import com.realcomp.data.conversion.ConversionException;
 
 /**
  * Special converter marks a field as having an alias.
@@ -9,7 +12,7 @@ package com.realcomp.data.conversion;
  * @author krenfro
  */
 @com.realcomp.data.annotation.Converter("alias")
-public class Alias<DataType> extends ComplexConverter{
+public class Alias extends ComplexConverter{
 
     protected String name;
     

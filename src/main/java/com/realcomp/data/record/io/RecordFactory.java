@@ -1,16 +1,13 @@
 package com.realcomp.data.record.io;
 
-import com.realcomp.data.Operation;
-import com.realcomp.data.conversion.Alias;
 import com.realcomp.data.conversion.ConversionException;
-import com.realcomp.data.conversion.MissingFieldException;
 import com.realcomp.data.record.Record;
 import com.realcomp.data.schema.Classifier;
 import com.realcomp.data.schema.FileSchema;
+import com.realcomp.data.schema.KeyFieldIntrospector;
 import com.realcomp.data.schema.SchemaField;
 import com.realcomp.data.validation.Severity;
 import com.realcomp.data.validation.ValidationException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -56,7 +53,7 @@ public class RecordFactory {
     protected Map<String,List<String>> aliases;
 
     protected FileSchema schema;
-    protected RecordFactoryWorker worker;
+    protected ValueResolver resolver;
     protected Severity validationExceptionThreshold = Severity.HIGH;
 
     public RecordFactory(FileSchema schema) throws ParsePlanException{
@@ -67,11 +64,20 @@ public class RecordFactory {
         this.schema = schema;
         buildKeyFieldCache();
         buildParsePlan();
-        buildAliases();
-        worker = new RecordFactoryWorker(validationExceptionThreshold);
-        worker.setSchema(schema);
+        aliases = Aliases.getAliases(schema);
+        resolver = new ValueResolver(validationExceptionThreshold);
+        resolver.setSchema(schema);
     }
     
+    /**
+     * Builds a Record from the provided String[] and SchemaFields.
+     * 
+     * @param fields
+     * @param data
+     * @return
+     * @throws ValidationException
+     * @throws ConversionException 
+     */
     public Record build(List<SchemaField> fields, String[] data)
             throws ValidationException, ConversionException{
 
@@ -89,8 +95,8 @@ public class RecordFactory {
             index = fields.indexOf(schemaField);
             Object value = null;
             try{
-                value = worker.build(
-                        schemaField, getOperations(schemaField), data[index], record);
+                value = resolver.resolve(
+                        schemaField, Operations.getOperations(schema, schemaField), data[index], record);
             }
             catch (ConversionException e){
                 throw new ConversionException(
@@ -121,71 +127,6 @@ public class RecordFactory {
         }
     }
     
-    /**
-     * build the alias map for all fields in the schema.
-     */
-    protected final void buildAliases(){
-        aliases = new HashMap<String,List<String>>();
-        for (SchemaField field: schema.getFields()){
-            List<String> definedAliases = getAliases(field);
-            if (definedAliases != null)
-                aliases.put(field.getName(), definedAliases);
-        }
-    }
-    
-    /**
-     * Aliases are defined as Alias converters in the schema.
-     * 
-     * @param field
-     * @return all aliases for the specified field, or null if none defined.
-     * @see com.realcomp.data.conversion.Alias
-     */
-    protected List<String> getAliases(SchemaField field){
-        
-        List<String> retVal = null;
-        List<Operation> operations = field.getOperations();
-        if (operations != null){
-            for (Operation operation: operations){
-                if (operation instanceof Alias){
-                    String alias = ((Alias) operation).getName();
-                    if (alias != null){
-                        if (retVal == null)
-                             retVal = new ArrayList<String>();
-                        
-                        retVal.add(alias);
-                    }
-                }
-            }
-        }
-        
-        return retVal;
-    }
-
-
-    /**
-     * 
-     * @param field
-     * @return All operations for a field, including any <i>before</i> and <i>after</i> operations.
-     * @throws MissingFieldException 
-     */
-    protected List<Operation> getOperations(SchemaField field)
-            throws MissingFieldException{
-
-        List<Operation> operations = new ArrayList<Operation>();
-        List<Operation> temp = schema.getBeforeOperations();
-        if (temp != null)
-            operations.addAll(temp);
-
-        temp = field.getOperations();
-        if (temp != null)
-            operations.addAll(temp);
-
-        temp = schema.getAfterOperations();
-        if (temp != null)
-            operations.addAll(temp);
-        return operations;
-    }
-
 
 
     protected final void buildKeyFieldCache(){
@@ -229,7 +170,11 @@ public class RecordFactory {
         return keys;
     }
 
-
+    /**
+     * Returns the pre-computed parse plan for the specified List of SchemaFields
+     * @param fields
+     * @return the ParsePlan for the specified SchemaFields
+     */
     protected ParsePlan getParsePlan(List<SchemaField> fields){
 
         ParsePlan plan = parsePlan;
@@ -238,16 +183,18 @@ public class RecordFactory {
         return plan;
     }
 
+    
     public Severity getValidationExceptionThreshold() {
         return validationExceptionThreshold;
     }
 
+    
     public void setValidationExceptionThreshold(Severity validationExceptionThreshold) {
         if (validationExceptionThreshold == null)
             throw new IllegalArgumentException("validationExceptionThreshold == null");
         this.validationExceptionThreshold = validationExceptionThreshold;
-        if (worker != null)
-            worker.setValidationExceptionThreshold(validationExceptionThreshold);
+        if (resolver != null)
+            resolver.setValidationExceptionThreshold(validationExceptionThreshold);
         
     }
 }

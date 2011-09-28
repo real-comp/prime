@@ -19,9 +19,11 @@ import java.util.logging.Logger;
  *
  * @author krenfro
  */
-public class RecordFactoryWorker {
+public class ValueResolver {
 
-    protected static final Logger log = Logger.getLogger(RecordFactoryWorker.class.getName());
+    Need to redesign this
+    
+    protected static final Logger log = Logger.getLogger(ValueResolver.class.getName());
 
     protected Severity validationExceptionThreshold;
     protected FileSchema schema;
@@ -34,7 +36,7 @@ public class RecordFactoryWorker {
      * important than others.
      * @param validationExceptionThreshold
      */
-    public RecordFactoryWorker(Severity validationExceptionThreshold){
+    public ValueResolver(Severity validationExceptionThreshold){
         this.validationExceptionThreshold = validationExceptionThreshold;
     }
 
@@ -56,29 +58,29 @@ public class RecordFactoryWorker {
         this.schema = schema;
     }
     
-    public Object build(SchemaField field, List<Operation> operations, Object data, Record record)
+    public Object resolve(SchemaField field, List<Operation> operations, Object data, Record record)
             throws ConversionException, ValidationException, MissingFieldException{
 
-        return field.getType().coerce(operate(field.getName(), operations, data, record));
+        Object resultOfOperations = resolve(field.getName(), operations, data, record);
+        return field.getType().coerce(resultOfOperations);
     }
 
 
-    protected Object operate(String fieldName, List<Operation> operations, Object data, Record record)
+    protected Object resolve(String fieldName, List<Operation> operations, Object data, Record record)
             throws ConversionException, ValidationException, MissingFieldException{
 
-        if (operations == null || operations.isEmpty())
-            return data;
-        for (Operation op: operations)
-            data = operate(fieldName, op, data, record);
+        if (operations != null && !operations.isEmpty()){
+            for (Operation op: operations)
+                data = resolve(fieldName, op, data, record);
+        }
 
         return data;
     }
 
-    protected Object operate(String fieldName, Operation op, Object data, Record record)
+    protected Object resolve(String fieldName, Operation op, Object data, Record record)
                 throws ConversionException, ValidationException, MissingFieldException{
 
         Object result = data;
-
 
         if (op instanceof Validator){
             try {

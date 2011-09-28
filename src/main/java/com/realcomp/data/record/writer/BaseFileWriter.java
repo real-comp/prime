@@ -1,13 +1,17 @@
 package com.realcomp.data.record.writer;
 
+import com.realcomp.data.DataType;
 import com.realcomp.data.Operation;
-import com.realcomp.data.conversion.Alias;
+import com.realcomp.data.record.io.Alias;
 import com.realcomp.data.conversion.ConversionException;
 import com.realcomp.data.conversion.Converter;
 import com.realcomp.data.conversion.MultiFieldConverter;
 import com.realcomp.data.record.AfterLastRecord;
 import com.realcomp.data.record.BeforeFirstRecord;
 import com.realcomp.data.record.Record;
+import com.realcomp.data.record.io.Aliases;
+import com.realcomp.data.record.io.Operations;
+import com.realcomp.data.record.io.ValueResolver;
 import com.realcomp.data.schema.FileSchema;
 import com.realcomp.data.schema.SchemaException;
 import com.realcomp.data.schema.SchemaField;
@@ -39,7 +43,10 @@ public abstract class BaseFileWriter implements RecordWriter{
     protected long count;
     protected boolean beforeFirstOperationsRun = false;
     
+    protected ValueResolver valueResolver;
+    
     public BaseFileWriter(){
+        valueResolver = new ValueResolver(validationExceptionThreshold);
     }
     
     public BaseFileWriter(BaseFileWriter copy){
@@ -61,6 +68,7 @@ public abstract class BaseFileWriter implements RecordWriter{
     @Override
     public void setValidationExceptionThreshold(Severity severity) {
         this.validationExceptionThreshold = severity;
+        valueResolver.setValidationExceptionThreshold(severity);
     }
     
     @Override
@@ -167,45 +175,23 @@ public abstract class BaseFileWriter implements RecordWriter{
        throws ValidationException, ConversionException, IOException;
 
     
-    protected List<Alias> getAliases(SchemaField schemaField){
-        
-        List<Alias> aliases = new ArrayList<Alias>();        
-        List<Operation> operations = schemaField.getOperations();
-        
-        if (operations != null){
-            for (Operation op: operations){
-                if (op instanceof Alias){
-                    aliases.add((Alias) op);
-                }
-            }
-        }
-
-        return aliases;
-    }
-
-    protected String toString(Record record, SchemaField schemaField)
+    protected Object resolve(Record record, SchemaField schemaField)
             throws ValidationException, ConversionException{
 
         Object value = record.get(schemaField.getName());
-        String data = "";
+        
         if (value == null){
             //try aliases
-            for (Alias alias: getAliases(schemaField)){
-                value = record.get(alias.getName());
+            for (String alias: Aliases.getAliases(schemaField)){
+                value = record.get(alias);
                 if (value != null){
-                    data = value.toString();
                     break;
                 }
             }
         }
-        else{
-            data = value.toString();
-        }
         
         try{
-            data = operate(schemaField.getName(), schema.getBeforeOperations(), data, record);
-            data = operate(schemaField.getName(), schemaField.getOperations(), data, record);
-            data = operate(schemaField.getName(), schema.getAfterOperations(), data, record);
+            value = operate(schemaField.getName(), Operations.getOperations(schema, schemaField), value, record);
         }
         catch(ValidationException ex){
             String message = String.format(
@@ -220,35 +206,35 @@ public abstract class BaseFileWriter implements RecordWriter{
             throw new ConversionException(message, ex);
         }
 
-        return data;
+        return value;
     }
 
-    protected String operate(SchemaField field, String data, Record record)
+    protected Object operate(SchemaField field, Object value, Record record)
             throws ConversionException, ValidationException{
         
-        data = operate(field.getName(), schema.getBeforeOperations(), data, record);
-        data = operate(field.getName(), field.getOperations(), data, record);
-        data = operate(field.getName(), schema.getAfterOperations(), data, record);
-        return data;
+        value = operate(field.getName(), schema.getBeforeOperations(), value, record);
+        value = operate(field.getName(), field.getOperations(), value, record);
+        value = operate(field.getName(), schema.getAfterOperations(), value, record);
+        return value;
     }
     
-    protected String operate(String fieldName, List<Operation> operations, String data, Record record)
+    protected Object operate(String fieldName, List<Operation> operations, Object value, Record record)
             throws ConversionException, ValidationException{
         
         if (operations == null)
-            return data;
+            return value;
         for (Operation op: operations)
-            data = operate(fieldName, op, data, record);
-        return data;
+            value = operate(fieldName, op, value, record);
+        return value;
     }
     
 
-    protected String operate(String fieldName, Operation op, String data, Record record)
+    protected Object operate(String fieldName, Operation op, Object value, Record record)
                 throws ConversionException, ValidationException{
 
         if (op instanceof Validator){
             try {
-                ((Validator) op).validate(data);
+                ((Validator) op).validate(value);
             }
             catch (ValidationException ex) {
                 Severity severity = ((Validator) op).getSeverity();
@@ -273,16 +259,16 @@ public abstract class BaseFileWriter implements RecordWriter{
             }
         }
         else if (op instanceof Converter){
-            data = ((Converter) op).convert(data);
+            value = ((Converter) op).convert(value);
         }
         else if (op instanceof MultiFieldConverter){
-            data = ((MultiFieldConverter) op).convert(data, record);
+            value = ((MultiFieldConverter) op).convert(value, record);
         }
         else{
             throw new IllegalStateException("Unhandled operator: " + op.getClass().getName());
         }
 
-        return data;
+        return value;
     }
 
     /**

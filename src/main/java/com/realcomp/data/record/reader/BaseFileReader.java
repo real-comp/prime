@@ -4,7 +4,7 @@ import com.realcomp.data.Operation;
 import com.realcomp.data.conversion.ConversionException;
 import com.realcomp.data.record.Record;
 import com.realcomp.data.record.io.RecordFactory;
-import com.realcomp.data.record.io.RecordFactoryWorker;
+import com.realcomp.data.record.io.ValueResolver;
 import com.realcomp.data.schema.AfterLastSchemaField;
 import com.realcomp.data.schema.BeforeFirstSchemaField;
 import com.realcomp.data.schema.FileSchema;
@@ -145,8 +145,8 @@ public abstract class BaseFileReader implements RecordReader{
         if (schema != null){
             List<Operation> operations = schema.getAfterLastOperations();
             if (operations != null && !operations.isEmpty()){
-                RecordFactoryWorker worker = new RecordFactoryWorker(validationExceptionThreshold);
-                worker.build(new AfterLastSchemaField(), operations, "" + this.getCount(), null);
+                ValueResolver worker = new ValueResolver(validationExceptionThreshold);
+                worker.resolve(new AfterLastSchemaField(), operations, "" + this.getCount(), null);
             }
         }
     }
@@ -156,8 +156,8 @@ public abstract class BaseFileReader implements RecordReader{
         if (schema != null){
             List<Operation> operations = schema.getBeforeFirstOperations();
             if (operations != null && !operations.isEmpty()){
-                RecordFactoryWorker worker = new RecordFactoryWorker(validationExceptionThreshold);
-                worker.build(new BeforeFirstSchemaField(), operations, "", null);
+                ValueResolver worker = new ValueResolver(validationExceptionThreshold);
+                worker.resolve(new BeforeFirstSchemaField(), operations, "", null);
             }
         }
     }

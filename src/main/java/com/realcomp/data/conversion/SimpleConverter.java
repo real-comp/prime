@@ -6,7 +6,8 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * A Converter for all DataTypes except Map and List
+ * A Converter for the simple DataTypes (STRING, BOOLEAN, INTEGER, FLOAT, LONG, DOUBLE)
+ * 
  * @author krenfro
  */
 public abstract class SimpleConverter implements Converter{
