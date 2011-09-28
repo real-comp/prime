@@ -4,20 +4,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * A record key that references an item in a List. 
- * e.g., "property.owner[1].name" would reference name field of the the 2nd item in the owner list.
- * 
+ * The key for a value in a Record.
+ * A record key can also reference an item in a List. 
+ * e.g., "owner[1]" would reference 2nd item in the list stored at key 'owner'.
  * 
  * @author krenfro
  */
-public class IndexedRecordKey {
+public class RecordKey {
 
     private static final String KEY_DELIMITER_REGEX = "\\.";
     
     private String key;
     private int index;
 
-    public IndexedRecordKey(String key) {
+    public RecordKey(String key) {
 
         index = -1;
         int start = key.indexOf("[");
@@ -35,6 +35,21 @@ public class IndexedRecordKey {
             this.key = key;
         }
     }
+    
+    /**
+     * Parses period delimited composite key for each individual RecordKey component.
+     * For example, the key "property.owner[1].name" would return
+     * a list of 3 RecordKeys. 
+     * 
+     * @param compositeKey
+     * @return 
+     */
+    public static List<RecordKey> parse(String compositeKey) {
+        List<RecordKey> list = new ArrayList<RecordKey>();
+        for (String key : compositeKey.split(KEY_DELIMITER_REGEX))
+            list.add(new RecordKey(key));
+        return list;
+    }
 
     public boolean isIndexed() {
         return index >= 0;
@@ -48,12 +63,7 @@ public class IndexedRecordKey {
         return index;
     }
 
-    static List<IndexedRecordKey> parse(String compositeKey) {
-        List<IndexedRecordKey> list = new ArrayList<IndexedRecordKey>();
-        for (String key : compositeKey.split(KEY_DELIMITER_REGEX))
-            list.add(new IndexedRecordKey(key));
-        return list;
-    }
+    
     
     @Override
     public String toString(){
@@ -66,7 +76,7 @@ public class IndexedRecordKey {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        final IndexedRecordKey other = (IndexedRecordKey) obj;
+        final RecordKey other = (RecordKey) obj;
         if ((this.key == null) ? (other.key != null) : !this.key.equals(other.key))
             return false;
         if (this.index != other.index)

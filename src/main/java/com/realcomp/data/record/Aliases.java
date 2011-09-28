@@ -1,5 +1,6 @@
-package com.realcomp.data.record.io;
+package com.realcomp.data.record;
 
+import com.realcomp.data.record.Alias;
 import com.realcomp.data.Operation;
 import com.realcomp.data.schema.FileSchema;
 import com.realcomp.data.schema.SchemaField;

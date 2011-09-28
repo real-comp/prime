@@ -1,6 +1,7 @@
 package com.realcomp.data.record.writer;
 
 import au.com.bytecode.opencsv.CSVWriter;
+import com.realcomp.data.DataType;
 import com.realcomp.data.conversion.ConversionException;
 import com.realcomp.data.record.Record;
 import com.realcomp.data.record.io.Delimiter;
@@ -36,6 +37,7 @@ public class DelimitedFileWriter extends BaseFileWriter{
     protected boolean header = false;
     
     public DelimitedFileWriter(){
+        super();
         current = new ArrayList<String>();
     }
     
@@ -155,7 +157,11 @@ public class DelimitedFileWriter extends BaseFileWriter{
     protected void write(Record record, SchemaField field)
             throws ValidationException, ConversionException, IOException{
 
-        current.add(toString(record, field));
+        Object value = valueResolver.resolve(field, record);
+        if (value == null)
+            value = "";
+        
+        current.add((String) DataType.STRING.coerce(value));
     }
 
     public boolean isHeader() {

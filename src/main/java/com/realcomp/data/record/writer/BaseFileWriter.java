@@ -1,28 +1,20 @@
 package com.realcomp.data.record.writer;
 
-import com.realcomp.data.DataType;
 import com.realcomp.data.Operation;
-import com.realcomp.data.record.io.Alias;
 import com.realcomp.data.conversion.ConversionException;
-import com.realcomp.data.conversion.Converter;
-import com.realcomp.data.conversion.MultiFieldConverter;
-import com.realcomp.data.record.AfterLastRecord;
-import com.realcomp.data.record.BeforeFirstRecord;
 import com.realcomp.data.record.Record;
-import com.realcomp.data.record.io.Aliases;
-import com.realcomp.data.record.io.Operations;
 import com.realcomp.data.record.io.ValueResolver;
+import com.realcomp.data.schema.AfterLastSchemaField;
+import com.realcomp.data.schema.BeforeFirstSchemaField;
 import com.realcomp.data.schema.FileSchema;
 import com.realcomp.data.schema.SchemaException;
 import com.realcomp.data.schema.SchemaField;
 import com.realcomp.data.validation.Severity;
 import com.realcomp.data.validation.ValidationException;
-import com.realcomp.data.validation.Validator;
 import com.realcomp.data.view.RecordView;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -41,23 +33,24 @@ public abstract class BaseFileWriter implements RecordWriter{
     protected FileSchema schema;
     protected Severity validationExceptionThreshold = DEFAULT_VALIDATION_THREASHOLD;
     protected long count;
-    protected boolean beforeFirstOperationsRun = false;
-    
+    protected boolean beforeFirstOperationsRun = false;    
     protected ValueResolver valueResolver;
     
     public BaseFileWriter(){
-        valueResolver = new ValueResolver(validationExceptionThreshold);
     }
     
     public BaseFileWriter(BaseFileWriter copy){
-        validationExceptionThreshold = copy.validationExceptionThreshold;
+        
         try{
-            if (copy.schema != null)
-                schema = new FileSchema(copy.schema);
+            validationExceptionThreshold = copy.validationExceptionThreshold;
+            schema = new FileSchema(copy.schema);  
+            if (copy.valueResolver != null)
+                valueResolver = new ValueResolver(copy.valueResolver);
         }
         catch(SchemaException ex){
             throw new IllegalStateException(ex); //should never happen
         }
+        
     }
     
     @Override
@@ -68,7 +61,8 @@ public abstract class BaseFileWriter implements RecordWriter{
     @Override
     public void setValidationExceptionThreshold(Severity severity) {
         this.validationExceptionThreshold = severity;
-        valueResolver.setValidationExceptionThreshold(severity);
+        if (valueResolver != null)
+            valueResolver.setValidationExceptionThreshold(severity);
     }
     
     @Override
@@ -105,31 +99,29 @@ public abstract class BaseFileWriter implements RecordWriter{
 
     protected void executeAfterLastOperations() throws ValidationException, ConversionException{
         
-        if (schema != null){
-            List<Operation> afterLast = schema.getAfterLastOperations();
-            if (afterLast != null){
-                for (Operation op: afterLast){
-                    operate("(after last record)", op, "" + this.getCount(), new AfterLastRecord());
-                }
-            }
+        if (schema != null){            
+            assert(valueResolver != null);            
+            valueResolver.resolve(new AfterLastSchemaField(), new Record(), "" + this.getCount());            
         }
     }
 
     protected void executeBeforeFirstOperations() throws ValidationException, ConversionException{
 
         if (schema != null){
-            List<Operation> beforeFirst = schema.getBeforeFirstOperations();
-            if (beforeFirst != null){
-                for (Operation op: beforeFirst){
-                    operate("(before first record)", op, "", new BeforeFirstRecord());
-                }
-            }
+            assert(valueResolver != null);            
+            valueResolver.resolve(new BeforeFirstSchemaField(), new Record(), "" + this.getCount());
         }
     }
     
     @Override
     public void setSchema(FileSchema schema) throws SchemaException{
+        if (schema == null)
+            throw new IllegalArgumentException("schema is null");
         this.schema = schema;
+        if (valueResolver == null)
+            valueResolver = new ValueResolver(schema, validationExceptionThreshold);
+        else
+            valueResolver.setSchema(schema);
     }
 
     @Override
@@ -174,103 +166,7 @@ public abstract class BaseFileWriter implements RecordWriter{
     protected abstract void write(Record record, SchemaField field)
        throws ValidationException, ConversionException, IOException;
 
-    
-    protected Object resolve(Record record, SchemaField schemaField)
-            throws ValidationException, ConversionException{
-
-        Object value = record.get(schemaField.getName());
-        
-        if (value == null){
-            //try aliases
-            for (String alias: Aliases.getAliases(schemaField)){
-                value = record.get(alias);
-                if (value != null){
-                    break;
-                }
-            }
-        }
-        
-        try{
-            value = operate(schemaField.getName(), Operations.getOperations(schema, schemaField), value, record);
-        }
-        catch(ValidationException ex){
-            String message = String.format(
-                    "{0} for [{1}] in record [%s]",
-                    new Object[]{ex.getMessage(), schemaField.getName(), schema.toString(record)});
-            throw new ValidationException(message, ex);
-        }
-        catch(ConversionException ex){
-            String message = String.format(
-                    "{0} for [{1}] in record [%s]",
-                    new Object[]{ex.getMessage(), schemaField.getName(), schema.toString(record)});
-            throw new ConversionException(message, ex);
-        }
-
-        return value;
-    }
-
-    protected Object operate(SchemaField field, Object value, Record record)
-            throws ConversionException, ValidationException{
-        
-        value = operate(field.getName(), schema.getBeforeOperations(), value, record);
-        value = operate(field.getName(), field.getOperations(), value, record);
-        value = operate(field.getName(), schema.getAfterOperations(), value, record);
-        return value;
-    }
-    
-    protected Object operate(String fieldName, List<Operation> operations, Object value, Record record)
-            throws ConversionException, ValidationException{
-        
-        if (operations == null)
-            return value;
-        for (Operation op: operations)
-            value = operate(fieldName, op, value, record);
-        return value;
-    }
-    
-
-    protected Object operate(String fieldName, Operation op, Object value, Record record)
-                throws ConversionException, ValidationException{
-
-        if (op instanceof Validator){
-            try {
-                ((Validator) op).validate(value);
-            }
-            catch (ValidationException ex) {
-                Severity severity = ((Validator) op).getSeverity();
-
-                if (severity.ordinal() >= validationExceptionThreshold.ordinal())
-                    throw ex;
-                
-                switch(severity){
-                    case LOW:
-                        log.log(Level.INFO, String.format("%s for [%s] in record [%s]",
-                                new Object[]{ex.getMessage(), fieldName, schema.toString(record)}));
-                        break;
-                    case MEDIUM:
-                        log.log(Level.WARNING, String.format("%s for [%s] in record [%s]",
-                                new Object[]{ex.getMessage(), fieldName, schema.toString(record)}));
-                        break;
-                    case HIGH:
-                        log.log(Level.SEVERE, String.format("%s for [%s] in record [%s]",
-                                new Object[]{ex.getMessage(), fieldName, schema.toString(record)}));
-                        break;
-                }
-            }
-        }
-        else if (op instanceof Converter){
-            value = ((Converter) op).convert(value);
-        }
-        else if (op instanceof MultiFieldConverter){
-            value = ((MultiFieldConverter) op).convert(value, record);
-        }
-        else{
-            throw new IllegalStateException("Unhandled operator: " + op.getClass().getName());
-        }
-
-        return value;
-    }
-
+  
     /**
      * @param data
      * @return first two fields from the record

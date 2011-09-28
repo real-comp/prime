@@ -8,7 +8,7 @@ import com.realcomp.data.Operation;
  */
 public interface Validator<T> extends Operation{
 
-    static final Severity DEFAULT_SEVERITY=Severity.MEDIUM;
+    static final Severity DEFAULT_SEVERITY = Severity.MEDIUM;
 
     /**
      * Set the severity of this Validator.

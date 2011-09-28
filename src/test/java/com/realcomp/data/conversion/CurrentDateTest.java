@@ -26,24 +26,24 @@ public class CurrentDateTest {
         Calendar now = Calendar.getInstance();
         DateFormat formatter = new SimpleDateFormat("yyyyMMdd");
         assertEquals(formatter.format(now.getTime()), converter.convert(""));
-        assertEquals(8, converter.convert(null).length());
+        assertEquals(8, converter.convert(null).toString().length());
 
         converter.setFormat("yyyy");
         formatter = new SimpleDateFormat("yyyy");
         assertEquals(formatter.format(now.getTime()), converter.convert(""));
-        assertEquals(4, converter.convert(null).length());
+        assertEquals(4, converter.convert(null).toString().length());
 
 
         converter.setFormat("MM/dd/yyyy");
         formatter = new SimpleDateFormat("MM/dd/yyyy");
         assertEquals(formatter.format(now.getTime()), converter.convert(""));
-        assertEquals(10, converter.convert(null).length());
+        assertEquals(10, converter.convert(null).toString().length());
 
         converter.setFormat("M/d/yyyy");
         formatter = new SimpleDateFormat("M/d/yyyy");
         assertEquals(formatter.format(now.getTime()), converter.convert(""));
-        assertTrue(converter.convert(null).length() >= 8);
-        assertTrue(converter.convert(null).length() <= 10);
+        assertTrue(converter.convert(null).toString().length() >= 8);
+        assertTrue(converter.convert(null).toString().length() <= 10);
 
         converter.setFormat("short");
         formatter = DateFormat.getDateInstance(DateFormat.SHORT);

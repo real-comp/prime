@@ -145,8 +145,8 @@ public abstract class BaseFileReader implements RecordReader{
         if (schema != null){
             List<Operation> operations = schema.getAfterLastOperations();
             if (operations != null && !operations.isEmpty()){
-                ValueResolver worker = new ValueResolver(validationExceptionThreshold);
-                worker.resolve(new AfterLastSchemaField(), operations, "" + this.getCount(), null);
+                ValueResolver resolver = new ValueResolver(schema, validationExceptionThreshold);
+                resolver.resolve(new AfterLastSchemaField(), new Record(), "" + this.getCount());
             }
         }
     }
@@ -156,8 +156,8 @@ public abstract class BaseFileReader implements RecordReader{
         if (schema != null){
             List<Operation> operations = schema.getBeforeFirstOperations();
             if (operations != null && !operations.isEmpty()){
-                ValueResolver worker = new ValueResolver(validationExceptionThreshold);
-                worker.resolve(new BeforeFirstSchemaField(), operations, "", null);
+                ValueResolver resolver = new ValueResolver(schema, validationExceptionThreshold);
+                resolver.resolve(new BeforeFirstSchemaField(), new Record(), "" + this.getCount());
             }
         }
     }

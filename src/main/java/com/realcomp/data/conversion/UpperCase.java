@@ -6,6 +6,10 @@ package com.realcomp.data.conversion;
  */
 @com.realcomp.data.annotation.Converter("upperCase")
 public class UpperCase extends SimpleConverter {
+    
+    public UpperCase(){
+        super();
+    }
 
     @Override
     public Object convert(Object value) throws ConversionException{

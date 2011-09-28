@@ -1,122 +1,95 @@
 package com.realcomp.data.record.io;
 
-import com.realcomp.data.Operation;
 import com.realcomp.data.conversion.ConversionException;
-import com.realcomp.data.conversion.Converter;
-import com.realcomp.data.conversion.MissingFieldException;
-import com.realcomp.data.conversion.MultiFieldConverter;
+import com.realcomp.data.record.Aliases;
 import com.realcomp.data.record.Record;
 import com.realcomp.data.schema.FileSchema;
 import com.realcomp.data.schema.SchemaField;
 import com.realcomp.data.validation.Severity;
 import com.realcomp.data.validation.ValidationException;
-import com.realcomp.data.validation.Validator;
-import java.util.List;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- *
+ * 
  * @author krenfro
  */
 public class ValueResolver {
-
-    Need to redesign this
     
     protected static final Logger log = Logger.getLogger(ValueResolver.class.getName());
 
-    protected Severity validationExceptionThreshold;
-    protected FileSchema schema;
+    private ValueSurgeon surgeon;
     
-    /**
-     * If a Validator logs a warning above this threshold, then the warning is thrown as
-     * a ValidationException. By default, Validators log at Severity.MEDIUM, so all
-     * validation failures are simply logged.  This mechanism, along with adjustable
-     * Validator severity, allow for configurations where some validations are more
-     * important than others.
-     * @param validationExceptionThreshold
-     */
-    public ValueResolver(Severity validationExceptionThreshold){
-        this.validationExceptionThreshold = validationExceptionThreshold;
+    public ValueResolver(FileSchema schema){
+        surgeon = new ValueSurgeon(schema);
     }
-
-    public Severity getValidationExceptionThreshold() {
-        return validationExceptionThreshold;
+    
+    public ValueResolver(FileSchema schema, Severity validationExceptionThreshold){
+        surgeon = new ValueSurgeon(schema, validationExceptionThreshold);
     }
-
-    public void setValidationExceptionThreshold(Severity validationExceptionThreshold) {
-        if (validationExceptionThreshold == null)
-            throw new IllegalArgumentException("validationExceptionThreshold is null");
-        this.validationExceptionThreshold = validationExceptionThreshold;
+    
+    public ValueResolver(ValueResolver copy){
+        surgeon = new ValueSurgeon(copy.surgeon);
     }
 
     public FileSchema getSchema() {
-        return schema;
+        return surgeon.getSchema();
     }
 
     public void setSchema(FileSchema schema) {
-        this.schema = schema;
+        surgeon.setSchema(schema);
+    }
+
+    public Severity getValidationExceptionThreshold() {
+        return surgeon.getValidationExceptionThreshold();
+    }
+
+    public void setValidationExceptionThreshold(Severity validationExceptionThreshold) {
+        surgeon.setValidationExceptionThreshold(validationExceptionThreshold);
     }
     
-    public Object resolve(SchemaField field, List<Operation> operations, Object data, Record record)
-            throws ConversionException, ValidationException, MissingFieldException{
-
-        Object resultOfOperations = resolve(field.getName(), operations, data, record);
-        return field.getType().coerce(resultOfOperations);
-    }
-
-
-    protected Object resolve(String fieldName, List<Operation> operations, Object data, Record record)
-            throws ConversionException, ValidationException, MissingFieldException{
-
-        if (operations != null && !operations.isEmpty()){
-            for (Operation op: operations)
-                data = resolve(fieldName, op, data, record);
-        }
-
-        return data;
-    }
-
-    protected Object resolve(String fieldName, Operation op, Object data, Record record)
-                throws ConversionException, ValidationException, MissingFieldException{
-
-        Object result = data;
-
-        if (op instanceof Validator){
-            try {
-                ((Validator) op).validate(data);
-            }
-            catch (ValidationException ex) {
-                Severity severity = ((Validator) op).getSeverity();
-                switch(severity){
-                    case LOW:
-                        log.log(Level.INFO, String.format("%s for [%s] in record [%s]",
-                                new Object[]{ex.getMessage(), fieldName, schema.toString(record)}));
-                        break;
-                    case MEDIUM:
-                        log.log(Level.WARNING, String.format("%s for [%s] in record [%s]",
-                                new Object[]{ex.getMessage(), fieldName, schema.toString(record)}));
-                        break;
-                    case HIGH:
-                        log.log(Level.SEVERE, String.format("%s for [%s] in record [%s]",
-                                new Object[]{ex.getMessage(), fieldName, schema.toString(record)}));
-                        break;
+    /**
+     * Resolve the specified field from the Record, performing all specified Operations.
+     * 
+     * @param field
+     * @param record
+     * @return the resolved value, or null if not found
+     * @throws ConversionException
+     * @throws ValidationException 
+     */
+    public Object resolve(SchemaField field, Record record)
+            throws ConversionException, ValidationException{
+            
+        //schema field name is not composite, so resolving first is ok
+        Object value = record.get(field.getName());
+        
+        if (value == null){
+            //try aliases
+            for (String alias: Aliases.getAliases(field)){
+                value = record.get(alias);
+                if (value != null){
+                    break;
                 }
-
-                if (severity.ordinal() >= validationExceptionThreshold.ordinal())
-                    throw ex;
             }
         }
-        else if (op instanceof Converter){
-            result = ((Converter) op).convert(data);
-        }
-        else if (op instanceof MultiFieldConverter){
-            result = ((MultiFieldConverter) op).convert(data, record);
-        }
-        else{
-            throw new IllegalStateException("Unhandled operator: " + op.getClass().getName());
-        }
-
-        return result;
+        
+        return resolve(field, record, value);
     }
+    
+    /**
+     * Modify the value with the operations defined in the FileSchema for the specified SchemaField.
+     * @param field
+     * @param record
+     * @param value
+     * @return the resolved value, or null if not found
+     * @throws ConversionException
+     * @throws ValidationException 
+     */
+    public Object resolve(SchemaField field, Record record, Object value)
+            throws ConversionException, ValidationException{
+            
+        return value == null ? null : surgeon.operate(field, record, value);
+    }
+    
+    
+    
 }

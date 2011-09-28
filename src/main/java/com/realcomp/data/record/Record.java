@@ -66,33 +66,7 @@ public class Record implements Serializable {
     }
     
     public Object put(String key, Object value) {
-
-        if (value == null) {
-            return data.remove(key);
-        }
-        else {
-            DataType type = DataType.getDataType(value);
-            switch (type) {
-                case STRING:
-                    return put(key, (String) value);
-                case INTEGER:
-                    return put(key, (Integer) value);
-                case FLOAT:
-                    return put(key, (Float) value);
-                case LONG:
-                    return put(key, (Long) value);
-                case DOUBLE:
-                    return put(key, (Double) value);
-                case BOOLEAN:
-                    return put(key, (Boolean) value);
-                case LIST:
-                    return put(key, (List) value);
-                case MAP:
-                    return put(key, (Map) value);
-            }
-        }
-
-        return get(key);
+        return value == null ? data.remove(key) : data.put(key, value);
     }
 
     public Object put(String key, String value) {
@@ -131,6 +105,11 @@ public class Record implements Serializable {
         return data.get(key);
     }
     
+    /**
+     * 
+     * @param key
+     * @return 
+     */
     public List<Object> resolve(String key){
         return RecordValueResolver.resolve(data, key);
     }

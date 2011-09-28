@@ -5,18 +5,24 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 
+ * Finds a specified value in a Record.  The composite key can reference a value
+ * arbitrarily deep within a Record.  This utility dives into the Record to find the value.
  * @author krenfro
  */
 public class RecordValueResolver {
     
     
-    public static List<Object> resolve(Map<String,Object> data, String key){
+    /**
+     * @param data
+     * @param compositeKey Period delimited key
+     * @return a list of Objects (DataTypes) referenced by the compositeKey
+     */
+    public static List<Object> resolve(Map<String,Object> data, String compositeKey){
         
-        return resolve(data, IndexedRecordKey.parse(key));        
+        return resolve(data, RecordKey.parse(compositeKey));        
     }
     
-    private static List<Object> resolve(Map<String,Object> map, List<IndexedRecordKey> keys){
+    private static List<Object> resolve(Map<String,Object> map, List<RecordKey> keys){
         
         List<Object> retVal = new ArrayList<Object>();        
         
@@ -24,7 +30,7 @@ public class RecordValueResolver {
             retVal.add(map);
         }
         else{            
-            IndexedRecordKey key = keys.remove(0);
+            RecordKey key = keys.remove(0);
             Object value = map.get(key.getKey());
 
             if (value != null){
@@ -33,11 +39,11 @@ public class RecordValueResolver {
 
                     if (key.isIndexed()){
                         if (list.size() > key.getIndex())
-                            retVal.addAll(resolve(list.get(key.getIndex()), new ArrayList<IndexedRecordKey>(keys)));
+                            retVal.addAll(resolve(list.get(key.getIndex()), new ArrayList<RecordKey>(keys)));
                     }
                     else{
                         for (Map<String,Object> entry: list)
-                            retVal.addAll(resolve(entry, new ArrayList<IndexedRecordKey>(keys)));
+                            retVal.addAll(resolve(entry, new ArrayList<RecordKey>(keys)));
                     }
                 }
                 else{

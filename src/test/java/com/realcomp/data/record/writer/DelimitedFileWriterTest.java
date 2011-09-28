@@ -118,29 +118,28 @@ public class DelimitedFileWriterTest {
         reader.setDelimiter(Delimiter.CSV);
 
         
-        File temp = File.createTempFile("realcomp-data.", ".tmp");
-        temp.deleteOnExit();
-        writer.open(new FileOutputStream(temp));
-        writer.setSchema(get3FieldSchema());
-        
         String data = "\"a123\",\"b123\",\"c123\"";
-        reader.open(new ByteArrayInputStream(data.getBytes()));
-
+        ByteArrayInputStream in = new ByteArrayInputStream(data.getBytes());
+        reader.open(in);
         Record a = reader.read();
         assertNotNull(a);
         assertEquals("a123", a.get("a"));
         assertEquals("b123", a.get("b"));
         assertEquals("c123", a.get("c"));
-
+        
+        
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        writer.open(out);
+        writer.setSchema(get3FieldSchema());
         writer.write(a);
         writer.write(a);
         writer.write(a);
+        
         writer.close();
         reader.close();
-
-        ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-        reader.open(new FileInputStream(temp));
         
+        in = new ByteArrayInputStream(out.toByteArray());
+        reader.open(in);        
         Record b = reader.read();
         assertEquals(a, b);
         assertEquals(a, reader.read());

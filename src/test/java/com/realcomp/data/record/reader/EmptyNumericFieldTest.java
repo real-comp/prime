@@ -38,9 +38,9 @@ public class EmptyNumericFieldTest {
         instance = new DelimitedFileReader();
         instance.setSchema(getSchema());
         record = instance.loadRecord(fields, data);
-        assertEquals(null, record.get("int"));
-        assertEquals(null, record.get("float"));
-        assertEquals(null, record.get("double"));
+        assertEquals(0, record.get("int"));
+        assertEquals(0f, record.get("float"));
+        assertEquals(0d, record.get("double"));
 
 
     }

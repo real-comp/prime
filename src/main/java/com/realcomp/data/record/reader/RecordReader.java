@@ -25,7 +25,7 @@ public interface RecordReader {
     
     
     /**
-     * If a Validator logs a warning above this threshold, then the warning is thrown as
+     * If a Validator logs a warning at or above this threshold, then the warning is thrown as
      * a ValidationException. By default, Validators log at Severity.MEDIUM, so all
      * validation failures are simply logged.  This mechanism, along with adjustable
      * Validator severity, allow for configurations where some validations are more

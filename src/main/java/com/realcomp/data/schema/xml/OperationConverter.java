@@ -27,6 +27,11 @@ import java.util.Set;
 public class OperationConverter implements Converter{
     
 
+    public OperationConverter(){
+        super();
+    }
+    
+    
     @Override
     public boolean canConvert(Class type){
         return Operation.class.isAssignableFrom(type);
@@ -44,6 +49,9 @@ public class OperationConverter implements Converter{
 
                 if (o instanceof MultiFieldOperation && pd.getName().equals("fields")){
                     value = getFieldNames(((MultiFieldOperation)o).getFields());
+                }
+                else if (pd.getName().equals("supportedTypes")){
+                    value = null;
                 }
                 else{
                     value = getProperty(pd, o);
@@ -110,6 +118,9 @@ public class OperationConverter implements Converter{
 
                     writer.addAttribute("fields", fieldNames);                        
                 }
+                else if (pd.getName().equals("supportedTypes")){
+                    
+                }
                 else{
                     String value = getProperty(pd, op);
                     if (value != null)
@@ -145,7 +156,7 @@ public class OperationConverter implements Converter{
                 if (op instanceof MultiFieldOperation && pd.getName().equals("fields")){
                     ((MultiFieldOperation) op).setFields(getFieldNames(reader.getAttribute(pd.getName())));
                     successful.add(pd.getName());
-                }
+                }     
                 else{
                     setProperty(pd.getName(), reader.getAttribute(pd.getName()), pd, op);
                     successful.add(pd.getName());

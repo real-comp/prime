@@ -1,4 +1,4 @@
-package com.realcomp.data.record.io;
+package com.realcomp.data.record;
 
 import com.realcomp.data.conversion.ComplexConverter;
 import com.realcomp.data.conversion.ConversionException;

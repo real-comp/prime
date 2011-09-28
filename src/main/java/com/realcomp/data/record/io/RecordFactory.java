@@ -1,5 +1,6 @@
 package com.realcomp.data.record.io;
 
+import com.realcomp.data.record.Aliases;
 import com.realcomp.data.conversion.ConversionException;
 import com.realcomp.data.record.Record;
 import com.realcomp.data.schema.Classifier;
@@ -53,8 +54,7 @@ public class RecordFactory {
     protected Map<String,List<String>> aliases;
 
     protected FileSchema schema;
-    protected ValueResolver resolver;
-    protected Severity validationExceptionThreshold = Severity.HIGH;
+    protected ValueSurgeon surgeon;
 
     public RecordFactory(FileSchema schema) throws ParsePlanException{
 
@@ -65,8 +65,7 @@ public class RecordFactory {
         buildKeyFieldCache();
         buildParsePlan();
         aliases = Aliases.getAliases(schema);
-        resolver = new ValueResolver(validationExceptionThreshold);
-        resolver.setSchema(schema);
+        surgeon = new ValueSurgeon(schema);
     }
     
     /**
@@ -83,7 +82,7 @@ public class RecordFactory {
 
         if (fields.size() != data.length)
             throw new ValidationException(
-                    "number of fields in schema does not match data.",
+                    "The number of fields in schema does not match data.",
                     fields.size() + " != " + data.length,
                     Severity.HIGH);
 
@@ -95,12 +94,12 @@ public class RecordFactory {
             index = fields.indexOf(schemaField);
             Object value = null;
             try{
-                value = resolver.resolve(
-                        schemaField, Operations.getOperations(schema, schemaField), data[index], record);
+                value = surgeon.operate(schemaField, record, data[index]);
             }
-            catch (ConversionException e){
+            catch (ConversionException ex){
                 throw new ConversionException(
-                        e.getMessage() + " in field [" + schemaField + "]");
+                        String.format("%s in field [%s] of record [%s]",
+                                new Object[]{ex.getMessage(), schemaField, schema.toString(record)}));
             }
 
             record.put(schemaField.getName(), value);
@@ -185,16 +184,11 @@ public class RecordFactory {
 
     
     public Severity getValidationExceptionThreshold() {
-        return validationExceptionThreshold;
+        return surgeon.getValidationExceptionThreshold();
     }
 
     
     public void setValidationExceptionThreshold(Severity validationExceptionThreshold) {
-        if (validationExceptionThreshold == null)
-            throw new IllegalArgumentException("validationExceptionThreshold == null");
-        this.validationExceptionThreshold = validationExceptionThreshold;
-        if (resolver != null)
-            resolver.setValidationExceptionThreshold(validationExceptionThreshold);
-        
+        surgeon.setValidationExceptionThreshold(validationExceptionThreshold);        
     }
 }

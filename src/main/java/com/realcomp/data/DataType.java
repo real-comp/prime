@@ -113,7 +113,7 @@ public enum DataType {
         try {
             switch (DataType.getDataType(value)) {
                 case STRING:
-                    return Integer.parseInt(value.toString().isEmpty() ? "0" : value.toString());
+                    return ((Double) Double.parseDouble(value.toString().isEmpty() ? "0" : value.toString())).intValue();
                 case INTEGER:
                     return (Integer) value;
                 case FLOAT:

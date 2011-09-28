@@ -1,5 +1,6 @@
 package com.realcomp.data.record.writer;
 
+import com.realcomp.data.DataType;
 import com.realcomp.data.conversion.ConversionException;
 import com.realcomp.data.record.Record;
 import com.realcomp.data.schema.Classifier;
@@ -118,7 +119,12 @@ public class FixedFileWriter extends BaseFileWriter{
     protected void write(Record record, SchemaField field)
             throws ValidationException, ConversionException, IOException{
 
-        writer.write(resize(toString(record, field), field.getLength()));
+        
+        Object value = valueResolver.resolve(field, record);
+        if (value == null)
+            value = "";
+        
+        writer.write(resize((String) DataType.STRING.coerce(value), field.getLength()));
     }
 
     protected String resize(String s, int length){
