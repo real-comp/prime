@@ -1,7 +1,9 @@
 package com.realcomp.data.conversion;
 
+
 /**
- * behaves like String.substring(begin, end);
+ * behaves like String.substring(begin, end)
+ * Bad index will return empty-string.
  * 
  * @author krenfro
  */
@@ -29,13 +31,16 @@ public class Substring implements Converter {
             throw new IllegalArgumentException("value is null");
 
         try{
-            if (end == null)
+            if (begin == null)
+                begin = 0;
+            
+            if (end == null || end <= begin)
                 return value.substring(begin);
             else
                 return value.substring(begin, end);
         }
         catch(IndexOutOfBoundsException e){
-            throw new ConversionException(e);
+            return "";
         }
         
     }

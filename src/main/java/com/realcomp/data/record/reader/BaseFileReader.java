@@ -188,8 +188,9 @@ public abstract class BaseFileReader implements RecordReader{
 
         if (fields.size() != data.length)
             throw new ValidationException(
-                    "number of fields in schema does not match data.",
-                    fields.size() + " != " + data.length,
+                    String.format("number of fields in schema [%s] does not match data [%s].",
+                            new Object[]{fields.size(), data.length}),
+                    String.format("%s != %s", new Object[]{fields.size(), data.length}),
                     Severity.HIGH);
 
         return recordFactory.build(fields, data);

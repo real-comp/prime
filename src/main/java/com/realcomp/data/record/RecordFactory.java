@@ -75,11 +75,13 @@ public class RecordFactory {
     public Record build(List<SchemaField> fields, String[] data)
             throws ValidationException, ConversionException{
 
-        if (fields.size() != data.length)
+        if (fields.size() != data.length)            
             throw new ValidationException(
-                    "number of fields in schema does not match data.",
-                    fields.size() + " != " + data.length,
+                    String.format("number of fields in schema [%s] does not match data [%s].",
+                            new Object[]{fields.size(), data.length}),
+                    String.format("%s != %s", new Object[]{fields.size(), data.length}),
                     Severity.HIGH);
+        
 
         Record record = new Record();
         int index = 0;
