@@ -161,12 +161,16 @@ public class FixedFileWriter extends BaseFileWriter{
         if (getClass() != obj.getClass())
             return false;
         final FixedFileWriter other = (FixedFileWriter) obj;
+        if (this.header != other.header)
+            return false;
         return true;
     }
 
     @Override
     public int hashCode() {
-        int hash = 3;
+        int hash = 7;
+        hash = 53 * hash + (this.header ? 1 : 0);
         return hash;
     }
+
 }

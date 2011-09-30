@@ -17,4 +17,11 @@
                 <goal>deploy</goal>
             </goals>
         </action>
+        <action>
+            <actionName>CUSTOM-sonar</actionName>
+            <displayName>sonar</displayName>
+            <goals>
+                <goal>sonar:sonar</goal>
+            </goals>
+        </action>
     </actions>

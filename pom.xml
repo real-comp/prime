@@ -149,5 +149,15 @@
         <developerConnection>scm:svn:svn+ssh://dev.real-comp.com/opt/usr/share/rcsvn/realcomp-data/trunk</developerConnection>
         <url>http://dev.real-comp.com:8060/browse/rcsvn/realcomp-data/trunk</url>
     </scm>
+    
+    <reporting>
+      <plugins>
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>cobertura-maven-plugin</artifactId>
+          <version>2.5.1</version>
+        </plugin>
+      </plugins>
+    </reporting>
 
 </project>

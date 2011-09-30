@@ -21,6 +21,8 @@ public enum DataType {
     BOOLEAN("boolean"),
     MAP("map"),
     LIST("list");
+    
+    
     private BooleanConverter booleanConverter;
     private String description;
 
@@ -76,26 +78,38 @@ public enum DataType {
         if (value == null)
             throw new IllegalArgumentException("value is null");
 
+        Object result = null;
+        
         switch (this) {
             case STRING:
-                return coerceToString(value);
+                result = coerceToString(value);
+                break;
             case INTEGER:
-                return coerceToInteger(value);
+                result = coerceToInteger(value);
+                break;
             case FLOAT:
-                return coerceToFloat(value);
+                result = coerceToFloat(value);
+                break;
             case LONG:
-                return coerceToLong(value);
+                result = coerceToLong(value);
+                break;
             case DOUBLE:
-                return coerceToDouble(value);
+                result = coerceToDouble(value);
+                break;
             case BOOLEAN:
-                return coerceToBoolean(value);
+                result = coerceToBoolean(value);
+                break;
             case LIST:
-                return coerceToList(value);
+                result = coerceToList(value);
+                break;
             case MAP:
-                return coerceToMap(value);
+                result = coerceToMap(value);
+                break;
+            default:
+                throw new IllegalStateException("Unhandled DataType: " + this.toString());
         }
 
-        return null;
+        return result;
     }
 
     private String coerceToString(Object value) {
@@ -110,34 +124,46 @@ public enum DataType {
      */
     private Integer coerceToInteger(Object value) throws ConversionException {
 
+        Integer result = null;
+        
         try {
             switch (DataType.getDataType(value)) {
                 case STRING:
-                    return ((Double) Double.parseDouble(value.toString().isEmpty() ? "0" : value.toString())).intValue();
+                    result = ((Double) Double.parseDouble(value.toString().isEmpty() ? "0" : value.toString())).intValue();
+                    break;
                 case INTEGER:
-                    return (Integer) value;
+                    result = (Integer) value;
+                    break;
                 case FLOAT:
-                    return ((Float) value).intValue();
+                    result = ((Float) value).intValue();
+                    break;
                 case LONG:
-                    return ((Long) value).intValue();
+                    result = ((Long) value).intValue();
+                    break;
                 case DOUBLE:
-                    return ((Double) value).intValue();
+                    result = ((Double) value).intValue();
+                    break;
                 case BOOLEAN:
-                    return ((Boolean) value) ? 1 : 0;
+                    result = ((Boolean) value) ? 1 : 0;
+                    break;
                 case LIST:
                     if (((List) value).size() == 1)
-                        return coerceToInteger(((List) value).get(0));
+                        result = coerceToInteger(((List) value).get(0));
+                    break;
             }
-        } catch (NumberFormatException nfe) {
+        } 
+        catch (NumberFormatException nfe) {
             throw new ConversionException(
                     String.format("Unable to coerce [%s] of type [%s] to type [%s]",
                     value, DataType.getDataType(value), INTEGER));
         }
 
-        throw new ConversionException(
-                String.format("Unable to coerce [%s] of type [%s] to type [%s]",
-                value, DataType.getDataType(value), INTEGER));
+        if (result == null)
+            throw new ConversionException(
+                    String.format("Unable to coerce [%s] of type [%s] to type [%s]",
+                    value, DataType.getDataType(value), INTEGER));
 
+        return result;
     }
 
     /**

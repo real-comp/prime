@@ -11,19 +11,20 @@ import java.util.Calendar;
 @com.realcomp.data.annotation.Converter("currentDate")
 public class CurrentDate extends ComplexConverter{
 
-    protected static Calendar now = Calendar.getInstance();
-
+    protected Calendar now;
     protected String format;
     protected DateFormat formatter;
     
     public CurrentDate(){
         super();
+        now = Calendar.getInstance();
         format = "yyyyMMdd";
         formatter = getFormatter(format);
     }
     
     public CurrentDate(String format){
         super();
+        now = Calendar.getInstance();
         this.format = format;
         formatter = getFormatter(format);
     }

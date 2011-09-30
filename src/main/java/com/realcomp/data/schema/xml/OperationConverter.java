@@ -118,10 +118,7 @@ public class OperationConverter implements Converter{
 
                     writer.addAttribute("fields", fieldNames);                        
                 }
-                else if (pd.getName().equals("supportedTypes")){
-                    
-                }
-                else{
+                else if (!pd.getName().equals("supportedTypes")){
                     String value = getProperty(pd, op);
                     if (value != null)
                         writer.addAttribute(pd.getName(), value);
