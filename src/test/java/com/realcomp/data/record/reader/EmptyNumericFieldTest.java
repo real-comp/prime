@@ -24,7 +24,7 @@ public class EmptyNumericFieldTest {
     @Test
     public void testEmptyFields() throws Exception {
 
-        List<SchemaField> fields = getSchema().getFields();
+        List<SchemaField> fields = getSchema().getFields().get(FileSchema.DEFAULT_CLASSIFIER);
 
         String[] data = new String[]{"123","456","789"};
         DelimitedFileReader instance = new DelimitedFileReader();

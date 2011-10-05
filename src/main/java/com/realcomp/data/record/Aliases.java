@@ -1,6 +1,5 @@
 package com.realcomp.data.record;
 
-import com.realcomp.data.record.Alias;
 import com.realcomp.data.Operation;
 import com.realcomp.data.schema.FileSchema;
 import com.realcomp.data.schema.SchemaField;
@@ -8,6 +7,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 /**
  *
@@ -23,10 +23,12 @@ public class Aliases {
      */
     public static Map<String, List<String>> getAliases(FileSchema schema){
         Map<String,List<String>> aliases = new HashMap<String,List<String>>();
-        for (SchemaField field: schema.getFields()){
-            List<String> definedAliases = getAliases(field);
-            if (definedAliases != null)
-                aliases.put(field.getName(), definedAliases);
+        for (Map.Entry<Pattern, List<SchemaField>> fields: schema.getFields().entrySet()){
+            for (SchemaField field: fields.getValue()){
+                List<String> definedAliases = getAliases(field);
+                if (definedAliases != null)
+                    aliases.put(field.getName(), definedAliases);
+            }
         }
         return aliases;
     }

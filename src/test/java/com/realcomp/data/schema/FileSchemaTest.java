@@ -35,18 +35,18 @@ public class FileSchemaTest {
         FileSchema b = new FileSchema(a);
         
         assertEquals(a, b);
-        assertTrue(a.getFields().size() == 1);
-        assertTrue(a.getFields().get(0).getOperations().size() == 1);
-        assertTrue(b.getFields().size() == 1);
-        assertTrue(b.getFields().get(0).getOperations().size() == 1);
+        assertTrue(a.getFields().get(FileSchema.DEFAULT_CLASSIFIER).size() == 1);
+        assertTrue(a.getFields().get(FileSchema.DEFAULT_CLASSIFIER).get(0).getOperations().size() == 1);
+        assertTrue(b.getFields().get(FileSchema.DEFAULT_CLASSIFIER).size() == 1);
+        assertTrue(b.getFields().get(FileSchema.DEFAULT_CLASSIFIER).get(0).getOperations().size() == 1);
         
-        b.getFields().get(0).clearOperations();
+        b.getFields().get(FileSchema.DEFAULT_CLASSIFIER).get(0).clearOperations();
         
         assertFalse(a.equals(b));
-        assertTrue(a.getFields().size() == 1);
-        assertTrue(a.getFields().get(0).getOperations().size() == 1);
-        assertTrue(b.getFields().size() == 1);
-        assertTrue(b.getFields().get(0).getOperations().size() == 0);
+        assertTrue(a.getFields().get(FileSchema.DEFAULT_CLASSIFIER).size() == 1);
+        assertTrue(a.getFields().get(FileSchema.DEFAULT_CLASSIFIER).get(0).getOperations().size() == 1);
+        assertTrue(b.getFields().get(FileSchema.DEFAULT_CLASSIFIER).size() == 1);
+        assertTrue(b.getFields().get(FileSchema.DEFAULT_CLASSIFIER).get(0).getOperations().size() == 0);
         
         
     }

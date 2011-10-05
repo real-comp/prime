@@ -82,7 +82,7 @@ public class Filter {
     }
 
     protected void checkFields(){
-        for (SchemaField f: outputSchema.getFields()){
+        for (SchemaField f: outputSchema.getFields().get(FileSchema.DEFAULT_CLASSIFIER)){
             if (inputSchema.getField(f.getName()) == null)
                 logger.log(
                         Level.WARNING,

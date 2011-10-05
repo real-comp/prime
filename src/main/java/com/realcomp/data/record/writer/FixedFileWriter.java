@@ -61,7 +61,7 @@ public class FixedFileWriter extends BaseFileWriter{
 
     @Override
     public void write(Record record)
-            throws IOException, ValidationException, ConversionException{
+            throws IOException, ValidationException, ConversionException, SchemaException{
 
         //optionally write header record
         if (!beforeFirstOperationsRun && header){
@@ -88,13 +88,11 @@ public class FixedFileWriter extends BaseFileWriter{
         try {
             FileSchema originalSchema = getSchema();
             FileSchema headerSchema = new FileSchema(getSchema());
-            for (SchemaField f : headerSchema.getFields()){
-                f.clearOperations();
+            for (List<SchemaField> fields : headerSchema.getFields().values()){
+                for (SchemaField field: fields)
+                    field.clearOperations();
             }
-            for (Classifier c : headerSchema.getClassifiers())
-                for (SchemaField f : c.getFields())
-                    f.clearOperations();
-
+            
             setSchema(headerSchema);
             super.write(getHeader());
             writer.newLine();
@@ -109,7 +107,7 @@ public class FixedFileWriter extends BaseFileWriter{
     
     protected Record getHeader(){
         Record retVal = new Record();
-        for(SchemaField field: schema.getFields())
+        for(SchemaField field: schema.getFields().get(FileSchema.DEFAULT_CLASSIFIER))
             retVal.put(field.getName(), field.getName());
         return retVal;
     }
@@ -133,7 +131,8 @@ public class FixedFileWriter extends BaseFileWriter{
 
     @Override
     public void setSchema(FileSchema schema) throws SchemaException {
-        ensureFieldLengthsSpecified(schema.getFields());
+        for (List<SchemaField> fields: schema.getFields().values())
+            ensureFieldLengthsSpecified(fields);
         super.setSchema(schema);
     }
 

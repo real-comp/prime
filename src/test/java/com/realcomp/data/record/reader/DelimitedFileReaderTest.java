@@ -221,7 +221,7 @@ public class DelimitedFileReaderTest {
     @Test
     public void testLoadRecordMissingFields() throws Exception {
 
-        List<SchemaField> fields = get3FieldSchema().getFields();
+        List<SchemaField> fields = get3FieldSchema().getFields().get(FileSchema.DEFAULT_CLASSIFIER);
 
         String[] data = new String[]{"a123","b123"};
         DelimitedFileReader instance = new DelimitedFileReader();

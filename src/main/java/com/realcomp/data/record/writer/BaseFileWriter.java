@@ -1,6 +1,5 @@
 package com.realcomp.data.record.writer;
 
-import com.realcomp.data.Operation;
 import com.realcomp.data.conversion.ConversionException;
 import com.realcomp.data.record.Record;
 import com.realcomp.data.record.io.ValueResolver;
@@ -131,14 +130,14 @@ public abstract class BaseFileWriter implements RecordWriter{
 
     @Override
     public void write(RecordView recordView)
-        throws IOException, ValidationException, ConversionException{
+        throws IOException, ValidationException, ConversionException, SchemaException{
 
         write(recordView.getRecord());
     }
     
     @Override
     public void write(Record record)
-            throws IOException, ValidationException, ConversionException{
+            throws IOException, ValidationException, ConversionException, SchemaException{
 
         if (schema == null)
             throw new IllegalStateException("schema not specified");
@@ -150,7 +149,7 @@ public abstract class BaseFileWriter implements RecordWriter{
             beforeFirstOperationsRun = true;
         }
 
-        write(record, schema.getFields());
+        write(record, schema.classify(record));
         count++;
     }
 
@@ -171,11 +170,11 @@ public abstract class BaseFileWriter implements RecordWriter{
      * @param data
      * @return first two fields from the record
      */
-    protected String getRecordIdentifier(Record record){
+    protected String getRecordIdentifier(Record record) throws SchemaException{
         if (record == null || record.isEmpty())
             return "";
         String id = "";
-        List<SchemaField> fields = schema.getFields();
+        List<SchemaField> fields = schema.classify(record);
         if (fields.size() > 0)
             id = id.concat(record.get(fields.get(0).getName()).toString());
         

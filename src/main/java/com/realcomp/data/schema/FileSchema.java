@@ -7,13 +7,20 @@ import com.realcomp.data.record.reader.RecordReader;
 import com.realcomp.data.record.writer.RecordWriter;
 import com.realcomp.data.schema.xml.RecordReaderConverter;
 import com.realcomp.data.schema.xml.RecordWriterConverter;
+import com.realcomp.data.schema.xml.SchemaFieldsConverter;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
 import com.thoughtworks.xstream.annotations.XStreamConverter;
-import com.thoughtworks.xstream.annotations.XStreamImplicit;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
 import org.apache.commons.lang.StringUtils;
 
 /**
@@ -24,6 +31,7 @@ import org.apache.commons.lang.StringUtils;
 public class FileSchema {
 
     protected static final Logger logger = Logger.getLogger(FileSchema.class.getName());
+    protected static final Pattern DEFAULT_CLASSIFIER = Pattern.compile(".*");
 
     @XStreamAsAttribute
     protected String name;
@@ -41,24 +49,21 @@ public class FileSchema {
     protected List<Operation> before;
     protected List<Operation> after;
     protected List<Operation> afterLast;
-    protected List<SchemaField> fields;
-
-    @XStreamImplicit
-    protected List<Classifier> classifiers;
-
-
+    
+    protected LinkedHashSet<SchemaFieldList> fields;
+    
     public FileSchema(){
-        fields = new ArrayList<SchemaField>();
-        classifiers = new ArrayList<Classifier>();
+        fields = new LinkedHashSet<SchemaFieldList>();
+        fields.add(new SchemaFieldList());
     }
 
     public FileSchema(FileSchema copy) throws SchemaException{
-        fields = new ArrayList<SchemaField>();
-        classifiers = new ArrayList<Classifier>();
+        fields = new LinkedHashSet<SchemaFieldList>();
+        for (SchemaFieldList fieldList: fields)
+            fields.add(new SchemaFieldList(fieldList));
+        
         this.name = copy.name;
         this.version = copy.version;
-        setFields(copy.getFields());
-        setClassifiers(copy.getClassifiers());
         setBeforeFirstOperations(copy.getBeforeFirstOperations());
         setBeforeOperations(copy.getBeforeOperations());
         setAfterLastOperations(copy.getAfterLastOperations());
@@ -90,36 +95,8 @@ public class FileSchema {
         this.writer = writer;
         this.writer.setSchema(this);
     }
-
-    public List<Classifier> getClassifiers() {
-
-        if (classifiers == null)
-            classifiers = new ArrayList<Classifier>();
-
-        return classifiers;
-    }
-
-    public void setClassifiers(List<Classifier> classifiers) throws SchemaException{
-
-        if (classifiers == null)
-            throw new IllegalArgumentException("classifiers is null");
-        
-        this.classifiers.clear();
-        for (Classifier c: classifiers)
-            addClassifier(c);
-    }
-
-    public void addClassifier(Classifier classifier) throws SchemaException{
-        if (classifier == null)
-            throw new IllegalArgumentException("classifier is null");
-        if (classifier.getFields() == null)
-            throw new SchemaException("no fields specified for the classifier");
-        if (classifier.getFields().isEmpty())
-            throw new SchemaException("no fields specified for the classifier");
-
-        classifiers.add(classifier);
-    }
-
+    
+    
     /**
      * Classify some data and return the List of SchemaFields that should be used to parse the data.
      * If no classifiers have been specified, or there is not a classifier match, the
@@ -133,14 +110,17 @@ public class FileSchema {
         if (data == null)
             throw new IllegalArgumentException("data is null");
 
-        for (Classifier c: classifiers){
-            if (c.supports(data))
-                return c.getFields();
+        List<SchemaField> result = fields.get(DEFAULT_CLASSIFIER);
+        
+        for (Pattern pattern: fields.keySet()){            
+            if (!pattern.equals(DEFAULT_CLASSIFIER) && pattern.matcher(data).matches())
+                result = fields.get(pattern);
         }
-
-        return fields;
+        
+        return result;
     }
 
+    
     /**
      * Classify a record and return the layout (List of SchemaFields) that match.
      * If multiple SchemaFields are defined that contain Fields named in the Record,
@@ -156,25 +136,15 @@ public class FileSchema {
             throw new IllegalArgumentException("record is null");
         
         List<SchemaField> result = null;
-
-        if (classifiers != null){
-            for (Classifier c: classifiers){
-                if (c.supports(record)){
-                    if (result == null)
-                        result = c.getFields();
-                    else if (result.size() < c.getFields().size())
-                        result = c.getFields();
-                }
+        List<String> fieldsInRecord = getFieldNames(record);
+        
+        for (List<SchemaField> f: fields.values()){            
+            if (getFieldNames(f).containsAll(fieldsInRecord)){
+                result = f;
+                break;
             }
         }
-
-        if (result == null){
-            Classifier defaultClassifier = new Classifier();
-            defaultClassifier.setFields(fields);
-            if (defaultClassifier.supports(record))
-                result = fields;
-        }
-
+        
         if (result == null)
             throw new SchemaException("Unable to find layout that supports Record: " + record);
 
@@ -182,44 +152,99 @@ public class FileSchema {
     }
 
 
+    /**
+     * 
+     * @param schemaFields
+     * @return a list containing the name of each SchemaField
+     */
+    private List<String> getFieldNames(List<SchemaField> schemaFields){
+        List<String> names = new ArrayList<String>();
+        for (SchemaField schemaField: schemaFields)
+            names.add(schemaField.getName());
+        return names;
+    }
+    
+    /**
+     * 
+     * @param record
+     * @return a list containing the key of each (top-level) field in the record
+     */
+    private List<String> getFieldNames(Record record){
+        List<String> names = new ArrayList<String>();
+        names.addAll(record.keySet());
+        return names;
+    }
+    
+    
+    /**
+     * 
+     * @param name
+     * @return the named field from the default list of fields
+     */
     public SchemaField getField(String name){
         
         if (name == null)
             throw new IllegalArgumentException("name is null");
         
-        for (SchemaField field: fields)
+        for (SchemaField field: fields.get(DEFAULT_CLASSIFIER))
             if (field.getName().equals(name))
                 return field;
 
         return null;
     }
         
+    
+    public List<SchemaField> getDefaultFields(){
+        return fields.get(DEFAULT_CLASSIFIER);
+    }
+    
+    public List<SchemaField> setDefaultFields(List<SchemaField> schemaFields){
+        return fields.put(DEFAULT_CLASSIFIER, schemaFields);
+    }
+    
     /**
      *
      * @return all SchemaFields defined for this Schema
      */
-    public List<SchemaField> getFields() {
+    public List<SchemaField> getFields(Pattern classifier) {
 
-        return fields;
+        return fields.get(classifier);
     }
-
-    /**
-     * @param fields not null nor empty.
-     * @throws SchemaException if there is already a field with the same name as one of the fields
-     */
-    public void setFields(List<SchemaField> fields) throws SchemaException{
-        if (fields == null)
+    
+    
+    public List<SchemaField> setFields(Pattern classifier, List<SchemaField> schemaFields) throws SchemaException{
+        if (classifier == null)
+            throw new IllegalArgumentException("pattern is null");
+        if (schemaFields == null)
             throw new IllegalArgumentException("fields is null");
-        if (fields.isEmpty())
+        if (schemaFields.isEmpty())
             throw new IllegalArgumentException("fields is empty");
+        
+        List<SchemaField> copy = new ArrayList<SchemaField>();
+        for (SchemaField f: schemaFields)
+            copy.add(new SchemaField(f));
 
-        this.fields.clear();
-        for (SchemaField field: fields)
-            addField(field);
+        return fields.put(Pattern.compile(classifier.toString()), copy);
     }
 
+    
+    public List<Pattern> getClassifiers(){
+        List<Pattern> classifiers = new ArrayList<Pattern>();
+        
+        if (fields.size() > 1){
+            classifiers.addAll(fields.keySet());
+            classifiers.remove(DEFAULT_CLASSIFIER);            
+        }
+        
+        return classifiers;
+    }
+    
+    public boolean hasClassifiers(){
+        return fields.size() > 1;
+    }
+    
     /**
-     * Add a field to the schema
+     * Add a field to the default list of fields.
      * @param field
      * @throws SchemaException if there is already a field with the same name
      */
@@ -228,14 +253,14 @@ public class FileSchema {
             throw new IllegalArgumentException("field is null");
 
         verifyUniqueName(field.getName());
-        fields.add(new SchemaField(field));
+        fields.get(DEFAULT_CLASSIFIER).add(new SchemaField(field));
     }
 
     protected void verifyUniqueName(String name) throws SchemaException{
         if (name == null)
             throw new IllegalArgumentException("name is null");
         
-        for (SchemaField existing: fields)
+        for (SchemaField existing: fields.get(DEFAULT_CLASSIFIER))
             if (name.equals(existing.getName()))
                 throw new SchemaException(
                     String.format(
@@ -243,7 +268,8 @@ public class FileSchema {
                         name,
                         this.toString()));
     }
-
+     
+    
     /**
      *
      * @return optional name for this schema, or null
@@ -468,7 +494,7 @@ public class FileSchema {
      */
     public List<SchemaField> getKeyFields(){
         List<SchemaField> keyFields = new ArrayList<SchemaField>();
-        for (SchemaField f: fields){            
+        for (SchemaField f: fields.get(DEFAULT_CLASSIFIER)){            
             if (isKeyField(f))
                 keyFields.add(f);
         }
@@ -483,7 +509,7 @@ public class FileSchema {
      */
     public List<SchemaField> getForeignKeyFields(){
         List<SchemaField> foreignKeyFields = new ArrayList<SchemaField>();
-        for (SchemaField f: fields){            
+        for (SchemaField f: fields.get(DEFAULT_CLASSIFIER)){            
             if (isForeignKeyField(f))
                 foreignKeyFields.add(f);
         }
@@ -534,7 +560,7 @@ public class FileSchema {
         if (keys.isEmpty()){            
             try {
                 StringBuilder s = new StringBuilder();
-                List<SchemaField> schemaFields = record == null ? fields : classify(record);
+                List<SchemaField> schemaFields = record == null ? fields.get(DEFAULT_CLASSIFIER) : classify(record);
                 boolean needDelimiter = false;
                 Object fieldValue = null;
                 for (SchemaField field: schemaFields){
@@ -562,7 +588,7 @@ public class FileSchema {
 
     @Override
     public String toString(){
-        StringBuilder s = new StringBuilder(name);
+        StringBuilder s = new StringBuilder(name == null ? "" : name);
         if (version != null && !version.isEmpty())
             s.append(" (").append(version).append(")");
         return s.toString();
@@ -593,24 +619,23 @@ public class FileSchema {
             return false;
         if (this.fields != other.fields && (this.fields == null || !this.fields.equals(other.fields)))
             return false;
-        if (this.classifiers != other.classifiers && (this.classifiers == null || !this.classifiers.equals(other.classifiers)))
-            return false;
         return true;
     }
 
     @Override
     public int hashCode() {
-        int hash = 3;
-        hash = 19 * hash + (this.name != null ? this.name.hashCode() : 0);
-        hash = 19 * hash + (this.version != null ? this.version.hashCode() : 0);
-        hash = 19 * hash + (this.reader != null ? this.reader.hashCode() : 0);
-        hash = 19 * hash + (this.writer != null ? this.writer.hashCode() : 0);
-        hash = 19 * hash + (this.beforeFirst != null ? this.beforeFirst.hashCode() : 0);
-        hash = 19 * hash + (this.before != null ? this.before.hashCode() : 0);
-        hash = 19 * hash + (this.after != null ? this.after.hashCode() : 0);
-        hash = 19 * hash + (this.afterLast != null ? this.afterLast.hashCode() : 0);
-        hash = 19 * hash + (this.fields != null ? this.fields.hashCode() : 0);
-        hash = 19 * hash + (this.classifiers != null ? this.classifiers.hashCode() : 0);
+        int hash = 5;
+        hash = 53 * hash + (this.name != null ? this.name.hashCode() : 0);
+        hash = 53 * hash + (this.version != null ? this.version.hashCode() : 0);
+        hash = 53 * hash + (this.reader != null ? this.reader.hashCode() : 0);
+        hash = 53 * hash + (this.writer != null ? this.writer.hashCode() : 0);
+        hash = 53 * hash + (this.beforeFirst != null ? this.beforeFirst.hashCode() : 0);
+        hash = 53 * hash + (this.before != null ? this.before.hashCode() : 0);
+        hash = 53 * hash + (this.after != null ? this.after.hashCode() : 0);
+        hash = 53 * hash + (this.afterLast != null ? this.afterLast.hashCode() : 0);
+        hash = 53 * hash + (this.fields != null ? this.fields.hashCode() : 0);
         return hash;
     }
+
+    
 }

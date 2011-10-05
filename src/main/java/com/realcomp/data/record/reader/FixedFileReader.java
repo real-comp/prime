@@ -114,11 +114,11 @@ public class FixedFileReader extends BaseFileReader{
 
 
     protected void ensureFieldLengthsSpecified(FileSchema schema) throws SchemaException{
-        for (Classifier c: schema.getClassifiers())
-            ensureFieldLengthsSpecified(c.getFields());
-
-        ensureFieldLengthsSpecified(schema.getFields());
+        
+        for (List<SchemaField> fields: schema.getFields().values())
+            ensureFieldLengthsSpecified(fields);
     }
+    
     
     protected void ensureFieldLengthsSpecified(List<SchemaField> fields) throws SchemaException{        
         for (SchemaField field: fields)

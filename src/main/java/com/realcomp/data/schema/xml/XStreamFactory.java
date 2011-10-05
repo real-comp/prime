@@ -53,6 +53,7 @@ public class XStreamFactory {
         xstream.registerConverter(new OperationConverter());
         xstream.registerConverter(new DataTypeConverter());
         xstream.registerConverter(new DelimiterConverter());
+        xstream.registerConverter(new SchemaFieldsConverter());
         
         for (Class c: validators){
             Validator annotation = (Validator) c.getAnnotation(Validator.class);

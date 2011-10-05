@@ -99,7 +99,7 @@ public class DelimitedFileWriter extends BaseFileWriter{
 
     @Override
     public void write(Record record)
-            throws IOException, ValidationException, ConversionException{
+            throws IOException, ValidationException, ConversionException, SchemaException{
 
         //optionally write header record
         if (!beforeFirstOperationsRun && header){
@@ -128,13 +128,11 @@ public class DelimitedFileWriter extends BaseFileWriter{
         try {
             FileSchema originalSchema = getSchema();
             FileSchema headerSchema = new FileSchema(getSchema());
-            for (SchemaField f: headerSchema.getFields()){
-                f.clearOperations();
+             for (List<SchemaField> fields : headerSchema.getFields().values()){
+                for (SchemaField field: fields)
+                    field.clearOperations();
             }
-            for (Classifier c: headerSchema.getClassifiers())
-                for (SchemaField f: c.getFields())
-                    f.clearOperations();
-
+             
             setSchema(headerSchema);
             super.write(getHeader());
             writer.writeNext(current.toArray(new String[current.size()]));
@@ -148,7 +146,7 @@ public class DelimitedFileWriter extends BaseFileWriter{
 
     protected Record getHeader(){
         Record retVal = new Record();
-        for(SchemaField field: schema.getFields())
+        for(SchemaField field: schema.getFields().get(FileSchema.DEFAULT_CLASSIFIER))
             retVal.put(field.getName(), field.getName());
         return retVal;
     }

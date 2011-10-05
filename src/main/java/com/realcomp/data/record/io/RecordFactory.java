@@ -54,7 +54,8 @@ public class RecordFactory {
     protected Map<String,List<String>> aliases;
 
     protected FileSchema schema;
-    protected ValueSurgeon surgeon;
+    
+    private ValueSurgeon surgeon;
 
     public RecordFactory(FileSchema schema) throws ParsePlanException{
 
@@ -130,26 +131,25 @@ public class RecordFactory {
 
     protected final void buildKeyFieldCache(){
 
-        keyFields = KeyFieldIntrospector.getKeyFieldnames(schema.getFields());
+        keyFields = KeyFieldIntrospector.getKeyFieldnames(schema.getFields().get(FileSchema.DEFAULT_CLASSIFIER));
 
-        //there are classifiers, so I need to use the slower keyFieldCache
-        if (!schema.getClassifiers().isEmpty()){
-            keyFieldCache = new HashMap<List<SchemaField>, List<String>>();
-            keyFieldCache.put(schema.getFields(), keyFields);
-            for (Classifier c: schema.getClassifiers())
-                keyFieldCache.put(c.getFields(), KeyFieldIntrospector.getKeyFieldnames(c.getFields()));
+        if (schema.getFields().size() > 1){
+            keyFieldCache = new HashMap<List<SchemaField>, List<String>>();            
+            for (List<SchemaField> fields: schema.getFields().values()){
+                keyFieldCache.put(fields, KeyFieldIntrospector.getKeyFieldnames(fields));
+            }
         }
     }
 
     protected final void buildParsePlan() throws ParsePlanException{
 
-        parsePlan = new ParsePlan(schema.getFields());
+        parsePlan = new ParsePlan(schema.getFields().get(FileSchema.DEFAULT_CLASSIFIER));
 
-        if (!schema.getClassifiers().isEmpty()){
+        if (schema.getFields().size() > 1){
             parsePlanCache = new HashMap<List<SchemaField>, ParsePlan>();
-            parsePlanCache.put(schema.getFields(), parsePlan);
-            for (Classifier c: schema.getClassifiers())
-                parsePlanCache.put(c.getFields(), new ParsePlan(c.getFields()));
+            for (List<SchemaField> fields: schema.getFields().values()){
+                parsePlanCache.put(fields, new ParsePlan(fields));
+            }
         }
     }
 

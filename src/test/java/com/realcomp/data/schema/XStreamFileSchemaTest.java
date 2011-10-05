@@ -1,6 +1,7 @@
 package com.realcomp.data.schema;
 
 
+import java.util.regex.Pattern;
 import com.realcomp.data.view.DummyView;
 import com.realcomp.data.view.ExampleView;
 import java.io.ByteArrayInputStream;
@@ -60,12 +61,13 @@ public class XStreamFileSchemaTest {
         schema.addBeforeOperation(new UpperCase());
         schema.addAfterOperation(new Trim());
 
-        Classifier classifier = new Classifier("recordtypeb", ".{19}");
-        classifier.addSchemaField(new SchemaField("pid", DataType.LONG, 10));
-        classifier.addSchemaField(new SchemaField("zip5", DataType.INTEGER, 5));
-        classifier.addSchemaField(new SchemaField("zip4", DataType.INTEGER, 4));
-        schema.addClassifier(classifier);
-
+        List<SchemaField> typeB = new ArrayList<SchemaField>();
+        typeB.add(new SchemaField("pid", DataType.LONG, 10));
+        typeB.add(new SchemaField("zip5", DataType.INTEGER, 5));
+        typeB.add(new SchemaField("zip4", DataType.INTEGER, 4));
+        
+        schema.setFields(Pattern.compile(".{19}"), typeB);
+        
         DelimitedFileReader reader = new DelimitedFileReader();
         reader.setDelimiter(Delimiter.TAB);
         schema.setReader(reader);
@@ -83,8 +85,8 @@ public class XStreamFileSchemaTest {
         assertEquals(1, deserialized.getAfterOperations().size());
         assertTrue(deserialized.getAfterOperations().get(0).getClass().equals(Trim.class));
         assertEquals(5, deserialized.getFields().size());
-        assertEquals(DataType.LONG, deserialized.getFields().get(0).getType());
-        assertEquals(DataType.STRING, deserialized.getFields().get(1).getType());
+        assertEquals(DataType.LONG, deserialized.getFields().get(FileSchema.DEFAULT_CLASSIFIER).get(0).getType());
+        assertEquals(DataType.STRING, deserialized.getFields().get(FileSchema.DEFAULT_CLASSIFIER).get(1).getType());
 
         assertTrue(getSchema().equals(deserialized));
     }
@@ -134,6 +136,7 @@ public class XStreamFileSchemaTest {
         assertTrue(a.getReader().supports(DummyView.class));
         
         String xml = xstream.toXML(a);
+        System.out.println(xml);
 
         FileSchema b = SchemaFactory.buildFileSchema(new ByteArrayInputStream(xml.getBytes()));
         assertEquals(a, b);

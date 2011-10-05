@@ -158,7 +158,7 @@ public class DelimitedFileWriterTest {
         good.put("b", "2");
         good.put("c", "3");
 
-        assertTrue(schema.getFields().equals(schema.classify(good)));
+        assertTrue(schema.getFields().get(FileSchema.DEFAULT_CLASSIFIER).equals(schema.classify(good)));
         
         Record bad = new Record();
         bad.put("foo","bar");
