@@ -5,12 +5,10 @@ import au.com.bytecode.opencsv.CSVParser;
 import com.realcomp.data.conversion.ConversionException;
 import com.realcomp.data.record.Record;
 import com.realcomp.data.schema.SchemaException;
-import com.realcomp.data.schema.SchemaField;
 import com.realcomp.data.validation.ValidationException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
-import java.util.List;
 
 /**
  *
@@ -91,8 +89,7 @@ public class DelimitedFileReader extends BaseFileReader implements Cloneable{
         Record record = null;
         String data = reader.readLine();
         if (data != null){
-            List<SchemaField> fields = schema.classify(data);
-            record = loadRecord(fields, parser.parseLine(data));
+            record = loadRecord(schema.classify(data), parser.parseLine(data));
         }
 
         if (record != null)

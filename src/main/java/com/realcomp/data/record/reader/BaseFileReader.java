@@ -5,11 +5,11 @@ import com.realcomp.data.conversion.ConversionException;
 import com.realcomp.data.record.Record;
 import com.realcomp.data.record.io.RecordFactory;
 import com.realcomp.data.record.io.ValueResolver;
-import com.realcomp.data.schema.AfterLastSchemaField;
-import com.realcomp.data.schema.BeforeFirstSchemaField;
+import com.realcomp.data.schema.AfterLastField;
+import com.realcomp.data.schema.BeforeFirstField;
 import com.realcomp.data.schema.FileSchema;
 import com.realcomp.data.schema.SchemaException;
-import com.realcomp.data.schema.SchemaField;
+import com.realcomp.data.schema.FieldList;
 import com.realcomp.data.validation.Severity;
 import com.realcomp.data.validation.ValidationException;
 import com.realcomp.data.view.RecordView;
@@ -146,7 +146,7 @@ public abstract class BaseFileReader implements RecordReader{
             List<Operation> operations = schema.getAfterLastOperations();
             if (operations != null && !operations.isEmpty()){
                 ValueResolver resolver = new ValueResolver(schema, validationExceptionThreshold);
-                resolver.resolve(new AfterLastSchemaField(), new Record(), "" + this.getCount());
+                resolver.resolve(new AfterLastField(), new Record(), "" + this.getCount());
             }
         }
     }
@@ -157,7 +157,7 @@ public abstract class BaseFileReader implements RecordReader{
             List<Operation> operations = schema.getBeforeFirstOperations();
             if (operations != null && !operations.isEmpty()){
                 ValueResolver resolver = new ValueResolver(schema, validationExceptionThreshold);
-                resolver.resolve(new BeforeFirstSchemaField(), new Record(), "" + this.getCount());
+                resolver.resolve(new BeforeFirstField(), new Record(), "" + this.getCount());
             }
         }
     }
@@ -178,7 +178,7 @@ public abstract class BaseFileReader implements RecordReader{
         return schema;
     }
 
-    protected Record loadRecord(List<SchemaField> fields, String[] data)
+    protected Record loadRecord(FieldList fields, String[] data)
             throws ValidationException, ConversionException{
 
         if (fields == null)

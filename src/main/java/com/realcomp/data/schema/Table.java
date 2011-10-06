@@ -8,7 +8,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- *
+ * A Table in a RelationalSchema
+ * 
  * @author krenfro
  */
 @XStreamAlias("table")

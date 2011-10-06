@@ -7,7 +7,7 @@ import com.realcomp.data.record.writer.RecordWriter;
 import com.realcomp.data.schema.FileSchema;
 import com.realcomp.data.schema.SchemaException;
 import com.realcomp.data.schema.SchemaFactory;
-import com.realcomp.data.schema.SchemaField;
+import com.realcomp.data.schema.Field;
 import com.realcomp.data.validation.ValidationException;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -46,7 +46,6 @@ public class Filter {
             throw new SchemaException("No writer specified in output schema.");
         writer.open(out);
         
-        checkFields();
         Record record = getNextRecord(reader);
         while (record != null){
             try{
@@ -55,7 +54,7 @@ public class Filter {
             catch(ValidationException ex){
                 logger.log(Level.INFO, 
                            "filtered: {0} because: {1}", 
-                           new Object[]{outputSchema.toString(record), ex.getMessage()});
+                           new Object[]{outputSchema.classify(record).toString(record), ex.getMessage()});
             }
             record = getNextRecord(reader);
         }
@@ -81,15 +80,6 @@ public class Filter {
         return r;
     }
 
-    protected void checkFields(){
-        for (SchemaField f: outputSchema.getFields().get(FileSchema.DEFAULT_CLASSIFIER)){
-            if (inputSchema.getField(f.getName()) == null)
-                logger.log(
-                        Level.WARNING,
-                        "No field in the input schema with name: {0}", f.getName());
-        }
-
-    }
 
     public void setInputSchema(InputStream in) throws IOException{
         this.inputSchema = SchemaFactory.buildFileSchema(in);

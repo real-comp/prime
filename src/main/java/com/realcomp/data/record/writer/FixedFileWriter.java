@@ -3,10 +3,10 @@ package com.realcomp.data.record.writer;
 import com.realcomp.data.DataType;
 import com.realcomp.data.conversion.ConversionException;
 import com.realcomp.data.record.Record;
-import com.realcomp.data.schema.Classifier;
 import com.realcomp.data.schema.FileSchema;
 import com.realcomp.data.schema.SchemaException;
-import com.realcomp.data.schema.SchemaField;
+import com.realcomp.data.schema.Field;
+import com.realcomp.data.schema.FieldList;
 import com.realcomp.data.validation.ValidationException;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -88,8 +88,8 @@ public class FixedFileWriter extends BaseFileWriter{
         try {
             FileSchema originalSchema = getSchema();
             FileSchema headerSchema = new FileSchema(getSchema());
-            for (List<SchemaField> fields : headerSchema.getFields().values()){
-                for (SchemaField field: fields)
+            for (FieldList fields : headerSchema.getFieldLists()){
+                for (Field field: fields)
                     field.clearOperations();
             }
             
@@ -107,14 +107,14 @@ public class FixedFileWriter extends BaseFileWriter{
     
     protected Record getHeader(){
         Record retVal = new Record();
-        for(SchemaField field: schema.getFields().get(FileSchema.DEFAULT_CLASSIFIER))
+        for(Field field: schema.getDefaultFieldList())
             retVal.put(field.getName(), field.getName());
         return retVal;
     }
     
 
     @Override
-    protected void write(Record record, SchemaField field)
+    protected void write(Record record, Field field)
             throws ValidationException, ConversionException, IOException{
 
         
@@ -131,24 +131,24 @@ public class FixedFileWriter extends BaseFileWriter{
 
     @Override
     public void setSchema(FileSchema schema) throws SchemaException {
-        for (List<SchemaField> fields: schema.getFields().values())
+        for (FieldList fields: schema.getFieldLists())
             ensureFieldLengthsSpecified(fields);
         super.setSchema(schema);
     }
 
 
-    protected void ensureFieldLengthsSpecified(List<SchemaField> fields) throws SchemaException{
-        for (SchemaField field: fields)
+    protected void ensureFieldLengthsSpecified(FieldList fields) throws SchemaException{
+        for (Field field: fields)
             if (field.getLength() <= 0)
                 throw new SchemaException("field length not specified for: " + field);
     }
 
     
-    protected int getExpectedLength(List<SchemaField> fields){
+    protected int getExpectedLength(List<Field> fields){
 
         assert(fields != null);
         int retVal = 0;
-        for (SchemaField field: fields)
+        for (Field field: fields)
             retVal = retVal + field.getLength();
         return retVal;
     }

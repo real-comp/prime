@@ -1,10 +1,11 @@
 package com.realcomp.data.record.reader;
 
+import com.realcomp.data.schema.FieldList;
 import com.realcomp.data.schema.SchemaException;
 import com.realcomp.data.schema.FileSchema;
 import com.realcomp.data.DataType;
 import com.realcomp.data.record.Record;
-import com.realcomp.data.schema.SchemaField;
+import com.realcomp.data.schema.Field;
 import java.util.List;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -24,7 +25,7 @@ public class EmptyNumericFieldTest {
     @Test
     public void testEmptyFields() throws Exception {
 
-        List<SchemaField> fields = getSchema().getFields().get(FileSchema.DEFAULT_CLASSIFIER);
+        FieldList fields = getSchema().getDefaultFieldList();
 
         String[] data = new String[]{"123","456","789"};
         DelimitedFileReader instance = new DelimitedFileReader();
@@ -50,9 +51,11 @@ public class EmptyNumericFieldTest {
         FileSchema schema = new FileSchema();
         schema.setName("test");
         schema.setVersion("0");
-        schema.addField(new SchemaField("int", DataType.INTEGER));
-        schema.addField(new SchemaField("float", DataType.FLOAT));
-        schema.addField(new SchemaField("double", DataType.DOUBLE));
+        FieldList fields = new FieldList();
+        fields.add(new Field("int", DataType.INTEGER));
+        fields.add(new Field("float", DataType.FLOAT));
+        fields.add(new Field("double", DataType.DOUBLE));
+        schema.addFieldList(fields);
         return schema;
     }
 

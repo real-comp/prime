@@ -43,9 +43,9 @@ public class DoubleQuote {
         FileSchema schema = new FileSchema();
         schema.setName("test");
         schema.setVersion("1.0");
-        schema.addField(new SchemaField("pid", DataType.LONG, 10));
+        schema.addField(new Field("pid", DataType.LONG, 10));
 
-        SchemaField owner = new SchemaField("owner", DataType.STRING, 20);
+        Field owner = new Field("owner", DataType.STRING, 20);
 
         Concat concat = new Concat();
         ReplaceFirst replaceFirst = new ReplaceFirst();
@@ -60,8 +60,8 @@ public class DoubleQuote {
 
 
         schema.addField(owner);
-        schema.addField(new SchemaField("zip", DataType.INTEGER, 5));
-        schema.addField(new SchemaField("value", DataType.FLOAT, 7));
+        schema.addField(new Field("zip", DataType.INTEGER, 5));
+        schema.addField(new Field("value", DataType.FLOAT, 7));
 
         DelimitedFileReader reader = new DelimitedFileReader();
         reader.setDelimiter(Delimiter.TAB);
@@ -92,7 +92,7 @@ public class DoubleQuote {
 
         FileSchema schema = SchemaFactory.buildFileSchema(new ByteArrayInputStream(xml.getBytes()));
 
-        SchemaField field = schema.getField("owner");
+        Field field = schema.getField("owner");
         boolean foundIt = false;
         for (Operation op: field.getOperations()){
 

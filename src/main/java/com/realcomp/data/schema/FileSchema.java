@@ -5,23 +5,17 @@ import com.realcomp.data.Operation;
 import com.realcomp.data.record.Record;
 import com.realcomp.data.record.reader.RecordReader;
 import com.realcomp.data.record.writer.RecordWriter;
+import com.realcomp.data.schema.xml.FieldListConverter;
 import com.realcomp.data.schema.xml.RecordReaderConverter;
 import com.realcomp.data.schema.xml.RecordWriterConverter;
-import com.realcomp.data.schema.xml.SchemaFieldsConverter;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
 import com.thoughtworks.xstream.annotations.XStreamConverter;
+import com.thoughtworks.xstream.annotations.XStreamImplicit;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
-import org.apache.commons.lang.StringUtils;
 
 /**
  *
@@ -50,17 +44,18 @@ public class FileSchema {
     protected List<Operation> after;
     protected List<Operation> afterLast;
     
-    protected LinkedHashSet<SchemaFieldList> fields;
+    @XStreamImplicit(itemFieldName="fields")
+    protected List<FieldList> fieldLists;
     
     public FileSchema(){
-        fields = new LinkedHashSet<SchemaFieldList>();
-        fields.add(new SchemaFieldList());
+        fieldLists = new ArrayList<FieldList>();
+        fieldLists.add(new FieldList());
     }
 
     public FileSchema(FileSchema copy) throws SchemaException{
-        fields = new LinkedHashSet<SchemaFieldList>();
-        for (SchemaFieldList fieldList: fields)
-            fields.add(new SchemaFieldList(fieldList));
+        fieldLists = new ArrayList<FieldList>();
+        for (FieldList fieldList: copy.fieldLists)
+            fieldLists.add(new FieldList(fieldList));
         
         this.name = copy.name;
         this.version = copy.version;
@@ -98,177 +93,144 @@ public class FileSchema {
     
     
     /**
-     * Classify some data and return the List of SchemaFields that should be used to parse the data.
+     * Classify some data and return the FieldList that should be used to parse the data.
      * If no classifiers have been specified, or there is not a classifier match, the
-     * default Field list is returned.
+     * default FieldList is returned.
      * 
      * @param data not null
-     * @return the List of SchemaFields that should be used to parse the data.
+     * @return the FieldList that should be used to parse the data. never null
+     * @throws SchemaException if no defined layout supports the data
      */
-    public List<SchemaField> classify(String data){
+    public FieldList classify(String data) throws SchemaException{
 
         if (data == null)
             throw new IllegalArgumentException("data is null");
-
-        List<SchemaField> result = fields.get(DEFAULT_CLASSIFIER);
         
-        for (Pattern pattern: fields.keySet()){            
-            if (!pattern.equals(DEFAULT_CLASSIFIER) && pattern.matcher(data).matches())
-                result = fields.get(pattern);
+        FieldList match = null;
+        
+        for (FieldList fieldList: fieldLists){
+            if (fieldList.supports(data)){
+                if (match == null){
+                    match = fieldList;
+                }
+                else if (match != null && !fieldList.isDefaultClassifier()){
+                    match = fieldList; //allow a more specific FieldList
+                }
+            }
         }
         
-        return result;
+        if (match == null)
+            throw new SchemaException("The schema does not support the specified data.");
+        
+        return match;
     }
 
     
     /**
-     * Classify a record and return the layout (List of SchemaFields) that match.
-     * If multiple SchemaFields are defined that contain Fields named in the Record,
-     * then the layout defined first in the Schema will be returned.
+     * Classify a record and return the FieldList that matches.
+     * If multiple FieldLists support the specified Record, then the FieldList that
+     * is not the <i>default</i> is returned.  If multiple FieldLists support the specified Record,
+     * and neither are the <i>default</i> then the one defined first is returned.
      *
      * @param record not null
-     * @return
+     * @return the FieldList that should be used for the Record. never null
      * @throws SchemaException if no defined layout supports the Record
      */
-    public List<SchemaField> classify(Record record) throws SchemaException{
+    public FieldList classify(Record record) throws SchemaException{
         
         if (record == null)
             throw new IllegalArgumentException("record is null");
         
-        List<SchemaField> result = null;
-        List<String> fieldsInRecord = getFieldNames(record);
+        FieldList match = null;
         
-        for (List<SchemaField> f: fields.values()){            
-            if (getFieldNames(f).containsAll(fieldsInRecord)){
-                result = f;
-                break;
+        for (FieldList fieldList: fieldLists){
+            if (fieldList.supports(record)){
+                 if (match == null){
+                    match = fieldList;
+                }
+                else if (match != null && !fieldList.isDefaultClassifier()){
+                    match = fieldList; //allow a more specific FieldList
+                }
             }
         }
-        
-        if (result == null)
-            throw new SchemaException("Unable to find layout that supports Record: " + record);
-
-        return result;
+            
+        throw new SchemaException("The schema does not support the specified Record");
     }
-
-
+    
+    
     /**
+     * Returns the FieldList that has the default classifier (match anything),
+     * or is defined first.
      * 
-     * @param schemaFields
-     * @return a list containing the name of each SchemaField
+     * @return the default FieldList, or the FieldList that was defined first.
      */
-    private List<String> getFieldNames(List<SchemaField> schemaFields){
-        List<String> names = new ArrayList<String>();
-        for (SchemaField schemaField: schemaFields)
-            names.add(schemaField.getName());
-        return names;
-    }
-    
-    /**
-     * 
-     * @param record
-     * @return a list containing the key of each (top-level) field in the record
-     */
-    private List<String> getFieldNames(Record record){
-        List<String> names = new ArrayList<String>();
-        names.addAll(record.keySet());
-        return names;
-    }
-    
-    
-    /**
-     * 
-     * @param name
-     * @return the named field from the default list of fields
-     */
-    public SchemaField getField(String name){
+    public FieldList getDefaultFieldList(){
         
-        if (name == null)
-            throw new IllegalArgumentException("name is null");
-        
-        for (SchemaField field: fields.get(DEFAULT_CLASSIFIER))
-            if (field.getName().equals(name))
-                return field;
-
-        return null;
-    }
-        
-    
-    public List<SchemaField> getDefaultFields(){
-        return fields.get(DEFAULT_CLASSIFIER);
-    }
-    
-    public List<SchemaField> setDefaultFields(List<SchemaField> schemaFields){
-        return fields.put(DEFAULT_CLASSIFIER, schemaFields);
-    }
-    
-    /**
-     *
-     * @return all SchemaFields defined for this Schema
-     */
-    public List<SchemaField> getFields(Pattern classifier) {
-
-        return fields.get(classifier);
-    }
-    
-    
-    public List<SchemaField> setFields(Pattern classifier, List<SchemaField> schemaFields) throws SchemaException{
-        if (classifier == null)
-            throw new IllegalArgumentException("pattern is null");
-        if (schemaFields == null)
-            throw new IllegalArgumentException("fields is null");
-        if (schemaFields.isEmpty())
-            throw new IllegalArgumentException("fields is empty");
-        
-        List<SchemaField> copy = new ArrayList<SchemaField>();
-        for (SchemaField f: schemaFields)
-            copy.add(new SchemaField(f));
-
-        return fields.put(Pattern.compile(classifier.toString()), copy);
-    }
-
-    
-    public List<Pattern> getClassifiers(){
-        List<Pattern> classifiers = new ArrayList<Pattern>();
-        
-        if (fields.size() > 1){
-            classifiers.addAll(fields.keySet());
-            classifiers.remove(DEFAULT_CLASSIFIER);            
+        FieldList retVal = null;
+        for (FieldList fieldList: fieldLists){
+            if (retVal == null)
+                retVal = fieldList;
+            if (fieldList.isDefaultClassifier())
+                retVal = fieldList;
         }
         
-        return classifiers;
+        return retVal;
     }
-    
-    public boolean hasClassifiers(){
-        return fields.size() > 1;
+
+    /**
+     * 
+     * @return the FieldLists supported by this FileSchema
+     */
+    public List<FieldList> getFieldLists() {
+        return fieldLists;
+    }
+
+    /**
+     * 
+     * @param fieldLists not null
+     */
+    public void setFieldLists(List<FieldList> fieldLists) {
+        if (fieldLists == null)
+            throw new IllegalArgumentException("fieldLists is null");
+        
+        this.fieldLists.clear();
+        for (FieldList f: fieldLists)
+            this.fieldLists.add(new FieldList(f));
     }
     
     /**
-     * Add a field to the default list of fields.
-     * @param field
-     * @throws SchemaException if there is already a field with the same name
+     * 
+     * @param fieldList to be added
      */
-    public void addField(SchemaField field) throws SchemaException{
-        if (field == null)
-            throw new IllegalArgumentException("field is null");
-
-        verifyUniqueName(field.getName());
-        fields.get(DEFAULT_CLASSIFIER).add(new SchemaField(field));
+    public void addFieldList(FieldList fieldList){
+        if (fieldList == null)
+            throw new IllegalArgumentException("fieldList is null");
+        this.fieldLists.add(new FieldList(fieldList));
     }
-
-    protected void verifyUniqueName(String name) throws SchemaException{
-        if (name == null)
-            throw new IllegalArgumentException("name is null");
-        
-        for (SchemaField existing: fields.get(DEFAULT_CLASSIFIER))
-            if (name.equals(existing.getName()))
-                throw new SchemaException(
-                    String.format(
-                        "A field with name [%s] is already defined in schema [%s].",
-                        name,
-                        this.toString()));
+    
+    /**
+     * 
+     * @param fieldList to be removed
+     * @return true if removed; else false
+     */
+    public boolean removeFieldList(FieldList fieldList){
+        if (fieldList == null)
+            throw new IllegalArgumentException("fieldList is null");
+        return fieldLists.remove(fieldList);
     }
-     
+    
+    
+    public void addField(Field field){
+        getDefaultFieldList().add(field);
+    }
+    
+    public boolean removeField(Field field){
+        return getDefaultFieldList().remove(field);
+    }
+    
+    public Field getField(String name){
+        return getDefaultFieldList().get(name);
+    }
     
     /**
      *
@@ -287,7 +249,7 @@ public class FileSchema {
     }
 
     /**
-     * @return all Operations to perform on all fields after fields specific operations are
+     * @return all Operations to perform on all Fields after all Field specific operations are
      * finished, or null if none specified.
      *
      */
@@ -296,7 +258,7 @@ public class FileSchema {
     }
 
     /**
-     * Set all Operations to perform on all fields after all field specific operations are finished.
+     * Set all Operations to perform on all Fields after all Field specific operations are finished.
      * @param after null will clear existing list
      */
     public void setAfterOperations(List<Operation> after) {
@@ -313,7 +275,7 @@ public class FileSchema {
     }
 
     /**
-     * Add an Operation to the after operations group, to be run after all field specific
+     * Add an Operation to the after operations group, to be run after all Field specific
      * Operations are performed.
      * @param op not null
      */
@@ -329,7 +291,7 @@ public class FileSchema {
 
 
     /**
-     * @return all Operations to perform after all records have been processed, or null
+     * @return all Operations to perform after all Records have been processed, or null
      * if none specified.
      *
      */
@@ -338,7 +300,7 @@ public class FileSchema {
     }
 
     /**
-     * Set all Operations to perform after all records have been processed.
+     * Set all Operations to perform after all Records have been processed.
      * @param afterLast null will clear existing list
      */
     public void setAfterLastOperations(List<Operation> afterLast) {
@@ -355,7 +317,7 @@ public class FileSchema {
     }
 
     /**
-     * Add an Operation to the afterLast operations group, to be run after all records
+     * Add an Operation to the afterLast operations group, to be run after all Records
      * have been processed.
      * @param op not null
      */
@@ -372,7 +334,7 @@ public class FileSchema {
 
     /**
      *
-     * @return all Operations to perform on all fields before any field specific Operations are
+     * @return all Operations to perform on all Fields before any Field specific Operations are
      * performed, or null if none specified.
      */
     public List<Operation> getBeforeOperations() {
@@ -380,7 +342,7 @@ public class FileSchema {
     }
 
     /**
-     * Set all Operations to perform on all fields before any field specific Operations are
+     * Set all Operations to perform on all Fields before any Field specific Operations are
      * performed.
      * @param before null will clear list
      */
@@ -397,7 +359,7 @@ public class FileSchema {
     }
 
     /**
-     * Add an Operation to the before operations group, to be run before all field specific
+     * Add an Operation to the before operations group, to be run before all Field specific
      * Operations are performed.
      * @param op not null, not a MultiFieldOperation
      */
@@ -417,7 +379,7 @@ public class FileSchema {
 
     /**
      *
-     * @return all Operations to perform before any records are processed, or null
+     * @return all Operations to perform before any Records are processed, or null
      * if none specified.
      */
     public List<Operation> getBeforeFirstOperations() {
@@ -425,7 +387,7 @@ public class FileSchema {
     }
 
     /**
-     * Set all Operations to perform before any records are processed.
+     * Set all Operations to perform before any Records are processed.
      * @param beforeFirst null will clear list
      */
     public void setBeforeFirstOperations(List<Operation> beforeFirst) {
@@ -441,7 +403,7 @@ public class FileSchema {
     }
 
     /**
-     * Add an Operation to the beforeFirst operations group, to be run before any records
+     * Add an Operation to the beforeFirst operations group, to be run before any Records
      * are processed.
      * @param op not null, not a MultiFieldOperation
      */
@@ -472,118 +434,6 @@ public class FileSchema {
         this.version = version;
     }           
 
-    public boolean isKeyField(SchemaField field){
-        for (Operation op: field.getOperations()){
-            if (op instanceof com.realcomp.data.validation.field.Key)
-                return true;
-        }
-        return false;
-    }
-    
-    public boolean isForeignKeyField(SchemaField field){
-        for (Operation op: field.getOperations()){
-            if (op instanceof com.realcomp.data.validation.field.ForeignKey)
-                return true;
-        }
-        return false;
-    }
-    
-    /**
-     * 
-     * @return all 'key' SchemaFields, in the order defined by this FileSchema
-     */
-    public List<SchemaField> getKeyFields(){
-        List<SchemaField> keyFields = new ArrayList<SchemaField>();
-        for (SchemaField f: fields.get(DEFAULT_CLASSIFIER)){            
-            if (isKeyField(f))
-                keyFields.add(f);
-        }
-        
-        return keyFields;
-    }
-    
-    
-    /**
-     * 
-     * @return all 'foreign key' SchemaFields, in the order defined by this FileSchema
-     */
-    public List<SchemaField> getForeignKeyFields(){
-        List<SchemaField> foreignKeyFields = new ArrayList<SchemaField>();
-        for (SchemaField f: fields.get(DEFAULT_CLASSIFIER)){            
-            if (isForeignKeyField(f))
-                foreignKeyFields.add(f);
-        }
-        
-        return foreignKeyFields;
-    }
-    
-    
-    
-    
-    /**
-     * List of Strings pulled from Fields in a Record that are marked as 'Keys'.
-     * 
-     * @param record not null
-     * @return list of Key fields, as Strings, from the specified record. 
-     */
-    public List<String> getKeys(Record record){
-
-        List<String> key = new ArrayList<String>();
-        
-        for (SchemaField f: getKeyFields()){                       
-            Object value = record.get(f.getName());
-
-            //Note: a key value may be NULL if the Record is not fully constructed.
-            //For example, if a ValidationException is thrown during Record creation, the
-            //Record creator may try to construct a helpful message using schema.toString(record).
-            if (value != null)
-                key.add(value.toString());
-        }
-        
-        return key;
-    }
-    
-    /**
-     * A superior Record.toString() that uses this schema's knowledge of the Record to 
-     * output a pipe "|" delimited string of the Record's keys, in the order defined
-     * in the schema.
-     * 
-     * If no keys are defined in the schema, then return Record.toString().
-     * 
-     * @see Record#toString()
-     * @param record
-     * @return Pipe delimited String of the Record's keys
-     */
-    public String toString(Record record){
-        List<String> keys = getKeys(record);
-        String retVal = null;
-        if (keys.isEmpty()){            
-            try {
-                StringBuilder s = new StringBuilder();
-                List<SchemaField> schemaFields = record == null ? fields.get(DEFAULT_CLASSIFIER) : classify(record);
-                boolean needDelimiter = false;
-                Object fieldValue = null;
-                for (SchemaField field: schemaFields){
-                    if (needDelimiter)
-                        s.append("|");
-                    needDelimiter = true;
-                    fieldValue = record.get(field.getName());
-                    if (fieldValue != null)
-                        s.append(fieldValue.toString());
-                }
-                retVal = s.toString();
-            }
-            catch (SchemaException ex) {
-                retVal = record.toString(); //this shouldn't happen.
-            }
-            
-        }
-        else{
-            retVal = StringUtils.join(keys, "|");
-        }
-        
-        return retVal;
-    }
      
 
     @Override
@@ -617,7 +467,7 @@ public class FileSchema {
             return false;
         if (this.afterLast != other.afterLast && (this.afterLast == null || !this.afterLast.equals(other.afterLast)))
             return false;
-        if (this.fields != other.fields && (this.fields == null || !this.fields.equals(other.fields)))
+        if (this.fieldLists != other.fieldLists && (this.fieldLists == null || !this.fieldLists.equals(other.fieldLists)))
             return false;
         return true;
     }
@@ -633,7 +483,7 @@ public class FileSchema {
         hash = 53 * hash + (this.before != null ? this.before.hashCode() : 0);
         hash = 53 * hash + (this.after != null ? this.after.hashCode() : 0);
         hash = 53 * hash + (this.afterLast != null ? this.afterLast.hashCode() : 0);
-        hash = 53 * hash + (this.fields != null ? this.fields.hashCode() : 0);
+        hash = 53 * hash + (this.fieldLists != null ? this.fieldLists.hashCode() : 0);
         return hash;
     }
 

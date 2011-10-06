@@ -3,10 +3,9 @@ package com.realcomp.data.record.io;
 import com.realcomp.data.record.Aliases;
 import com.realcomp.data.conversion.ConversionException;
 import com.realcomp.data.record.Record;
-import com.realcomp.data.schema.Classifier;
 import com.realcomp.data.schema.FileSchema;
-import com.realcomp.data.schema.KeyFieldIntrospector;
-import com.realcomp.data.schema.SchemaField;
+import com.realcomp.data.schema.Field;
+import com.realcomp.data.schema.FieldList;
 import com.realcomp.data.validation.Severity;
 import com.realcomp.data.validation.ValidationException;
 import java.util.HashMap;
@@ -22,28 +21,14 @@ import java.util.Map;
  */
 public class RecordFactory {
 
-    /**
-     * Stores the list of key fieldnames for a particular list of SchemaFields.
-     * When classifiers are used, the keys for a record may change.  The
-     * computation of key fields is expensive, so its cached.
-     */
-    protected Map<List<SchemaField>, List<String>> keyFieldCache;
 
     /**
-     * The list of key fields for schemas that do not make use of classifiers.
-     * Most schemas will not make use of classifiers, and will therefore
-     * have the same key fields for every record.
-     * This is an optimization to limit the use of keyFieldCache
-     */
-    protected List<String> keyFields;
-
-    /**
-     * Cache of the parse plan for each unique list of SchemaFields.
-     * When classifiers are used, the SchemaFields for a record may
+     * Cache of the parse plan for each unique FieldList.
+     * When classifiers are used, the FieldList for a record may
      * differ. The computation of parsing plans is expensive, so
      * this cache is used to store the plans.
      */
-    protected Map<List<SchemaField>, ParsePlan> parsePlanCache;
+    protected Map<FieldList, ParsePlan> parsePlanCache;
 
     /**
      * Most schemas do not make use of classifiers, so this is an optimization
@@ -63,48 +48,46 @@ public class RecordFactory {
             throw new IllegalArgumentException("schema is null");
 
         this.schema = schema;
-        buildKeyFieldCache();
         buildParsePlan();
         aliases = Aliases.getAliases(schema);
         surgeon = new ValueSurgeon(schema);
     }
     
     /**
-     * Builds a Record from the provided String[] and SchemaFields.
+     * Builds a Record from the provided String[] and FieldList.
      * 
-     * @param fields
+     * @param fieldLists
      * @param data
      * @return
      * @throws ValidationException
      * @throws ConversionException 
      */
-    public Record build(List<SchemaField> fields, String[] data)
+    public Record build(FieldList fieldList, String[] data)
             throws ValidationException, ConversionException{
 
-        if (fields.size() != data.length)
+        if (fieldList.size() != data.length)
             throw new ValidationException(
                     "The number of fields in schema does not match data.",
-                    fields.size() + " != " + data.length,
+                    fieldList.size() + " != " + data.length,
                     Severity.HIGH);
 
         Record record = new Record();
         int index = 0;
-        List<SchemaField> schemaFields = getParsePlan(fields).getFields();
         
-        for (SchemaField schemaField: schemaFields){
-            index = fields.indexOf(schemaField);
+        for (Field field: getParsePlan(fieldList)){
+            index = fieldList.indexOf(field);
             Object value = null;
             try{
-                value = surgeon.operate(schemaField, record, data[index]);
+                value = surgeon.operate(field, record, data[index]);
             }
             catch (ConversionException ex){
                 throw new ConversionException(
                         String.format("%s in field [%s] of record [%s]",
-                                new Object[]{ex.getMessage(), schemaField, schema.toString(record)}));
+                                new Object[]{ex.getMessage(), field, fieldList.toString(record)}));
             }
 
-            record.put(schemaField.getName(), value);
-            addAliases(record, schemaField.getName(), value);
+            record.put(field.getName(), value);
+            addAliases(record, field.getName(), value);
         }
 
 
@@ -128,57 +111,27 @@ public class RecordFactory {
     }
     
 
-
-    protected final void buildKeyFieldCache(){
-
-        keyFields = KeyFieldIntrospector.getKeyFieldnames(schema.getFields().get(FileSchema.DEFAULT_CLASSIFIER));
-
-        if (schema.getFields().size() > 1){
-            keyFieldCache = new HashMap<List<SchemaField>, List<String>>();            
-            for (List<SchemaField> fields: schema.getFields().values()){
-                keyFieldCache.put(fields, KeyFieldIntrospector.getKeyFieldnames(fields));
-            }
-        }
-    }
-
     protected final void buildParsePlan() throws ParsePlanException{
+        
+        parsePlan = new ParsePlan(schema.getDefaultFieldList());
 
-        parsePlan = new ParsePlan(schema.getFields().get(FileSchema.DEFAULT_CLASSIFIER));
-
-        if (schema.getFields().size() > 1){
-            parsePlanCache = new HashMap<List<SchemaField>, ParsePlan>();
-            for (List<SchemaField> fields: schema.getFields().values()){
-                parsePlanCache.put(fields, new ParsePlan(fields));
+        if (schema.getFieldLists().size() > 1){
+            parsePlanCache = new HashMap<FieldList, ParsePlan>();
+            for (FieldList fieldList: schema.getFieldLists()){
+                parsePlanCache.put(fieldList, new ParsePlan(fieldList));
             }
         }
     }
-
     /**
-     * A <i>key</i> field is identified as having a <i>Key</i> validator operation.
-     *
-     * @param fields
-     * @return the <i>key</i> fields from the list of fields.
+     * Returns the pre-computed parse plan for the specified FieldList
+     * @param schemaFieldList
+     * @return fieldList ParsePlan for the specified FieldList
      */
-    protected List<String> getKeyFields(List<SchemaField> fields){
-
-        List<String> keys = keyFields;
-        if (keyFieldCache != null)
-            keys = keyFieldCache.get(fields);
-
-
-        return keys;
-    }
-
-    /**
-     * Returns the pre-computed parse plan for the specified List of SchemaFields
-     * @param fields
-     * @return the ParsePlan for the specified SchemaFields
-     */
-    protected ParsePlan getParsePlan(List<SchemaField> fields){
+    protected ParsePlan getParsePlan(FieldList fieldList){
 
         ParsePlan plan = parsePlan;
         if (parsePlanCache != null)
-            plan = parsePlanCache.get(fields);
+            plan = parsePlanCache.get(fieldList);
         return plan;
     }
 

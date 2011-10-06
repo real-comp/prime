@@ -1,6 +1,5 @@
 package com.realcomp.data.record;
 
-import com.realcomp.data.DataType;
 import com.realcomp.data.schema.FileSchema;
 import java.io.Serializable;
 import java.util.Collection;

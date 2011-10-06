@@ -8,7 +8,8 @@ import com.realcomp.data.conversion.MissingFieldException;
 import com.realcomp.data.conversion.MultiFieldConverter;
 import com.realcomp.data.record.Record;
 import com.realcomp.data.schema.FileSchema;
-import com.realcomp.data.schema.SchemaField;
+import com.realcomp.data.schema.SchemaException;
+import com.realcomp.data.schema.Field;
 import com.realcomp.data.validation.Severity;
 import com.realcomp.data.validation.ValidationException;
 import com.realcomp.data.validation.Validator;
@@ -68,7 +69,7 @@ class ValueSurgeon {
     
     
     
-    public Object operate(SchemaField field, Record record, Object data) 
+    public Object operate(Field field, Record record, Object data) 
             throws ConversionException, ValidationException{
         
         if (field == null)
@@ -86,20 +87,27 @@ class ValueSurgeon {
             }
             catch (ValidationException ex) {
                 Severity severity = ((Validator) op).getSeverity();
-                switch(severity){
-                    case LOW:
-                        log.log(Level.INFO, String.format("%s for [%s] in record [%s]",
-                                new Object[]{ex.getMessage(), field, schema.toString(record)}));
-                        break;
-                    case MEDIUM:
-                        log.log(Level.WARNING, String.format("%s for [%s] in record [%s]",
-                                new Object[]{ex.getMessage(), field, schema.toString(record)}));
-                        break;
-                    case HIGH:
-                        log.log(Level.SEVERE, String.format("%s for [%s] in record [%s]",
-                                new Object[]{ex.getMessage(), field, schema.toString(record)}));
-                        break;
+                
+                try{
+                    switch(severity){
+                        case LOW:
+                            log.log(Level.INFO, String.format("%s for [%s] in record [%s]",
+                                    new Object[]{ex.getMessage(), field, schema.classify(record).toString(record)}));
+                            break;
+                        case MEDIUM:
+                            log.log(Level.WARNING, String.format("%s for [%s] in record [%s]",
+                                    new Object[]{ex.getMessage(), field, schema.classify(record).toString(record)}));
+                            break;
+                        case HIGH:
+                            log.log(Level.SEVERE, String.format("%s for [%s] in record [%s]",
+                                    new Object[]{ex.getMessage(), field, schema.classify(record).toString(record)}));
+                            break;
+                    }
                 }
+                catch(SchemaException se){
+                    throw new ConversionException(se);
+                }
+                        
 
                 if (severity.ordinal() >= validationExceptionThreshold.ordinal())
                     throw ex;

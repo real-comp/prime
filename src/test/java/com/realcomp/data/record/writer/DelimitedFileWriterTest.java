@@ -2,9 +2,6 @@ package com.realcomp.data.record.writer;
 
 import java.io.IOException;
 import com.realcomp.data.record.io.Delimiter;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.File;
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
 import com.realcomp.data.record.reader.*;
@@ -13,7 +10,7 @@ import com.realcomp.data.schema.FileSchema;
 import com.realcomp.data.DataType;
 import java.io.ByteArrayInputStream;
 import com.realcomp.data.record.Record;
-import com.realcomp.data.schema.SchemaField;
+import com.realcomp.data.schema.Field;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -158,13 +155,13 @@ public class DelimitedFileWriterTest {
         good.put("b", "2");
         good.put("c", "3");
 
-        assertTrue(schema.getFields().get(FileSchema.DEFAULT_CLASSIFIER).equals(schema.classify(good)));
+        assertTrue(schema.getDefaultFieldList().equals(schema.classify(good)));
         
         Record bad = new Record();
         bad.put("foo","bar");
 
         try{
-            schema.getFields().equals(schema.classify(bad));
+            schema.getDefaultFieldList().equals(schema.classify(bad));
             fail("should have thrown SchemaException");
         }
         catch(SchemaException ok){}
@@ -176,9 +173,9 @@ public class DelimitedFileWriterTest {
         FileSchema schema = new FileSchema();
         schema.setName("test");
         schema.setVersion("0");
-        schema.addField(new SchemaField("a", DataType.STRING));
-        schema.addField(new SchemaField("b", DataType.STRING));
-        schema.addField(new SchemaField("c", DataType.STRING));
+        schema.addField(new Field("a", DataType.STRING));
+        schema.addField(new Field("b", DataType.STRING));
+        schema.addField(new Field("c", DataType.STRING));
         return schema;
     }
 

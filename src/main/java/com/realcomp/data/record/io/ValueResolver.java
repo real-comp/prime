@@ -4,7 +4,7 @@ import com.realcomp.data.conversion.ConversionException;
 import com.realcomp.data.record.Aliases;
 import com.realcomp.data.record.Record;
 import com.realcomp.data.schema.FileSchema;
-import com.realcomp.data.schema.SchemaField;
+import com.realcomp.data.schema.Field;
 import com.realcomp.data.validation.Severity;
 import com.realcomp.data.validation.ValidationException;
 import java.util.logging.Logger;
@@ -56,7 +56,7 @@ public class ValueResolver {
      * @throws ConversionException
      * @throws ValidationException 
      */
-    public Object resolve(SchemaField field, Record record)
+    public Object resolve(Field field, Record record)
             throws ConversionException, ValidationException{
             
         //schema field name is not composite, so resolving first is ok
@@ -76,7 +76,7 @@ public class ValueResolver {
     }
     
     /**
-     * Modify the value with the operations defined in the FileSchema for the specified SchemaField.
+     * Modify the value with the operations defined in the FileSchema for the specified Field.
      * @param field
      * @param record
      * @param value
@@ -84,7 +84,7 @@ public class ValueResolver {
      * @throws ConversionException
      * @throws ValidationException 
      */
-    public Object resolve(SchemaField field, Record record, Object value)
+    public Object resolve(Field field, Record record, Object value)
             throws ConversionException, ValidationException{
             
         return value == null ? null : surgeon.operate(field, record, value);

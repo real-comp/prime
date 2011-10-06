@@ -1,5 +1,6 @@
 package com.realcomp.data.record.reader;
 
+import com.realcomp.data.schema.FieldList;
 import com.realcomp.data.record.reader.FixedFileReader;
 import com.realcomp.data.schema.SchemaException;
 import com.realcomp.data.validation.ValidationException;
@@ -8,7 +9,7 @@ import com.realcomp.data.DataType;
 import com.realcomp.data.schema.FileSchema;
 import java.io.ByteArrayInputStream;
 import com.realcomp.data.record.Record;
-import com.realcomp.data.schema.SchemaField;
+import com.realcomp.data.schema.Field;
 import java.io.IOException;
 import java.io.InputStream;
 import org.junit.Test;
@@ -43,9 +44,14 @@ public class FixedFileReaderTest {
         FileSchema schema = new FileSchema();
         schema.setName("test");
         schema.setVersion("0");
-        schema.addField(new SchemaField("a", DataType.STRING, 1));
-        schema.addField(new SchemaField("b", DataType.STRING, 1));
-        schema.addField(new SchemaField("c", DataType.STRING, 1));
+        
+        FieldList fields = new FieldList();
+        fields.add(new Field("a", DataType.STRING, 1));
+        fields.add(new Field("b", DataType.STRING, 1));
+        fields.add(new Field("c", DataType.STRING, 1));
+        schema.addFieldList(fields);
+        
+        
 
         String data = "abc";
         instance.setSchema(schema);
@@ -67,9 +73,9 @@ public class FixedFileReaderTest {
         FileSchema schema = new FileSchema();
         schema.setName("test");
         schema.setVersion("0");
-        schema.addField(new SchemaField("a", DataType.STRING, 1));
-        schema.addField(new SchemaField("b", DataType.STRING, 2));
-        schema.addField(new SchemaField("c", DataType.STRING)); //<-- missing length
+        schema.addField(new Field("a", DataType.STRING, 1));
+        schema.addField(new Field("b", DataType.STRING, 2));
+        schema.addField(new Field("c", DataType.STRING)); //<-- missing length
         
         try{
             instance.open(new ByteArrayInputStream(data.getBytes()));
@@ -153,9 +159,9 @@ public class FixedFileReaderTest {
         FileSchema schema = new FileSchema();
         schema.setName("test");
         schema.setVersion("0");
-        schema.addField(new SchemaField("a", DataType.STRING, 1));
-        schema.addField(new SchemaField("b", DataType.STRING, 2));
-        schema.addField(new SchemaField("c", DataType.STRING, 3));
+        schema.addField(new Field("a", DataType.STRING, 1));
+        schema.addField(new Field("b", DataType.STRING, 2));
+        schema.addField(new Field("c", DataType.STRING, 3));
 
         return schema;
     }
@@ -164,11 +170,11 @@ public class FixedFileReaderTest {
         FileSchema schema = new FileSchema();
         schema.setName("test");
         schema.setVersion("0");
-        schema.addField(new SchemaField("int", DataType.INTEGER, 5));
-        schema.addField(new SchemaField("float", DataType.FLOAT, 5));
-        schema.addField(new SchemaField("long", DataType.LONG, 5));
-        schema.addField(new SchemaField("double", DataType.DOUBLE, 5));
-        schema.addField(new SchemaField("string", DataType.STRING, 1));
+        schema.addField(new Field("int", DataType.INTEGER, 5));
+        schema.addField(new Field("float", DataType.FLOAT, 5));
+        schema.addField(new Field("long", DataType.LONG, 5));
+        schema.addField(new Field("double", DataType.DOUBLE, 5));
+        schema.addField(new Field("string", DataType.STRING, 1));
 
         schema.addAfterOperation(new Trim());
         return schema;
@@ -213,11 +219,11 @@ public class FixedFileReaderTest {
         schema.setVersion("0");
         
         //zero length ok
-        schema.addField(new SchemaField("a", DataType.STRING, 0));
+        schema.addField(new Field("a", DataType.STRING, 0));
             
 
         try{
-            schema.addField(new SchemaField("a", DataType.STRING, -1));
+            schema.addField(new Field("a", DataType.STRING, -1));
             fail("should have thrown IllegalArgumentException");
         }
         catch(IllegalArgumentException expected){}

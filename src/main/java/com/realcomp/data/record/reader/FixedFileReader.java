@@ -2,10 +2,10 @@ package com.realcomp.data.record.reader;
 
 import com.realcomp.data.conversion.ConversionException;
 import com.realcomp.data.record.Record;
-import com.realcomp.data.schema.Classifier;
 import com.realcomp.data.schema.FileSchema;
 import com.realcomp.data.schema.SchemaException;
-import com.realcomp.data.schema.SchemaField;
+import com.realcomp.data.schema.Field;
+import com.realcomp.data.schema.FieldList;
 import com.realcomp.data.validation.Severity;
 import com.realcomp.data.validation.ValidationException;
 import java.io.IOException;
@@ -60,8 +60,8 @@ public class FixedFileReader extends BaseFileReader{
         Record record = null;
         String data = reader.readLine();
         if (data != null){
-            List<SchemaField> fields = schema.classify(data);            
-            String[] parsed = parse(data, schema.classify(data));
+            FieldList fields = schema.classify(data);            
+            String[] parsed = parse(data, fields);
             record = loadRecord(fields, parsed);
         }
 
@@ -79,7 +79,7 @@ public class FixedFileReader extends BaseFileReader{
         super.setSchema(schema);
     }
 
-    protected String[] parse(String record, List<SchemaField> fields)
+    protected String[] parse(String record, FieldList fields)
             throws ValidationException, SchemaException{
 
         if (fields == null)
@@ -101,7 +101,7 @@ public class FixedFileReader extends BaseFileReader{
         int start = 0;
         int stop = -1;
         
-        for (SchemaField field: fields){
+        for (Field field: fields){
             stop = start + field.getLength();
             result[index] = record.substring(start, stop);
             index++;
@@ -115,23 +115,23 @@ public class FixedFileReader extends BaseFileReader{
 
     protected void ensureFieldLengthsSpecified(FileSchema schema) throws SchemaException{
         
-        for (List<SchemaField> fields: schema.getFields().values())
+        for (FieldList fields: schema.getFieldLists())
             ensureFieldLengthsSpecified(fields);
     }
     
     
-    protected void ensureFieldLengthsSpecified(List<SchemaField> fields) throws SchemaException{        
-        for (SchemaField field: fields)
+    protected void ensureFieldLengthsSpecified(FieldList fields) throws SchemaException{        
+        for (Field field: fields)
             if (field.getLength() <= 0)
                 throw new SchemaException("field length not specified for: " + field);
     }
 
     
-    protected int getExpectedLength(List<SchemaField> fields){
+    protected int getExpectedLength(List<Field> fields){
 
         assert(fields != null);
         int retVal = 0;
-        for (SchemaField field: fields)
+        for (Field field: fields)
             retVal = retVal + field.getLength();
         return retVal;
     }

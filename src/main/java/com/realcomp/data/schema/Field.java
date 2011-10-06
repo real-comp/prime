@@ -13,15 +13,16 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- *
+ * A named and typed field of a Schema.
+ * 
  * @author krenfro
  */
 @XStreamAlias("field")
 @XmlRootElement
-public class SchemaField {
+public class Field {
     
     /**
-     * Some characters are discouraged for use in SchemaField names, as they
+     * Some characters are discouraged for use in Field names, as they
      * have special meaning when processing Records.
      * . (period) : delimiter used for nested Records. (e.g., "property.land.acres");
      * [ ]        : open/close brackets are used to identify pieces of a Record.
@@ -43,31 +44,31 @@ public class SchemaField {
     @XStreamAsAttribute
     protected int length;
 
-    public SchemaField(){
+    public Field(){
          operations = new ArrayList<Operation>();
     }
 
-    public SchemaField(String name){
+    public Field(String name){
         this();
         checkName(name);
         this.name = name;
     }
 
-    public SchemaField(String name, DataType type){
+    public Field(String name, DataType type){
         this(name);
         if (type == null)
             throw new IllegalArgumentException("type is null");
         this.type = type;
     }
 
-    public SchemaField(String name, DataType type, int length){
+    public Field(String name, DataType type, int length){
         this(name, type);
         if (length < 0)
             throw new IllegalArgumentException("length < 0");
         this.length = length;
     }
 
-    public SchemaField(SchemaField copy){
+    public Field(Field copy){
         
         this();
         this.name = copy.name;
@@ -99,12 +100,12 @@ public class SchemaField {
      */
     protected void checkName(String name){
         if (name == null)
-            throw new IllegalArgumentException("schema field name is null");
+            throw new IllegalArgumentException("name is null");
         if (name.isEmpty())
-            throw new IllegalArgumentException("schema field name is empty");
+            throw new IllegalArgumentException("name is empty");
         for (String s: INVALID_NAME_CHARACTERS)
             if (name.contains(s))
-                throw new IllegalArgumentException("schema field name contains invalid character: " + s);
+                throw new IllegalArgumentException("field name contains invalid character: " + s);
     }
 
     public int getLength() {
@@ -161,6 +162,23 @@ public class SchemaField {
         this.type = type;
     }
     
+    public boolean isKey(){
+        for (Operation op: operations){
+            if (op instanceof com.realcomp.data.validation.field.Key)
+                return true;
+        }
+        return false;
+    }
+    
+    public boolean isForeignKey(){
+        for (Operation op: operations){
+            if (op instanceof com.realcomp.data.validation.field.ForeignKey)
+                return true;
+        }
+        return false;
+    }
+    
+    
     @Override
     public String toString() {
         return name;
@@ -185,7 +203,7 @@ public class SchemaField {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        final SchemaField other = (SchemaField) obj;
+        final Field other = (Field) obj;
         if ((this.name == null) ? (other.name != null) : !this.name.equals(other.name))
             return false;
         if (this.type != other.type)

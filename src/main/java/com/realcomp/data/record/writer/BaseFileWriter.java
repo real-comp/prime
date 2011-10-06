@@ -3,11 +3,12 @@ package com.realcomp.data.record.writer;
 import com.realcomp.data.conversion.ConversionException;
 import com.realcomp.data.record.Record;
 import com.realcomp.data.record.io.ValueResolver;
-import com.realcomp.data.schema.AfterLastSchemaField;
-import com.realcomp.data.schema.BeforeFirstSchemaField;
+import com.realcomp.data.schema.AfterLastField;
+import com.realcomp.data.schema.BeforeFirstField;
 import com.realcomp.data.schema.FileSchema;
 import com.realcomp.data.schema.SchemaException;
-import com.realcomp.data.schema.SchemaField;
+import com.realcomp.data.schema.Field;
+import com.realcomp.data.schema.FieldList;
 import com.realcomp.data.validation.Severity;
 import com.realcomp.data.validation.ValidationException;
 import com.realcomp.data.view.RecordView;
@@ -100,7 +101,7 @@ public abstract class BaseFileWriter implements RecordWriter{
         
         if (schema != null){            
             assert(valueResolver != null);            
-            valueResolver.resolve(new AfterLastSchemaField(), new Record(), "" + this.getCount());            
+            valueResolver.resolve(new AfterLastField(), new Record(), "" + this.getCount());            
         }
     }
 
@@ -108,7 +109,7 @@ public abstract class BaseFileWriter implements RecordWriter{
 
         if (schema != null){
             assert(valueResolver != null);            
-            valueResolver.resolve(new BeforeFirstSchemaField(), new Record(), "" + this.getCount());
+            valueResolver.resolve(new BeforeFirstField(), new Record(), "" + this.getCount());
         }
     }
     
@@ -154,15 +155,15 @@ public abstract class BaseFileWriter implements RecordWriter{
     }
 
     
-    protected void write(Record record, List<SchemaField> fields)
+    protected void write(Record record, FieldList fields)
             throws ValidationException, ConversionException, IOException{
 
-        for (SchemaField field: fields)
+        for (Field field: fields)
             write(record, field);
     }
 
 
-    protected abstract void write(Record record, SchemaField field)
+    protected abstract void write(Record record, Field field)
        throws ValidationException, ConversionException, IOException;
 
   
@@ -174,7 +175,7 @@ public abstract class BaseFileWriter implements RecordWriter{
         if (record == null || record.isEmpty())
             return "";
         String id = "";
-        List<SchemaField> fields = schema.classify(record);
+        List<Field> fields = schema.classify(record);
         if (fields.size() > 0)
             id = id.concat(record.get(fields.get(0).getName()).toString());
         

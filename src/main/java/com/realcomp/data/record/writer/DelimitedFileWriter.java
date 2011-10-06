@@ -5,10 +5,10 @@ import com.realcomp.data.DataType;
 import com.realcomp.data.conversion.ConversionException;
 import com.realcomp.data.record.Record;
 import com.realcomp.data.record.io.Delimiter;
-import com.realcomp.data.schema.Classifier;
 import com.realcomp.data.schema.FileSchema;
 import com.realcomp.data.schema.SchemaException;
-import com.realcomp.data.schema.SchemaField;
+import com.realcomp.data.schema.Field;
+import com.realcomp.data.schema.FieldList;
 import com.realcomp.data.validation.ValidationException;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -128,8 +128,8 @@ public class DelimitedFileWriter extends BaseFileWriter{
         try {
             FileSchema originalSchema = getSchema();
             FileSchema headerSchema = new FileSchema(getSchema());
-             for (List<SchemaField> fields : headerSchema.getFields().values()){
-                for (SchemaField field: fields)
+             for (FieldList fields : headerSchema.getFieldLists()){
+                for (Field field: fields)
                     field.clearOperations();
             }
              
@@ -146,13 +146,13 @@ public class DelimitedFileWriter extends BaseFileWriter{
 
     protected Record getHeader(){
         Record retVal = new Record();
-        for(SchemaField field: schema.getFields().get(FileSchema.DEFAULT_CLASSIFIER))
+        for(Field field: schema.getDefaultFieldList())
             retVal.put(field.getName(), field.getName());
         return retVal;
     }
 
     @Override
-    protected void write(Record record, SchemaField field)
+    protected void write(Record record, Field field)
             throws ValidationException, ConversionException, IOException{
 
         Object value = valueResolver.resolve(field, record);

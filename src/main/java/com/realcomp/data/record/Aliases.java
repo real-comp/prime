@@ -2,12 +2,12 @@ package com.realcomp.data.record;
 
 import com.realcomp.data.Operation;
 import com.realcomp.data.schema.FileSchema;
-import com.realcomp.data.schema.SchemaField;
+import com.realcomp.data.schema.Field;
+import com.realcomp.data.schema.FieldList;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Pattern;
 
 /**
  *
@@ -23,8 +23,8 @@ public class Aliases {
      */
     public static Map<String, List<String>> getAliases(FileSchema schema){
         Map<String,List<String>> aliases = new HashMap<String,List<String>>();
-        for (Map.Entry<Pattern, List<SchemaField>> fields: schema.getFields().entrySet()){
-            for (SchemaField field: fields.getValue()){
+        for (FieldList fieldList: schema.getFieldLists()){
+            for (Field field: fieldList){
                 List<String> definedAliases = getAliases(field);
                 if (definedAliases != null)
                     aliases.put(field.getName(), definedAliases);
@@ -40,7 +40,7 @@ public class Aliases {
      * @return all aliases for the specified field, or null if none defined.
      * @see com.realcomp.data.conversion.Alias
      */
-    public static List<String> getAliases(SchemaField field){
+    public static List<String> getAliases(Field field){
         
         List<String> retVal = null;
         List<Operation> operations = field.getOperations();

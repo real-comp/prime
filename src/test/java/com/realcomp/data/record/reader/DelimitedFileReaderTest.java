@@ -1,5 +1,6 @@
 package com.realcomp.data.record.reader;
 
+import com.realcomp.data.schema.FieldList;
 import com.realcomp.data.record.io.Delimiter;
 import com.realcomp.data.schema.SchemaException;
 import com.realcomp.data.validation.ValidationException;
@@ -7,7 +8,7 @@ import com.realcomp.data.schema.FileSchema;
 import com.realcomp.data.DataType;
 import java.io.ByteArrayInputStream;
 import com.realcomp.data.record.Record;
-import com.realcomp.data.schema.SchemaField;
+import com.realcomp.data.schema.Field;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
@@ -221,7 +222,7 @@ public class DelimitedFileReaderTest {
     @Test
     public void testLoadRecordMissingFields() throws Exception {
 
-        List<SchemaField> fields = get3FieldSchema().getFields().get(FileSchema.DEFAULT_CLASSIFIER);
+        FieldList fields = get3FieldSchema().getDefaultFieldList();
 
         String[] data = new String[]{"a123","b123"};
         DelimitedFileReader instance = new DelimitedFileReader();
@@ -254,9 +255,12 @@ public class DelimitedFileReaderTest {
         FileSchema schema = new FileSchema();
         schema.setName("test");
         schema.setVersion("0");
-        schema.addField(new SchemaField("a", DataType.STRING));
-        schema.addField(new SchemaField("b", DataType.STRING));
-        schema.addField(new SchemaField("c", DataType.STRING));
+        
+        FieldList fields = new FieldList();
+        fields.add(new Field("a", DataType.STRING));
+        fields.add(new Field("b", DataType.STRING));
+        fields.add(new Field("c", DataType.STRING));
+        schema.addFieldList(fields);
         return schema;
     }
 
