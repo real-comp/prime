@@ -452,6 +452,15 @@ public class FileSchema {
             s.append(" (").append(version).append(")");
         return s.toString();
     }
+    
+    public String toString(Record record){
+        try{
+            return classify(record).toString(record);
+        }
+        catch(SchemaException ex){
+            return getDefaultFieldList().toString(record);
+        }
+    }
 
     @Override
     public boolean equals(Object obj) {
