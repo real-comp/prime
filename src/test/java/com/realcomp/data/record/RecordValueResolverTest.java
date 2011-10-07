@@ -55,7 +55,13 @@ public class RecordValueResolverTest {
     }
 
     @Test
+    public void testConstructor(){
+        new RecordValueResolver();
+    }
+    
+    @Test
     public void testResolve() {
+        
         
         Record record = getRecord();
         List<Object> result = RecordValueResolver.resolve(record.data, "name");

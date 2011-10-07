@@ -36,6 +36,12 @@ public class XStreamFileSchemaTest {
         
     }
 
+    
+    @Test
+    public void testConstructor(){
+        new XStreamFactory();
+    }
+    
 
     protected FileSchema getSchema() throws SchemaException{
         FileSchema schema = new FileSchema();

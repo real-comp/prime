@@ -3,7 +3,7 @@ package com.realcomp.data.conversion;
 import org.apache.commons.lang.StringUtils;
 
 /**
- *
+ * 
  * @author krenfro
  */
 @com.realcomp.data.annotation.Converter("resize")
@@ -19,6 +19,8 @@ public class Resize extends SimpleConverter {
     
     public Resize(int length){
         super();
+        if (length < 0)
+            throw new IllegalArgumentException("length < 0");
         this.length = length;
     }
     
@@ -35,15 +37,19 @@ public class Resize extends SimpleConverter {
 
     @Override
     public Resize copyOf(){
-        return new Resize(length);
+        Resize copy = new Resize();
+        copy.length = length;
+        return copy;
     }
             
-    public String getLength() {
-        return Integer.toString(length);
+    public int getLength() {
+        return length;
     }
 
-    public void setLength(String length) {
-        this.length = Integer.parseInt(length);
+    public void setLength(int length) {
+        if (length < 0)
+            throw new IllegalArgumentException("length < 0");
+        this.length = length;
     }
 
     @Override

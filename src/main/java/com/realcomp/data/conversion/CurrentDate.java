@@ -42,6 +42,9 @@ public class CurrentDate extends ComplexConverter{
      */
     @Override
     public Object convert(Object value) throws ConversionException{
+        if (value == null)
+            throw new IllegalArgumentException("value is null");
+        
         return formatter.format(now.getTime());
     }
 

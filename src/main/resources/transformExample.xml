@@ -5,14 +5,6 @@
    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
    xsi:schemaLocation="http://www.real-comp.com/realcomp-data/schema/transform/1.0 http://www.real-comp.com/realcomp-data/schema/transform/1.0/transform.xsd">
     
-    <classifiers>
-        <classifier regex="pattern">
-            <fields>
-                <field name=""/>
-            </fields>
-        </classifier>
-    </classifiers>
-    
     <fields>
         <field name="DATE">
             <currentDate format="MM/dd/yyyy"/>

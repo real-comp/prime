@@ -40,7 +40,8 @@ public class FirstName extends SimpleConverter {
     public FirstName copyOf(){
         return new FirstName();
     }
-
+    
+    
     @Override
     public boolean equals(Object other) {
         return (other instanceof FirstName);
@@ -51,4 +52,5 @@ public class FirstName extends SimpleConverter {
         int hash = 7;
         return hash;
     }
+
 }

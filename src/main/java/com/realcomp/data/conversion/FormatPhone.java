@@ -1,6 +1,5 @@
 package com.realcomp.data.conversion;
 
-import com.realcomp.data.Operation;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -53,9 +52,22 @@ public class FormatPhone extends SimpleConverter {
     }
 
     @Override
-    public Operation copyOf() {
+    public FormatPhone copyOf() {
         return new FormatPhone();
     }
+    
+    
+    @Override
+    public boolean equals(Object other) {
+        return (other instanceof FormatPhone);
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        return hash;
+    }
+
     
     
 }

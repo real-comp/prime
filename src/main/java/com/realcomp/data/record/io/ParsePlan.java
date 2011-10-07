@@ -47,8 +47,9 @@ public class ParsePlan extends ArrayList<Field>{
         while (!skipped.isEmpty()){
 
             for (Field field: skipped){
-                if (containsAll(getDependentFieldNames(field)))
+                if (getParsedFieldNames().containsAll(getDependentFieldNames(field))){
                     add(field);
+                }
             }
 
             skipped.removeAll(this);
@@ -69,7 +70,23 @@ public class ParsePlan extends ArrayList<Field>{
             }
         }
     }
+    
+    /**
+     * 
+     * @return list of all field names that have been successfully parsed
+     */
+    protected final List<String> getParsedFieldNames(){
+        List<String> fieldNames = new ArrayList<String>();
+        for (Field f: this){
+            fieldNames.add(f.getName());
+        }
+        return fieldNames;
+    }
 
+    /**
+     * @return list of field names that the Field needs to be available in the Record for its 
+     *  operations to succeed.
+     */
     protected final List<String> getDependentFieldNames(Field field){
 
         List<String> fieldNames = new ArrayList<String>();

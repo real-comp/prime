@@ -11,20 +11,26 @@ import java.util.List;
  */
 public abstract class BaseMultiFieldConverter implements MultiFieldConverter{
 
-    
     protected List<DataType> supportedTypes;
+    protected List<String> fieldNames;
 
     public BaseMultiFieldConverter(){
+        fieldNames = new ArrayList<String>();
         supportedTypes = new ArrayList<DataType>();
         supportedTypes.add(DataType.STRING);
         supportedTypes.add(DataType.BOOLEAN);
         supportedTypes.add(DataType.INTEGER);
         supportedTypes.add(DataType.FLOAT);
         supportedTypes.add(DataType.DOUBLE);
-        supportedTypes.add(DataType.LONG);        
+        supportedTypes.add(DataType.LONG);
     }
     
-    protected List<String> fieldNames;
+    public BaseMultiFieldConverter(List<String> fieldNames){
+        this();        
+        setFields(fieldNames);
+    }
+    
+    
 
     @Override
     public List<String> getFields() {
@@ -33,7 +39,10 @@ public abstract class BaseMultiFieldConverter implements MultiFieldConverter{
 
     @Override
     public void setFields(List<String> fieldNames) {
-        this.fieldNames = fieldNames;
+        if (fieldNames == null)
+            throw new IllegalArgumentException("fieldNames is null");
+        this.fieldNames.clear();
+        this.fieldNames.addAll(fieldNames);
     }
     
     /**
