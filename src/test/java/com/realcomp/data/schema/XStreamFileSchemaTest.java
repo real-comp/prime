@@ -98,6 +98,11 @@ public class XStreamFileSchemaTest {
                 XStreamFileSchemaTest.class.getResourceAsStream("test_1.schema"));
         assertEquals(Delimiter.TAB, ((DelimitedFileReader) schema.getReader()).getDelimiter());
         
+        assertEquals(2, schema.getFieldLists().size());
+        assertEquals(6, schema.getDefaultFieldList().size());
+        assertEquals(1, schema.getBeforeOperations().size());
+        assertEquals(1, schema.getAfterOperations().size());
+        
         schema = SchemaFactory.buildFileSchema(
                 XStreamFileSchemaTest.class.getResourceAsStream("test_2.schema"));
         assertEquals(Delimiter.CSV, ((DelimitedFileReader) schema.getReader()).getDelimiter());

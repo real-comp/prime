@@ -2,15 +2,11 @@ package com.realcomp.data.schema;
 
 import com.realcomp.data.record.Record;
 import com.realcomp.data.schema.xml.FieldListConverter;
-import com.realcomp.data.schema.xml.RegexPatternConverter;
-import com.thoughtworks.xstream.annotations.XStreamAlias;
-import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
 import com.thoughtworks.xstream.annotations.XStreamConverter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.regex.Pattern;
-import javax.xml.bind.annotation.XmlRootElement;
 import org.apache.commons.lang.StringUtils;
 
 /**
@@ -21,6 +17,7 @@ import org.apache.commons.lang.StringUtils;
 public class FieldList extends ArrayList<Field> {
     
     public static final Pattern DEFAULT_CLASSIFIER = Pattern.compile(".*");
+    private static final long serialVersionUID = 1L;
       
     private Pattern classifier = DEFAULT_CLASSIFIER;
     

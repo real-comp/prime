@@ -53,7 +53,6 @@ public class XStreamFactory {
         xstream.registerConverter(new OperationConverter());
         xstream.registerConverter(new DataTypeConverter());
         xstream.registerConverter(new DelimiterConverter());
-        xstream.registerConverter(new RegexPatternConverter());
         xstream.registerConverter(new FieldListConverter());
         
         for (Class c: validators){

@@ -14,6 +14,7 @@ import com.thoughtworks.xstream.annotations.XStreamConverter;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
@@ -153,8 +154,11 @@ public class FileSchema {
                 }
             }
         }
-            
-        throw new SchemaException("The schema does not support the specified Record");
+        
+        if (match == null)
+            throw new SchemaException("The schema does not support the specified Record");
+        
+        return match;
     }
     
     
@@ -205,7 +209,13 @@ public class FileSchema {
     public void addFieldList(FieldList fieldList){
         if (fieldList == null)
             throw new IllegalArgumentException("fieldList is null");
-        this.fieldLists.add(new FieldList(fieldList));
+        
+        if (fieldList.isDefaultClassifier()){
+            logger.log(Level.FINE, "replacing default field list");
+            fieldLists.remove(getDefaultFieldList());
+        }
+        
+        fieldLists.add(new FieldList(fieldList));
     }
     
     /**

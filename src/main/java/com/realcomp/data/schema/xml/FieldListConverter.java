@@ -5,8 +5,10 @@ import com.realcomp.data.schema.FieldList;
 import com.thoughtworks.xstream.converters.Converter;
 import com.thoughtworks.xstream.converters.MarshallingContext;
 import com.thoughtworks.xstream.converters.UnmarshallingContext;
+import com.thoughtworks.xstream.converters.collections.CollectionConverter;
 import com.thoughtworks.xstream.io.HierarchicalStreamReader;
 import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
+import java.util.regex.Pattern;
 
 /**
  * Uses xStream, JavaBeans and reflection to dynamically serialize/de-serialize an Operation
@@ -16,9 +18,6 @@ import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
 public class FieldListConverter implements Converter{
     
 
-    public FieldListConverter(){
-        super();
-    }
     
     
     @Override
@@ -31,16 +30,15 @@ public class FieldListConverter implements Converter{
     public void marshal(Object o, HierarchicalStreamWriter writer, MarshallingContext mc) {
 
         FieldList fieldList = (FieldList) o;
-        writer.startNode("fields");
         if (!fieldList.isDefaultClassifier())
             writer.addAttribute("classifier", fieldList.getClassifier().toString());
-        
+            
+       
         for (Field field: fieldList){
-            System.err.println(field);
-            writer.flush();
+            writer.startNode("field");
             mc.convertAnother(field);
+            writer.endNode();
         }
-        writer.endNode();
     }
 
 
@@ -48,9 +46,15 @@ public class FieldListConverter implements Converter{
     public Object unmarshal(HierarchicalStreamReader reader, UnmarshallingContext uc) {
         
         FieldList fieldList = new FieldList();
+        String classifier = reader.getAttribute("classifier");
+        if (classifier != null)
+            fieldList.setClassifier(Pattern.compile(classifier));
+        
         while (reader.hasMoreChildren()){
-            Field f = (Field) uc.convertAnother(reader.getValue(), Field.class);
+            reader.moveDown();
+            Field f = (Field) uc.convertAnother(fieldList, Field.class);
             fieldList.add(f);
+            reader.moveUp();
         }
         return fieldList;
     }

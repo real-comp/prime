@@ -24,9 +24,9 @@
       <converter class="com.realcomp.data.conversion.Trim"/>
     </field>
   </fields>
-  <classifier id="recordtypeb" regex=".{19}">
+  <fields classifier=".{19}">
     <field name="pid" type="long" length="10"/>
     <field name="zip5" type="int" length="5"/>
     <field name="zip4" type="int" length="4"/>
-  </classifier>
+  </fields>
 </file-schema>
