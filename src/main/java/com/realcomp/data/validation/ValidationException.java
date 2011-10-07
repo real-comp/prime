@@ -1,7 +1,5 @@
 package com.realcomp.data.validation;
 
-
-
 /**
  * <p>An exception thrown when validation fails.</p>
  *

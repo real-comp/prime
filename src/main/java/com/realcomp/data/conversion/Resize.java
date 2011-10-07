@@ -11,7 +11,7 @@ public class Resize extends SimpleConverter {
 
     private static final int USE_ORIGINAL_LENGTH = -1;
 
-    protected int length = USE_ORIGINAL_LENGTH;
+    private int length = USE_ORIGINAL_LENGTH;
     
     public Resize(){
         super();

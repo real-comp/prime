@@ -7,7 +7,7 @@ package com.realcomp.data.conversion;
 @com.realcomp.data.annotation.Converter("constant")
 public class ConstantConverter extends SimpleConverter{
 
-    protected Object value = "";
+    private Object value = "";
     
     public ConstantConverter(){
         super();

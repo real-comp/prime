@@ -5,7 +5,6 @@ import com.realcomp.data.Operation;
 import com.realcomp.data.record.Record;
 import com.realcomp.data.record.reader.RecordReader;
 import com.realcomp.data.record.writer.RecordWriter;
-import com.realcomp.data.schema.xml.FieldListConverter;
 import com.realcomp.data.schema.xml.RecordReaderConverter;
 import com.realcomp.data.schema.xml.RecordWriterConverter;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -25,28 +24,28 @@ import java.util.regex.Pattern;
 @XStreamAlias("file-schema")
 public class FileSchema {
 
-    protected static final Logger logger = Logger.getLogger(FileSchema.class.getName());
+    private static final Logger logger = Logger.getLogger(FileSchema.class.getName());
     protected static final Pattern DEFAULT_CLASSIFIER = Pattern.compile(".*");
 
     @XStreamAsAttribute
-    protected String name;
+    private String name;
 
     @XStreamAsAttribute
-    protected String version;
+    private String version;
 
     @XStreamConverter(RecordReaderConverter.class)
-    protected RecordReader reader;
+    private RecordReader reader;
 
     @XStreamConverter(RecordWriterConverter.class)
-    protected RecordWriter writer;
+    private RecordWriter writer;
 
-    protected List<Operation> beforeFirst;
-    protected List<Operation> before;
-    protected List<Operation> after;
-    protected List<Operation> afterLast;
+    private List<Operation> beforeFirst;
+    private List<Operation> before;
+    private List<Operation> after;
+    private List<Operation> afterLast;
     
     @XStreamImplicit(itemFieldName="fields")
-    protected List<FieldList> fieldLists;
+    private List<FieldList> fieldLists;
     
     public FileSchema(){
         fieldLists = new ArrayList<FieldList>();
@@ -114,7 +113,7 @@ public class FileSchema {
                 if (match == null){
                     match = fieldList;
                 }
-                else if (match != null && !fieldList.isDefaultClassifier()){
+                else if (!fieldList.isDefaultClassifier()){
                     match = fieldList; //allow a more specific FieldList
                 }
             }

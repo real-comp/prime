@@ -10,7 +10,7 @@ import java.util.List;
 @com.realcomp.data.annotation.Converter("concat")
 public class Concat extends BaseMultiFieldConverter{
 
-    protected String delimiter = "";
+    private String delimiter = "";
 
     public Concat(){
         super();

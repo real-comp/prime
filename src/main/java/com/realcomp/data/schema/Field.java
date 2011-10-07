@@ -32,17 +32,17 @@ public class Field {
     
     @XStreamAsAttribute
     @XmlAttribute
-    protected String name;
+    private String name;
     
     @XStreamAsAttribute
     @XStreamConverter(DataTypeConverter.class)
-    protected DataType type = DataType.STRING;
+    private DataType type = DataType.STRING;
 
     @XStreamImplicit
-    protected List<Operation> operations;
+    private List<Operation> operations;
 
     @XStreamAsAttribute
-    protected int length;
+    private int length;
 
     public Field(){
          operations = new ArrayList<Operation>();

@@ -58,7 +58,7 @@ public class Codes{
     /**
      * By default, code translations misses are logged at Level.FINE 
      * JDK logging can be figured to override this level for all Codes instances, but it may be 
-     * he case that you desire a different logging level for an individual Codes instance.
+     * the case that you desire a different logging level for an individual Codes instance.
      * 
      * @param logLevel The level at which to log code translations misses.
      */
