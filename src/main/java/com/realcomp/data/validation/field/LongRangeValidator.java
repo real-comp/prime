@@ -1,7 +1,11 @@
 package com.realcomp.data.validation.field;
 
+import com.realcomp.data.DataType;
 import com.realcomp.data.annotation.Validator;
+import com.realcomp.data.conversion.ConversionException;
 import com.realcomp.data.validation.ValidationException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 /**
@@ -15,25 +19,26 @@ public class LongRangeValidator extends BaseFieldValidator {
     protected long max = Long.MAX_VALUE;
 
     @Override
-    public void validate(String value) throws ValidationException{
-
+    public void validate(Object value) throws ValidationException{
+        
         if (value == null)
             throw new IllegalArgumentException("value is null");
         if (min > max)
             throw new IllegalStateException(String.format("min (%s) > max (%s)", min, max));
 
         try{
-            long parsed = parseLong(value);
-            if (parsed < min){
+            Long coerced = (Long) DataType.LONG.coerce(value);
+            
+            if (coerced < min){
                 throw new ValidationException(
                         String.format("less than minimum value of %s", min), value, getSeverity());
             }
-            else if(parsed > max){
+            else if(coerced > max){
                 throw new ValidationException(
                         String.format("greater than maximum value of %s", max), value, getSeverity());
             }
         }
-        catch(NumberFormatException ex){
+        catch(ConversionException ex){
             throw new ValidationException(ex.getMessage(), value, getSeverity());
         }
     }

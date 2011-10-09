@@ -45,7 +45,7 @@ public class TransformerTest {
         
         field.addOperation(new RequiredValidator());
         fields.add(field);
-        t.setFields(fields); THIS IS DUMB - WHY SO MUCH COPYING?!?!
+        t.setFields(fields);
         
         
         

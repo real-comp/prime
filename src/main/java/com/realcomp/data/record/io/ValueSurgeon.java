@@ -23,6 +23,8 @@ import java.util.logging.Logger;
  */
 public class ValueSurgeon extends Transformer{
     
+    rework me
+    
     protected static final Logger log = Logger.getLogger(ValueSurgeon.class.getName());
 
     protected FileSchema schema;

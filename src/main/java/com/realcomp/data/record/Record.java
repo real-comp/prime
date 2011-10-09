@@ -121,25 +121,6 @@ public class Record implements Serializable {
             return null;        
     }
     
-      
-
-    /**
-     * @see FileSchema#toString(Record)
-     * @return (up to) the first two fields of this Record delimited by a pipe "|"
-     */
-    @Override
-    public String toString() {
-
-        StringBuilder s = new StringBuilder();
-        for (Object f : data.values()) {
-            if (s.length() > 0)
-                s.append("|");
-            s.append(f.toString());
-        }
-
-        return s.toString();
-    }
-
     @Override
     public boolean equals(Object obj) {
         if (obj == null)

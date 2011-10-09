@@ -48,8 +48,10 @@ public class Transformer {
         
         
         for (Field field: fields){
-            
             Object value = record.get(field.getName());
+            if (value == null)
+                value = "";
+            
             for (Operation op: getOperations(field)){                
                 try{
                     value = operate(op, value, record);

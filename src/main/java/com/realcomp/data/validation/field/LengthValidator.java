@@ -1,7 +1,9 @@
 
 package com.realcomp.data.validation.field;
 
+import com.realcomp.data.DataType;
 import com.realcomp.data.annotation.Validator;
+import com.realcomp.data.conversion.ConversionException;
 import com.realcomp.data.validation.ValidationException;
 
 
@@ -16,21 +18,27 @@ public class LengthValidator extends BaseFieldValidator {
     protected int max = Integer.MAX_VALUE;
 
     @Override
-    public void validate(String value) throws ValidationException{
+    public void validate(Object value) throws ValidationException{
         if (value == null)
             throw new IllegalArgumentException("value is null");
         if (min > max)
             throw new IllegalStateException(String.format("min (%s) > max (%s)", min, max));
 
-        int length = value.length();
+        try {
+            String coerced = (String) DataType.STRING.coerce(value);
+            int length = coerced.length();
 
-        if (length < min){
-            throw new ValidationException(
-                    String.format("too short (min: %s)", min), value, getSeverity());
+            if (length < min){
+                throw new ValidationException(
+                        String.format("too short (min: %s)", min), value, getSeverity());
+            }
+            else if (length > max){
+                throw new ValidationException(
+                        String.format("too long (max: %s)", max), value, getSeverity());
+            }
         }
-        else if (length > max){
-            throw new ValidationException(
-                    String.format("too long (max: %s)", max), value, getSeverity());
+        catch(ConversionException ex){
+            throw new ValidationException(ex.getMessage(), value, getSeverity());
         }
     }
 

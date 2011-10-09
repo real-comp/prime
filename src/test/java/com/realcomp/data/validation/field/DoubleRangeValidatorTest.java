@@ -40,14 +40,8 @@ public class DoubleRangeValidatorTest {
         DoubleRangeValidator validator = new DoubleRangeValidator();
         validator.validate("0");
         validator.validate("0.00001");
+        validator.validate(""); //coerces to 0
         
-        try{
-            validator.validate("");
-            fail("should have thrown ValidationException");
-        }
-        catch(ValidationException ok){
-        }
-
         
         validator.validate("00000");
         validator.validate("100000.001");
@@ -97,33 +91,16 @@ public class DoubleRangeValidatorTest {
             fail("should have thrown ValidationException");
         }
         catch(ValidationException ok){}        
-    }
-
-    /**
-     * Test of parseLong method, of class LongRangeValidator.
-     */
-    @Test
-    public void testParseDouble() {
-        DoubleRangeValidator validator = new DoubleRangeValidator();
-        assertEquals(0, validator.parseDouble("0"), .0001f);
-        assertEquals(0, validator.parseDouble("00"), .0001f);
-        assertEquals(1, validator.parseDouble("1"), .0001f);
-        assertEquals(-1, validator.parseDouble("-1"), .0001f);
-        assertEquals(1.1, validator.parseDouble("1.1"), .0001f);
-        assertEquals(1.1, validator.parseDouble("000001.10000"), .0001f);
-    }
-
-    @Test(expected=NumberFormatException.class)
-    public void testParseInvalidDouble(){
-        DoubleRangeValidator validator = new DoubleRangeValidator();
-        validator.parseDouble("");
-    }
-
-
-    @Test(expected=NumberFormatException.class)
-    public void testParseInvalidDouble2(){
-        DoubleRangeValidator validator = new DoubleRangeValidator();
-        validator.parseDouble("00.00.0");
+        
+        validator.setMin(1);
+        try{
+            validator.validate("");
+            fail("should have thrown ValidationException");
+        }
+        catch(ValidationException ok){}        
+        
+        
+        
     }
 
 }

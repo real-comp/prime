@@ -15,6 +15,8 @@ import java.util.logging.Logger;
  */
 public class ValueResolver {
     
+    rework me
+            
     protected static final Logger log = Logger.getLogger(ValueResolver.class.getName());
 
     private ValueSurgeon surgeon;
