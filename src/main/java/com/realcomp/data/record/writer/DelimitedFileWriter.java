@@ -155,11 +155,12 @@ public class DelimitedFileWriter extends BaseFileWriter{
     protected void write(Record record, Field field)
             throws ValidationException, ConversionException, IOException{
 
-        Object value = valueResolver.resolve(field, record);
-        if (value == null)
-            value = "";
-        
-        current.add((String) DataType.STRING.coerce(value));
+        context.setRecord(record);
+        context.setKey(field.getName());
+        List<Object> values = surgeon.operate(field.getOperations(), context);
+      
+        if (!values.isEmpty())        
+            current.add((String) DataType.STRING.coerce(values.get(0)));
     }
 
     public boolean isHeader() {

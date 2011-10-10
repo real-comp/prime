@@ -1,16 +1,24 @@
 package com.realcomp.data.record.io;
 
-import com.realcomp.data.record.Aliases;
+import com.realcomp.data.Operation;
 import com.realcomp.data.conversion.ConversionException;
 import com.realcomp.data.record.Record;
-import com.realcomp.data.schema.FileSchema;
+import com.realcomp.data.record.RecordValueAssembler;
+import com.realcomp.data.record.RecordValueException;
 import com.realcomp.data.schema.Field;
+import com.realcomp.data.schema.FileSchema;
 import com.realcomp.data.schema.FieldList;
+import com.realcomp.data.transform.TransformContext;
+import com.realcomp.data.transform.Transformer;
+import com.realcomp.data.transform.ValueSurgeon;
 import com.realcomp.data.validation.Severity;
 import com.realcomp.data.validation.ValidationException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Creates Records from a String[] using a FileSchema.
@@ -36,21 +44,32 @@ public class RecordFactory {
      */
     protected ParsePlan parsePlan;
     
-    protected Map<String,List<String>> aliases;
-
-    protected FileSchema schema;
+    protected FileSchema schema;    
+    protected ValueSurgeon surgeon;
+    protected TransformContext context;
     
-    private ValueSurgeon surgeon;
-
     public RecordFactory(FileSchema schema) throws ParsePlanException{
 
         if (schema == null)
             throw new IllegalArgumentException("schema is null");
 
         this.schema = schema;
-        buildParsePlan();
-        aliases = Aliases.getAliases(schema);
-        surgeon = new ValueSurgeon(schema);
+        buildParsePlan();        
+        surgeon = new ValueSurgeon();
+        context = new TransformContext();
+        context.setSchema(schema);
+    }
+    
+    /**
+     * Build a Record from the provided String[] using the schema's default FieldList
+     * 
+     * @param data
+     * @return
+     * @throws ValidationException
+     * @throws ConversionException 
+     */
+    public Record build(String[] data) throws ValidationException, ConversionException{
+        return build(schema.getDefaultFieldList(), data);
     }
     
     /**
@@ -71,46 +90,28 @@ public class RecordFactory {
                     fieldList.size() + " != " + data.length,
                     Severity.HIGH);
 
-        Record record = new Record();
+        Record record = new Record();        
+        context.setRecord(record);
         int index = 0;
         
         for (Field field: getParsePlan(fieldList)){
-            index = fieldList.indexOf(field);
-            Object value = null;
-            try{
-                value = surgeon.operate(field, record, data[index]);
+            try {
+                index = fieldList.indexOf(field);
+                context.setKey(field.getName());
+                record.put(field.getName(), data[index]); //seed record with initial value
+                List value = surgeon.operate(getOperations(field), context);
+                record.put(field.getName(), field.getType().coerce(value.get(0))); //set final value
+                for (String alias: context.getAliases())
+                    RecordValueAssembler.assemble(context.getRecord(), alias, value);
             }
-            catch (ConversionException ex){
-                throw new ConversionException(
-                        String.format("%s in field [%s] of record [%s]",
-                                new Object[]{ex.getMessage(), field, fieldList.toString(record)}));
+            catch (RecordValueException ex) {
+                throw new ConversionException(ex);
             }
-
-            record.put(field.getName(), value);
-            addAliases(record, field.getName(), value);
         }
-
-
+        
         return record;
     }
     
-    /**
-     * If aliases are defined for the field, add an entry to the specified record, 
-     * with the alias name as the key, and the provided value as the value.
-     * 
-     * @param record
-     * @param fieldName
-     * @param value 
-     */
-    protected void addAliases(Record record, String fieldName, Object value){
-        if (aliases.containsKey(fieldName)){
-            for (String alias: aliases.get(fieldName)){
-                record.put(alias, value);
-            }
-        }
-    }
-    
-
     protected final void buildParsePlan() throws ParsePlanException{
         
         parsePlan = new ParsePlan(schema.getDefaultFieldList());
@@ -136,12 +137,25 @@ public class RecordFactory {
     }
 
     
-    public Severity getValidationExceptionThreshold() {
-        return surgeon.getValidationExceptionThreshold();
+    public Severity getValidationExceptionThreshold() {        
+        return context.getValidationExceptionThreshold();
     }
 
     
     public void setValidationExceptionThreshold(Severity validationExceptionThreshold) {
-        surgeon.setValidationExceptionThreshold(validationExceptionThreshold);        
+        context.setValidationExceptionThreshold(validationExceptionThreshold);        
     }
+    
+    
+    protected List<Operation> getOperations(Field field){
+        
+        List<Operation> operations = new ArrayList<Operation>();
+        if (schema.getBeforeOperations() != null)
+            operations.addAll(schema.getBeforeOperations());
+        operations.addAll(field.getOperations());
+        if (schema.getAfterOperations() != null)
+            operations.addAll(schema.getAfterOperations());
+        return operations;
+    }
+    
 }

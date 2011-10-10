@@ -1,20 +1,24 @@
 package com.realcomp.data.record.writer;
 
+import com.realcomp.data.Operation;
 import com.realcomp.data.conversion.ConversionException;
 import com.realcomp.data.record.Record;
-import com.realcomp.data.record.io.ValueResolver;
 import com.realcomp.data.schema.AfterLastField;
 import com.realcomp.data.schema.BeforeFirstField;
 import com.realcomp.data.schema.FileSchema;
 import com.realcomp.data.schema.SchemaException;
 import com.realcomp.data.schema.Field;
 import com.realcomp.data.schema.FieldList;
+import com.realcomp.data.transform.TransformContext;
+import com.realcomp.data.transform.Transformer;
+import com.realcomp.data.transform.ValueSurgeon;
 import com.realcomp.data.validation.Severity;
 import com.realcomp.data.validation.ValidationException;
 import com.realcomp.data.view.RecordView;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -31,21 +35,21 @@ public abstract class BaseFileWriter implements RecordWriter{
     protected OutputStream out;
     protected String charset = Charset.defaultCharset().name();
     protected FileSchema schema;
-    protected Severity validationExceptionThreshold = DEFAULT_VALIDATION_THREASHOLD;
     protected long count;
-    protected boolean beforeFirstOperationsRun = false;    
-    protected ValueResolver valueResolver;
+    protected boolean beforeFirstOperationsRun = false;   
+    protected TransformContext context;
+    protected ValueSurgeon surgeon;
     
     public BaseFileWriter(){
+        context = new TransformContext();
+        surgeon = new ValueSurgeon();
     }
     
     public BaseFileWriter(BaseFileWriter copy){
         
+        this();
         try{
-            validationExceptionThreshold = copy.validationExceptionThreshold;
             schema = new FileSchema(copy.schema);  
-            if (copy.valueResolver != null)
-                valueResolver = new ValueResolver(copy.valueResolver);
         }
         catch(SchemaException ex){
             throw new IllegalStateException(ex); //should never happen
@@ -55,14 +59,13 @@ public abstract class BaseFileWriter implements RecordWriter{
     
     @Override
     public Severity getValidationExceptionThreshold() {
-        return validationExceptionThreshold;
+        return context.getValidationExceptionThreshold();
     }
 
     @Override
     public void setValidationExceptionThreshold(Severity severity) {
-        this.validationExceptionThreshold = severity;
-        if (valueResolver != null)
-            valueResolver.setValidationExceptionThreshold(severity);
+        
+        context.setValidationExceptionThreshold(severity);
     }
     
     @Override
@@ -99,17 +102,25 @@ public abstract class BaseFileWriter implements RecordWriter{
 
     protected void executeAfterLastOperations() throws ValidationException, ConversionException{
         
-        if (schema != null){            
-            assert(valueResolver != null);            
-            valueResolver.resolve(new AfterLastField(), new Record(), "" + this.getCount());            
+        if (schema != null){
+            List<Operation> operations = schema.getAfterLastOperations();
+            if (operations != null && !operations.isEmpty()){
+                context.setRecordCount(this.getCount());
+                surgeon.operate(operations, context);
+            }
         }
+
+            
     }
 
     protected void executeBeforeFirstOperations() throws ValidationException, ConversionException{
 
-        if (schema != null){
-            assert(valueResolver != null);            
-            valueResolver.resolve(new BeforeFirstField(), new Record(), "" + this.getCount());
+         if (schema != null){
+            List<Operation> operations = schema.getBeforeFirstOperations();            
+            if (operations != null && !operations.isEmpty()){
+                context.setRecordCount(this.getCount());
+                surgeon.operate(operations, context);
+            }
         }
     }
     
@@ -118,10 +129,7 @@ public abstract class BaseFileWriter implements RecordWriter{
         if (schema == null)
             throw new IllegalArgumentException("schema is null");
         this.schema = schema;
-        if (valueResolver == null)
-            valueResolver = new ValueResolver(schema, validationExceptionThreshold);
-        else
-            valueResolver.setSchema(schema);
+        context.setSchema(schema);
     }
 
     @Override

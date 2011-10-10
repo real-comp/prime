@@ -117,12 +117,10 @@ public class FixedFileWriter extends BaseFileWriter{
     protected void write(Record record, Field field)
             throws ValidationException, ConversionException, IOException{
 
-        
-        Object value = valueResolver.resolve(field, record);
-        if (value == null)
-            value = "";
-        
-        writer.write(resize((String) DataType.STRING.coerce(value), field.getLength()));
+        context.setRecord(record);
+        context.setKey(field.getName());
+        List<Object> values = surgeon.operate(field.getOperations(), context);
+        writer.write(resize((String) DataType.STRING.coerce(values.get(0)), field.getLength()));
     }
 
     protected String resize(String s, int length){

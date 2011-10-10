@@ -31,16 +31,23 @@ public class FieldList extends ArrayList<Field> {
     }
     
     public FieldList(Pattern classifier){
-        
+        this();
         if (classifier == null)
             throw new IllegalArgumentException("classifier is null");
         this.classifier = Pattern.compile(classifier.toString());
     }
     
     public FieldList(FieldList copy){
+        this();
         for (Field field: copy)
             add(new Field(field));
         this.classifier = Pattern.compile(copy.classifier.toString());
+    }
+    
+    public FieldList(List<Field> copy){
+        this();
+        for (Field field: copy)
+            add(new Field(field));
     }
 
     private void resetCachedValues(){

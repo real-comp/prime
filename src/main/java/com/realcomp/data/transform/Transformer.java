@@ -3,18 +3,13 @@ package com.realcomp.data.transform;
 import com.realcomp.data.MultiFieldOperation;
 import com.realcomp.data.Operation;
 import com.realcomp.data.conversion.ConversionException;
-import com.realcomp.data.conversion.Converter;
-import com.realcomp.data.conversion.MissingFieldException;
-import com.realcomp.data.conversion.MultiFieldConverter;
-import com.realcomp.data.record.Record;
+import com.realcomp.data.record.RecordValueAssembler;
+import com.realcomp.data.record.RecordValueException;
 import com.realcomp.data.schema.FieldList;
 import com.realcomp.data.schema.Field;
-import com.realcomp.data.validation.Severity;
 import com.realcomp.data.validation.ValidationException;
-import com.realcomp.data.validation.Validator;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -27,9 +22,8 @@ public class Transformer {
     
     private List<Operation> before;
     private List<Operation> after;
-    private FieldList fields;
+    private List<Field> fields;
     private ValueSurgeon surgeon;
-    protected Severity validationExceptionThreshold = Severity.getDefault();
     
     public Transformer(){
         fields = new FieldList();
@@ -43,24 +37,24 @@ public class Transformer {
         if (copy.after != null)
             setAfter(copy.after);
         setFields(copy.fields);
-        validationExceptionThreshold = copy.validationExceptionThreshold;
     }
     
-    public void transform(Record record) throws ConversionException, ValidationException{
+    public void transform(TransformContext context) throws ConversionException, ValidationException{
         
+        context.setFields(fields);
         
-        for (Field field: fields){
+        for (Field field: fields){            
+            context.setKey(field.getName());            
+            List<Object> result = surgeon.operate(getOperations(field), context);
             
-            List<Operation> operations = new ArrayList<Operation>();
-            if (before != null)
-                operations.addAll(before);
-            operations.addAll(field.getOperations());
-            if (after != null)
-                operations.addAll(after);
-            
-            List<Object> result = surgeon.operate(record, field.getName(), operations);
-            
-            record.put(field.getName(), value);
+            try {
+                RecordValueAssembler.assemble(context.getRecord(), field.getName(), result);                
+                for (String alias: context.getAliases())
+                    RecordValueAssembler.assemble(context.getRecord(), alias, result);
+            }
+            catch (RecordValueException ex) {
+                throw new ConversionException(ex);
+            }
         }        
     }
     
@@ -75,72 +69,16 @@ public class Transformer {
         return operations;
     }
     
-    protected void handleValidationException(Operation op, Field field, Record record, ValidationException ex) 
-            throws ValidationException{
-        
-        Severity severity = ((Validator) op).getSeverity();
-
-        switch(severity){
-            case LOW:
-                logger.log(Level.INFO, String.format("%s for [%s]",
-                        new Object[]{ex.getMessage(), field, fields.toString(record)}));
-                break;
-            case MEDIUM:
-                logger.log(Level.WARNING, String.format("%s for [%s] in record [%s]",
-                        new Object[]{ex.getMessage(), field, fields.toString(record)}));
-                break;
-            case HIGH:
-                logger.log(Level.SEVERE, String.format("%s for [%s] in record [%s]",
-                        new Object[]{ex.getMessage(), field, fields.toString(record)}));
-                break;
-        }
-
-        if (severity.ordinal() >= validationExceptionThreshold.ordinal())
-            throw ex;
-    }
     
 
-    /**
-     * Perform an <i>operation</i> on some data for a <i>Record</i>
-     * 
-     * @param operation
-     * @param data not null
-     * @param record May be a partial Record, and useful for a MultiFieldConverter
-     * @return the result of the operation. not null.
-     * @throws ConversionException
-     * @throws ValidationException
-     * @throws MissingFieldException 
-     */
-    protected Object operate(Operation operation, Object data, Record record)
-                throws ConversionException, ValidationException, MissingFieldException{
-
-        Object result = data;
-
-        if (operation instanceof Validator){
-            ((Validator) operation).validate(data);
-        }
-        else if (operation instanceof MultiFieldConverter){
-            result = ((MultiFieldConverter) operation).convert(data, record);
-        }
-        else if (operation instanceof Converter){
-            result = ((Converter) operation).convert(data);
-        }
-        else{
-            throw new IllegalStateException("Unsupported operaton: " + operation.getClass().getName());
-        }
-
-        return result;
-    }
-    
-
-    public FieldList getFields() {
+    public List<Field> getFields() {
         return fields;
     }
 
-    public void setFields(FieldList fields) {
+    public void setFields(List<Field> fields) {
         if (fields == null)
             throw new IllegalArgumentException("fields is null");
-        this.fields = new FieldList(fields);
+        this.fields = new ArrayList(fields);
     }
 
     
@@ -228,15 +166,6 @@ public class Transformer {
         this.before.add(op);
     }
 
-    public Severity getValidationExceptionThreshold() {
-        return validationExceptionThreshold;
-    }
-
-    public void setValidationExceptionThreshold(Severity validationExceptionThreshold) {
-        this.validationExceptionThreshold = validationExceptionThreshold;
-    }
-    
-    
 
     
 }

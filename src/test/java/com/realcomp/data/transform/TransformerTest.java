@@ -39,8 +39,11 @@ public class TransformerTest {
         record.put("a", "asdf  ");
         record.put("b", "83838383");
         
+        TransformContext context = new TransformContext();
+        context.setRecord(record);
+        
         assertEquals("asdf  ", record.get("a"));
-        t.transform(record);
+        t.transform(context);
         assertEquals("asdf", record.get("a"));
         
         field.addOperation(new RequiredValidator());

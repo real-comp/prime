@@ -4,12 +4,13 @@ import com.realcomp.data.Operation;
 import com.realcomp.data.conversion.ConversionException;
 import com.realcomp.data.record.Record;
 import com.realcomp.data.record.io.RecordFactory;
-import com.realcomp.data.record.io.ValueResolver;
-import com.realcomp.data.schema.AfterLastField;
 import com.realcomp.data.schema.BeforeFirstField;
+import com.realcomp.data.schema.Field;
 import com.realcomp.data.schema.FileSchema;
 import com.realcomp.data.schema.SchemaException;
 import com.realcomp.data.schema.FieldList;
+import com.realcomp.data.transform.TransformContext;
+import com.realcomp.data.transform.Transformer;
 import com.realcomp.data.validation.Severity;
 import com.realcomp.data.validation.ValidationException;
 import com.realcomp.data.view.RecordView;
@@ -145,8 +146,16 @@ public abstract class BaseFileReader implements RecordReader{
         if (schema != null){
             List<Operation> operations = schema.getAfterLastOperations();
             if (operations != null && !operations.isEmpty()){
-                ValueResolver resolver = new ValueResolver(schema, validationExceptionThreshold);
-                resolver.resolve(new AfterLastField(), new Record(), "" + this.getCount());
+                Transformer transformer = new Transformer();
+                List<Field> fields = new ArrayList<Field>();
+                fields.add(new BeforeFirstField());
+                transformer.setFields(fields);
+                transformer.setAfter(operations);
+                TransformContext context = new TransformContext();
+                context.setValidationExceptionThreshold(validationExceptionThreshold);
+                context.setRecordCount(this.getCount());
+                context.setSchema(schema);
+                transformer.transform(context);
             }
         }
     }
@@ -154,10 +163,18 @@ public abstract class BaseFileReader implements RecordReader{
     protected void executeBeforeFirstOperations() throws ValidationException, ConversionException{
 
         if (schema != null){
-            List<Operation> operations = schema.getBeforeFirstOperations();
+            List<Operation> operations = schema.getBeforeFirstOperations();            
             if (operations != null && !operations.isEmpty()){
-                ValueResolver resolver = new ValueResolver(schema, validationExceptionThreshold);
-                resolver.resolve(new BeforeFirstField(), new Record(), "" + this.getCount());
+                List<Field> fields = new ArrayList<Field>();
+                fields.add(new BeforeFirstField());
+                Transformer transformer = new Transformer();
+                transformer.setFields(fields);
+                transformer.setBefore(operations);
+                TransformContext context = new TransformContext();
+                context.setValidationExceptionThreshold(validationExceptionThreshold);
+                context.setRecordCount(this.getCount());
+                context.setSchema(schema);
+                transformer.transform(context);
             }
         }
     }

@@ -10,9 +10,10 @@ import java.util.List;
  * 
  * @author krenfro
  */
-class RecordKey {
+public class RecordKey {
 
     private static final String KEY_DELIMITER_REGEX = "\\.";
+    private static final String KEY_DELIMITER = ".";
     
     private String key;
     private int index;
@@ -41,13 +42,18 @@ class RecordKey {
      * For example, the key "property.owner[1].name" would return
      * a list of 3 RecordKeys. 
      * 
-     * @param compositeKey
+     * @param compositeKey not null
      * @return 
      */
     public static List<RecordKey> parse(String compositeKey) {
+        if (compositeKey == null)
+            throw new IllegalArgumentException("compositeKey is null");
+        
         List<RecordKey> list = new ArrayList<RecordKey>();
-        for (String key : compositeKey.split(KEY_DELIMITER_REGEX))
-            list.add(new RecordKey(key));
+        if (!compositeKey.isEmpty()){
+            for (String key : compositeKey.split(KEY_DELIMITER_REGEX))
+                list.add(new RecordKey(key));
+        }
         return list;
     }
 
@@ -59,11 +65,30 @@ class RecordKey {
         return key;
     }
     
+    public static String toKey(List<RecordKey> keys){
+        
+        StringBuilder result = new StringBuilder();
+        for (int x = 0; x < keys.size(); x++){
+            if (x != 0){
+                result.append(KEY_DELIMITER);
+            }
+            result.append(keys.get(x));
+        }
+        return result.toString();
+    }
+    
     public int getIndex(){
         return index;
     }
 
-    
+    public void setIndex(int index) {
+        this.index = index;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
+    }
+
     
     @Override
     public String toString(){

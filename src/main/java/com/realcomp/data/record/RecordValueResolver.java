@@ -35,20 +35,22 @@ public class RecordValueResolver {
             retVal.add(map);
         }
         else{            
-            RecordKey key = keys.remove(0);
+            RecordKey key = keys.get(0);
             Object value = map.get(key.getKey());
 
             if (value != null){
+                List<RecordKey> workingKeys = new ArrayList<RecordKey>(keys);
+                key = workingKeys.remove(0);
                 if (List.class.isAssignableFrom(value.getClass())){                    
                     List<Map<String,Object>> list = (List<Map<String,Object>>) value;
 
                     if (key.isIndexed()){
                         if (list.size() > key.getIndex())
-                            retVal.addAll(resolve(list.get(key.getIndex()), new ArrayList<RecordKey>(keys)));
+                            retVal.addAll(resolve(list.get(key.getIndex()), workingKeys));
                     }
                     else{
                         for (Map<String,Object> entry: list)
-                            retVal.addAll(resolve(entry, new ArrayList<RecordKey>(keys)));
+                            retVal.addAll(resolve(entry, workingKeys)); //recursion
                     }
                 }
                 else{
