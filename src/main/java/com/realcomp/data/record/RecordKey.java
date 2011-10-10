@@ -10,7 +10,7 @@ import java.util.List;
  * 
  * @author krenfro
  */
-public class RecordKey {
+class RecordKey {
 
     private static final String KEY_DELIMITER_REGEX = "\\.";
     

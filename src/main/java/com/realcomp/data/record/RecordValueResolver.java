@@ -7,19 +7,24 @@ import java.util.Map;
 /**
  * Finds a specified value in a Record.  The composite key can reference a value
  * arbitrarily deep within a Record.  This utility dives into the Record to find the value.
+ * 
+ * @see RecordValueAssembler
  * @author krenfro
  */
 public class RecordValueResolver {
     
+    public static List<Object> resolve(Record record, String key){
+        return resolve(record.data, key);
+    }
     
     /**
      * @param data
-     * @param compositeKey Period delimited key
-     * @return a list of Objects (DataTypes) referenced by the compositeKey
+     * @param key Period delimited key
+     * @return a list of Objects (DataTypes) referenced by the key
      */
-    public static List<Object> resolve(Map<String,Object> data, String compositeKey){
+    public static List<Object> resolve(Map<String,Object> data, String key){
         
-        return resolve(data, RecordKey.parse(compositeKey));        
+        return resolve(data, RecordKey.parse(key));        
     }
     
     private static List<Object> resolve(Map<String,Object> map, List<RecordKey> keys){

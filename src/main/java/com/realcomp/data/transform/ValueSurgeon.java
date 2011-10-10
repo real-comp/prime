@@ -6,7 +6,7 @@ import com.realcomp.data.conversion.Converter;
 import com.realcomp.data.conversion.MissingFieldException;
 import com.realcomp.data.conversion.MultiFieldConverter;
 import com.realcomp.data.record.Record;
-import com.realcomp.data.record.RecordKey;
+import com.realcomp.data.record.RecordValueResolver;
 import com.realcomp.data.validation.ValidationException;
 import com.realcomp.data.validation.Validator;
 import java.util.List;
@@ -26,13 +26,14 @@ public class ValueSurgeon {
     
     /**
      * @param record holds a value to be operated on
-     * @param key the key of the value in the record to operate on
+     * @param key the key of the value(s) in the record to operate on
      * @param operations the operations to perform
-     * @return the result of the operation. may be null
+     * @return the result of the operation. never null. may be empty. One entry for each value 
+     * referenced by the key.
      * @throws ConversionException
      * @throws ValidationException 
      */
-    public Object operate(Record record, RecordKey key, List<Operation> operations) 
+    public List<Object> operate(Record record, String key, List<Operation> operations) 
             throws ConversionException, ValidationException{
         
         if (record == null)
@@ -42,22 +43,24 @@ public class ValueSurgeon {
         if (operations == null)
             throw new IllegalArgumentException("operations is null");
         
-        Object value = record.get(key.getKey());
-        if (value == null && defaultValue != null){
+        // The key specified may resolve to multiple values in the record
+        List<Object> values = RecordValueResolver.resolve(record, key);
+        
+        if (values.isEmpty() && defaultValue != null){
             logger.log(
                     Level.FINE, 
                     "Using default value of [{0}] for [{1}] in Record [{2}]", 
                         new Object[]{defaultValue, key, record});
-            value = defaultValue;
+            values.add(defaultValue);
         }
-            
-        if (value != null){
+        
+        for (int x = 0; x < values.size(); x++){
             for (Operation op: operations){
-                value = operate(op, value, record);
+                values.set(x, operate(op, values.get(x), record));
             }
         }
         
-        return value;
+        return values;
     }
 
     /**

@@ -28,10 +28,12 @@ public class Transformer {
     private List<Operation> before;
     private List<Operation> after;
     private FieldList fields;
+    private ValueSurgeon surgeon;
     protected Severity validationExceptionThreshold = Severity.getDefault();
     
     public Transformer(){
         fields = new FieldList();
+        surgeon = new ValueSurgeon();
     }
     
     public Transformer(Transformer copy){
@@ -48,18 +50,16 @@ public class Transformer {
         
         
         for (Field field: fields){
-            Object value = record.get(field.getName());
-            if (value == null)
-                value = "";
             
-            for (Operation op: getOperations(field)){                
-                try{
-                    value = operate(op, value, record);
-                }
-                catch (ValidationException ex) {
-                    handleValidationException(op, field, record, ex);
-                }                
-            }
+            List<Operation> operations = new ArrayList<Operation>();
+            if (before != null)
+                operations.addAll(before);
+            operations.addAll(field.getOperations());
+            if (after != null)
+                operations.addAll(after);
+            
+            List<Object> result = surgeon.operate(record, field.getName(), operations);
+            
             record.put(field.getName(), value);
         }        
     }
