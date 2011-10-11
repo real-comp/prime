@@ -23,13 +23,15 @@ import java.util.List;
 @com.realcomp.data.annotation.Converter("lastNameFirst")
 public class LastNameFirst implements Converter {
 
+    private boolean lastNameFirst = true;
+    
     
     @Override
     public String convert(String value) throws ConversionException{
         if (value == null)
             throw new IllegalArgumentException("value is null");
 
-        List<Name> names = NameParser.parse(value);
+        List<Name> names = NameParser.parse(value, lastNameFirst);
         String retVal = value;        
         if (!names.isEmpty())
             retVal = NameFormatter.getLastNameFirst(names.get(0));
@@ -38,17 +40,38 @@ public class LastNameFirst implements Converter {
     
     @Override
     public LastNameFirst copyOf(){
-        return new LastNameFirst();
+        LastNameFirst copy = new LastNameFirst();
+        copy.setLastNameFirst(lastNameFirst);
+        return copy;
+    }
+
+    public boolean isLastNameFirst() {
+        return lastNameFirst;
+    }
+
+    public void setLastNameFirst(boolean lastNameFirst) {
+        this.lastNameFirst = lastNameFirst;
     }
 
     @Override
-    public boolean equals(Object other) {
-        return (other instanceof LastNameFirst);
+    public boolean equals(Object obj) {
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        final LastNameFirst other = (LastNameFirst) obj;
+        if (this.lastNameFirst != other.lastNameFirst)
+            return false;
+        return true;
     }
 
     @Override
     public int hashCode() {
         int hash = 7;
+        hash = 79 * hash + (this.lastNameFirst ? 1 : 0);
         return hash;
     }
+    
+    
+
 }
