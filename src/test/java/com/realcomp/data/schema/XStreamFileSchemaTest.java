@@ -1,6 +1,7 @@
 package com.realcomp.data.schema;
 
 
+import com.realcomp.data.record.io.Format;
 import java.util.regex.Pattern;
 import com.realcomp.data.view.DummyView;
 import com.realcomp.data.view.ExampleView;
@@ -9,9 +10,7 @@ import java.io.StringReader;
 import java.util.List;
 import java.util.ArrayList;
 import com.realcomp.data.schema.xml.XStreamFactory;
-import com.realcomp.data.record.io.Delimiter;
 import com.realcomp.data.validation.field.DoubleRangeValidator;
-import com.realcomp.data.record.reader.DelimitedFileReader;
 import com.realcomp.data.conversion.Replace;
 import com.realcomp.data.conversion.UpperCase;
 import com.realcomp.data.conversion.Trim;
@@ -74,9 +73,7 @@ public class XStreamFileSchemaTest {
         
         schema.addFieldList(typeB);
         
-        DelimitedFileReader reader = new DelimitedFileReader();
-        reader.setDelimiter(Delimiter.TAB);
-        schema.setReader(reader);
+        schema.setFormat(new Format("TAB"));
 
         return schema;
     }
@@ -102,7 +99,7 @@ public class XStreamFileSchemaTest {
 
         FileSchema schema = SchemaFactory.buildFileSchema(
                 XStreamFileSchemaTest.class.getResourceAsStream("test_1.schema"));
-        assertEquals(Delimiter.TAB, ((DelimitedFileReader) schema.getReader()).getDelimiter());
+        assertEquals("TAB", schema.getFormat().getType());
         
         assertEquals(2, schema.getFieldLists().size());
         assertEquals(6, schema.getDefaultFieldList().size());
@@ -111,15 +108,15 @@ public class XStreamFileSchemaTest {
         
         schema = SchemaFactory.buildFileSchema(
                 XStreamFileSchemaTest.class.getResourceAsStream("test_2.schema"));
-        assertEquals(Delimiter.CSV, ((DelimitedFileReader) schema.getReader()).getDelimiter());
+        assertEquals("CSV", schema.getFormat().getType());
         
         schema = SchemaFactory.buildFileSchema(
                 XStreamFileSchemaTest.class.getResourceAsStream("test_3.schema"));
-        assertEquals(Delimiter.CSV, ((DelimitedFileReader) schema.getReader()).getDelimiter());
+        assertEquals("CSV", schema.getFormat().getType());
 
         schema = SchemaFactory.buildFileSchema(
                 XStreamFileSchemaTest.class.getResourceAsStream("test_4.schema"));
-        assertEquals(Delimiter.CSV, ((DelimitedFileReader) schema.getReader()).getDelimiter());
+        assertEquals("CSV", schema.getFormat().getType());
 
     }
 

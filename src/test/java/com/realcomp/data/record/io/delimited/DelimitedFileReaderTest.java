@@ -1,7 +1,6 @@
-package com.realcomp.data.record.reader;
+package com.realcomp.data.record.io.delimited;
 
 import com.realcomp.data.schema.FieldList;
-import com.realcomp.data.record.io.Delimiter;
 import com.realcomp.data.schema.SchemaException;
 import com.realcomp.data.validation.ValidationException;
 import com.realcomp.data.schema.FileSchema;
@@ -62,42 +61,29 @@ public class DelimitedFileReaderTest {
 
         
         DelimitedFileReader instance = new DelimitedFileReader();
-        assertEquals(Delimiter.TAB, instance.getDelimiter());
-        instance.setDelimiter(Delimiter.CSV);
-        assertEquals(Delimiter.CSV, instance.getDelimiter());
-        instance.setDelimiter(Delimiter.TAB);
-        assertEquals(Delimiter.TAB, instance.getDelimiter());
+        assertEquals("TAB", instance.getDelimiter());
+        instance.setDelimiter("CSV");
+        assertEquals("CSV", instance.getDelimiter());
+        instance.setDelimiter("TAB");
+        assertEquals("TAB", instance.getDelimiter());
+        instance.setDelimiter("-");
+        assertEquals("-", instance.getDelimiter());
 
         try{
             instance.setDelimiter(null);
             fail("should have thrown IllegalArgumentException");
         }
         catch(IllegalArgumentException expected){}
+        
+        try{
+            instance.setDelimiter("12");
+            fail("should have thrown IllegalArgumentException");
+        }
+        catch(IllegalArgumentException expected){}
+        
     }
     
-    @Test
-    public void testTypes(){
-
-        assertEquals(Delimiter.TAB, Delimiter.parse("tab"));
-        assertEquals(Delimiter.TAB, Delimiter.parse("TAB"));
-        assertEquals(Delimiter.TAB, Delimiter.parse("tabbed"));
-        assertEquals(Delimiter.TAB, Delimiter.parse("TABBED"));
-        assertEquals(Delimiter.CSV, Delimiter.parse("csv"));
-        assertEquals(Delimiter.CSV, Delimiter.parse("CSV"));
-
-        try{
-            Delimiter.parse(null);
-            fail("should have thrown IllegalArgumentException");
-        }
-        catch(IllegalArgumentException expected){}
-
-        try{
-            Delimiter.parse("asdf");
-            fail("should have thrown IllegalArgumentException");
-        }
-        catch(IllegalArgumentException expected){}
-    }
-
+  
 
     @Test
     public void testNoTypeChangeAfterOpen() throws IOException, SchemaException{
@@ -107,7 +93,7 @@ public class DelimitedFileReaderTest {
         instance.setSchema(get3FieldSchema());
         instance.open(new ByteArrayInputStream(data.getBytes()));
         try{
-            instance.setDelimiter(Delimiter.CSV);
+            instance.setDelimiter("CSV");
             fail("should have thrown IllegalStateException");
         }
         catch(IllegalStateException expected){}
@@ -143,7 +129,7 @@ public class DelimitedFileReaderTest {
     public void testCSV() throws Exception {
 
         DelimitedFileReader instance = new DelimitedFileReader();
-        instance.setDelimiter(Delimiter.CSV);
+        instance.setDelimiter("CSV");
         String data = "\"a123\",\"b123\",\"c123\"";
         instance.setSchema(get3FieldSchema());
         instance.open(new ByteArrayInputStream(data.getBytes()));

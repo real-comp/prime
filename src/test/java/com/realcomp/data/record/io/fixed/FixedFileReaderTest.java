@@ -1,7 +1,6 @@
-package com.realcomp.data.record.reader;
+package com.realcomp.data.record.io.fixed;
 
 import com.realcomp.data.schema.FieldList;
-import com.realcomp.data.record.reader.FixedFileReader;
 import com.realcomp.data.schema.SchemaException;
 import com.realcomp.data.validation.ValidationException;
 import com.realcomp.data.conversion.Trim;

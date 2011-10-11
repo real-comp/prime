@@ -1,7 +1,8 @@
 package com.realcomp.data.util;
 
 import com.realcomp.data.conversion.ConversionException;
-import com.realcomp.data.record.reader.RecordReader;
+import com.realcomp.data.record.io.RecordReader;
+import com.realcomp.data.record.io.RecordReaderFactory;
 import com.realcomp.data.schema.FileSchema;
 import com.realcomp.data.schema.SchemaException;
 import com.realcomp.data.schema.SchemaFactory;
@@ -21,7 +22,6 @@ public class Validate {
 
     private static final Logger logger =  Logger.getLogger(Validate.class.getName());
 
-
     private FileSchema schema;
 
     public Validate(){
@@ -38,14 +38,17 @@ public class Validate {
         this.schema = schema;
     }
 
-    public void validate(File file) throws SchemaException, IOException, ValidationException, ConversionException{
+    public void validate(File file) 
+            throws SchemaException, IOException, ValidationException, ConversionException{
         validate(new FileInputStream(file));
     }
 
-    public void validate(InputStream in) throws SchemaException, IOException, ValidationException, ConversionException {
+    public void validate(InputStream in) 
+            throws SchemaException, IOException, ValidationException, ConversionException {
 
-        RecordReader reader = schema.getReader();
+        RecordReader reader = RecordReaderFactory.build(schema.getFormat());
         reader.open(in);
+        
         long lineNumber = 1;
         try {
             while (reader.read() != null){

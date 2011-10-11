@@ -1,17 +1,14 @@
 package com.realcomp.data.schema.xml;
 
-import com.realcomp.data.record.reader.RecordReader;
+import com.realcomp.data.record.io.RecordReader;
 import com.thoughtworks.xstream.converters.ConversionException;
 import com.thoughtworks.xstream.converters.Converter;
 import com.thoughtworks.xstream.converters.MarshallingContext;
 import com.thoughtworks.xstream.converters.UnmarshallingContext;
-import com.thoughtworks.xstream.converters.collections.CollectionConverter;
 import com.thoughtworks.xstream.io.HierarchicalStreamReader;
 import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -28,8 +25,7 @@ public class RecordReaderConverter extends DynamicPropertyGetter implements Conv
         addIgnoredProperty("class");
         addIgnoredProperty("schema");
         addIgnoredProperty("count");
-        addIgnoredProperty("beforeFirst");
-        addIgnoredProperty("views");
+        addIgnoredProperty("beforeFirstOperationsRun");
    }
 
     @Override
@@ -43,15 +39,6 @@ public class RecordReaderConverter extends DynamicPropertyGetter implements Conv
         try {
             for(Map.Entry<String,Object> entry: getProperties(o).entrySet())
                 writer.addAttribute(entry.getKey(), entry.getValue().toString());
-
-            RecordReader r = (RecordReader) o;
-            if (!r.getViews().isEmpty()){
-                for (String classname: r.getViews()){
-                    writer.startNode("view");
-                    writer.addAttribute("class", classname);
-                    writer.endNode();
-                }
-            }
 
         }
         catch (DynamicPropertyException ex) {
@@ -78,18 +65,6 @@ public class RecordReaderConverter extends DynamicPropertyGetter implements Conv
                 }
             }
             propSetter.setProperties(reader, properties);
-
-
-            List<String> views = new ArrayList<String>();
-            while (stream.hasMoreChildren()){
-                stream.moveDown();
-                if (stream.getNodeName().equals("view"))
-                    views.add(stream.getAttribute("class"));
-                stream.moveUp();
-            }
-            
-            if (!views.isEmpty())
-                reader.setViews(views);
             
             return reader;
         }

@@ -3,13 +3,9 @@ package com.realcomp.data.schema;
 import com.realcomp.data.MultiFieldOperation;
 import com.realcomp.data.Operation;
 import com.realcomp.data.record.Record;
-import com.realcomp.data.record.reader.RecordReader;
-import com.realcomp.data.record.writer.RecordWriter;
-import com.realcomp.data.schema.xml.RecordReaderConverter;
-import com.realcomp.data.schema.xml.RecordWriterConverter;
+import com.realcomp.data.record.io.Format;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
-import com.thoughtworks.xstream.annotations.XStreamConverter;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,12 +28,8 @@ public class FileSchema {
 
     @XStreamAsAttribute
     private String version;
-
-    @XStreamConverter(RecordReaderConverter.class)
-    private RecordReader reader;
-
-    @XStreamConverter(RecordWriterConverter.class)
-    private RecordWriter writer;
+    
+    private Format format;
 
     private List<Operation> beforeFirst;
     private List<Operation> before;
@@ -63,32 +55,6 @@ public class FileSchema {
         setBeforeOperations(copy.getBeforeOperations());
         setAfterLastOperations(copy.getAfterLastOperations());
         setAfterOperations(copy.getAfterOperations());
-    }
-
-    public RecordReader getReader() throws SchemaException{
-        if (reader != null)
-            reader.setSchema(this);
-        return reader;
-    }
-
-    public void setReader(RecordReader reader) throws SchemaException{
-        if (reader == null)
-            throw new IllegalArgumentException("reader is null");
-        this.reader = reader;
-        this.reader.setSchema(this);
-    }
-
-    public RecordWriter getWriter() throws SchemaException{
-        if (writer != null)
-            writer.setSchema(this);
-        return writer;
-    }
-
-    public void setWriter(RecordWriter writer) throws SchemaException{
-        if (writer == null)
-            throw new IllegalArgumentException("writer is null");
-        this.writer = writer;
-        this.writer.setSchema(this);
     }
     
     
@@ -441,10 +407,18 @@ public class FileSchema {
      */
     public void setVersion(String version) {
         this.version = version;
-    }           
+    }
 
-     
+    public Format getFormat() {
+        return new Format(format);
+    }
 
+    public void setFormat(Format format) {
+        this.format = new Format(format);
+    }
+
+    
+    
     @Override
     public String toString(){
         StringBuilder s = new StringBuilder(name == null ? "" : name);
@@ -473,9 +447,7 @@ public class FileSchema {
             return false;
         if ((this.version == null) ? (other.version != null) : !this.version.equals(other.version))
             return false;
-        if (this.reader != other.reader && (this.reader == null || !this.reader.equals(other.reader)))
-            return false;
-        if (this.writer != other.writer && (this.writer == null || !this.writer.equals(other.writer)))
+        if (this.format != other.format && (this.format == null || !this.format.equals(other.format)))
             return false;
         if (this.beforeFirst != other.beforeFirst && (this.beforeFirst == null || !this.beforeFirst.equals(other.beforeFirst)))
             return false;
@@ -492,18 +464,19 @@ public class FileSchema {
 
     @Override
     public int hashCode() {
-        int hash = 5;
-        hash = 53 * hash + (this.name != null ? this.name.hashCode() : 0);
-        hash = 53 * hash + (this.version != null ? this.version.hashCode() : 0);
-        hash = 53 * hash + (this.reader != null ? this.reader.hashCode() : 0);
-        hash = 53 * hash + (this.writer != null ? this.writer.hashCode() : 0);
-        hash = 53 * hash + (this.beforeFirst != null ? this.beforeFirst.hashCode() : 0);
-        hash = 53 * hash + (this.before != null ? this.before.hashCode() : 0);
-        hash = 53 * hash + (this.after != null ? this.after.hashCode() : 0);
-        hash = 53 * hash + (this.afterLast != null ? this.afterLast.hashCode() : 0);
-        hash = 53 * hash + (this.fieldLists != null ? this.fieldLists.hashCode() : 0);
+        int hash = 3;
+        hash = 61 * hash + (this.name != null ? this.name.hashCode() : 0);
+        hash = 61 * hash + (this.version != null ? this.version.hashCode() : 0);
+        hash = 61 * hash + (this.format != null ? this.format.hashCode() : 0);
+        hash = 61 * hash + (this.beforeFirst != null ? this.beforeFirst.hashCode() : 0);
+        hash = 61 * hash + (this.before != null ? this.before.hashCode() : 0);
+        hash = 61 * hash + (this.after != null ? this.after.hashCode() : 0);
+        hash = 61 * hash + (this.afterLast != null ? this.afterLast.hashCode() : 0);
+        hash = 61 * hash + (this.fieldLists != null ? this.fieldLists.hashCode() : 0);
         return hash;
     }
+    
+    
 
     
 }

@@ -50,7 +50,5 @@ public class TransformerTest {
         fields.add(field);
         t.setFields(fields);
         
-        
-        
     }
 }

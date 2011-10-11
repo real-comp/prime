@@ -23,6 +23,7 @@ import java.util.List;
 @com.realcomp.data.annotation.Converter("lastNameFirst")
 public class LastNameFirst extends SimpleConverter {
 
+    private boolean lastNameFirst = true;
     
     @Override
     public Object convert(Object value) throws ConversionException{
@@ -30,25 +31,47 @@ public class LastNameFirst extends SimpleConverter {
             throw new IllegalArgumentException("value is null");
 
         String retVal = value.toString();  
-        List<Name> names = NameParser.parse(retVal);              
+        List<Name> names = NameParser.parse(retVal, lastNameFirst);
         if (!names.isEmpty())
             retVal = NameFormatter.getLastNameFirst(names.get(0));
         return retVal;
     }
+
+    public boolean isLastNameFirst() {
+        return lastNameFirst;
+    }
+
+    public void setLastNameFirst(boolean lastNameFirst) {
+        this.lastNameFirst = lastNameFirst;
+    }
+    
+    
     
     @Override
     public LastNameFirst copyOf(){
-        return new LastNameFirst();
+        LastNameFirst copy = new LastNameFirst();
+        copy.setLastNameFirst(lastNameFirst);
+        return copy;
     }
 
     @Override
-    public boolean equals(Object other) {
-        return (other instanceof LastNameFirst);
+    public boolean equals(Object obj) {
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        final LastNameFirst other = (LastNameFirst) obj;
+        if (this.lastNameFirst != other.lastNameFirst)
+            return false;
+        return true;
     }
 
     @Override
     public int hashCode() {
-        int hash = 7;
+        int hash = 3;
+        hash = 89 * hash + (this.lastNameFirst ? 1 : 0);
         return hash;
     }
+
+    
 }

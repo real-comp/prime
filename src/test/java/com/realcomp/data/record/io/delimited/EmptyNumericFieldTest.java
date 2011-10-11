@@ -1,5 +1,6 @@
-package com.realcomp.data.record.reader;
+package com.realcomp.data.record.io.delimited;
 
+import com.realcomp.data.record.io.delimited.DelimitedFileReader;
 import com.realcomp.data.schema.FieldList;
 import com.realcomp.data.schema.SchemaException;
 import com.realcomp.data.schema.FileSchema;

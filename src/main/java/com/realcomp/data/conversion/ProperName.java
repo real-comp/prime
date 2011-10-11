@@ -20,13 +20,15 @@ import java.util.List;
 @com.realcomp.data.annotation.Converter("properName")
 public class ProperName extends SimpleConverter {
     
+    private boolean lastNameFirst = true;
+    
     @Override
     public Object convert(Object value) throws ConversionException{
         if (value == null)
             throw new IllegalArgumentException("value is null");
 
         String retVal = value.toString();        
-        List<Name> names = NameParser.parse(retVal);        
+        List<Name> names = NameParser.parse(retVal, lastNameFirst);
         if (!names.isEmpty())
             retVal = names.get(0).toString();        
         return retVal;
@@ -37,14 +39,30 @@ public class ProperName extends SimpleConverter {
         return new ProperName();
     }
 
+    public boolean isLastNameFirst() {
+        return lastNameFirst;
+    }
+
+    public void setLastNameFirst(boolean lastNameFirst) {
+        this.lastNameFirst = lastNameFirst;
+    }
+
     @Override
-    public boolean equals(Object other) {
-        return (other instanceof ProperName);
+    public boolean equals(Object obj) {
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        final ProperName other = (ProperName) obj;
+        if (this.lastNameFirst != other.lastNameFirst)
+            return false;
+        return true;
     }
 
     @Override
     public int hashCode() {
-        int hash = 7;
+        int hash = 3;
+        hash = 59 * hash + (this.lastNameFirst ? 1 : 0);
         return hash;
     }
 }

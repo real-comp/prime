@@ -7,7 +7,9 @@ import com.realcomp.data.conversion.SimpleConverter;
 import com.realcomp.data.schema.FileSchema;
 import com.realcomp.data.schema.RelationalSchema;
 import com.realcomp.data.schema.Field;
+import com.realcomp.data.schema.FieldList;
 import com.realcomp.data.schema.Table;
+import com.realcomp.data.transform.Transformer;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.StaxDriver;
 import java.util.Set;
@@ -50,10 +52,13 @@ public class XStreamFactory {
         xstream.processAnnotations(Field.class);
         xstream.processAnnotations(SimpleConverter.class);
         xstream.processAnnotations(ComplexConverter.class);
+        xstream.processAnnotations(FieldList.class);
+        xstream.processAnnotations(Transformer.class);
+        
         xstream.registerConverter(new OperationConverter());
         xstream.registerConverter(new DataTypeConverter());
-        xstream.registerConverter(new DelimiterConverter());
         xstream.registerConverter(new FieldListConverter());
+        
         
         for (Class c: validators){
             Validator annotation = (Validator) c.getAnnotation(Validator.class);

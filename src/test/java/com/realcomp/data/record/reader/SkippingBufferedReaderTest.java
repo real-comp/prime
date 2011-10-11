@@ -3,6 +3,7 @@
 
 package com.realcomp.data.record.reader;
 
+import com.realcomp.data.record.io.SkippingBufferedReader;
 import java.io.StringReader;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;

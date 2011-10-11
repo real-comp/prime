@@ -1,6 +1,6 @@
 package com.realcomp.data.schema.xml;
 
-import com.realcomp.data.record.writer.RecordWriter;
+import com.realcomp.data.record.io.RecordWriter;
 import com.thoughtworks.xstream.converters.ConversionException;
 import com.thoughtworks.xstream.converters.Converter;
 import com.thoughtworks.xstream.converters.MarshallingContext;
@@ -25,7 +25,7 @@ public class RecordWriterConverter  extends DynamicPropertyGetter implements Con
         addIgnoredProperty("class");
         addIgnoredProperty("schema");
         addIgnoredProperty("count");
-        addIgnoredProperty("beforeFirst");
+        addIgnoredProperty("beforeFirstOperationsRun");
    }
 
     @Override

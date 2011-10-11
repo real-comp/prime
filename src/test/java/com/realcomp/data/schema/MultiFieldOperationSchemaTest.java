@@ -1,20 +1,17 @@
 package com.realcomp.data.schema;
 
 
+import com.realcomp.data.record.io.Format;
 import java.util.logging.Logger;
-import com.realcomp.data.record.io.ParsePlanException;
 import com.realcomp.data.conversion.Concat;
 import java.io.ByteArrayInputStream;
 import java.util.List;
 import java.util.ArrayList;
 import com.realcomp.data.schema.xml.XStreamFactory;
-import com.realcomp.data.record.io.Delimiter;
-import com.realcomp.data.record.reader.DelimitedFileReader;
 import org.junit.Before;
 import com.realcomp.data.DataType;
 import com.thoughtworks.xstream.XStream;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 /**
  *
@@ -53,15 +50,7 @@ public class MultiFieldOperationSchemaTest {
         schema.addField(new Field("zip", DataType.INTEGER, 5));
         schema.addField(new Field("value", DataType.FLOAT, 7));
 
-        DelimitedFileReader reader = new DelimitedFileReader();
-        reader.setDelimiter(Delimiter.TAB);
-        try{
-            schema.setReader(reader);
-        }
-        catch(ParsePlanException e){
-            logger.warning(e.getMessage());
-        }
-
+        schema.setFormat(new Format("TAB"));
 
         return schema;
     }

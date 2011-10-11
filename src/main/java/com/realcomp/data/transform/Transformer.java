@@ -8,20 +8,28 @@ import com.realcomp.data.record.RecordValueException;
 import com.realcomp.data.schema.FieldList;
 import com.realcomp.data.schema.Field;
 import com.realcomp.data.validation.ValidationException;
+import com.thoughtworks.xstream.annotations.XStreamAlias;
+import com.thoughtworks.xstream.annotations.XStreamImplicit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  *
  * @author krenfro
  */
+
+@XStreamAlias("transform")
+@XmlRootElement
 public class Transformer {
     
     private static final Logger logger = Logger.getLogger(Transformer.class.getName());
     
     private List<Operation> before;
     private List<Operation> after;
+    
+    @XStreamImplicit
     private List<Field> fields;
     private ValueSurgeon surgeon;
     
@@ -69,6 +77,9 @@ public class Transformer {
         return operations;
     }
     
+    public void addField(Field field){
+        fields.add(new Field(field));
+    }
     
 
     public List<Field> getFields() {
@@ -78,7 +89,10 @@ public class Transformer {
     public void setFields(List<Field> fields) {
         if (fields == null)
             throw new IllegalArgumentException("fields is null");
-        this.fields = new ArrayList(fields);
+        
+        this.fields.clear();
+        for (Field field: fields)
+            addField(field);
     }
 
     

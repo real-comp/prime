@@ -17,13 +17,16 @@ import java.util.List;
 public class LastName extends SimpleConverter {
 
     
+    private boolean lastNameFirst = true;
+    
+    
     @Override
     public Object convert(Object value) throws ConversionException{
         if (value == null)
             throw new IllegalArgumentException("value is null");
 
         String retVal = value.toString();        
-        List<Name> names = NameParser.parse(retVal);
+        List<Name> names = NameParser.parse(retVal, lastNameFirst);
         
         if (!names.isEmpty()){
             Name name = names.get(0);
@@ -40,17 +43,36 @@ public class LastName extends SimpleConverter {
     
     @Override
     public LastName copyOf(){
-        return new LastName();
+        LastName copy = new LastName();
+        copy.setLastNameFirst(lastNameFirst);
+        return copy;
+    }
+
+    public boolean isLastNameFirst() {
+        return lastNameFirst;
+    }
+
+    public void setLastNameFirst(boolean lastNameFirst) {
+        this.lastNameFirst = lastNameFirst;
     }
 
     @Override
-    public boolean equals(Object other) {
-        return (other instanceof LastName);
+    public boolean equals(Object obj) {
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        final LastName other = (LastName) obj;
+        if (this.lastNameFirst != other.lastNameFirst)
+            return false;
+        return true;
     }
 
     @Override
     public int hashCode() {
-        int hash = 7;
+        int hash = 3;
+        hash = 89 * hash + (this.lastNameFirst ? 1 : 0);
         return hash;
     }
+    
 }
