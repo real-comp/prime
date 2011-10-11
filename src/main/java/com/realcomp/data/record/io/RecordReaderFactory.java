@@ -18,7 +18,6 @@ public class RecordReaderFactory {
         RecordReader reader = null;
         
         try {
-
             if (type.equals("CSV") || type.equalsIgnoreCase("TAB") || type.length() == 1){
                 reader = new DelimitedFileReader();
             }
