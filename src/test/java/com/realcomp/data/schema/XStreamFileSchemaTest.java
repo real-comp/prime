@@ -1,6 +1,7 @@
 package com.realcomp.data.schema;
 
 
+import com.realcomp.data.conversion.FirstName;
 import com.realcomp.data.view.DummyView;
 import com.realcomp.data.view.ExampleView;
 import java.io.ByteArrayInputStream;
@@ -107,6 +108,11 @@ public class XStreamFileSchemaTest {
         schema = SchemaFactory.buildFileSchema(
                 XStreamFileSchemaTest.class.getResourceAsStream("test_4.schema"));
         assertEquals(Delimiter.CSV, ((DelimitedFileReader) schema.getReader()).getDelimiter());
+        
+        SchemaField f = schema.getField("name");
+        assertEquals(1, f.getOperations().size());
+        FirstName firstName = (FirstName) f.getOperations().get(0);
+        assertFalse(firstName.isLastNameFirst());
 
     }
 
