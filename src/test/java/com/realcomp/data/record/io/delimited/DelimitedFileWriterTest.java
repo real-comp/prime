@@ -72,21 +72,6 @@ public class DelimitedFileWriterTest {
     }
     
 
-    @Test
-    public void testNoTypeChangeAfterOpen() throws IOException{
-
-        DelimitedFileWriter instance = new DelimitedFileWriter();
-        String data = "a\tb\tc";
-        instance.open(new ByteArrayOutputStream());
-        try{
-            instance.setDelimiter(",");
-            fail("should have thrown IllegalStateException");
-        }
-        catch(IllegalStateException expected){}
-        instance.close();
-    }
-
-
 
     @Test
     public void testCSV() throws Exception {

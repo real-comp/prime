@@ -4,6 +4,7 @@ import com.realcomp.data.annotation.Converter;
 import com.realcomp.data.annotation.Validator;
 import com.realcomp.data.conversion.ComplexConverter;
 import com.realcomp.data.conversion.SimpleConverter;
+import com.realcomp.data.record.io.Format;
 import com.realcomp.data.schema.FileSchema;
 import com.realcomp.data.schema.RelationalSchema;
 import com.realcomp.data.schema.Field;
@@ -54,6 +55,7 @@ public class XStreamFactory {
         xstream.processAnnotations(ComplexConverter.class);
         xstream.processAnnotations(FieldList.class);
         xstream.processAnnotations(Transformer.class);
+        xstream.processAnnotations(Format.class);
         
         xstream.registerConverter(new OperationConverter());
         xstream.registerConverter(new DataTypeConverter());

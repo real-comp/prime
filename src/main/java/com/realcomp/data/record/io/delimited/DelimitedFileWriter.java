@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -34,6 +35,9 @@ public class DelimitedFileWriter extends BaseRecordWriter{
     protected List<String> current;
     protected boolean header = false;
     
+    public DelimitedFileWriter(){    
+       current = new ArrayList<String>();
+    }
     
     @Override
     protected void write(Record record, Field field)
@@ -160,7 +164,9 @@ public class DelimitedFileWriter extends BaseRecordWriter{
 
     public void setDelimiter(String delimiter) {
         
-        if (delimiter.equalsIgnoreCase("TAB"))
+        if (delimiter == null)
+            throw new IllegalArgumentException("delimiter is null");        
+        else if (delimiter.equalsIgnoreCase("TAB"))
             this.delimiter = '\t';
         else if (delimiter.equalsIgnoreCase("CSV"))
             this.delimiter = ',';

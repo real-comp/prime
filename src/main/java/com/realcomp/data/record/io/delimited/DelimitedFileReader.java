@@ -128,7 +128,9 @@ public class DelimitedFileReader extends BaseRecordReader{
 
     public void setDelimiter(String delimiter) {
         
-        if (delimiter.equalsIgnoreCase("TAB"))
+        if (delimiter == null)
+            throw new IllegalArgumentException("delimiter is null");
+        else if (delimiter.equalsIgnoreCase("TAB"))
             this.delimiter = '\t';
         else if (delimiter.equalsIgnoreCase("CSV"))
             this.delimiter = ',';

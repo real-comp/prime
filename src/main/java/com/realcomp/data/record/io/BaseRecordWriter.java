@@ -36,6 +36,8 @@ public abstract class BaseRecordWriter implements RecordWriter{
     protected ValueSurgeon surgeon;
     
     public BaseRecordWriter(){
+        context = new TransformContext();
+        surgeon = new ValueSurgeon();
     }
     
     

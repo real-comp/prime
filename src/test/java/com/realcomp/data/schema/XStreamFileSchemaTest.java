@@ -130,28 +130,5 @@ public class XStreamFileSchemaTest {
         assertTrue(field.getOperations().contains(new Trim()));
     }
 
-
-    @Test
-    public void testSchemaWithRecordViews() throws SchemaException{
-
-        List<String> views = new ArrayList<String>();
-        views.add("com.realcomp.data.view.ExampleView");
-        views.add("com.realcomp.data.view.DummyView");
-        
-        FileSchema a = getSchema();
-        a.getReader().setViews(views);
-        assertTrue(a.getReader().supports(ExampleView.class));
-        assertTrue(a.getReader().supports(DummyView.class));
-        
-        String xml = xstream.toXML(a);
-        System.out.println(xml);
-
-        FileSchema b = SchemaFactory.buildFileSchema(new ByteArrayInputStream(xml.getBytes()));
-        assertEquals(a, b);
-        assertTrue(b.getReader().supports(ExampleView.class));
-        assertTrue(b.getReader().supports(DummyView.class));
-
-    }
-
     
 }

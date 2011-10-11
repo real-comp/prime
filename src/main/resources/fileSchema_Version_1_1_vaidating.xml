@@ -5,13 +5,7 @@
    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
    xsi:schemaLocation="http://www.real-comp.com/realcomp-data/schema/file-schema/1.1 http://www.real-comp.com/realcomp-data/schema/file-schema/1.1/file-schema.xsd">
     
-    <reader class="" delimiter=" ">
-        <views>
-            <view class="asdf.asdf"/>
-            <view class="asdf.asdf"/>
-        </views>
-    </reader>
-    <writer class="" stuff=" "/>
+    <format type="CSV"/>
     
     <before>
         <trim/>

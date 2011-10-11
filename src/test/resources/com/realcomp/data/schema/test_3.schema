@@ -1,5 +1,7 @@
 <file-schema name="test" version="1.0">
-  <reader class="com.realcomp.data.record.reader.DelimitedFileReader" delimiter="CSV"/>
+    
+  <format type="CSV"/>
+  
   <before>
     <upperCase/>
   </before>

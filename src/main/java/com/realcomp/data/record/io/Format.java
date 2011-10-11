@@ -1,15 +1,24 @@
 package com.realcomp.data.record.io;
 
+import com.thoughtworks.xstream.annotations.XStreamAlias;
+import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
 import java.util.HashMap;
 import java.util.Map;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  *
  * @author krenfro
  */
+@XStreamAlias("format")
+@XmlRootElement
 public class Format {
     
+    @XStreamAsAttribute
+    @XmlAttribute
     private String type;    
+    
     private Map<String,String> attributes;
     
     public Format(){
@@ -19,13 +28,15 @@ public class Format {
     public Format(String type){
         if (type == null)
             throw new IllegalArgumentException("type is null");
+        attributes = new HashMap<String,String>();
         this.type = type;
     }
     
     public Format(Format copy){
-        super();
-        type = copy.type;
-        attributes.putAll(copy.attributes);
+        this();
+        type = copy.type;        
+        if (copy.attributes != null)
+            attributes.putAll(copy.attributes);
     }
 
     public Map<String, String> getAttributes() {
@@ -33,7 +44,9 @@ public class Format {
     }
 
     public void setAttributes(Map<String, String> attributes) {
-        this.attributes = attributes;
+        this.attributes.clear();
+        if (attributes != null)            
+            this.attributes.putAll(attributes);
     }
 
     public String getType() {

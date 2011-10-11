@@ -84,23 +84,6 @@ public class DelimitedFileReaderTest {
     }
     
   
-
-    @Test
-    public void testNoTypeChangeAfterOpen() throws IOException, SchemaException{
-
-        DelimitedFileReader instance = new DelimitedFileReader();
-        String data = "a\tb\tc";
-        instance.setSchema(get3FieldSchema());
-        instance.open(new ByteArrayInputStream(data.getBytes()));
-        try{
-            instance.setDelimiter("CSV");
-            fail("should have thrown IllegalStateException");
-        }
-        catch(IllegalStateException expected){}
-        instance.close();
-    }
-
-
     /**
      * Test of next method, of class DelimitedFileParser.
      */
