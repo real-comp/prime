@@ -75,13 +75,11 @@ public class FileSchema {
         FieldList match = null;
         
         for (FieldList fieldList: fieldLists){
-            if (fieldList.supports(data)){
-                if (match == null){
-                    match = fieldList;
-                }
-                else if (!fieldList.isDefaultClassifier()){
-                    match = fieldList; //allow a more specific FieldList
-                }
+            if (match == null && fieldList.isDefaultClassifier()){
+                match = fieldList;
+            }
+            else if (!fieldList.isDefaultClassifier() && fieldList.supports(data)){
+                match = fieldList;  
             }
         }
         
@@ -109,14 +107,12 @@ public class FileSchema {
         
         FieldList match = null;
         
-        for (FieldList fieldList: fieldLists){
-            if (fieldList.supports(record)){
-                 if (match == null){
-                    match = fieldList;
-                }
-                else if (match != null && !fieldList.isDefaultClassifier()){
-                    match = fieldList; //allow a more specific FieldList
-                }
+        for (FieldList fieldList: fieldLists){            
+            if (match == null && fieldList.isDefaultClassifier()){
+                match = fieldList;
+            }
+            else if (!fieldList.isDefaultClassifier() && fieldList.supports(record)){                
+                match = fieldList;  
             }
         }
         

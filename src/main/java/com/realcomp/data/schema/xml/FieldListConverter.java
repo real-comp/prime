@@ -8,6 +8,8 @@ import com.thoughtworks.xstream.converters.UnmarshallingContext;
 import com.thoughtworks.xstream.converters.collections.CollectionConverter;
 import com.thoughtworks.xstream.io.HierarchicalStreamReader;
 import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
+import java.util.Iterator;
+import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
 /**
@@ -17,7 +19,7 @@ import java.util.regex.Pattern;
  */
 public class FieldListConverter implements Converter{
     
-
+    private static final Logger logger = Logger.getLogger(FieldListConverter.class.getName());
     
     
     @Override
@@ -45,10 +47,11 @@ public class FieldListConverter implements Converter{
     @Override
     public Object unmarshal(HierarchicalStreamReader reader, UnmarshallingContext uc) {
         
-        FieldList fieldList = new FieldList();
+        FieldList fieldList = new FieldList();        
         String classifier = reader.getAttribute("classifier");
-        if (classifier != null)
+        if (classifier != null){
             fieldList.setClassifier(Pattern.compile(classifier));
+        }
         
         while (reader.hasMoreChildren()){
             reader.moveDown();

@@ -2,6 +2,8 @@ package com.realcomp.data.record.io;
 
 import com.realcomp.data.record.io.delimited.DelimitedFileReader;
 import com.realcomp.data.record.io.fixed.FixedFileReader;
+import com.realcomp.data.schema.FileSchema;
+import com.realcomp.data.schema.SchemaException;
 import java.beans.IntrospectionException;
 import java.util.Set;
 import java.util.logging.Level;
@@ -14,6 +16,13 @@ import java.util.logging.Logger;
 public class RecordReaderFactory {
     
     private static final Logger logger = Logger.getLogger(RecordReaderFactory.class.getName());
+    
+    public static RecordReader build(FileSchema schema) throws FormatException, SchemaException{
+        
+        RecordReader reader = build(schema.getFormat());
+        reader.setSchema(schema);
+        return reader;
+    }
     
     public static RecordReader build(Format format) throws FormatException{
         

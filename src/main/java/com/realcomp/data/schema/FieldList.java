@@ -6,6 +6,7 @@ import com.thoughtworks.xstream.annotations.XStreamConverter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import org.apache.commons.lang.StringUtils;
 
@@ -15,6 +16,8 @@ import org.apache.commons.lang.StringUtils;
  */
 @XStreamConverter(FieldListConverter.class)
 public class FieldList extends ArrayList<Field> {
+    
+    private static final Logger logger = Logger.getLogger(FieldList.class.getName());
     
     public static final Pattern DEFAULT_CLASSIFIER = Pattern.compile(".*");
     private static final long serialVersionUID = 1L;
@@ -45,7 +48,7 @@ public class FieldList extends ArrayList<Field> {
     }
     
     public FieldList(List<Field> copy){
-        this();
+        this();        
         for (Field field: copy)
             add(new Field(field));
     }
@@ -86,7 +89,7 @@ public class FieldList extends ArrayList<Field> {
     public boolean supports(Record record){
         
         if (names == null)
-            names = getNames();
+            names = getFieldNames();
         
         return names.containsAll(record.keySet());
     }
@@ -99,7 +102,7 @@ public class FieldList extends ArrayList<Field> {
         return null;
     }
     
-    private List<String> getNames(){
+    private List<String> getFieldNames(){
         List<String> retVal = new ArrayList<String>();
         for (Field f: this){
             retVal.add(f.getName());

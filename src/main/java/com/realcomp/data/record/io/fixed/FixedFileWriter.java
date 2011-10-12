@@ -2,6 +2,7 @@ package com.realcomp.data.record.io.fixed;
 
 import com.realcomp.data.record.io.BaseRecordWriter;
 import com.realcomp.data.DataType;
+import com.realcomp.data.Operation;
 import com.realcomp.data.conversion.ConversionException;
 import com.realcomp.data.record.Record;
 import com.realcomp.data.schema.FileSchema;
@@ -111,7 +112,7 @@ public class FixedFileWriter extends BaseRecordWriter{
         context.setRecord(record);
         context.setKey(field.getName());
         List<Object> values = surgeon.operate(field.getOperations(), context);
-        writer.write(resize((String) DataType.STRING.coerce(values.get(0)), field.getLength()));
+        writer.write(resize((String) DataType.STRING.coerce(values.isEmpty() ? "" : values.get(0)), field.getLength()));
     }
 
     protected String resize(String s, int length){

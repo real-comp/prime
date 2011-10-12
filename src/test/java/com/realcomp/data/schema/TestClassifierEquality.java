@@ -19,4 +19,13 @@ public class TestClassifierEquality {
         assertFalse(a.equals(b)); //surprisingly, this is false
         assertEquals(a.toString(), b.toString());
     }
+    
+    @Test
+    public void testDefaultClassifier(){
+        
+        assertTrue(FileSchema.DEFAULT_CLASSIFIER.matcher("asdf").matches());
+        assertTrue(Pattern.compile("(.){4}").matcher("asdf").matches());
+        assertFalse(Pattern.compile("(.){5}").matcher("asdf").matches());
+        
+    }
 }

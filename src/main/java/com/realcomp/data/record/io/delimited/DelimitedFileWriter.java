@@ -45,7 +45,9 @@ public class DelimitedFileWriter extends BaseRecordWriter{
         context.setKey(field.getName());
         List<Object> values = surgeon.operate(field.getOperations(), context);
       
-        if (!values.isEmpty())        
+        if (values.isEmpty())        
+            current.add("");
+        else
             current.add((String) DataType.STRING.coerce(values.get(0)));
     }
     

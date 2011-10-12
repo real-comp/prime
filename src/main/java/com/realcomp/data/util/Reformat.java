@@ -38,10 +38,10 @@ public class Reformat {
     public void reformat(InputStream in, OutputStream out) 
             throws SchemaException, IOException, ValidationException, ConversionException {
 
-        RecordReader reader = RecordReaderFactory.build(inputSchema.getFormat());
+        RecordReader reader = RecordReaderFactory.build(inputSchema);
         reader.open(in);
         
-        RecordWriter writer = RecordWriterFactory.build(outputSchema.getFormat());
+        RecordWriter writer = RecordWriterFactory.build(outputSchema);
         writer.open(out);
         
         Record record = reader.read();

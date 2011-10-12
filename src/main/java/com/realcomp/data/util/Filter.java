@@ -36,10 +36,10 @@ public class Filter {
     public void filter(InputStream in, OutputStream out) 
             throws SchemaException, IOException, ConversionException, ValidationException {
 
-        RecordReader reader = RecordReaderFactory.build(inputSchema.getFormat());
+        RecordReader reader = RecordReaderFactory.build(inputSchema);
         reader.open(in);
         
-        RecordWriter writer = RecordWriterFactory.build(outputSchema.getFormat());
+        RecordWriter writer = RecordWriterFactory.build(outputSchema);
         writer.open(out);
         
         Record record = getNextRecord(reader);

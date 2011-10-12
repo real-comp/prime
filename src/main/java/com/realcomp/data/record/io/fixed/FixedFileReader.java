@@ -15,6 +15,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.util.List;
+import java.util.logging.Logger;
 import org.apache.commons.io.IOUtils;
 
 /**
@@ -24,8 +25,10 @@ import org.apache.commons.io.IOUtils;
  * @author krenfro
  */
 public class FixedFileReader extends BaseRecordReader{
-
     
+    private static final Logger logger = Logger.getLogger(FixedFileReader.class.getName());
+    
+    protected boolean header = false;
     protected SkippingBufferedReader reader;
     
     public FixedFileReader(){
@@ -166,5 +169,20 @@ public class FixedFileReader extends BaseRecordReader{
             retVal = retVal + field.getLength();
         return retVal;
     }
+    
+    
+    public boolean isHeader() {
+        return header;
+    }
+
+    public void setHeader(boolean header) {
+        this.header = header;
+        if (header && skipLeading == 0)
+            skipLeading = 1;
+        else if (!header && skipLeading == 1)
+            skipLeading = 0;
+    }
+    
+    
     
 }

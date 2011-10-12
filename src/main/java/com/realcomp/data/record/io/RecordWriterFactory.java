@@ -2,6 +2,8 @@ package com.realcomp.data.record.io;
 
 import com.realcomp.data.record.io.delimited.DelimitedFileWriter;
 import com.realcomp.data.record.io.fixed.FixedFileWriter;
+import com.realcomp.data.schema.FileSchema;
+import com.realcomp.data.schema.SchemaException;
 import java.beans.IntrospectionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -14,6 +16,13 @@ public class RecordWriterFactory {
     
     private static final Logger logger = Logger.getLogger(RecordWriterFactory.class.getName());
     
+    public static RecordWriter build(FileSchema schema) throws FormatException, SchemaException{
+        
+        RecordWriter writer = build(schema.getFormat());
+        writer.setSchema(schema);
+        return writer;
+    }
+     
     public static RecordWriter build(Format format) throws FormatException{
         
         String type = format.getType();

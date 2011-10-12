@@ -46,7 +46,7 @@ public class Validate {
     public void validate(InputStream in) 
             throws SchemaException, IOException, ValidationException, ConversionException {
 
-        RecordReader reader = RecordReaderFactory.build(schema.getFormat());
+        RecordReader reader = RecordReaderFactory.build(schema);
         reader.open(in);
         
         long lineNumber = 1;

@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
+import java.util.logging.Logger;
 
 /**
  *
@@ -20,6 +21,8 @@ import java.nio.charset.Charset;
  */
 public class DelimitedFileReader extends BaseRecordReader{
 
+    private static final Logger logger = Logger.getLogger(DelimitedFileReader.class.getName());
+    
     protected SkippingBufferedReader reader;
     
     protected boolean header = false;
@@ -87,8 +90,9 @@ public class DelimitedFileReader extends BaseRecordReader{
 
         if (fields.size() != data.length)
             throw new ValidationException(
-                    "number of fields in schema does not match data.",
-                    fields.size() + " != " + data.length,
+                    String.format(
+                        "The number of fields in schema [%s] does not match number of fields in the data [%s].",
+                        new Object[]{fields.size(), data.length}),
                     Severity.HIGH);
 
         return recordFactory.build(fields, data);
