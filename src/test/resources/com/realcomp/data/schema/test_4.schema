@@ -1,6 +1,6 @@
 <file-schema name="test" version="1.0">
     
-  <format type="CSV"/>
+  <format type="CSV" header="true"/>
   
   <before>
     <upperCase/>

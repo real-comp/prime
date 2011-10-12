@@ -2,6 +2,8 @@ package com.realcomp.data.record.io;
 
 import com.realcomp.data.record.io.delimited.DelimitedFileReader;
 import com.realcomp.data.record.io.fixed.FixedFileReader;
+import java.beans.IntrospectionException;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -11,6 +13,7 @@ import java.util.logging.Logger;
  */
 public class RecordReaderFactory {
     
+    private static final Logger logger = Logger.getLogger(RecordReaderFactory.class.getName());
     
     public static RecordReader build(Format format) throws FormatException{
         
@@ -38,6 +41,19 @@ public class RecordReaderFactory {
             throw new FormatException(ex);
         }
         
-        throw new IllegalStateException("TODO: set properties dynamically");
+        try {
+            DynamicPropertySetter setter = new DynamicPropertySetter();
+            Set<String> unused = setter.setProperties(reader, format.getAttributes());
+            for (String property: unused){
+                logger.log(Level.WARNING, 
+                           String.format("Reader [%s] does not support a property named [%s]",
+                                         new Object[]{reader.getClass().getName(), property}));
+            }
+        }
+        catch (IntrospectionException ex) {
+            logger.log(Level.WARNING, ex.getMessage(), ex);
+        }
+        
+        return reader;
     }
 }

@@ -42,10 +42,6 @@ public class XStreamFactory {
         LoggingMXBean mxBean = LogManager.getLoggingMXBean();
         mxBean.setLoggerLevel(Reflections.class.getName(), Level.WARNING.getName());
         
-        Reflections reflections = new Reflections(conf);
-        Set<Class<?>> validators = reflections.getTypesAnnotatedWith(Validator.class);
-        Set<Class<?>> converters = reflections.getTypesAnnotatedWith(Converter.class);
-
         XStream xstream = new XStream(new StaxDriver());
         xstream.processAnnotations(FileSchema.class);
         xstream.processAnnotations(RelationalSchema.class);
@@ -60,7 +56,13 @@ public class XStreamFactory {
         xstream.registerConverter(new OperationConverter());
         xstream.registerConverter(new DataTypeConverter());
         xstream.registerConverter(new FieldListConverter());
+        xstream.registerConverter(new FormatConverter());
         
+
+        /* use reflection to get all classes on the classpath annotated as a validator or converter */
+        Reflections reflections = new Reflections(conf);
+        Set<Class<?>> validators = reflections.getTypesAnnotatedWith(Validator.class);
+        Set<Class<?>> converters = reflections.getTypesAnnotatedWith(Converter.class);
         
         for (Class c: validators){
             Validator annotation = (Validator) c.getAnnotation(Validator.class);

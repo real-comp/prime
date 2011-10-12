@@ -2,6 +2,9 @@ package com.realcomp.data.record.io;
 
 import com.realcomp.data.record.io.delimited.DelimitedFileWriter;
 import com.realcomp.data.record.io.fixed.FixedFileWriter;
+import java.beans.IntrospectionException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -9,6 +12,7 @@ import com.realcomp.data.record.io.fixed.FixedFileWriter;
  */
 public class RecordWriterFactory {
     
+    private static final Logger logger = Logger.getLogger(RecordWriterFactory.class.getName());
     
     public static RecordWriter build(Format format) throws FormatException{
         
@@ -37,6 +41,16 @@ public class RecordWriterFactory {
             throw new FormatException(ex);
         }
         
-        throw new IllegalStateException("TODO: set properties dynamically");
+        
+        try {
+            DynamicPropertySetter setter = new DynamicPropertySetter();
+            setter.setProperties(writer, format.getAttributes());
+        }
+        catch (IntrospectionException ex) {
+            logger.log(Level.WARNING, ex.getMessage(), ex);
+        }
+        
+        return writer;
+        
     }
 }

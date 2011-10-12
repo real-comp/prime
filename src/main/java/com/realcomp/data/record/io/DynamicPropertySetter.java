@@ -1,4 +1,4 @@
-package com.realcomp.data.schema.xml;
+package com.realcomp.data.record.io;
 
 import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
@@ -9,6 +9,8 @@ import java.lang.reflect.Method;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Writes properties, dynamically, to a JavaBean
@@ -17,6 +19,8 @@ import java.util.Set;
  */
 public class DynamicPropertySetter {
 
+    private static final Logger logger = Logger.getLogger(DynamicPropertySetter.class.getName());
+    
     private Set<String> ignoredProperties;
 
     public DynamicPropertySetter(){
@@ -32,31 +36,70 @@ public class DynamicPropertySetter {
      *
      * @param bean
      * @param properties to be applied
+     * @return list of property keys not set because the bean did not expose the property.
      * @throws DynamicPropertyException
      */
-    public void setProperties(Object bean, Map<String, String> properties)
-            throws DynamicPropertyException {
-
+    public Set<String> setProperties(Object bean, Map<String, String> properties) throws IntrospectionException {
+        
+        Set<String> unused = new HashSet<String>();
         if (properties == null || properties.isEmpty())
-            return;
-
-        try {
-            BeanInfo beanInfo = Introspector.getBeanInfo(bean.getClass());
-            for (PropertyDescriptor pd : beanInfo.getPropertyDescriptors()) {
-                setProperty(pd.getName(), properties.get(pd.getName()), pd, bean);
+            return unused;
+        
+        unused.addAll(properties.keySet());
+        
+        String name = null;
+        String value = null;
+        BeanInfo beanInfo = Introspector.getBeanInfo(bean.getClass());
+        for (PropertyDescriptor pd : beanInfo.getPropertyDescriptors()) {
+            name = pd.getName();
+            value = properties.get(name);
+            
+            if (value != null){
+                try {
+                    if (setProperty(name, value, pd, bean)){
+                        unused.remove(name);
+                    }
+                }
+                catch (Exception ex) {
+                    logger.log(Level.FINE,
+                            String.format("Unable to set property [%s] on bean of class [%s]", 
+                                          new Object[]{name, bean.getClass().getName()}), 
+                            ex);
+                }
             }
         }
-        catch (IntrospectionException ex) {
-            throw new DynamicPropertyException(ex);
-        }
-        catch (IllegalStateException ex) {
-            throw new DynamicPropertyException(ex);
-        }
-        catch (IllegalArgumentException ex) {
-            throw new DynamicPropertyException(ex);
-        }
+
+
+        return unused;
     }
 
+    
+    protected boolean setProperty(String name, String value, PropertyDescriptor pd, Object bean) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+
+        if (name == null)
+            throw new IllegalArgumentException("name is null");
+        if (bean == null)
+            throw new IllegalArgumentException("bean is null");
+        if (pd == null)
+            throw new IllegalArgumentException("pd is null");
+        if (name.isEmpty())
+            throw new IllegalArgumentException("name is empty");
+
+        boolean success = false;
+
+        if (isValidProperty(name, value)){
+
+            if (pd.getPropertyType().isEnum()) {
+                success = setEnum(name, value, pd, bean);
+            }
+            else{
+                success = setObject(name, value, pd, bean);
+            }
+        }
+        
+        return success;
+    }
+    
     /**
      * @param name
      * @param value
@@ -64,7 +107,8 @@ public class DynamicPropertySetter {
      * @param bean
      * @return
      */
-    protected boolean setObject(String name, String value, PropertyDescriptor pd, Object bean) {
+    protected boolean setObject(String name, String value, PropertyDescriptor pd, Object bean) 
+            throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 
 
         boolean success = false;
@@ -72,7 +116,7 @@ public class DynamicPropertySetter {
         Method setter = pd.getWriteMethod();
         if (setter != null){
             Class[] parameterTypes = setter.getParameterTypes();
-            try {
+         
 
                 if (parameterTypes.length > 0) {
                     Class parameterType = parameterTypes[0];
@@ -110,13 +154,6 @@ public class DynamicPropertySetter {
                         success = true;
                     }
                 }
-            }
-            catch (IllegalAccessException ex) {
-            }
-            catch (IllegalArgumentException ex) {
-            }
-            catch (InvocationTargetException ex) {
-            }
         }
 
         return success;
@@ -132,7 +169,8 @@ public class DynamicPropertySetter {
      * @param bean The javabean that has a set method that accepts an enum
      * @return true if successful; else false
      */
-    protected boolean setEnum(String name, String value, PropertyDescriptor pd, Object bean) {
+    protected boolean setEnum(String name, String value, PropertyDescriptor pd, Object bean) 
+            throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
 
         assert (name != null);
         assert (value != null);
@@ -142,60 +180,24 @@ public class DynamicPropertySetter {
         boolean success = false;
         Class propertyType = pd.getPropertyType();
 
+        
         try {
-            try {
-                pd.getWriteMethod().invoke(bean, Enum.valueOf(propertyType, value));
-                success = true;
-            }
-            catch (IllegalArgumentException e) {
+            pd.getWriteMethod().invoke(bean, Enum.valueOf(propertyType, value));
+            success = true;
+        }
+        catch (IllegalArgumentException e) {
 
-                //check if the emum has a parse(String) method, and use it if it does.
-                Method parseMethod = propertyType.getDeclaredMethod("parse", String.class);
-                Enum parsedEnum = (Enum) parseMethod.invoke(
-                        propertyType.getEnumConstants()[0], value);
-                pd.getWriteMethod().invoke(bean, parsedEnum);
-                success = true;
-            }
+            //check if the emum has a parse(String) method, and use it if it does.
+            Method parseMethod = propertyType.getDeclaredMethod("parse", String.class);
+            Enum parsedEnum = (Enum) parseMethod.invoke(
+                    propertyType.getEnumConstants()[0], value);
+            pd.getWriteMethod().invoke(bean, parsedEnum);
+            success = true;
         }
-        catch (IllegalAccessException ex) {
-        }
-        catch (InvocationTargetException ex) {
-        }
-        catch (NoSuchMethodException ex) {
-        }
-        catch (SecurityException ex) {
-        }
-
+        
         return success;
     }
 
-    protected void setProperty(String name, String value, PropertyDescriptor pd, Object bean) {
-
-        if (name == null)
-            throw new IllegalArgumentException("name is null");
-        if (bean == null)
-            throw new IllegalArgumentException("bean is null");
-        if (pd == null)
-            throw new IllegalArgumentException("pd is null");
-        if (name.isEmpty())
-            throw new IllegalArgumentException("name is empty");
-
-
-        if (isValidProperty(name, value)){
-
-            boolean success = false;
-
-            if (pd.getPropertyType().isEnum()) {
-                success = setEnum(name, value, pd, bean);
-            }
-            else{
-                success = setObject(name, value, pd, bean);
-            }
-
-            if (!success)
-                throw new IllegalStateException("unable to set property for: " + name);
-        }
-    }
 
 
     /**

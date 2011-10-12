@@ -22,6 +22,7 @@ public class DelimitedFileReader extends BaseRecordReader{
 
     protected SkippingBufferedReader reader;
     
+    protected boolean header = false;
     protected char delimiter = '\t';
     protected char quoteCharacter = CSVParser.DEFAULT_QUOTE_CHARACTER;
     protected char escapeCharacter = CSVParser.DEFAULT_ESCAPE_CHARACTER;
@@ -140,6 +141,19 @@ public class DelimitedFileReader extends BaseRecordReader{
             this.delimiter = delimiter.charAt(0);
         }   
     }
+
+    public boolean isHeader() {
+        return header;
+    }
+
+    public void setHeader(boolean header) {
+        this.header = header;
+        if (header && skipLeading == 0)
+            skipLeading = 1;
+        else if (!header && skipLeading == 1)
+            skipLeading = 0;
+    }
+    
     
     
     

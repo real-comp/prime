@@ -1,22 +1,18 @@
 package com.realcomp.data.record.io;
 
-import com.thoughtworks.xstream.annotations.XStreamAlias;
-import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
+
+import com.realcomp.data.schema.xml.FormatConverter;
+import com.thoughtworks.xstream.annotations.XStreamConverter;
 import java.util.HashMap;
 import java.util.Map;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  *
  * @author krenfro
  */
-@XStreamAlias("format")
-@XmlRootElement
+@XStreamConverter(FormatConverter.class)
 public class Format {
     
-    @XStreamAsAttribute
-    @XmlAttribute
     private String type;    
     
     private Map<String,String> attributes;
@@ -47,6 +43,14 @@ public class Format {
         this.attributes.clear();
         if (attributes != null)            
             this.attributes.putAll(attributes);
+    }
+    
+    public String getAttribute(String name){
+        return attributes.get(name);
+    }
+    
+    public String setAttribute(String name, String value){
+        return attributes.put(name, value);
     }
 
     public String getType() {

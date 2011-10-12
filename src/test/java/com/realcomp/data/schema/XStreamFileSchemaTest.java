@@ -113,10 +113,13 @@ public class XStreamFileSchemaTest {
         schema = SchemaFactory.buildFileSchema(
                 XStreamFileSchemaTest.class.getResourceAsStream("test_3.schema"));
         assertEquals("CSV", schema.getFormat().getType());
+        assertNull(schema.getFormat().getAttribute("header"));
 
         schema = SchemaFactory.buildFileSchema(
                 XStreamFileSchemaTest.class.getResourceAsStream("test_4.schema"));
         assertEquals("CSV", schema.getFormat().getType());
+        assertEquals("true", schema.getFormat().getAttribute("header"));
+        
 
     }
 

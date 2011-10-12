@@ -1,5 +1,7 @@
 package com.realcomp.data.schema.xml;
 
+import com.realcomp.data.record.io.DynamicPropertyGetter;
+import com.realcomp.data.record.io.DynamicPropertySetter;
 import com.realcomp.data.record.io.RecordReader;
 import com.thoughtworks.xstream.converters.ConversionException;
 import com.thoughtworks.xstream.converters.Converter;
@@ -7,6 +9,7 @@ import com.thoughtworks.xstream.converters.MarshallingContext;
 import com.thoughtworks.xstream.converters.UnmarshallingContext;
 import com.thoughtworks.xstream.io.HierarchicalStreamReader;
 import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
+import java.beans.IntrospectionException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -39,9 +42,8 @@ public class RecordReaderConverter extends DynamicPropertyGetter implements Conv
         try {
             for(Map.Entry<String,Object> entry: getProperties(o).entrySet())
                 writer.addAttribute(entry.getKey(), entry.getValue().toString());
-
         }
-        catch (DynamicPropertyException ex) {
+        catch (IntrospectionException ex) {
             Logger.getLogger(RecordReaderConverter.class.getName()).log(Level.SEVERE, null, ex);
             throw new ConversionException(ex);
         }
@@ -68,7 +70,7 @@ public class RecordReaderConverter extends DynamicPropertyGetter implements Conv
             
             return reader;
         }
-        catch (DynamicPropertyException ex) {
+        catch (IntrospectionException ex) {
             throw new ConversionException(ex);
         }
         catch (IllegalAccessException ex) {

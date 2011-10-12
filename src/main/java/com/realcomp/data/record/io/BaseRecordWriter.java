@@ -34,6 +34,8 @@ public abstract class BaseRecordWriter implements RecordWriter{
     protected boolean beforeFirstOperationsRun = false;   
     protected TransformContext context;
     protected ValueSurgeon surgeon;
+    protected int skipLeading = 0;
+    protected int skipTrailing = 0;
     
     public BaseRecordWriter(){
         context = new TransformContext();
@@ -168,6 +170,49 @@ public abstract class BaseRecordWriter implements RecordWriter{
 
         return id;
     }
+    
+    /**
+     *
+     * @return number of leading records to skip. default 0
+     */
+    public int getSkipLeading() {
+        return skipLeading;
+    }
+
+    /**
+     *
+     * @param skipLeading number of leading records to skip. >= 0
+     */
+    public void setSkipLeading(int skipLeading) {
+        if (skipLeading < 0)
+            throw new IllegalArgumentException(
+                    String.format("skipLeading out of range: %s < 0", skipLeading));
+        if (out != null)
+            throw new IllegalArgumentException("Cannot setSkipLeading after open()");
+        this.skipLeading = skipLeading;
+    }
+
+    /**
+     *
+     * @return number of trailing records to skip. default 0
+     */
+    public int getSkipTrailing() {
+        return skipTrailing;
+    }
+
+    /**
+     *
+     * @param skipTrailing number of trailing records to skip. >= 0
+     */
+    public void setSkipTrailing(int skipTrailing) {
+        if (skipTrailing < 0)
+            throw new IllegalArgumentException(
+                    String.format("skipTrailing out of range: %s < 0", skipTrailing));
+        if (out != null)
+            throw new IllegalArgumentException("Cannot setSkipTrailing after open()");
+        this.skipTrailing = skipTrailing;
+    }
+
 
     /** {@inheritDoc} */
     @Override
