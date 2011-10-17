@@ -39,7 +39,7 @@ public class DynamicPropertySetter {
      * @return list of property keys not set because the bean did not expose the property.
      * @throws DynamicPropertyException
      */
-    public Set<String> setProperties(Object bean, Map<String, String> properties) throws IntrospectionException {
+    public Set<String> setProperties(Object bean, Map<String, Object> properties) throws IntrospectionException {
         
         Set<String> unused = new HashSet<String>();
         if (properties == null || properties.isEmpty())
@@ -48,7 +48,7 @@ public class DynamicPropertySetter {
         unused.addAll(properties.keySet());
         
         String name = null;
-        String value = null;
+        Object value = null;
         BeanInfo beanInfo = Introspector.getBeanInfo(bean.getClass());
         for (PropertyDescriptor pd : beanInfo.getPropertyDescriptors()) {
             name = pd.getName();
@@ -74,7 +74,7 @@ public class DynamicPropertySetter {
     }
 
     
-    protected boolean setProperty(String name, String value, PropertyDescriptor pd, Object bean) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+    protected boolean setProperty(String name, Object value, PropertyDescriptor pd, Object bean) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
 
         if (name == null)
             throw new IllegalArgumentException("name is null");
@@ -107,7 +107,7 @@ public class DynamicPropertySetter {
      * @param bean
      * @return
      */
-    protected boolean setObject(String name, String value, PropertyDescriptor pd, Object bean) 
+    protected boolean setObject(String name, Object value, PropertyDescriptor pd, Object bean) 
             throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 
 
@@ -126,31 +126,54 @@ public class DynamicPropertySetter {
                         success = true;
                     }
                     else if(parameterType == Integer.class || parameterType.getName().equals("int")) {
-                        setter.invoke(bean, Integer.valueOf(value));
+                        if (value instanceof Integer)
+                            setter.invoke(bean, (Integer) value);
+                        else
+                            setter.invoke(bean, Integer.valueOf(value.toString()));
                         success = true;
                     }
                     else if (parameterType == Float.class || parameterType.getName().equals("float")) {
-                        setter.invoke(bean, Float.valueOf(value));
+                        if (value instanceof Float)
+                            setter.invoke(bean, (Float) value);
+                        else
+                            setter.invoke(bean, Float.valueOf(value.toString()));
                         success = true;
                     }
                     else if (parameterType == Double.class || parameterType.getName().equals("double")) {
-                        setter.invoke(bean, Double.valueOf(value));
+                        if (value instanceof Double)
+                            setter.invoke(bean, (Double) value);
+                        else
+                            setter.invoke(bean, Double.valueOf(value.toString()));
                         success = true;
                     }
                     else if (parameterType == Long.class || parameterType.getName().equals("long")) {
-                        setter.invoke(bean, Long.valueOf(value));
+                        if (value instanceof Long)
+                            setter.invoke(bean, (Long) value);
+                        else
+                            setter.invoke(bean, Long.valueOf(value.toString()));
                         success = true;
                     }
                     else if (parameterType == Short.class || parameterType.getName().equals("short")) {
-                        setter.invoke(bean, Short.valueOf(value));
+                        if (value instanceof Short)
+                            setter.invoke(bean, (Short) value);
+                        else
+                            setter.invoke(bean, Short.valueOf(value.toString()));
                         success = true;
                     }
                     else if (parameterType == Boolean.class || parameterType.getName().equals("boolean")) {
-                        setter.invoke(bean, Boolean.valueOf(value));
+                        if (value instanceof Boolean)
+                            setter.invoke(bean, (Boolean) value);
+                        else
+                            setter.invoke(bean, Boolean.valueOf(value.toString()));
                         success = true;
                     }
-                    else if ((parameterType == Character.class || parameterType.getName().equals("char")) && value.length() == 1) {
-                        setter.invoke(bean, Character.valueOf(value.charAt(0)));
+                    else if ((parameterType == Character.class 
+                            || parameterType.getName().equals("char")) 
+                            && value.toString().length() == 1) {
+                        if (value instanceof Character)
+                            setter.invoke(bean, (Character) value);
+                        else
+                            setter.invoke(bean, Character.valueOf(value.toString().charAt(0)));
                         success = true;
                     }
                 }
@@ -169,7 +192,7 @@ public class DynamicPropertySetter {
      * @param bean The javabean that has a set method that accepts an enum
      * @return true if successful; else false
      */
-    protected boolean setEnum(String name, String value, PropertyDescriptor pd, Object bean) 
+    protected boolean setEnum(String name, Object value, PropertyDescriptor pd, Object bean) 
             throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
 
         assert (name != null);
@@ -182,7 +205,7 @@ public class DynamicPropertySetter {
 
         
         try {
-            pd.getWriteMethod().invoke(bean, Enum.valueOf(propertyType, value));
+            pd.getWriteMethod().invoke(bean, Enum.valueOf(propertyType, value.toString()));
             success = true;
         }
         catch (IllegalArgumentException e) {

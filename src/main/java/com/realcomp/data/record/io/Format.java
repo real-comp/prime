@@ -60,6 +60,17 @@ public class Format {
     public void setType(String type) {
         this.type = type;
     }
+    
+    @Override
+    public String toString(){
+        
+        StringBuilder s = new StringBuilder();
+        s.append("Format (type=");
+        s.append(type);
+        s.append(") attributes:");
+        s.append(attributes.toString());
+        return s.toString();
+    }
 
     @Override
     public boolean equals(Object obj) {

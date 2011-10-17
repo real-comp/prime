@@ -57,7 +57,7 @@ public class RecordWriterConverter  extends DynamicPropertyGetter implements Con
             RecordWriter writer = (RecordWriter) readerClass.newInstance();
             DynamicPropertySetter propSetter = new DynamicPropertySetter();
             propSetter.addIgnoredProperty("class");
-            Map<String,String> properties = new HashMap<String,String>();
+            Map<String,Object> properties = new HashMap<String,Object>();
             Iterator<String> itr = stream.getAttributeNames();
             while(itr.hasNext()){
                 String name = itr.next();
