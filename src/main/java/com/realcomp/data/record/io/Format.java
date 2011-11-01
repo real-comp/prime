@@ -3,7 +3,9 @@ package com.realcomp.data.record.io;
 
 import com.realcomp.data.schema.xml.FormatConverter;
 import com.thoughtworks.xstream.annotations.XStreamConverter;
+import com.thoughtworks.xstream.annotations.XStreamImplicit;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -14,7 +16,7 @@ import java.util.Map;
 public class Format {
     
     private String type;    
-    
+        
     private Map<String,String> attributes;
     
     public Format(){
@@ -53,6 +55,7 @@ public class Format {
         return attributes.put(name, value);
     }
 
+    
     public String getType() {
         return type;
     }

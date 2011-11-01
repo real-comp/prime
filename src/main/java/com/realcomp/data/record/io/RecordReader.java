@@ -41,7 +41,7 @@ public interface RecordReader {
     */
     Record read() throws IOException, ValidationException, ConversionException, SchemaException;
 
- /**
+    /**
      * Close open resources. Should be invoked when you are done with the RecordReader.
      */
     void close();

@@ -12,7 +12,7 @@ import java.util.List;
  *
  * @author krenfro
  */
-public interface RecordViewReader {
+public interface RecordViewReader extends RecordReader {
     
     public void setRecordReader(RecordReader reader);
     

@@ -3,12 +3,6 @@ package com.realcomp.data.schema;
 
 import com.realcomp.data.record.io.Format;
 import java.util.regex.Pattern;
-import com.realcomp.data.view.DummyView;
-import com.realcomp.data.view.ExampleView;
-import java.io.ByteArrayInputStream;
-import java.io.StringReader;
-import java.util.List;
-import java.util.ArrayList;
 import com.realcomp.data.schema.xml.XStreamFactory;
 import com.realcomp.data.validation.field.DoubleRangeValidator;
 import com.realcomp.data.conversion.Replace;

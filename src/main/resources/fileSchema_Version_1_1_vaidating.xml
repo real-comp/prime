@@ -5,7 +5,7 @@
    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
    xsi:schemaLocation="http://www.real-comp.com/realcomp-data/schema/file-schema/1.1 http://www.real-comp.com/realcomp-data/schema/file-schema/1.1/file-schema.xsd">
     
-    <format type="CSV"/>
+    <format type="CSV" views="asdf"/>
     
     <before>
         <trim/>
@@ -41,5 +41,6 @@
         <field name="" type="int"/>
         
     </fields>
+    
 
 </rc:file-schema>
