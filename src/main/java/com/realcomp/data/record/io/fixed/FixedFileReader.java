@@ -44,9 +44,9 @@ public class FixedFileReader extends BaseRecordReader{
     @Override
     public void open(InputStream in) throws IOException{
         
+        close();
         super.open(in);
         
-        close();
         Charset c = charset == null ? Charset.defaultCharset() : Charset.forName(charset);
         reader = new SkippingBufferedReader(new InputStreamReader(in, c));
         reader.setSkipLeading(skipLeading);
@@ -57,8 +57,9 @@ public class FixedFileReader extends BaseRecordReader{
 
 
     @Override
-    public void close(){
-        IOUtils.closeQuietly(reader);
+    public void close(){        
+        super.close();
+        IOUtils.closeQuietly(reader);        
     }
     
     @Override

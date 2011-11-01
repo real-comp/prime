@@ -121,6 +121,17 @@
             <groupId>com.thoughtworks.xstream</groupId>
             <artifactId>xstream</artifactId>
             <version>1.3.1</version>
+        </dependency> 
+        <dependency>
+            <groupId>org.codehaus.jackson</groupId>
+            <artifactId>jackson-mapper-asl</artifactId>
+            <version>1.4.0</version> <!-- 1.8.5 is latest, but hadoop uses 1.4 (avro) -->
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.codehaus.jackson</groupId>
+            <artifactId>jackson-xc</artifactId>
+            <version>1.4.0</version><!-- 1.8.5 is latest, but hadoop uses 1.4 (avro) -->
         </dependency>
     </dependencies>
 

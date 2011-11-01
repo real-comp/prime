@@ -9,7 +9,6 @@ import com.realcomp.data.schema.Field;
 import com.realcomp.data.schema.FileSchema;
 import com.realcomp.data.schema.FieldList;
 import com.realcomp.data.transform.TransformContext;
-import com.realcomp.data.transform.Transformer;
 import com.realcomp.data.transform.ValueSurgeon;
 import com.realcomp.data.validation.Severity;
 import com.realcomp.data.validation.ValidationException;
@@ -17,8 +16,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Creates Records from a String[] using a FileSchema.
