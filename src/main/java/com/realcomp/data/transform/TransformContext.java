@@ -11,6 +11,7 @@ import com.realcomp.data.validation.ValidationException;
 import com.realcomp.data.validation.Validator;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -27,11 +28,9 @@ public class TransformContext {
     private String key;
     private Record record;
     private Severity validationExceptionThreshold = Severity.getDefault();
-    private List<String> aliases;
     private long recordCount;
     
     public TransformContext(){
-        aliases = new ArrayList<String>();
         record = new Record();
     }
     
@@ -55,8 +54,6 @@ public class TransformContext {
         key = copy.key;
         validationExceptionThreshold = copy.validationExceptionThreshold;
         record = new Record(copy.record);
-        aliases = new ArrayList<String>();
-        aliases.addAll(copy.aliases);        
         recordCount = copy.recordCount;
         
     }
@@ -107,7 +104,6 @@ public class TransformContext {
         if (record == null)
             throw new IllegalArgumentException("record is null");
         this.record = record;
-        aliases.clear();
     }
 
     public FileSchema getSchema() {
@@ -116,16 +112,16 @@ public class TransformContext {
 
     public void setSchema(FileSchema schema) {
         this.schema = schema;
-        aliases.clear();
     }
 
+    
+    
     public List<Field> getFields() {
         return fields;
     }
 
     public void setFields(List<Field> fields) {
         this.fields = fields;
-        aliases.clear();
     }
 
     public String getKey() {
@@ -136,7 +132,6 @@ public class TransformContext {
         if (key == null)
             throw new IllegalArgumentException("key is null");
         this.key = key;
-        aliases.clear();
     }
     
     public Severity getValidationExceptionThreshold() {
@@ -145,18 +140,6 @@ public class TransformContext {
 
     public void setValidationExceptionThreshold(Severity validationExceptionThreshold) {
         this.validationExceptionThreshold = validationExceptionThreshold;
-    }
-
-    public List<String> getAliases() {
-        return aliases;
-    }
-
-    public void setAliases(List<String> aliases) {
-        this.aliases = aliases;
-    }
-    
-    public void addAlias(String alias){
-        aliases.add(alias);
     }
 
     public long getRecordCount() {

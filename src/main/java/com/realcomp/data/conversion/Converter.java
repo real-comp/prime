@@ -14,8 +14,12 @@ import java.util.List;
 public interface Converter extends Operation{
 
     /**
-     * @param value not null
-     * @return the converted value, not null
+     * In the normal case, if a converter is asked to convert a null value, it should return null.
+     * There are special converters (Concat, Constant) that do allow a null input.  This is
+     * necessary so new fields can be created based on the data in other fields.
+     * 
+     * @param value the value to convert. may be null
+     * @return the converted value
      * @throws ConversionException if the value is not a supported DataType, or there 
      *          was a problem performing the conversion.
      * @throws IllegalArgumentException if value is null

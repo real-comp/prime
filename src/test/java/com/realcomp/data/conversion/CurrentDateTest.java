@@ -15,7 +15,15 @@ public class CurrentDateTest extends ComplexConverterTest{
     public CurrentDateTest() {
         converter = new CurrentDate();
     }
-
+    
+    
+    @Test
+    @Override
+    public void testNullInput() throws ConversionException{
+        
+        assertNotNull(converter.convert(null));
+    }
+    
 
     /**
      * Test of convert method, of class CurrentDate.

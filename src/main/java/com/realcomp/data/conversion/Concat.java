@@ -23,10 +23,12 @@ public class Concat extends BaseMultiFieldConverter{
     @Override
     public Object convert(Object value, Record record) throws ConversionException {
 
-        if (value == null)
-            throw new IllegalArgumentException("value is null");
         if (record == null)
             throw new IllegalArgumentException("record is null");
+        
+        //special converter that allows null input
+        if (value == null)
+            value = "";
         
         String retVal = "".concat(value.toString());
         boolean needDelimiter = false;

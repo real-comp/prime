@@ -92,18 +92,11 @@ public class RecordFactory {
         int index = 0;
         
         for (Field field: getParsePlan(fieldList)){
-            try {
-                index = fieldList.indexOf(field);
-                context.setKey(field.getName());
-                record.put(field.getName(), data[index]); //seed record with initial value
-                List value = surgeon.operate(getOperations(field), context);
-                record.put(field.getName(), field.getType().coerce(value.get(0))); //set final value
-                for (String alias: context.getAliases())
-                    RecordValueAssembler.assemble(context.getRecord(), alias, value);
-            }
-            catch (RecordValueException ex) {
-                throw new ConversionException(ex);
-            }
+            index = fieldList.indexOf(field);
+            context.setKey(field.getName());
+            record.put(field.getName(), data[index]); //seed record with initial value
+            List value = surgeon.operate(getOperations(field), context);
+            record.put(field.getName(), field.getType().coerce(value.get(0))); //set final value            
         }
         
         return record;

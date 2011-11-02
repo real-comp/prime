@@ -22,23 +22,23 @@ public class LastName extends SimpleConverter {
     
     @Override
     public Object convert(Object value) throws ConversionException{
-        if (value == null)
-            throw new IllegalArgumentException("value is null");
-
-        String retVal = value.toString();        
-        List<Name> names = NameParser.parse(retVal, lastNameFirst);
         
-        if (!names.isEmpty()){
-            Name name = names.get(0);
-            if (name instanceof IndividualName){
-                retVal = ((IndividualName) name).getLast();
-            }
-            else{
-                retVal = ((CompanyName) name).toString();
+        String retVal = null;
+        if (value != null){        
+            List<Name> names = NameParser.parse(value.toString(), lastNameFirst);
+            retVal = "";
+            if (!names.isEmpty()){
+                Name name = names.get(0);
+                if (name instanceof IndividualName){
+                    retVal = ((IndividualName) name).getLast();
+                }
+                else{
+                    retVal = ((CompanyName) name).toString();
+                }
             }
         }
         
-        return retVal == null ? "" : retVal;
+        return retVal;
     }
     
     @Override

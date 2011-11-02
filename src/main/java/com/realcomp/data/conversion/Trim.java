@@ -9,10 +9,7 @@ public class Trim extends SimpleConverter {
 
     @Override
     public Object convert(Object value) throws ConversionException{
-        if (value == null)
-            throw new IllegalArgumentException("value is null");
-
-        return value.toString().trim();
+        return value == null ? null : value.toString().trim();
     }
 
     

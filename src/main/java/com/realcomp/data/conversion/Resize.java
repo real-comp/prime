@@ -26,13 +26,11 @@ public class Resize extends SimpleConverter {
     
     @Override
     public Object convert(Object value) throws ConversionException{
-        if (value == null)
-            throw new IllegalArgumentException("value is null");
-
+        
         if (length == USE_ORIGINAL_LENGTH)
             return value;
         else
-            return StringUtils.rightPad(value.toString(), length).substring(0, length);
+            return value == null ? null : StringUtils.rightPad(value.toString(), length).substring(0, length);
     }
 
     @Override

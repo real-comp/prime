@@ -2,7 +2,6 @@ package com.realcomp.data.record.io.fixed;
 
 import com.realcomp.data.record.io.BaseRecordWriter;
 import com.realcomp.data.DataType;
-import com.realcomp.data.Operation;
 import com.realcomp.data.conversion.ConversionException;
 import com.realcomp.data.record.Record;
 import com.realcomp.data.schema.FileSchema;
@@ -14,7 +13,6 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.nio.charset.Charset;
 import java.util.List;
 import java.util.logging.Logger;
 import org.apache.commons.io.IOUtils;
@@ -56,7 +54,7 @@ public class FixedFileWriter extends BaseRecordWriter{
             throws IOException, ValidationException, ConversionException, SchemaException{
 
         //optionally write header record
-        if (!beforeFirstOperationsRun && header){
+        if (header && count == 0){
             writeHeader();
         }
         

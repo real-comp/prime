@@ -12,19 +12,15 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  *
  * @author krenfro
  */
-
 @XStreamAlias("transform")
 @XmlRootElement
 public class Transformer {
-    
-    private static final Logger logger = Logger.getLogger(Transformer.class.getName());
     
     private List<Operation> before;
     private List<Operation> after;
@@ -56,9 +52,7 @@ public class Transformer {
             List<Object> result = surgeon.operate(getOperations(field), context);
             
             try {
-                RecordValueAssembler.assemble(context.getRecord(), field.getName(), result);                
-                for (String alias: context.getAliases())
-                    RecordValueAssembler.assemble(context.getRecord(), alias, result);
+                RecordValueAssembler.assemble(context.getRecord(), field.getName(), result);
             }
             catch (RecordValueException ex) {
                 throw new ConversionException(ex);

@@ -24,13 +24,15 @@ public class ProperName extends SimpleConverter {
     
     @Override
     public Object convert(Object value) throws ConversionException{
-        if (value == null)
-            throw new IllegalArgumentException("value is null");
-
-        String retVal = value.toString();        
-        List<Name> names = NameParser.parse(retVal, lastNameFirst);
-        if (!names.isEmpty())
-            retVal = names.get(0).toString();        
+        
+        String retVal = null;
+        if (value != null){            
+            retVal = value.toString();        
+            List<Name> names = NameParser.parse(retVal, lastNameFirst);
+            if (!names.isEmpty())
+                retVal = names.get(0).toString();        
+        }
+        
         return retVal;
     }
     

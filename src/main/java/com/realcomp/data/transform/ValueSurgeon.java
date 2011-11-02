@@ -5,7 +5,6 @@ import com.realcomp.data.conversion.ConversionException;
 import com.realcomp.data.conversion.Converter;
 import com.realcomp.data.conversion.MissingFieldException;
 import com.realcomp.data.conversion.MultiFieldConverter;
-import com.realcomp.data.record.Alias;
 import com.realcomp.data.record.Record;
 import com.realcomp.data.record.RecordValueResolver;
 import com.realcomp.data.validation.ValidationException;
@@ -24,7 +23,6 @@ public class ValueSurgeon {
    
     private static final Logger logger = Logger.getLogger(ValueSurgeon.class.getName());
             
-    private Object defaultValue;
     
     /**
      * @param record holds the value(s) to be operated on
@@ -46,28 +44,34 @@ public class ValueSurgeon {
         Record record = context.getRecord();
         String key = context.getKey();
         
+        
         // The key specified may resolve to multiple values in the record
         List<Object> values = RecordValueResolver.resolve(record, key);
         
-        if (values.isEmpty() && defaultValue != null){
-            logger.log(
-                    Level.FINE, 
-                    "Using default value of [{0}] for [{1}] in Record [{2}]", 
-                        new Object[]{defaultValue, key, context.toString()});
-            values.add(defaultValue);
-        }
-        
-        
-        for (int x = 0; x < values.size(); x++){
-            Object temp = values.get(x);
+        if (values.isEmpty()){
+            //the key did not exist in the record, but there may still be output if there are 
+            // converters like concat or constant which can output values with null input.
+            
+            Object temp = null;
             for (Operation op: operations){
                 temp = operate(op, temp, context);
             }
-            values.set(x, temp);
+            if (temp != null)
+                values.add(temp);
+        }
+        else{
+            for (int x = 0; x < values.size(); x++){
+                Object temp = values.get(x);
+                for (Operation op: operations){
+                    temp = operate(op, temp, context);
+                }
+                values.set(x, temp);
+            }
         }
         
         return values;
     }
+    
 
     /**
      * Perform the requested operation on the data, optionally using the provided Record
@@ -104,9 +108,6 @@ public class ValueSurgeon {
             result = ((MultiFieldConverter) operation).convert(data, context.getRecord());
         }
         else if (operation instanceof Converter){
-            
-            if (operation instanceof Alias)
-                context.addAlias(((Alias) operation).getName());
             result = ((Converter) operation).convert(data);
         }
         else{
@@ -118,20 +119,4 @@ public class ValueSurgeon {
     }
     
 
-    /**
-     * 
-     * @return the value to be used when the specified key does not exist in the record. Default null.
-     */
-    public Object getDefaultValue() {
-        return defaultValue;
-    }
-
-    /**
-     * Set the value to be used when there is no value in the Record for the specified key.
-     * Default = null
-     * @param defaultValue 
-     */
-    public void setDefaultValue(Object defaultValue) {
-        this.defaultValue = defaultValue;
-    }       
 }

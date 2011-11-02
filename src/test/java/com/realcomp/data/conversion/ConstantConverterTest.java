@@ -14,6 +14,13 @@ public class ConstantConverterTest extends SimpleConverterTest {
     }
 
     @Test
+    @Override
+    public void testNullInput() throws ConversionException{
+        
+        assertNotNull(converter.convert(null));
+    }
+    
+    @Test
     public void testConverter() throws ConversionException{
 
         ConstantConverter c = new ConstantConverter();
@@ -24,14 +31,6 @@ public class ConstantConverterTest extends SimpleConverterTest {
         c.setValue("B");
         assertEquals("B", c.convert("anything"));
         assertEquals("B", c.convert("else"));
-
-        try{
-            c.convert(null);
-            fail("should have thrown IllegalArgumentException");
-        }
-        catch(IllegalArgumentException expected){
-        }
-
 
     }
     

@@ -43,6 +43,7 @@ public class DelimitedFileWriter extends BaseRecordWriter{
 
         context.setRecord(record);
         context.setKey(field.getName());
+        
         List<Object> values = surgeon.operate(field.getOperations(), context);
       
         if (values.isEmpty())        
@@ -57,7 +58,7 @@ public class DelimitedFileWriter extends BaseRecordWriter{
             throws IOException, ValidationException, ConversionException, SchemaException{
 
         //optionally write header record
-        if (!beforeFirstOperationsRun && header){
+        if (header && count == 0){
             current.clear();
             writeHeader();
         }
@@ -103,7 +104,7 @@ public class DelimitedFileWriter extends BaseRecordWriter{
         try {
             FileSchema originalSchema = getSchema();
             FileSchema headerSchema = new FileSchema(getSchema());
-             for (FieldList fields : headerSchema.getFieldLists()){
+            for (FieldList fields : headerSchema.getFieldLists()){
                 for (Field field: fields)
                     field.clearOperations();
             }

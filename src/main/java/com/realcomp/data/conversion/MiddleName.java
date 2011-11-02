@@ -1,39 +1,44 @@
 package com.realcomp.data.conversion;
 
-import com.realcomp.names.CompanyName;
 import com.realcomp.names.IndividualName;
 import com.realcomp.names.Name;
-import com.realcomp.names.NameFormatter;
 import com.realcomp.names.NameParser;
+import java.util.Arrays;
 import java.util.List;
 
 /**
- * Parses a name, returning a clean up version. If it is an IndividualName,
- * then format is last, prefix first middle, suffix; else if CompanyName, then the cleaned 
- * company name is used.
- * 
- * <p>
- * Only one name is returned, so if multiple names are in the input field, that
- * information will be lost.  For example, "Jeanine" would be lost if formatting
- * "Renfro, Ryan Kyle & Jeanine"
- * </p>
+ * Parses a name, returning the 'middle name' if the name is and instance of 
+ * IndividualName; else ""
  * 
  * @author krenfro
  */
-@com.realcomp.data.annotation.Converter("lastNameFirst")
-public class LastNameFirst extends SimpleConverter {
-
+@com.realcomp.data.annotation.Converter("middleName")
+public class MiddleName extends SimpleConverter {
+    
     private boolean lastNameFirst = true;
+
     
     @Override
     public Object convert(Object value) throws ConversionException{
-        
+
         String retVal = null;
         if (value != null){
             retVal = "";
             List<Name> names = NameParser.parse(value.toString(), lastNameFirst);
-            if (!names.isEmpty())
-                retVal = NameFormatter.getLastNameFirst(names.get(0));
+
+            if (!names.isEmpty()){
+                Name name = names.get(0);
+                if (name instanceof IndividualName){
+                    List<String> middleNames = ((IndividualName) name).getMiddle();
+                    if (middleNames != null){
+                        for (int x = 0; x < middleNames.size(); x++){
+                            if (x > 0)
+                                retVal = retVal.concat(" ");
+                            retVal = retVal.concat(middleNames.get(x));
+                        }
+                    }
+                }
+            }
         }
         
         return retVal;
@@ -47,11 +52,9 @@ public class LastNameFirst extends SimpleConverter {
         this.lastNameFirst = lastNameFirst;
     }
     
-    
-    
     @Override
-    public LastNameFirst copyOf(){
-        LastNameFirst copy = new LastNameFirst();
+    public MiddleName copyOf(){
+        MiddleName copy = new MiddleName();
         copy.setLastNameFirst(lastNameFirst);
         return copy;
     }
@@ -62,7 +65,7 @@ public class LastNameFirst extends SimpleConverter {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        final LastNameFirst other = (LastNameFirst) obj;
+        final MiddleName other = (MiddleName) obj;
         if (this.lastNameFirst != other.lastNameFirst)
             return false;
         return true;
@@ -70,10 +73,8 @@ public class LastNameFirst extends SimpleConverter {
 
     @Override
     public int hashCode() {
-        int hash = 3;
-        hash = 89 * hash + (this.lastNameFirst ? 1 : 0);
+        int hash = 7;
+        hash = 67 * hash + (this.lastNameFirst ? 1 : 0);
         return hash;
     }
-
-    
 }

@@ -28,12 +28,7 @@ public class ConverterTest {
     @Test
     public void testNullInput() throws ConversionException{
         
-        try{
-            converter.convert(null);
-            fail("Expected IllegalArgumentException on null input");
-        }
-        catch(IllegalArgumentException expected){
-        }
+        assertNull(converter.convert(null));
     }
     
     @Test

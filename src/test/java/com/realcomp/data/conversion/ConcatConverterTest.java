@@ -17,6 +17,22 @@ public class ConcatConverterTest extends MultiFieldConverterTest {
     }
     
     @Test
+    @Override
+    public void testNullInput() throws ConversionException{
+        
+        assertEquals("", converter.convert(null, new Record()));
+        
+        try{
+            converter.convert("", null);
+            fail("Expected IllegalArgumentException on null input");
+        }
+        catch(IllegalArgumentException expected){
+        }
+    }
+    
+     
+    
+    @Test
     public void testConvert() throws Exception {
         
         Concat concat = new Concat();

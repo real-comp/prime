@@ -21,23 +21,22 @@ public class BooleanConverter extends SimpleConverter{
     @Override
     public Object convert(Object value) throws ConversionException{
 
-        if (value == null)
-            throw new IllegalArgumentException("value is null");
-
         Boolean result = null;
-        String test = addCommas(value.toString(), caseSensitive);
-        
-        if (contains(truthy, test, caseSensitive ))
-            result = Boolean.TRUE;
-        else if(contains(falsy, test, caseSensitive ))
-            result = Boolean.FALSE;
-        else if (truthy.equals(",*,"))
-            result = Boolean.TRUE;
-        else if (falsy.equals(",*,"))
-            result = Boolean.FALSE;
+        if (value != null){
+            String test = addCommas(value.toString(), caseSensitive);
 
-        if (result == null)
-            throw new ConversionException("Unable to convert [" + value + "] to a boolean value");
+            if (contains(truthy, test, caseSensitive ))
+                result = Boolean.TRUE;
+            else if(contains(falsy, test, caseSensitive ))
+                result = Boolean.FALSE;
+            else if (truthy.equals(",*,"))
+                result = Boolean.TRUE;
+            else if (falsy.equals(",*,"))
+                result = Boolean.FALSE;
+
+            if (result == null)
+                throw new ConversionException("Unable to convert [" + value + "] to a boolean value");
+        }
         
         return result;
     }

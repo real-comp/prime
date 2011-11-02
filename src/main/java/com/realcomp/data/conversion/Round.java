@@ -46,12 +46,15 @@ public class Round implements Converter {
     @Override
     public Object convert(Object value) throws ConversionException{
         
-        if (value == null)
-            throw new IllegalArgumentException("value is null");
-        if (value.toString().isEmpty())
+        if (value == null){
+            return null;
+        }
+        else if (value.toString().isEmpty()){
             return value;
-        
-        return Math.round((Double) DataType.DOUBLE.coerce(value));
+        }
+        else{        
+            return Math.round((Double) DataType.DOUBLE.coerce(value));
+        }
     }
 
     

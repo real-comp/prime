@@ -42,13 +42,6 @@ public class MultiFieldConverterTest {
     public void testNullInput() throws ConversionException{
         
         try{
-            converter.convert(null, new Record());
-            fail("Expected IllegalArgumentException on null input");
-        }
-        catch(IllegalArgumentException expected){
-        }
-        
-        try{
             converter.convert("", null);
             fail("Expected IllegalArgumentException on null input");
         }

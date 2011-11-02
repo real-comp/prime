@@ -31,10 +31,7 @@ public class ReplaceFirst extends SimpleConverter {
 
     @Override
     public Object convert(Object value) throws ConversionException{
-        if (value == null)
-            throw new IllegalArgumentException("value is null");
-
-        return value.toString().replaceFirst(regex, replacement);
+        return value == null ? null : value.toString().replaceFirst(regex, replacement);
     }
 
     public String getRegex() {
