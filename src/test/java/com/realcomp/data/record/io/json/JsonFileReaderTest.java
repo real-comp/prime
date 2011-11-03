@@ -1,6 +1,8 @@
 
 package com.realcomp.data.record.io.json;
 
+import java.util.List;
+import java.util.Map;
 import com.realcomp.data.record.Record;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -29,5 +31,13 @@ public class JsonFileReaderTest {
         Record r = reader.parse(json);
         assertEquals(7810, r.resolveFirst("totalValue"));
         
+        Map<String,String> attributes = (Map) r.get("attributes");        
+        assertEquals("2011 Preliminary", attributes.get("valueDescription"));
+        
+        Map<String,Object> rawAddress = (Map) r.get("rawAddress");
+        assertEquals("1028 HWY 3", ((List) rawAddress.get("address")).get(0).toString());
+        
     }
+    
+    
 }

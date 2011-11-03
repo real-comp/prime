@@ -99,7 +99,7 @@
         <dependency>
             <groupId>com.realcomp.names</groupId>
             <artifactId>realcomp-names</artifactId>
-            <version>3.1.1</version>
+            <version>3.1.2-SNAPSHOT</version>
             <optional>true</optional>
         </dependency>
         <dependency>
@@ -125,13 +125,12 @@
         <dependency>
             <groupId>org.codehaus.jackson</groupId>
             <artifactId>jackson-mapper-asl</artifactId>
-            <version>1.4.0</version> <!-- 1.8.5 is latest, but hadoop uses 1.4 (avro) -->
-            <scope>provided</scope>
+            <version>1.8.6</version>
         </dependency>
         <dependency>
             <groupId>org.codehaus.jackson</groupId>
             <artifactId>jackson-xc</artifactId>
-            <version>1.4.0</version><!-- 1.8.5 is latest, but hadoop uses 1.4 (avro) -->
+            <version>1.8.6</version>
         </dependency>
     </dependencies>
 
