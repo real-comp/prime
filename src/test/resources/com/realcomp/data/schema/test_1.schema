@@ -20,7 +20,7 @@
       <validateDoubleRange max="2000.0" min="1000.0"/>
     </field>
     <field name="data" length="10">
-      <converter class="com.realcomp.data.conversion.Trim"/>
+      <!-- <converter class="com.realcomp.data.conversion.Trim"/> -->
     </field>
   </fields>
   <fields classifier=".{19}">

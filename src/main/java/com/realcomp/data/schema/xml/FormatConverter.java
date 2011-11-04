@@ -1,17 +1,13 @@
 package com.realcomp.data.schema.xml;
 
 import com.realcomp.data.record.io.Format;
-import com.realcomp.data.schema.Field;
-import com.realcomp.data.schema.FieldList;
 import com.thoughtworks.xstream.converters.Converter;
 import com.thoughtworks.xstream.converters.MarshallingContext;
 import com.thoughtworks.xstream.converters.UnmarshallingContext;
-import com.thoughtworks.xstream.converters.collections.CollectionConverter;
 import com.thoughtworks.xstream.io.HierarchicalStreamReader;
 import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.regex.Pattern;
 
 /**
  * Uses xStream, JavaBeans and reflection to dynamically serialize/de-serialize an Operation

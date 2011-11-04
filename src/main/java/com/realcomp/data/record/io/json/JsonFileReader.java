@@ -16,6 +16,7 @@ import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.SerializationConfig.Feature;
+import org.codehaus.jackson.map.annotate.JsonSerialize.Inclusion;
 import org.codehaus.jackson.xc.JaxbAnnotationIntrospector;
 
 /**
@@ -29,9 +30,10 @@ public class JsonFileReader extends BaseRecordReader{
     
     public JsonFileReader(){
         jackson = new ObjectMapper(); 
-        jackson.getSerializationConfig().appendAnnotationIntrospector(new JaxbAnnotationIntrospector());
-        jackson.getSerializationConfig().set(Feature.WRITE_NULL_MAP_VALUES, false); //Jackson 1.8.5
-        //jackson.getSerializationConfig().setSerializationInclusion(Inclusion.NON_NULL); //Jackson 1.4
+        //jackson.getSerializationConfig().appendAnnotationIntrospector(new JaxbAnnotationIntrospector());
+        //jackson.getSerializationConfig().set(Feature.WRITE_NULL_MAP_VALUES, false); //Jackson 1.8.5
+        jackson.getSerializationConfig().setAnnotationIntrospector(new JaxbAnnotationIntrospector());
+        jackson.getSerializationConfig().setSerializationInclusion(Inclusion.NON_NULL); //Jackson 1.4
     }
     
     

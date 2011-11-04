@@ -2,6 +2,7 @@ package com.realcomp.data.record.io;
 
 import com.realcomp.data.record.io.delimited.DelimitedFileReader;
 import com.realcomp.data.record.io.fixed.FixedFileReader;
+import com.realcomp.data.record.io.json.JsonFileReader;
 import com.realcomp.data.schema.FileSchema;
 import com.realcomp.data.schema.SchemaException;
 import java.beans.IntrospectionException;
@@ -70,6 +71,9 @@ public class RecordReaderFactory {
             }
             else if (type.equalsIgnoreCase("FIXED")){
                 reader = new FixedFileReader();
+            }
+            else if (type.equalsIgnoreCase("JSON")){
+                reader = new JsonFileReader();
             }
             else{
                 reader = (RecordReader) Class.forName(type).newInstance();
