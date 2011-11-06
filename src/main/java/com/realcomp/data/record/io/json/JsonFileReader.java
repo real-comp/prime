@@ -25,7 +25,7 @@ import org.codehaus.jackson.xc.JaxbAnnotationIntrospector;
  */
 public class JsonFileReader extends BaseRecordReader{
 
-    private ObjectMapper jackson;
+    protected ObjectMapper jackson;
     protected SkippingBufferedReader reader;
     
     public JsonFileReader(){
