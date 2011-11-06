@@ -6,6 +6,7 @@ import com.realcomp.data.record.io.json.JsonFileReader;
 import com.realcomp.data.schema.FileSchema;
 import com.realcomp.data.schema.SchemaException;
 import java.beans.IntrospectionException;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
@@ -18,6 +19,20 @@ import java.util.logging.Logger;
 public class RecordReaderFactory {
     
     private static final Logger logger = Logger.getLogger(RecordReaderFactory.class.getName());
+    
+    private static Map<String,String> types;
+    
+    static{
+        types = new HashMap<String,String>();
+        types.put("CSV", DelimitedFileReader.class.getName());
+        types.put("TAB", DelimitedFileReader.class.getName());
+        types.put("FIXED", FixedFileReader.class.getName());
+        types.put("JSON", JsonFileReader.class.getName());
+    }
+    
+    public static void registerReader(String type, String readerClass){
+        types.put(type, readerClass);
+    }
     
     public static RecordReader build(FileSchema schema) throws FormatException, SchemaException{
         
@@ -63,21 +78,20 @@ public class RecordReaderFactory {
     
     protected static RecordReader getReaderForType(String type) throws FormatException{
         
-        RecordReader reader = null;
+        if (type == null)
+            throw new IllegalArgumentException("type is null");
+        
+        RecordReader reader = null;        
+        String classname = types.get(type.toUpperCase());
+        if (classname == null && type.length() == 1){
+            classname = types.get("TAB"); //single character; default to delimited
+        }
+        else if (classname == null){
+            classname = type;
+        }
         
         try {
-            if (type.equalsIgnoreCase("CSV") || type.equalsIgnoreCase("TAB") || type.length() == 1){
-                reader = new DelimitedFileReader();
-            }
-            else if (type.equalsIgnoreCase("FIXED")){
-                reader = new FixedFileReader();
-            }
-            else if (type.equalsIgnoreCase("JSON")){
-                reader = new JsonFileReader();
-            }
-            else{
-                reader = (RecordReader) Class.forName(type).newInstance();
-            }
+            reader = (RecordReader) Class.forName(classname).newInstance();
         }
         catch (ClassNotFoundException ex) {
             throw new FormatException(ex);
@@ -88,7 +102,7 @@ public class RecordReaderFactory {
         catch (IllegalAccessException ex) {
             throw new FormatException(ex);
         }
-        
+
         return reader;
     }
     
