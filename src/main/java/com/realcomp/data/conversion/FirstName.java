@@ -29,6 +29,8 @@ public class FirstName extends SimpleConverter {
                 Name name = names.get(0);
                 if (name instanceof IndividualName){
                     retVal = ((IndividualName) name).getFirst();
+                    if (retVal == null)
+                        retVal = "";
                 }
             }
         }
