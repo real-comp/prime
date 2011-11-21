@@ -2,6 +2,7 @@ package com.realcomp.data.record.io;
 
 import com.realcomp.data.record.io.delimited.DelimitedFileWriter;
 import com.realcomp.data.record.io.fixed.FixedFileWriter;
+import com.realcomp.data.record.io.json.JsonWriter;
 import com.realcomp.data.schema.FileSchema;
 import com.realcomp.data.schema.SchemaException;
 import java.beans.IntrospectionException;
@@ -26,7 +27,7 @@ public class RecordWriterFactory {
         types.put("CSV", DelimitedFileWriter.class.getName());
         types.put("TAB", DelimitedFileWriter.class.getName());
         types.put("FIXED", FixedFileWriter.class.getName());
-        //types.put("JSON", JsonFileWriter.class.getName());
+        types.put("JSON", JsonWriter.class.getName());
     }
     
     

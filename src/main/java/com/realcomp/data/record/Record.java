@@ -49,7 +49,7 @@ public class Record implements Serializable {
     }
 
     public Set<String> keySet() {
-        return data.keySet();
+        return data.keySet();        
     }
 
     public Collection<Object> values() {
@@ -104,6 +104,10 @@ public class Record implements Serializable {
         return data.get(key);
     }
     
+    public Object remove(String key){
+        return data.remove(key);
+    }
+    
     /**
      * 
      * @param key
@@ -120,7 +124,7 @@ public class Record implements Serializable {
         else
             return null;        
     }
-    
+        
     @Override
     public boolean equals(Object obj) {
         if (obj == null)

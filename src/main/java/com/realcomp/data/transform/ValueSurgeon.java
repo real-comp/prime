@@ -11,7 +11,6 @@ import com.realcomp.data.validation.ValidationException;
 import com.realcomp.data.validation.Validator;
 import com.realcomp.data.validation.file.RecordCountValidator;
 import java.util.List;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**

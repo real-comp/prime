@@ -2,7 +2,7 @@ package com.realcomp.data.record.io;
 
 import com.realcomp.data.record.io.delimited.DelimitedFileReader;
 import com.realcomp.data.record.io.fixed.FixedFileReader;
-import com.realcomp.data.record.io.json.JsonFileReader;
+import com.realcomp.data.record.io.json.JsonReader;
 import com.realcomp.data.schema.FileSchema;
 import com.realcomp.data.schema.SchemaException;
 import java.beans.IntrospectionException;
@@ -27,7 +27,7 @@ public class RecordReaderFactory {
         types.put("CSV", DelimitedFileReader.class.getName());
         types.put("TAB", DelimitedFileReader.class.getName());
         types.put("FIXED", FixedFileReader.class.getName());
-        types.put("JSON", JsonFileReader.class.getName());
+        types.put("JSON", JsonReader.class.getName());
     }
     
     public static void registerReader(String type, String readerClass){

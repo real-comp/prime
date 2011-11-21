@@ -24,22 +24,16 @@ import java.util.logging.Logger;
 import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonParser;
 import org.codehaus.jackson.JsonToken;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.map.annotate.JsonSerialize.Inclusion;
-import org.codehaus.jackson.xc.JaxbAnnotationIntrospector;
-
 /**
  * 
- * The JSON format is rich enough that a FileSchema is not required to parse a Record.
+ * The JSON format is rich enough that a FileSchema is <i>not</i> required to parse a Record.
+ * If a schema <i>is</i> specified, only the fields specified in the schema will appear in the Record.
  * 
  * 
  * @author krenfro
  */
-public class JsonFileReader implements RecordReader {
-
-    private static final Logger logger = Logger.getLogger(JsonFileReader.class.getName());
+public class JsonReader implements RecordReader {
     
-    private ObjectMapper jackson;
     private JsonFactory jsonFactory;
     private JsonParser jsonParser;
     private long count;
@@ -49,16 +43,8 @@ public class JsonFileReader implements RecordReader {
     private ValueSurgeon surgeon;
     private TransformContext context;
 
-    public JsonFileReader() {
-
-
-        jackson = new ObjectMapper();
-        //jackson.getSerializationConfig().appendAnnotationIntrospector(new JaxbAnnotationIntrospector());
-        //jackson.getSerializationConfig().set(Feature.WRITE_NULL_MAP_VALUES, false); //Jackson 1.8.5
-        jackson.getSerializationConfig().setAnnotationIntrospector(new JaxbAnnotationIntrospector());
-        jackson.getSerializationConfig().setSerializationInclusion(Inclusion.NON_NULL); //Jackson 1.4
-        jsonFactory = jackson.getJsonFactory();
-
+    public JsonReader() {
+        jsonFactory = new JsonFactory();
         surgeon = new ValueSurgeon();
         context = new TransformContext();
     }
@@ -76,16 +62,29 @@ public class JsonFileReader implements RecordReader {
         Map map = parseMap();
 
         if (map != null) {
-            record = new Record(map);            
             
-            if (schema != null) {
-                context.setRecord(record);
-                
-                for (Field field : schema.classify(record)) {
+            
+            if (schema == null){
+                record = new Record(map);
+            }
+            else{
+                /* Since a schema is defined, only put the fields defined in the schema into the final record.
+                 * The operations should be able to find values in the more complete Record parsed from 
+                 * the raw json.  Create a temporary Record from the parsed json, and use that for the
+                 * field creation.  
+                 */
+                record = new Record();
+                Record temp = new Record(map);
+                context.setRecord(temp);
+                for (Field field : schema.classify(temp)) {
                     context.setKey(field.getName());
                     List value = surgeon.operate(getOperations(field), context);                    
-                    if (!value.isEmpty())
-                        record.put(field.getName(), field.getType().coerce(value.get(0))); //set final value            
+                    if (!value.isEmpty()){
+                        //Write the results of the operations to both the final Record, and the
+                        // temporary Record for subsequent field creation.
+                        record.put(field.getName(), field.getType().coerce(value.get(0)));
+                        temp.put(field.getName(), field.getType().coerce(value.get(0)));
+                    }
                 }
             }
             count++;
@@ -230,7 +229,7 @@ public class JsonFileReader implements RecordReader {
                 jsonParser.close();
             }
             catch (IOException ex) {
-                Logger.getLogger(JsonFileReader.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(JsonReader.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
     }
@@ -273,11 +272,11 @@ public class JsonFileReader implements RecordReader {
                 fields.add(new BeforeFirstField());
                 transformer.setFields(fields);
                 transformer.setAfter(operations);
-                TransformContext context = new TransformContext();
-                context.setValidationExceptionThreshold(validationExceptionThreshold);
-                context.setRecordCount(this.getCount());
-                context.setSchema(schema);
-                transformer.transform(context);
+                TransformContext ctx = new TransformContext();
+                ctx.setValidationExceptionThreshold(validationExceptionThreshold);
+                ctx.setRecordCount(this.getCount());
+                ctx.setSchema(schema);
+                transformer.transform(ctx);
             }
         }
     }
@@ -292,11 +291,11 @@ public class JsonFileReader implements RecordReader {
                 Transformer transformer = new Transformer();
                 transformer.setFields(fields);
                 transformer.setBefore(operations);
-                TransformContext context = new TransformContext();
-                context.setValidationExceptionThreshold(validationExceptionThreshold);
-                context.setRecordCount(this.getCount());
-                context.setSchema(schema);
-                transformer.transform(context);
+                TransformContext ctx = new TransformContext();
+                ctx.setValidationExceptionThreshold(validationExceptionThreshold);
+                ctx.setRecordCount(this.getCount());
+                ctx.setSchema(schema);
+                transformer.transform(ctx);
             }
         }
     }

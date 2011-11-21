@@ -3,8 +3,6 @@ package com.realcomp.data.record.io;
 import com.realcomp.data.Operation;
 import com.realcomp.data.conversion.ConversionException;
 import com.realcomp.data.record.Record;
-import com.realcomp.data.record.RecordValueAssembler;
-import com.realcomp.data.record.RecordValueException;
 import com.realcomp.data.schema.Field;
 import com.realcomp.data.schema.FileSchema;
 import com.realcomp.data.schema.FieldList;
@@ -96,7 +94,8 @@ public class RecordFactory {
             context.setKey(field.getName());
             record.put(field.getName(), data[index]); //seed record with initial value
             List value = surgeon.operate(getOperations(field), context);
-            record.put(field.getName(), field.getType().coerce(value.get(0))); //set final value            
+            if (!value.isEmpty())
+                record.put(field.getName(), field.getType().coerce(value.get(0))); //set final value            
         }
         
         return record;
