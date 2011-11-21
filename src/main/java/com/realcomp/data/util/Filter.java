@@ -2,12 +2,13 @@ package com.realcomp.data.util;
 
 import com.realcomp.data.conversion.ConversionException;
 import com.realcomp.data.record.Record;
-import com.realcomp.data.record.reader.RecordReader;
-import com.realcomp.data.record.writer.RecordWriter;
+import com.realcomp.data.record.io.RecordReader;
+import com.realcomp.data.record.io.RecordReaderFactory;
+import com.realcomp.data.record.io.RecordWriter;
+import com.realcomp.data.record.io.RecordWriterFactory;
 import com.realcomp.data.schema.FileSchema;
 import com.realcomp.data.schema.SchemaException;
 import com.realcomp.data.schema.SchemaFactory;
-import com.realcomp.data.schema.SchemaField;
 import com.realcomp.data.validation.ValidationException;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -25,7 +26,6 @@ public class Filter {
 
     private static final Logger logger =  Logger.getLogger(Filter.class.getName());
 
-
     private FileSchema inputSchema;
     private FileSchema outputSchema;
 
@@ -36,17 +36,12 @@ public class Filter {
     public void filter(InputStream in, OutputStream out) 
             throws SchemaException, IOException, ConversionException, ValidationException {
 
-        RecordReader reader = inputSchema.getReader();
-        if (reader == null)
-            throw new SchemaException("No reader specified in input schema.");
+        RecordReader reader = RecordReaderFactory.build(inputSchema);
         reader.open(in);
         
-        RecordWriter writer = outputSchema.getWriter();        
-        if (writer == null)
-            throw new SchemaException("No writer specified in output schema.");
+        RecordWriter writer = RecordWriterFactory.build(outputSchema);
         writer.open(out);
         
-        checkFields();
         Record record = getNextRecord(reader);
         while (record != null){
             try{
@@ -55,7 +50,7 @@ public class Filter {
             catch(ValidationException ex){
                 logger.log(Level.INFO, 
                            "filtered: {0} because: {1}", 
-                           new Object[]{outputSchema.toString(record), ex.getMessage()});
+                           new Object[]{outputSchema.classify(record).toString(record), ex.getMessage()});
             }
             record = getNextRecord(reader);
         }
@@ -81,15 +76,6 @@ public class Filter {
         return r;
     }
 
-    protected void checkFields(){
-        for (SchemaField f: outputSchema.getFields()){
-            if (inputSchema.getField(f.getName()) == null)
-                logger.log(
-                        Level.WARNING,
-                        "No field in the input schema with name: {0}", f.getName());
-        }
-
-    }
 
     public void setInputSchema(InputStream in) throws IOException{
         this.inputSchema = SchemaFactory.buildFileSchema(in);

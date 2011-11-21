@@ -1,6 +1,8 @@
 package com.realcomp.data.validation.field;
 
+import com.realcomp.data.DataType;
 import com.realcomp.data.annotation.Validator;
+import com.realcomp.data.conversion.ConversionException;
 import com.realcomp.data.validation.ValidationException;
 
 
@@ -23,42 +25,33 @@ public class DoubleRangeValidator extends BaseFieldValidator {
     }
     
     @Override
-    public void validate(String value) throws ValidationException{
+    public void validate(Object value) throws ValidationException{
         if (value == null)
             throw new IllegalArgumentException("value is null");
         if (min > max)
             throw new IllegalStateException(String.format("min (%s) > max (%s)", min, max));
 
         try{
-            double parsed = parseDouble(value);
-            if (Double.compare(parsed, min) < 0d){
+            Double coerced = (Double) DataType.DOUBLE.coerce(value);
+            
+            if (Double.compare(coerced, min) < 0d){
                 throw new ValidationException(
                         String.format("less than minimum value of %s", min), 
                         value,
                         getSeverity());
             }
-            else if(Double.compare(parsed, max) > 0d){
+            else if(Double.compare(coerced, max) > 0d){
                 throw new ValidationException(
                         String.format("greater than maximum value of %s", max), 
                         value,
                         getSeverity());
             }
         }
-        catch(NumberFormatException ex){
+        catch(ConversionException ex){
             throw new ValidationException(ex.getMessage(), value, getSeverity());
         }
     }
 
-    protected double parseDouble(String value){
-
-        String s = value.trim();
-        //remove leading zeros
-        while (s.length() > 1 & s.startsWith("0"))
-            s = s.substring(1);
-        if (s.startsWith("\\."))
-            s = "0".concat(s);
-        return Double.parseDouble(s);
-    }
 
     public double getMax() {
         return max;

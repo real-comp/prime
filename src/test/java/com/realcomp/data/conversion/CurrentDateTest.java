@@ -10,11 +10,20 @@ import static org.junit.Assert.*;
  *
  * @author krenfro
  */
-public class CurrentDateTest {
+public class CurrentDateTest extends ComplexConverterTest{
 
     public CurrentDateTest() {
+        converter = new CurrentDate();
     }
-
+    
+    
+    @Test
+    @Override
+    public void testNullInput() throws ConversionException{
+        
+        assertNotNull(converter.convert(null));
+    }
+    
 
     /**
      * Test of convert method, of class CurrentDate.
@@ -26,24 +35,24 @@ public class CurrentDateTest {
         Calendar now = Calendar.getInstance();
         DateFormat formatter = new SimpleDateFormat("yyyyMMdd");
         assertEquals(formatter.format(now.getTime()), converter.convert(""));
-        assertEquals(8, converter.convert(null).length());
+        assertEquals(8, converter.convert("").toString().length());
 
         converter.setFormat("yyyy");
         formatter = new SimpleDateFormat("yyyy");
         assertEquals(formatter.format(now.getTime()), converter.convert(""));
-        assertEquals(4, converter.convert(null).length());
+        assertEquals(4, converter.convert("").toString().length());
 
 
         converter.setFormat("MM/dd/yyyy");
         formatter = new SimpleDateFormat("MM/dd/yyyy");
         assertEquals(formatter.format(now.getTime()), converter.convert(""));
-        assertEquals(10, converter.convert(null).length());
+        assertEquals(10, converter.convert("").toString().length());
 
         converter.setFormat("M/d/yyyy");
         formatter = new SimpleDateFormat("M/d/yyyy");
         assertEquals(formatter.format(now.getTime()), converter.convert(""));
-        assertTrue(converter.convert(null).length() >= 8);
-        assertTrue(converter.convert(null).length() <= 10);
+        assertTrue(converter.convert("").toString().length() >= 8);
+        assertTrue(converter.convert("").toString().length() <= 10);
 
         converter.setFormat("short");
         formatter = DateFormat.getDateInstance(DateFormat.SHORT);
@@ -78,7 +87,63 @@ public class CurrentDateTest {
         instance.setFormat("medium");
         instance.setFormat("long");
         instance.setFormat("full");
+    }
+    
+    @Test
+    public void testParameterizedConstructor(){
+        CurrentDate a = new CurrentDate();
+        a.setFormat("yyyyMMdd");
+        
+        CurrentDate b = new CurrentDate("yyyyMMdd");
+        assertEquals(a, b);
+    }
+
+    @Test
+    public void testCopyOf() {
+        CurrentDate a = new CurrentDate();
+        CurrentDate b = a.copyOf();
+        assertEquals(a, b);
+        
+        a.setFormat("short");
+        assertFalse(a.equals(b));
+        
+        b.setFormat("short");
+        assertEquals(a, b);
+        
+    }
+    
+    @Test
+    public void testGetFormat(){
+        CurrentDate a = new CurrentDate();
+        assertEquals("yyyyMMdd", a.getFormat());
+        
+        a.setFormat("short");
+        assertEquals("short", a.getFormat());
+    }
+    
+    
+    @Test
+    @Override
+    public void testEquals() {
+        
+        super.testEquals();
+        
+        CurrentDate a = new CurrentDate();
+        CurrentDate b = new CurrentDate();
+        assertEquals(a, b);
+        a.setFormat("short");
+        assertFalse(a.equals(b));
+        b.setFormat("short");
+        assertEquals(a, b);
 
     }
 
+    @Test
+    public void testHashCode() {
+        CurrentDate a = new CurrentDate();
+        CurrentDate b = new CurrentDate();
+        assertEquals(a.hashCode(), b.hashCode());
+    }
+    
+    
 }

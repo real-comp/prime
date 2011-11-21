@@ -18,19 +18,21 @@ import java.util.List;
  * @author krenfro
  */
 @com.realcomp.data.annotation.Converter("properName")
-public class ProperName implements Converter {
+public class ProperName extends SimpleConverter {
     
     private boolean lastNameFirst = true;
-    
+        
     @Override
-    public String convert(String value) throws ConversionException{
-        if (value == null)
-            throw new IllegalArgumentException("value is null");
-
-        List<Name> names = NameParser.parse(value, lastNameFirst);
-        String retVal = value;        
-        if (!names.isEmpty())
-            retVal = names.get(0).toString();        
+    public Object convert(Object value) throws ConversionException{
+        
+        String retVal = null;
+        if (value != null){            
+            retVal = value.toString();        
+            List<Name> names = NameParser.parse(retVal, lastNameFirst);
+            if (!names.isEmpty())
+                retVal = names.get(0).toString();        
+        }
+        
         return retVal;
     }
     
@@ -63,8 +65,8 @@ public class ProperName implements Converter {
 
     @Override
     public int hashCode() {
-        int hash = 5;
-        hash = 47 * hash + (this.lastNameFirst ? 1 : 0);
+        int hash = 3;
+        hash = 59 * hash + (this.lastNameFirst ? 1 : 0);
         return hash;
     }
     

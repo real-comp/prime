@@ -1,4 +1,3 @@
-
 package com.realcomp.data.validation.field;
 
 import com.realcomp.data.annotation.Validator;
@@ -28,11 +27,11 @@ public class RegexValidator extends BaseFieldValidator {
     
     
     @Override
-    public void validate(String value) throws ValidationException{
+    public void validate(Object value) throws ValidationException{
         if (value == null)
             throw new IllegalArgumentException("value is null");
 
-        if (!pattern.matcher(value).matches()){
+        if (!pattern.matcher(value.toString()).matches()){
             throw new ValidationException(
                     String.format("did not match pattern %s", pattern.pattern()), 
                     value,
@@ -76,6 +75,4 @@ public class RegexValidator extends BaseFieldValidator {
         hash = 67 * hash + (this.regex != null ? this.regex.hashCode() : 0);
         return hash;
     }
-
-
 }

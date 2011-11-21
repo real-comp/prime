@@ -8,7 +8,7 @@ package com.realcomp.data.conversion;
  * @author krenfro
  */
 @com.realcomp.data.annotation.Converter("substring")
-public class Substring implements Converter {
+public class Substring extends SimpleConverter {
 
     protected Integer begin = 0;
     protected Integer end;
@@ -26,23 +26,26 @@ public class Substring implements Converter {
     }
     
     @Override
-    public String convert(String value) throws ConversionException{
+    public Object convert(Object value) throws ConversionException{
+        
         if (value == null)
             throw new IllegalArgumentException("value is null");
 
+        Object retVal = "";
+        
         try{
             if (begin == null)
                 begin = 0;
             
             if (end == null || end <= begin)
-                return value.substring(begin);
+                retVal = value.toString().substring(begin);
             else
-                return value.substring(begin, end);
+                retVal = value.toString().substring(begin, end);
         }
         catch(IndexOutOfBoundsException e){
-            return "";
         }
-        
+
+        return retVal;
     }
 
     @Override

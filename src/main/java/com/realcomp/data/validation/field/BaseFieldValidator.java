@@ -9,7 +9,7 @@ import com.realcomp.data.validation.Validator;
  *
  * @author krenfro
  */
-public abstract class BaseFieldValidator implements FieldValidator {
+public abstract class BaseFieldValidator implements Validator {
 
     protected Severity severity = Validator.DEFAULT_SEVERITY;
 

@@ -12,28 +12,29 @@ import java.util.List;
  * @author krenfro
  */
 @com.realcomp.data.annotation.Converter("firstName")
-public class FirstName implements Converter {
-
+public class FirstName extends SimpleConverter {
+    
     private boolean lastNameFirst = true;
     
     @Override
-    public String convert(String value) throws ConversionException{
-        if (value == null)
-            throw new IllegalArgumentException("value is null");
-
-        List<Name> names = NameParser.parse(value, lastNameFirst);
-        String retVal = value;        
-        if (!names.isEmpty()){
-            Name name = names.get(0);
-            if (name instanceof IndividualName){
-                retVal = ((IndividualName) name).getFirst();
-            }
-            else{
-                retVal = "";
+    public Object convert(Object value) throws ConversionException{
+        
+        String retVal = null;
+        
+        if (value != null){
+            List<Name> names = NameParser.parse(value.toString(), lastNameFirst);
+            retVal = "";
+            if (!names.isEmpty()){
+                Name name = names.get(0);
+                if (name instanceof IndividualName){
+                    retVal = ((IndividualName) name).getFirst();
+                    if (retVal == null)
+                        retVal = "";
+                }
             }
         }
         
-        return retVal == null ? "" : retVal;
+        return retVal;
     }
 
     public boolean isLastNameFirst() {
@@ -42,6 +43,13 @@ public class FirstName implements Converter {
 
     public void setLastNameFirst(boolean lastNameFirst) {
         this.lastNameFirst = lastNameFirst;
+    }
+    
+    @Override
+    public FirstName copyOf(){
+        FirstName copy = new FirstName();
+        copy.setLastNameFirst(lastNameFirst);
+        return copy;
     }
 
     @Override
@@ -60,14 +68,7 @@ public class FirstName implements Converter {
     public int hashCode() {
         int hash = 5;
         hash = 89 * hash + (this.lastNameFirst ? 1 : 0);
+        hash = 67 * hash + (this.lastNameFirst ? 1 : 0);
         return hash;
-    }
-    
-    @Override
-    public FirstName copyOf(){
-        FirstName copy = new FirstName();
-        copy.setLastNameFirst(lastNameFirst);
-        return copy;
-    }
-    
+    }    
 }

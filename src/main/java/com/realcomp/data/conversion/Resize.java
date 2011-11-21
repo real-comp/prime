@@ -3,25 +3,34 @@ package com.realcomp.data.conversion;
 import org.apache.commons.lang.StringUtils;
 
 /**
- *
+ * 
  * @author krenfro
  */
 @com.realcomp.data.annotation.Converter("resize")
-public class Resize implements Converter {
+public class Resize extends SimpleConverter {
 
     private static final int USE_ORIGINAL_LENGTH = -1;
 
-    protected int length = USE_ORIGINAL_LENGTH;
+    private int length = USE_ORIGINAL_LENGTH;
+    
+    public Resize(){
+        super();
+    }
+    
+    public Resize(int length){
+        super();
+        if (length < 0)
+            throw new IllegalArgumentException("length < 0");
+        this.length = length;
+    }
     
     @Override
-    public String convert(String value) throws ConversionException{
-        if (value == null)
-            throw new IllegalArgumentException("value is null");
-
+    public Object convert(Object value) throws ConversionException{
+        
         if (length == USE_ORIGINAL_LENGTH)
             return value;
         else
-            return StringUtils.rightPad(value, length).substring(0, length);
+            return value == null ? null : StringUtils.rightPad(value.toString(), length).substring(0, length);
     }
 
     @Override
@@ -31,12 +40,14 @@ public class Resize implements Converter {
         return copy;
     }
             
-    public String getLength() {
-        return Integer.toString(length);
+    public int getLength() {
+        return length;
     }
 
-    public void setLength(String length) {
-        this.length = Integer.parseInt(length);
+    public void setLength(int length) {
+        if (length < 0)
+            throw new IllegalArgumentException("length < 0");
+        this.length = length;
     }
 
     @Override

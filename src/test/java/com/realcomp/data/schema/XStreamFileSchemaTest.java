@@ -2,16 +2,10 @@ package com.realcomp.data.schema;
 
 
 import com.realcomp.data.conversion.FirstName;
-import com.realcomp.data.view.DummyView;
-import com.realcomp.data.view.ExampleView;
-import java.io.ByteArrayInputStream;
-import java.io.StringReader;
-import java.util.List;
-import java.util.ArrayList;
+import com.realcomp.data.record.io.Format;
+import java.util.regex.Pattern;
 import com.realcomp.data.schema.xml.XStreamFactory;
-import com.realcomp.data.record.io.Delimiter;
 import com.realcomp.data.validation.field.DoubleRangeValidator;
-import com.realcomp.data.record.reader.DelimitedFileReader;
 import com.realcomp.data.conversion.Replace;
 import com.realcomp.data.conversion.UpperCase;
 import com.realcomp.data.conversion.Trim;
@@ -36,22 +30,28 @@ public class XStreamFileSchemaTest {
         
     }
 
+    
+    @Test
+    public void testConstructor(){
+        new XStreamFactory();
+    }
+    
 
     protected FileSchema getSchema() throws SchemaException{
         FileSchema schema = new FileSchema();
         schema.setName("test");
         schema.setVersion("1.0");
-        schema.addField(new SchemaField("pid", DataType.LONG, 10));
+        schema.addField(new Field("pid", DataType.LONG, 10));
 
-        SchemaField owner = new SchemaField("owner", DataType.STRING, 20);
+        Field owner = new Field("owner", DataType.STRING, 20);
         Replace replace = new Replace(":", "-");
         owner.addOperation(replace);
         
         schema.addField(owner);
-        schema.addField(new SchemaField("zip", DataType.INTEGER, 5));
-        schema.addField(new SchemaField("value", DataType.FLOAT, 7));
+        schema.addField(new Field("zip", DataType.INTEGER, 5));
+        schema.addField(new Field("value", DataType.FLOAT, 7));
 
-        SchemaField area = new SchemaField("area", DataType.DOUBLE);
+        Field area = new Field("area", DataType.DOUBLE);
         DoubleRangeValidator validator = new DoubleRangeValidator();
         validator.setMin(1000);
         validator.setMax(2000);
@@ -61,15 +61,14 @@ public class XStreamFileSchemaTest {
         schema.addBeforeOperation(new UpperCase());
         schema.addAfterOperation(new Trim());
 
-        Classifier classifier = new Classifier("recordtypeb", ".{19}");
-        classifier.addSchemaField(new SchemaField("pid", DataType.LONG, 10));
-        classifier.addSchemaField(new SchemaField("zip5", DataType.INTEGER, 5));
-        classifier.addSchemaField(new SchemaField("zip4", DataType.INTEGER, 4));
-        schema.addClassifier(classifier);
-
-        DelimitedFileReader reader = new DelimitedFileReader();
-        reader.setDelimiter(Delimiter.TAB);
-        schema.setReader(reader);
+        FieldList typeB = new FieldList(Pattern.compile(".{19}"));
+        typeB.add(new Field("pid", DataType.LONG, 10));
+        typeB.add(new Field("zip5", DataType.INTEGER, 5));
+        typeB.add(new Field("zip4", DataType.INTEGER, 4));
+        
+        schema.addFieldList(typeB);
+        
+        schema.setFormat(new Format("TAB"));
 
         return schema;
     }
@@ -83,9 +82,9 @@ public class XStreamFileSchemaTest {
         FileSchema deserialized = (FileSchema) xstream.fromXML(xml);
         assertEquals(1, deserialized.getAfterOperations().size());
         assertTrue(deserialized.getAfterOperations().get(0).getClass().equals(Trim.class));
-        assertEquals(5, deserialized.getFields().size());
-        assertEquals(DataType.LONG, deserialized.getFields().get(0).getType());
-        assertEquals(DataType.STRING, deserialized.getFields().get(1).getType());
+        assertEquals(5, deserialized.getDefaultFieldList().size());
+        assertEquals(DataType.LONG, deserialized.getDefaultFieldList().get(0).getType());
+        assertEquals(DataType.STRING, deserialized.getDefaultFieldList().get(1).getType());
 
         assertTrue(getSchema().equals(deserialized));
     }
@@ -95,21 +94,29 @@ public class XStreamFileSchemaTest {
 
         FileSchema schema = SchemaFactory.buildFileSchema(
                 XStreamFileSchemaTest.class.getResourceAsStream("test_1.schema"));
-        assertEquals(Delimiter.TAB, ((DelimitedFileReader) schema.getReader()).getDelimiter());
+        assertEquals("TAB", schema.getFormat().getType());
+        
+        assertEquals(2, schema.getFieldLists().size());
+        assertEquals(6, schema.getDefaultFieldList().size());
+        assertEquals(1, schema.getBeforeOperations().size());
+        assertEquals(1, schema.getAfterOperations().size());
         
         schema = SchemaFactory.buildFileSchema(
                 XStreamFileSchemaTest.class.getResourceAsStream("test_2.schema"));
-        assertEquals(Delimiter.CSV, ((DelimitedFileReader) schema.getReader()).getDelimiter());
+        assertEquals("CSV", schema.getFormat().getType());
         
         schema = SchemaFactory.buildFileSchema(
                 XStreamFileSchemaTest.class.getResourceAsStream("test_3.schema"));
-        assertEquals(Delimiter.CSV, ((DelimitedFileReader) schema.getReader()).getDelimiter());
+        assertEquals("CSV", schema.getFormat().getType());
+        assertNull(schema.getFormat().getAttribute("header"));
 
         schema = SchemaFactory.buildFileSchema(
                 XStreamFileSchemaTest.class.getResourceAsStream("test_4.schema"));
-        assertEquals(Delimiter.CSV, ((DelimitedFileReader) schema.getReader()).getDelimiter());
+        assertEquals("CSV", schema.getFormat().getType());
+        assertEquals("true", schema.getFormat().getAttribute("header"));
         
-        SchemaField f = schema.getField("name");
+        
+        Field f = schema.getField("name");
         assertEquals(1, f.getOperations().size());
         FirstName firstName = (FirstName) f.getOperations().get(0);
         assertFalse(firstName.isLastNameFirst());
@@ -122,30 +129,9 @@ public class XStreamFileSchemaTest {
 
         FileSchema schema = SchemaFactory.buildFileSchema(
                 XStreamFileSchemaTest.class.getResourceAsStream("test_1.schema"));
-        SchemaField field = schema.getField("data");
-        assertTrue(field.getOperations().contains(new Trim()));
-    }
+        Field field = schema.getField("data");
 
-
-    @Test
-    public void testSchemaWithRecordViews() throws SchemaException{
-
-        List<String> views = new ArrayList<String>();
-        views.add("com.realcomp.data.view.ExampleView");
-        views.add("com.realcomp.data.view.DummyView");
-        
-        FileSchema a = getSchema();
-        a.getReader().setViews(views);
-        assertTrue(a.getReader().supports(ExampleView.class));
-        assertTrue(a.getReader().supports(DummyView.class));
-        
-        String xml = xstream.toXML(a);
-
-        FileSchema b = SchemaFactory.buildFileSchema(new ByteArrayInputStream(xml.getBytes()));
-        assertEquals(a, b);
-        assertTrue(b.getReader().supports(ExampleView.class));
-        assertTrue(b.getReader().supports(DummyView.class));
-
+        //assertTrue(field.getOperations().contains(new Trim()));
     }
 
     

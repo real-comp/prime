@@ -36,14 +36,8 @@ public class LongRangeValidatorTest {
         validator.validate("0");
         validator.validate("00000");
         validator.validate("100000");
-        validator.validate("-100000");
-
-        try {
-            validator.validate("");
-            fail("should have thrown exception");
-        }
-        catch (ValidationException ok) {
-        }
+        validator.validate("-100000");        
+        validator.validate("");
 
         validator.setMin(0);
         validator.validate("0");
@@ -69,6 +63,15 @@ public class LongRangeValidatorTest {
 
         try{
             validator.validate("11");
+            fail("should have thrown exception");
+        }
+        catch(ValidationException ok){}
+        
+        
+        validator.setMin(1);
+        
+        try{
+            validator.validate("");
             fail("should have thrown exception");
         }
         catch(ValidationException ok){}

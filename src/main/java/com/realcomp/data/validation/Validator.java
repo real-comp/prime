@@ -6,9 +6,9 @@ import com.realcomp.data.Operation;
  * 
  * @author krenfro
  */
-public interface Validator<T> extends Operation{
+public interface Validator extends Operation{
 
-    static final Severity DEFAULT_SEVERITY=Severity.MEDIUM;
+    static final Severity DEFAULT_SEVERITY = Severity.MEDIUM;
 
     /**
      * Set the severity of this Validator.
@@ -22,5 +22,10 @@ public interface Validator<T> extends Operation{
      */
     Severity getSeverity();
 
-    void validate(T value) throws ValidationException;
+    /**
+     * Validates the provided value; throwing a ValidationException if the value is not valid.
+     * @param value to be validated. not null.
+     * @throws ValidationException if the provided value is not valid.
+     */
+    void validate(Object value) throws ValidationException;
 }

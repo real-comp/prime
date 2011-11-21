@@ -3,20 +3,34 @@ package com.realcomp.data.record;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 /**
+ * Finds a specified value in a Record.  The composite key can reference a value
+ * arbitrarily deep within a Record.  This utility dives into the Record to find the value.
  * 
+ * @see RecordValueAssembler
  * @author krenfro
  */
 public class RecordValueResolver {
     
+    private static final Logger logger = Logger.getLogger(RecordValueResolver.class.getName());
     
-    public static List<Object> resolve(Map<String,Object> data, String key){
-        
-        return resolve(data, IndexedRecordKey.parse(key));        
+    public static List<Object> resolve(Record record, String key){
+        return resolve(record.data, key);
     }
     
-    private static List<Object> resolve(Map<String,Object> map, List<IndexedRecordKey> keys){
+    /**
+     * @param data
+     * @param key Period delimited key
+     * @return a list of Objects (DataTypes) referenced by the key
+     */
+    public static List<Object> resolve(Map<String,Object> data, String key){
+        
+        return resolve(data, RecordKey.parse(key));        
+    }
+    
+    private static List<Object> resolve(Map<String,Object> map, List<RecordKey> keys){
         
         List<Object> retVal = new ArrayList<Object>();        
         
@@ -24,20 +38,22 @@ public class RecordValueResolver {
             retVal.add(map);
         }
         else{            
-            IndexedRecordKey key = keys.remove(0);
+            RecordKey key = keys.get(0);
             Object value = map.get(key.getKey());
 
             if (value != null){
+                List<RecordKey> workingKeys = new ArrayList<RecordKey>(keys);
+                key = workingKeys.remove(0);
                 if (List.class.isAssignableFrom(value.getClass())){                    
                     List<Map<String,Object>> list = (List<Map<String,Object>>) value;
 
                     if (key.isIndexed()){
                         if (list.size() > key.getIndex())
-                            retVal.addAll(resolve(list.get(key.getIndex()), new ArrayList<IndexedRecordKey>(keys)));
+                            retVal.addAll(resolve(list.get(key.getIndex()), workingKeys));
                     }
                     else{
                         for (Map<String,Object> entry: list)
-                            retVal.addAll(resolve(entry, new ArrayList<IndexedRecordKey>(keys)));
+                            retVal.addAll(resolve(entry, workingKeys)); //recursion
                     }
                 }
                 else{

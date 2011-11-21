@@ -5,48 +5,55 @@ package com.realcomp.data.conversion;
  * @author krenfro
  */
 @com.realcomp.data.annotation.Converter("boolean")
-public class BooleanConverter implements Converter{
+public class BooleanConverter extends SimpleConverter{
 
-    protected String truthy = ",TRUE,T,YES,Y,1,";
-    protected String falsy = ",*,";
-    protected boolean caseSensitive = false;
+    private String truthy = ",TRUE,T,YES,Y,1,";
+    private String falsy = ",*,";
+    private boolean caseSensitive = false;
     
 
+    /**
+     * 
+     * @param value
+     * @return a Boolean
+     * @throws ConversionException 
+     */
     @Override
-    public String convert(String value) throws ConversionException{
-
-        if (value == null)
-            throw new IllegalArgumentException("value is null");
+    public Object convert(Object value) throws ConversionException{
 
         Boolean result = null;
-        String test = addCommas(value, caseSensitive);
-        
-        if (contains(truthy, test, caseSensitive ))
-            result = Boolean.TRUE;
-        else if(contains(falsy, test, caseSensitive ))
-            result = Boolean.FALSE;
-        else if (truthy.equals(",*,"))
-            result = Boolean.TRUE;
-        else if (falsy.equals(",*,"))
-            result = Boolean.FALSE;
+        if (value != null){
+            String test = addCommas(value.toString(), caseSensitive);
 
-        if (result == null)
-            throw new ConversionException("Unable to convert [" + value + "] to a boolean value");
+            if (contains(truthy, test, caseSensitive ))
+                result = Boolean.TRUE;
+            else if(contains(falsy, test, caseSensitive ))
+                result = Boolean.FALSE;
+            else if (truthy.equals(",*,"))
+                result = Boolean.TRUE;
+            else if (falsy.equals(",*,"))
+                result = Boolean.FALSE;
+
+            if (result == null)
+                throw new ConversionException("Unable to convert [" + value + "] to a boolean value");
+        }
         
-        return result.toString();
+        return result;
     }
 
     @Override
     public BooleanConverter copyOf(){
         BooleanConverter copy = new BooleanConverter();
-        copy.setTruthy(truthy);
-        copy.setFalsy(falsy);
+        copy.truthy = truthy;
+        copy.falsy = falsy;
         copy.caseSensitive = caseSensitive;
         return copy;
     }
     
     private String addCommas(String value, boolean caseSensitive){
 
+        assert(value != null);
+        
         if (caseSensitive)
             return ",".concat(value).concat(",");
         else
@@ -63,15 +70,13 @@ public class BooleanConverter implements Converter{
      * @param test
      * @param caseSensitive true if comparisons should be made in a case
      *                           sensitive manner
-     * @return true if flags string contains test string or both are null.
+     * @return true if flags string contains test string
      */
     private boolean contains(String flags, String test, boolean caseSensitive){
 
-        if (test == null && flags == null)
-            return true;
-        if (test == null || flags == null)
-            return false;
-
+        assert(test != null);
+        assert(flags != null);
+        
         if (caseSensitive && flags.contains(test))
             return true;
         else if (!caseSensitive &&
@@ -81,13 +86,23 @@ public class BooleanConverter implements Converter{
         return false;
     }
 
-
+    /**
+     * @return the comma-delimited list of flags that will evaluate to FALSE. (default = wildcard "*")
+     */
     public String getFalsy() {
         return removeCommas(falsy);
     }
 
+    /**
+     * @param falsy comma-delimited list of flags that will resolve to FALSE (default = wildcard "*")
+     *   Not null nor empty-string.
+     *   Use the wildcard "*" to match anything.  When using wildcard character, no other flags can be specified
+     * @throws IllegalArgumentException if falsy is null, or the wildcard is used with other flags.
+     */
     public void setFalsy(String falsy) {
         
+        if (falsy == null)
+            throw new IllegalArgumentException("falsy is null");
         if (falsy.contains( "*" ) && falsy.length() != 1)
             throw new IllegalArgumentException(
                     "Cannot use wildcard with other values: " + falsy);
@@ -95,18 +110,47 @@ public class BooleanConverter implements Converter{
         this.falsy = addCommas(falsy, caseSensitive);
     }
 
+    /**
+     * 
+     * @return comma-delimited list of flags that will resolve to TRUE (default = "TRUE,T,YES,Y,1")
+     */
     public String getTruthy() {
         return removeCommas(truthy);
     }
 
+    /**
+     * @param truthy comma-delimited list of flags that will resolve to TRUE (default = "TRUE,T,YES,Y,1")
+     *   Not null nor empty-string.
+     *   Use the wildcard "*" to match anything.  When using wildcard character, no other flags can be specified
+     * * @throws IllegalArgumentException if truthy is null or the wildcard is used with other flags.
+     */
     public void setTruthy(String truthy) {
 
+        if (truthy == null)
+            throw new IllegalArgumentException("truthy is null");
         if (truthy.contains( "*" ) && truthy.length() != 1)
             throw new IllegalArgumentException(
                     "Cannot use wildcard with other values: " + truthy);
 
         this.truthy = addCommas(truthy, caseSensitive);
     }
+
+    /**
+     * 
+     * @return whether comparisons to truthy and falsy flag should be made case-sensitively (default: false)
+     */
+    public boolean isCaseSensitive() {
+        return caseSensitive;
+    }
+
+    /**
+     * Set whether comparisons should be made in a case-sensitive manner.
+     * @param caseSensitive
+     */
+    public void setCaseSensitive(boolean caseSensitive) {
+        this.caseSensitive = caseSensitive;
+    }
+    
 
     @Override
     public boolean equals(Object obj) {

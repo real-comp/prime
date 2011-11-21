@@ -21,28 +21,22 @@ import java.util.List;
  * @author krenfro
  */
 @com.realcomp.data.annotation.Converter("lastNameFirst")
-public class LastNameFirst implements Converter {
+public class LastNameFirst extends SimpleConverter {
 
     private boolean lastNameFirst = true;
     
-    
     @Override
-    public String convert(String value) throws ConversionException{
-        if (value == null)
-            throw new IllegalArgumentException("value is null");
-
-        List<Name> names = NameParser.parse(value, lastNameFirst);
-        String retVal = value;        
-        if (!names.isEmpty())
-            retVal = NameFormatter.getLastNameFirst(names.get(0));
+    public Object convert(Object value) throws ConversionException{
+        
+        String retVal = null;
+        if (value != null){
+            retVal = "";
+            List<Name> names = NameParser.parse(value.toString(), lastNameFirst);
+            if (!names.isEmpty())
+                retVal = NameFormatter.getLastNameFirst(names.get(0));
+        }
+        
         return retVal;
-    }
-    
-    @Override
-    public LastNameFirst copyOf(){
-        LastNameFirst copy = new LastNameFirst();
-        copy.setLastNameFirst(lastNameFirst);
-        return copy;
     }
 
     public boolean isLastNameFirst() {
@@ -51,6 +45,15 @@ public class LastNameFirst implements Converter {
 
     public void setLastNameFirst(boolean lastNameFirst) {
         this.lastNameFirst = lastNameFirst;
+    }
+    
+    
+    
+    @Override
+    public LastNameFirst copyOf(){
+        LastNameFirst copy = new LastNameFirst();
+        copy.setLastNameFirst(lastNameFirst);
+        return copy;
     }
 
     @Override
@@ -67,11 +70,11 @@ public class LastNameFirst implements Converter {
 
     @Override
     public int hashCode() {
-        int hash = 7;
+        int hash = 3;
+        hash = 89 * hash + (this.lastNameFirst ? 1 : 0);
         hash = 79 * hash + (this.lastNameFirst ? 1 : 0);
         return hash;
     }
-    
-    
 
+    
 }

@@ -14,28 +14,30 @@ import java.util.List;
  * @author krenfro
  */
 @com.realcomp.data.annotation.Converter("lastName")
-public class LastName implements Converter {
+public class LastName extends SimpleConverter {
 
     private boolean lastNameFirst = true;
+        
     
     @Override
-    public String convert(String value) throws ConversionException{
-        if (value == null)
-            throw new IllegalArgumentException("value is null");
-
-        List<Name> names = NameParser.parse(value, lastNameFirst);
-        String retVal = value;        
-        if (!names.isEmpty()){
-            Name name = names.get(0);
-            if (name instanceof IndividualName){
-                retVal = ((IndividualName) name).getLast();
-            }
-            else{
-                retVal = ((CompanyName) name).toString();
+    public Object convert(Object value) throws ConversionException{
+        
+        String retVal = null;
+        if (value != null){        
+            List<Name> names = NameParser.parse(value.toString(), lastNameFirst);
+            retVal = "";
+            if (!names.isEmpty()){
+                Name name = names.get(0);
+                if (name instanceof IndividualName){
+                    retVal = ((IndividualName) name).getLast();
+                }
+                else{
+                    retVal = ((CompanyName) name).toString();
+                }
             }
         }
         
-        return retVal == null ? "" : retVal;
+        return retVal;
     }
     
     
@@ -69,7 +71,8 @@ public class LastName implements Converter {
     @Override
     public int hashCode() {
         int hash = 3;
-        hash = 43 * hash + (this.lastNameFirst ? 1 : 0);
+        hash = 89 * hash + (this.lastNameFirst ? 1 : 0);
         return hash;
     }
+    
 }

@@ -1,5 +1,7 @@
 <file-schema name="test" version="1.0">
-  <reader class="com.realcomp.data.record.reader.DelimitedFileReader" delimiter=","/>
+    
+  <format type="CSV" header="true"/>
+  
   <before>
     <upperCase/>
   </before>
@@ -20,9 +22,9 @@
       <validateDoubleRange max="2000.0" min="1000.0"/>
     </field>
   </fields>
-  <classifier id="recordtypeb" regex=".{19}">
+  <fields classifier=".{19}">
     <field name="pid" type="long" length="10"/>
     <field name="zip5" type="int" length="5"/>
     <field name="zip4" type="int" length="4"/>
-  </classifier>
+  </fields>
 </file-schema>

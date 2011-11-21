@@ -6,7 +6,7 @@ package com.realcomp.data.conversion;
  * @author krenfro
  */
 @com.realcomp.data.annotation.Converter("prepend")
-public class Prepend implements Converter {
+public class Prepend extends SimpleConverter {
 
     private String value = "";    
     
@@ -22,13 +22,18 @@ public class Prepend implements Converter {
     public Prepend copyOf(){
         return new Prepend(value);
     }
-    
+   
     @Override
-    public String convert(String value) throws ConversionException{
-        if (value == null)
-            throw new IllegalArgumentException("value is null");
+    public Object convert(Object o) throws ConversionException {
+          
+        Object retVal = value;
+        
+        //special converter that allows null input
+        if (o != null){
+            retVal = value.concat(o.toString());
+        }
 
-        return this.value.concat(value);
+        return retVal;
     }
 
     public String getValue() {

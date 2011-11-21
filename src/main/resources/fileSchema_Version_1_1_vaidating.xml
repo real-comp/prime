@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<rc:file-schema 
+   xmlns:rc="http://www.real-comp.com/realcomp-data/schema/file-schema/1.1"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://www.real-comp.com/realcomp-data/schema/file-schema/1.1 http://www.real-comp.com/realcomp-data/schema/file-schema/1.1/file-schema.xsd">
+    
+    <format type="CSV" views="asdf"/>
+    
+    <before>
+        <trim/>
+    </before>
+    
+    <after>
+        <trim/>
+    </after>
+    
+    <fields>
+        <field name="" type="int">
+            <key/>
+        </field>
+        <field name="" type="int">
+            <key/>
+            <key/>
+        </field>
+        <field name="" type="int"/>
+        <field name="" type="int"/>
+        
+    </fields>
+    
+    
+    <fields classifier="[A-Z]{19}">
+        <field name="" type="int">
+            <key/>
+        </field>
+        <field name="" type="int">
+            <key/>
+            <key/>
+        </field>
+        <field name="" type="int"/>
+        <field name="" type="int"/>
+        
+    </fields>
+    
+
+</rc:file-schema>

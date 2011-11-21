@@ -3,7 +3,6 @@ package com.realcomp.data.validation;
 
 
 import org.junit.Test;
-import com.realcomp.data.validation.field.FieldValidator;
 import static org.junit.Assert.*;
 
 /**
@@ -19,7 +18,7 @@ public class ValidationExceptionTest {
      * @param validator
      * @param test
      */
-    public static void assertException(FieldValidator validator, String test){
+    public static void assertException(Validator validator, String test){
         try{
             validator.validate(test);
             throw new AssertionError("ValidationException should have been thrown.");

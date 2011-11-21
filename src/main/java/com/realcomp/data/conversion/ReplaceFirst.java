@@ -8,34 +8,30 @@ package com.realcomp.data.conversion;
  * @author krenfro
  */
 @com.realcomp.data.annotation.Converter("replaceFirst")
-public class ReplaceFirst implements Converter {
+public class ReplaceFirst extends SimpleConverter {
 
     private String regex = "";
     private String replacement = "";
 
     public ReplaceFirst(){
+        super();
     }
 
     public ReplaceFirst(String regex, String replacement){
+        super();
         this.regex = regex;
         this.replacement = replacement;
     }
     
     @Override
     public ReplaceFirst copyOf(){
-        ReplaceFirst copy = new ReplaceFirst();
-        copy.setRegex(regex);
-        copy.setReplacement(replacement);
-        return copy;
+        return new ReplaceFirst(regex, replacement);
     }
 
 
     @Override
-    public String convert(String value) throws ConversionException{
-        if (value == null)
-            throw new IllegalArgumentException("value is null");
-
-        return value.replaceFirst(regex, replacement);
+    public Object convert(Object value) throws ConversionException{
+        return value == null ? null : value.toString().replaceFirst(regex, replacement);
     }
 
     public String getRegex() {

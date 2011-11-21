@@ -64,10 +64,17 @@ public class PrettyPrinter {
         FileSchema schema = schemas.get(table.getName());
         out.print(table.getName());
         out.print("[");
-        if (schema == null)
+        try{
+            if (schema == null)
+                out.print(map.toString());        
+            else{
+                Record r = new Record(map);
+                out.print(schema.classify(r).toString(r));
+            }
+        }
+        catch(SchemaException ex){
             out.print(map.toString());        
-        else
-            out.print(schema.toString(new Record(map)));
+        }
         out.print("]");
         out.println();
         

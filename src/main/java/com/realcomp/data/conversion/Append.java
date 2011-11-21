@@ -6,7 +6,7 @@ package com.realcomp.data.conversion;
  * @author krenfro
  */
 @com.realcomp.data.annotation.Converter("append")
-public class Append implements Converter {
+public class Append extends SimpleConverter {
 
     private String value = "";    
     
@@ -22,13 +22,18 @@ public class Append implements Converter {
     public Append copyOf(){
         return new Append(value);
     }
-    
+   
     @Override
-    public String convert(String value) throws ConversionException{
-        if (value == null)
-            throw new IllegalArgumentException("value is null");
+    public Object convert(Object o) throws ConversionException {
+          
+        Object retVal = value;
+        
+        //special converter that allows null input
+        if (o != null){
+            retVal = o.toString().concat(value);
+        }
 
-        return value.concat(this.value);
+        return retVal;
     }
 
     public String getValue() {

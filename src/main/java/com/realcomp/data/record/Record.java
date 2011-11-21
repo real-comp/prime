@@ -1,6 +1,5 @@
 package com.realcomp.data.record;
 
-import com.realcomp.data.DataType;
 import com.realcomp.data.schema.FileSchema;
 import java.io.Serializable;
 import java.util.Collection;
@@ -11,6 +10,9 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 /**
+ * 
+ * 
+ * 
  * <p>
  * A record may have more than one 'key' field.  These fields
  * are used to construct a record 'key' that may be useful.
@@ -47,7 +49,7 @@ public class Record implements Serializable {
     }
 
     public Set<String> keySet() {
-        return data.keySet();
+        return data.keySet();        
     }
 
     public Collection<Object> values() {
@@ -63,33 +65,7 @@ public class Record implements Serializable {
     }
     
     public Object put(String key, Object value) {
-
-        if (value == null) {
-            return put(key, (String) null);
-        }
-        else {
-            DataType type = DataType.get(value);
-            switch (type) {
-                case STRING:
-                    return put(key, (String) value);
-                case INTEGER:
-                    return put(key, (Integer) value);
-                case FLOAT:
-                    return put(key, (Float) value);
-                case LONG:
-                    return put(key, (Long) value);
-                case DOUBLE:
-                    return put(key, (Double) value);
-                case BOOLEAN:
-                    return put(key, (Boolean) value);
-                case LIST:
-                    return put(key, (List) value);
-                case MAP:
-                    return put(key, (Map) value);
-            }
-        }
-
-        return get(key);
+        return value == null ? data.remove(key) : data.put(key, value);
     }
 
     public Object put(String key, String value) {
@@ -128,6 +104,15 @@ public class Record implements Serializable {
         return data.get(key);
     }
     
+    public Object remove(String key){
+        return data.remove(key);
+    }
+    
+    /**
+     * 
+     * @param key
+     * @return 
+     */
     public List<Object> resolve(String key){
         return RecordValueResolver.resolve(data, key);
     }
@@ -139,26 +124,7 @@ public class Record implements Serializable {
         else
             return null;        
     }
-    
-      
-
-    /**
-     * @see FileSchema#toString(Record)
-     * @return (up to) the first two fields of this Record delimited by a pipe "|"
-     */
-    @Override
-    public String toString() {
-
-        StringBuilder s = new StringBuilder();
-        for (Object f : data.values()) {
-            if (s.length() > 0)
-                s.append("|");
-            s.append(f.toString());
-        }
-
-        return s.toString();
-    }
-
+        
     @Override
     public boolean equals(Object obj) {
         if (obj == null)

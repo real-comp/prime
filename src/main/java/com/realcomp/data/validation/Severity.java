@@ -9,7 +9,7 @@ package com.realcomp.data.validation;
  */
 public enum Severity {
 
-    LOW,MEDIUM,HIGH; //Note: the ordinal order of these is important!
+    LOW, MEDIUM, HIGH; //Note: the ordinal order of these is important!
 
     public static Severity getDefault(){
         return MEDIUM;

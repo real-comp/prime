@@ -7,11 +7,19 @@ import static org.junit.Assert.*;
  *
  * @author krenfro
  */
-public class ConstantConverterTest {
+public class ConstantConverterTest extends SimpleConverterTest {
 
     public ConstantConverterTest() {
+        converter = new ConstantConverter();
     }
 
+    @Test
+    @Override
+    public void testNullInput() throws ConversionException{
+        
+        assertNotNull(converter.convert(null));
+    }
+    
     @Test
     public void testConverter() throws ConversionException{
 
@@ -24,13 +32,39 @@ public class ConstantConverterTest {
         assertEquals("B", c.convert("anything"));
         assertEquals("B", c.convert("else"));
 
-        try{
-            c.convert(null);
-            fail("should have thrown IllegalArgumentException");
-        }
-        catch(IllegalArgumentException expected){
-        }
-
-
     }
+    
+    
+    @Test
+    public void testCopyOf() {
+        ConstantConverter a = new ConstantConverter();
+        a.setValue("KYLE");
+        ConstantConverter b = a.copyOf();
+        assertEquals(a, b);
+        assertEquals("KYLE", b.getValue());
+    }
+    
+    @Test
+    @Override
+    public void testEquals() {
+        
+        super.testEquals();
+        
+        ConstantConverter a = new ConstantConverter();
+        ConstantConverter b = new ConstantConverter();
+        assertEquals(a, b);
+        a.setValue("A");
+        assertFalse(a.equals(b));
+        b.setValue("A");
+        assertEquals(a, b);
+    }
+     
+    
+    @Test
+    public void testHashCode() {
+        ConstantConverter a = new ConstantConverter();
+        ConstantConverter b = new ConstantConverter();
+        assertEquals(a.hashCode(), b.hashCode());
+    }
+    
 }

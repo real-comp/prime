@@ -2,12 +2,16 @@ package com.realcomp.data.schema.xml;
 
 import com.realcomp.data.annotation.Converter;
 import com.realcomp.data.annotation.Validator;
+import com.realcomp.data.conversion.ComplexConverter;
+import com.realcomp.data.conversion.SimpleConverter;
+import com.realcomp.data.record.io.Format;
 import com.realcomp.data.schema.FileSchema;
 import com.realcomp.data.schema.RelationalSchema;
-import com.realcomp.data.schema.SchemaField;
+import com.realcomp.data.schema.Field;
+import com.realcomp.data.schema.FieldList;
 import com.realcomp.data.schema.Table;
+import com.realcomp.data.transform.Transformer;
 import com.thoughtworks.xstream.XStream;
-import com.thoughtworks.xstream.io.xml.DomDriver;
 import com.thoughtworks.xstream.io.xml.StaxDriver;
 import java.util.Set;
 import java.util.logging.Level;
@@ -38,18 +42,27 @@ public class XStreamFactory {
         LoggingMXBean mxBean = LogManager.getLoggingMXBean();
         mxBean.setLoggerLevel(Reflections.class.getName(), Level.WARNING.getName());
         
-        Reflections reflections = new Reflections(conf);
-        Set<Class<?>> validators = reflections.getTypesAnnotatedWith(Validator.class);
-        Set<Class<?>> converters = reflections.getTypesAnnotatedWith(Converter.class);
-
         XStream xstream = new XStream(new StaxDriver());
         xstream.processAnnotations(FileSchema.class);
         xstream.processAnnotations(RelationalSchema.class);
         xstream.processAnnotations(Table.class);
-        xstream.processAnnotations(SchemaField.class);
+        xstream.processAnnotations(Field.class);
+        xstream.processAnnotations(SimpleConverter.class);
+        xstream.processAnnotations(ComplexConverter.class);
+        xstream.processAnnotations(FieldList.class);
+        xstream.processAnnotations(Transformer.class);
+        xstream.processAnnotations(Format.class);
+        
         xstream.registerConverter(new OperationConverter());
         xstream.registerConverter(new DataTypeConverter());
-        xstream.registerConverter(new DelimiterConverter());
+        xstream.registerConverter(new FieldListConverter());
+        xstream.registerConverter(new FormatConverter());
+        
+
+        /* use reflection to get all classes on the classpath annotated as a validator or converter */
+        Reflections reflections = new Reflections(conf);
+        Set<Class<?>> validators = reflections.getTypesAnnotatedWith(Validator.class);
+        Set<Class<?>> converters = reflections.getTypesAnnotatedWith(Converter.class);
         
         for (Class c: validators){
             Validator annotation = (Validator) c.getAnnotation(Validator.class);

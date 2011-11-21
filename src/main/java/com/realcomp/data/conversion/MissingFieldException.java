@@ -12,6 +12,13 @@ public class MissingFieldException extends ConversionException{
         super(fieldName);
         this.fieldName = fieldName;        
     }
+    
+    
+    public MissingFieldException(String fieldName, Throwable cause) {
+        super(fieldName, cause);
+        this.fieldName = fieldName;  
+    }
+
 
     public String getFieldName() {
         return fieldName;

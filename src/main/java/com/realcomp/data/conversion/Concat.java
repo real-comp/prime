@@ -1,6 +1,7 @@
 package com.realcomp.data.conversion;
 
 import com.realcomp.data.record.Record;
+import java.util.List;
 
 /**
  *
@@ -9,12 +10,27 @@ import com.realcomp.data.record.Record;
 @com.realcomp.data.annotation.Converter("concat")
 public class Concat extends BaseMultiFieldConverter{
 
-    protected String delimiter = "";
+    private String delimiter = "";
 
+    public Concat(){
+        super();
+    }
+    
+    public Concat(List<String> fieldNames){
+        super(fieldNames);
+    }
+    
     @Override
-    public String convert(String value, Record record) throws ConversionException {
+    public Object convert(Object value, Record record) throws ConversionException {
 
-        String retVal = "".concat(value);
+        if (record == null)
+            throw new IllegalArgumentException("record is null");
+        
+        //special converter that allows null input
+        if (value == null)
+            value = "";
+        
+        String retVal = "".concat(value.toString());
         boolean needDelimiter = false;
         for (String fieldName: fieldNames){
 
@@ -59,12 +75,13 @@ public class Concat extends BaseMultiFieldConverter{
         if ((this.delimiter == null) ? (other.delimiter != null) : !this.delimiter.equals(other.delimiter)) {
             return false;
         }
-        return true;
+        
+        return super.equals(obj);
     }
 
     @Override
     public int hashCode() {
-        int hash = 7;
+        int hash = super.hashCode();
         hash = 11 * hash + (this.delimiter != null ? this.delimiter.hashCode() : 0);
         return hash;
     }

@@ -28,26 +28,25 @@ public class FileSchemaTest {
         
         
         FileSchema a = new FileSchema();
-        SchemaField original = new SchemaField("original");
+        Field original = new Field("original");
         original.addOperation(new Trim());        
         a.addField(original);
         
         FileSchema b = new FileSchema(a);
         
         assertEquals(a, b);
-        assertTrue(a.getFields().size() == 1);
-        assertTrue(a.getFields().get(0).getOperations().size() == 1);
-        assertTrue(b.getFields().size() == 1);
-        assertTrue(b.getFields().get(0).getOperations().size() == 1);
+        assertTrue(a.getDefaultFieldList().size() == 1);
+        assertTrue(a.getDefaultFieldList().get(0).getOperations().size() == 1);
+        assertTrue(b.getDefaultFieldList().size() == 1);
+        assertTrue(b.getDefaultFieldList().get(0).getOperations().size() == 1);
         
-        b.getFields().get(0).clearOperations();
+        b.getDefaultFieldList().get(0).clearOperations();
         
         assertFalse(a.equals(b));
-        assertTrue(a.getFields().size() == 1);
-        assertTrue(a.getFields().get(0).getOperations().size() == 1);
-        assertTrue(b.getFields().size() == 1);
-        assertTrue(b.getFields().get(0).getOperations().size() == 0);
-        
+        assertTrue(a.getDefaultFieldList().size() == 1);
+        assertTrue(a.getDefaultFieldList().get(0).getOperations().size() == 1);
+        assertTrue(b.getDefaultFieldList().size() == 1);
+        assertTrue(b.getDefaultFieldList().get(0).getOperations().size() == 0);
         
     }
 

@@ -28,11 +28,11 @@ public class SchemaFieldTest {
 
 
     /**
-     * Test of checkName method, of class SchemaField.
+     * Test of checkName method, of class Field.
      */
     @Test
     public void testCheckName() {
-        SchemaField instance = new SchemaField();
+        Field instance = new Field();
         instance.checkName("asdf");
         
         
@@ -71,10 +71,10 @@ public class SchemaFieldTest {
     @Test
     public void testCopyConstructor(){
         
-        SchemaField original = new SchemaField("original");
+        Field original = new Field("original");
         original.addOperation(new Trim());
         
-        SchemaField copy = new SchemaField(original);
+        Field copy = new Field(original);
         assertEquals(original, copy);
         assertTrue(copy.getOperations().size() == 1);
         assertEquals(new Trim(), copy.getOperations().get(0));

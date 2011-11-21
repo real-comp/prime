@@ -2,12 +2,14 @@ package com.realcomp.data.util;
 
 import com.realcomp.data.conversion.ConversionException;
 import com.realcomp.data.record.Record;
-import com.realcomp.data.record.reader.RecordReader;
-import com.realcomp.data.record.writer.RecordWriter;
+import com.realcomp.data.record.io.FormatException;
+import com.realcomp.data.record.io.RecordReader;
+import com.realcomp.data.record.io.RecordReaderFactory;
+import com.realcomp.data.record.io.RecordWriter;
+import com.realcomp.data.record.io.RecordWriterFactory;
 import com.realcomp.data.schema.FileSchema;
 import com.realcomp.data.schema.SchemaException;
 import com.realcomp.data.schema.SchemaFactory;
-import com.realcomp.data.schema.SchemaField;
 import com.realcomp.data.validation.ValidationException;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -33,13 +35,15 @@ public class Reformat {
     }
 
 
-    public void reformat(InputStream in, OutputStream out) throws SchemaException, IOException, ValidationException, ConversionException {
+    public void reformat(InputStream in, OutputStream out) 
+            throws SchemaException, IOException, ValidationException, ConversionException {
 
-        RecordReader reader = inputSchema.getReader();
+        RecordReader reader = RecordReaderFactory.build(inputSchema);
         reader.open(in);
-        RecordWriter writer = outputSchema.getWriter();
+        
+        RecordWriter writer = RecordWriterFactory.build(outputSchema);
         writer.open(out);
-        checkFields();
+        
         Record record = reader.read();
         while (record != null){
             writer.write(record);
@@ -48,16 +52,6 @@ public class Reformat {
 
         writer.close();
         reader.close();
-    }
-
-    protected void checkFields(){
-        for (SchemaField f: outputSchema.getFields()){
-            if (inputSchema.getField(f.getName()) == null)
-                logger.log(
-                        Level.WARNING,
-                        "No field in the input schema with name: {0}", f.getName());
-        }
-
     }
 
     public void setInputSchema(InputStream in) throws IOException{

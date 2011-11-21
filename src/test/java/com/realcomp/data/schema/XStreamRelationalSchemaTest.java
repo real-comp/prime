@@ -70,20 +70,6 @@ public class XStreamRelationalSchemaTest {
     
     
     
-        
-    @Test
-    public void testFieldEquality() throws SchemaException{
-        
-        KeyField a = new KeyField("field");
-        KeyField b = new KeyField("field");        
-        assertEquals(a, b);
-        
-        ForeignKeyField c = new ForeignKeyField("f");
-        ForeignKeyField d = new ForeignKeyField("f");        
-        assertEquals(c, d);
-    }
-    
-    
     @Test
     public void testTableEquality() throws SchemaException{
         

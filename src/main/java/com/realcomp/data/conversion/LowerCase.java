@@ -5,14 +5,12 @@ package com.realcomp.data.conversion;
  * @author krenfro
  */
 @com.realcomp.data.annotation.Converter("lowerCase")
-public class LowerCase implements Converter {
+public class LowerCase extends SimpleConverter {
 
     @Override
-    public String convert(String value) throws ConversionException{
-        if (value == null)
-            throw new IllegalArgumentException("value is null");
-
-        return value.toLowerCase();
+    public Object convert(Object value) throws ConversionException{
+        
+        return value == null ? null : value.toString().toLowerCase();
     }
     
     @Override
