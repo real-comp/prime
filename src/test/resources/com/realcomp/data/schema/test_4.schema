@@ -13,6 +13,9 @@
     <field name="owner" type="string" length="20">
       <replace regex=":" replacement="-"/>
     </field>
+    <field name="name" type="string" length="20">
+      <firstName lastNameFirst="false"/>
+    </field>
     <field name="zip" type="int" length="5"/>
     <field name="value" type="float" length="7"/>
     <field name="area" type="double" length="0">

@@ -21,7 +21,7 @@ import java.util.List;
 public class ProperName extends SimpleConverter {
     
     private boolean lastNameFirst = true;
-    
+        
     @Override
     public Object convert(Object value) throws ConversionException{
         
@@ -38,7 +38,9 @@ public class ProperName extends SimpleConverter {
     
     @Override
     public ProperName copyOf(){
-        return new ProperName();
+        ProperName copy = new ProperName();
+        copy.setLastNameFirst(lastNameFirst);
+        return copy;
     }
 
     public boolean isLastNameFirst() {
@@ -67,4 +69,5 @@ public class ProperName extends SimpleConverter {
         hash = 59 * hash + (this.lastNameFirst ? 1 : 0);
         return hash;
     }
+    
 }

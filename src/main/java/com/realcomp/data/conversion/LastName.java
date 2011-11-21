@@ -16,9 +16,8 @@ import java.util.List;
 @com.realcomp.data.annotation.Converter("lastName")
 public class LastName extends SimpleConverter {
 
-    
     private boolean lastNameFirst = true;
-    
+        
     
     @Override
     public Object convert(Object value) throws ConversionException{
@@ -41,19 +40,20 @@ public class LastName extends SimpleConverter {
         return retVal;
     }
     
-    @Override
-    public LastName copyOf(){
-        LastName copy = new LastName();
-        copy.setLastNameFirst(lastNameFirst);
-        return copy;
-    }
-
+    
     public boolean isLastNameFirst() {
         return lastNameFirst;
     }
 
     public void setLastNameFirst(boolean lastNameFirst) {
         this.lastNameFirst = lastNameFirst;
+    }
+
+    @Override
+    public LastName copyOf(){
+        LastName copy = new LastName();
+        copy.setLastNameFirst(lastNameFirst);
+        return copy;
     }
 
     @Override

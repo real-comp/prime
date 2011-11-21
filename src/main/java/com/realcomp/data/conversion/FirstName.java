@@ -15,7 +15,6 @@ import java.util.List;
 public class FirstName extends SimpleConverter {
     
     private boolean lastNameFirst = true;
-
     
     @Override
     public Object convert(Object value) throws ConversionException{
@@ -67,8 +66,9 @@ public class FirstName extends SimpleConverter {
 
     @Override
     public int hashCode() {
-        int hash = 7;
+        int hash = 5;
+        hash = 89 * hash + (this.lastNameFirst ? 1 : 0);
         hash = 67 * hash + (this.lastNameFirst ? 1 : 0);
         return hash;
-    }
+    }    
 }

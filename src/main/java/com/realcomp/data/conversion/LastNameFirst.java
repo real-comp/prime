@@ -72,6 +72,7 @@ public class LastNameFirst extends SimpleConverter {
     public int hashCode() {
         int hash = 3;
         hash = 89 * hash + (this.lastNameFirst ? 1 : 0);
+        hash = 79 * hash + (this.lastNameFirst ? 1 : 0);
         return hash;
     }
 

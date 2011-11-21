@@ -1,6 +1,7 @@
 package com.realcomp.data.schema;
 
 
+import com.realcomp.data.conversion.FirstName;
 import com.realcomp.data.record.io.Format;
 import java.util.regex.Pattern;
 import com.realcomp.data.schema.xml.XStreamFactory;
@@ -114,6 +115,11 @@ public class XStreamFileSchemaTest {
         assertEquals("CSV", schema.getFormat().getType());
         assertEquals("true", schema.getFormat().getAttribute("header"));
         
+        
+        Field f = schema.getField("name");
+        assertEquals(1, f.getOperations().size());
+        FirstName firstName = (FirstName) f.getOperations().get(0);
+        assertFalse(firstName.isLastNameFirst());
 
     }
 
