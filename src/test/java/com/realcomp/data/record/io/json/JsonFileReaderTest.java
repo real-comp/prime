@@ -4,6 +4,7 @@ package com.realcomp.data.record.io.json;
 import java.util.List;
 import java.util.Map;
 import com.realcomp.data.record.Record;
+import java.io.ByteArrayInputStream;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -23,8 +24,55 @@ public class JsonFileReaderTest {
         return "{\"attributes\":{\"valueDescription\":\"2011 Preliminary\",\"buildDate\":\"20111031\"},\"rawAddress\":{\"address\":[\"1028 HWY 3\"],\"state\":\"TX\",\"city\":\"LA MARQUE\",\"zip\":\"77568\",\"fips\":\"48267\"},\"exemptions\":[],\"owners\":[{\"name\":{\"first\":\"FELIPE\",\"last\":\"ATONAL\",\"salutation\":\"FELIPE\"},\"rawAddress\":{\"address\":[\"1028 HWY 3 LOT 17\"],\"state\":\"TX\",\"city\":\"LA MARQUE\",\"zip\":\"77568\"},\"percentOwnership\":100.0}],\"landSegments\":[],\"improvements\":[{\"description\":\"MOBILE HOME\",\"stories\":1.0,\"details\":[{\"description\":\"OUT BUILDINGS\"},{\"type\":\"MAIN_AREA\",\"description\":\"MAIN AREA\",\"sqft\":952.0}],\"sketchCommands\":\"NV!NV\"}],\"deedDate\":\"20051019\",\"agriculturalValue\":0,\"cadGeographicId\":\"101131\",\"cadPropertyId\":\"M279227\",\"landValue\":0,\"legalDescription\":\"SHADY OAKS MHPK-LM, SPACE 17, SERIAL # JE3107A, TITLE # 00146824, LABEL # TEX0122548, LIFESTYLE BAYSHORE 1980 14X68 CRM/TAN/BRN\",\"subdivision\":\"\",\"totalImprovementSqft\":952,\"totalLandAcres\":0.0,\"totalValue\":7810}";
     }
     
+    //@Test
+    public void testReadFromString() throws Exception{
+        
+        JsonFileReader reader = new JsonFileReader();
+        ByteArrayInputStream in = new ByteArrayInputStream(getJsonTestString1().getBytes());
+        reader.open(in);
+        Record record = reader.read();
+        assertNotNull(record);
+        assertEquals(1, reader.getCount());
+        assertEquals(7810, record.resolveFirst("totalValue"));
+        reader.close();
+    }
+    
+        
     @Test
-    public void testReader() throws Exception {
+    public void testReadFromFile() throws Exception{
+        
+        JsonFileReader reader = new JsonFileReader();
+        reader.open(this.getClass().getResourceAsStream("sample.json"));
+        Record record = reader.read();
+        assertNotNull(record);
+        assertEquals(1, reader.getCount());
+        assertEquals("relevate", record.resolveFirst("source"));
+        
+        assertNull(reader.read());
+        assertNull(reader.read());
+        reader.close();
+    
+        
+        reader = new JsonFileReader();
+        reader.open(this.getClass().getResourceAsStream("multiRecordSample.json"));
+        record = reader.read();
+        assertNotNull(record);
+        assertEquals(1, reader.getCount());
+        assertEquals("8665 EPHRAIM RD", record.resolveFirst("address"));
+        
+        record = reader.read();
+        assertNotNull(record);
+        assertEquals(2, reader.getCount());
+        assertEquals("8666 EPHRAIM RD", record.resolveFirst("address"));
+        
+        
+        assertNull(reader.read());
+        reader.close();
+    }
+    
+    
+    @Test
+    public void testParse() throws Exception {
         
         String json = getJsonTestString1();
         JsonFileReader reader = new JsonFileReader();
