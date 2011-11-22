@@ -55,6 +55,9 @@ public class Format {
         return attributes.put(name, value);
     }
 
+    public String removeAttribute(String name){
+        return attributes.remove(name);
+    }
     
     public String getType() {
         return type;
