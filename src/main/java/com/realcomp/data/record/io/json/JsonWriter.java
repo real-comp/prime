@@ -36,18 +36,16 @@ public class JsonWriter implements RecordWriter{
 
     private static final Logger logger = Logger.getLogger(JsonWriter.class.getName());
     
-    
-    private JsonFactory jsonFactory;
-    private JsonGenerator json;
-    private OutputStream out;
-    private FileSchema schema;
-    private long count;
-    private boolean beforeFirstOperationsRun = false;   
-    private Transformer transformer;
-    private TransformContext context;
-    private ValueSurgeon surgeon;
-    
-    private boolean pretty = false;
+    protected JsonFactory jsonFactory;
+    protected JsonGenerator json;
+    protected OutputStream out;
+    protected FileSchema schema;
+    protected long count;
+    protected boolean beforeFirstOperationsRun = false;   
+    protected Transformer transformer;
+    protected TransformContext context;
+    protected ValueSurgeon surgeon;    
+    protected boolean pretty = false;
     
     public JsonWriter(){
     
@@ -130,21 +128,27 @@ public class JsonWriter implements RecordWriter{
     private void writeJson(String name, Object value) 
             throws IOException, ValidationException, ConversionException{
         
-        DataType type = DataType.getDataType(value);
-            
-        switch(type){
-            case MAP:
-                json.writeFieldName(name);
-                writeJson(new Record((Map) value));
-                break;
-            case LIST:
-                json.writeArrayFieldStart(name);
-                writeJson(value, type);
-                json.writeEndArray();
-                break;
-            default:
-                json.writeFieldName(name);
-                writeJson(value, type);
+        if (value == null){
+            json.writeFieldName(name);
+            json.writeNull();
+        }
+        else{
+            DataType type = DataType.getDataType(value);
+
+            switch(type){
+                case MAP:
+                    json.writeFieldName(name);
+                    writeJson(new Record((Map) value));
+                    break;
+                case LIST:
+                    json.writeArrayFieldStart(name);
+                    writeJson(value, type);
+                    json.writeEndArray();
+                    break;
+                default:
+                    json.writeFieldName(name);
+                    writeJson(value, type);
+            }
         }
     }
 
@@ -152,38 +156,37 @@ public class JsonWriter implements RecordWriter{
     private void writeJson(Object value, DataType type) 
             throws IOException, ValidationException, ConversionException{
         
-        if (value == null){
-            json.writeNull();
+        assert(value != null);
+        assert(type != null);
+        
+        switch(type){
+            case STRING:
+                json.writeString((String) value);
+                break;
+            case INTEGER:
+                json.writeNumber((Integer) value);
+                break;
+            case LONG:
+                json.writeNumber((Long) value);
+                break;
+            case FLOAT:
+                json.writeNumber((Float) value);
+                break;
+            case DOUBLE:
+                json.writeNumber((Double) value);
+                break;
+            case BOOLEAN:
+                json.writeBoolean((Boolean) value);
+                break;
+            case MAP:
+                writeJson(new Record((Map) value));
+                break;
+            case LIST:
+                for (Object entry: (List) value)
+                    writeJson(entry, DataType.getDataType(entry));
+                break;
         }
-        else{
-            switch(type){
-                case STRING:
-                    json.writeString((String) value);
-                    break;
-                case INTEGER:
-                    json.writeNumber((Integer) value);
-                    break;
-                case LONG:
-                    json.writeNumber((Long) value);
-                    break;
-                case FLOAT:
-                    json.writeNumber((Float) value);
-                    break;
-                case DOUBLE:
-                    json.writeNumber((Double) value);
-                    break;
-                case BOOLEAN:
-                    json.writeBoolean((Boolean) value);
-                    break;
-                case MAP:
-                    writeJson(new Record((Map) value));
-                    break;
-                case LIST:
-                    for (Object entry: (List) value)
-                        writeJson(entry, DataType.getDataType(entry));
-                    break;
-            }
-        }
+
     }
     
     

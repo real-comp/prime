@@ -34,14 +34,14 @@ import org.codehaus.jackson.JsonToken;
  */
 public class JsonReader implements RecordReader {
     
-    private JsonFactory jsonFactory;
-    private JsonParser jsonParser;
-    private long count;
-    private boolean beforeFirstOperationsRun = false;
-    private FileSchema schema;
-    private Severity validationExceptionThreshold = DEFAULT_VALIDATION_THREASHOLD;
-    private ValueSurgeon surgeon;
-    private TransformContext context;
+    protected JsonFactory jsonFactory;
+    protected JsonParser jsonParser;
+    protected long count;
+    protected boolean beforeFirstOperationsRun = false;
+    protected FileSchema schema;
+    protected Severity validationExceptionThreshold = DEFAULT_VALIDATION_THREASHOLD;
+    protected ValueSurgeon surgeon;
+    protected TransformContext context;
 
     public JsonReader() {
         jsonFactory = new JsonFactory();
@@ -262,7 +262,7 @@ public class JsonReader implements RecordReader {
         return count;
     }
 
-    private void executeAfterLastOperations() throws ValidationException, ConversionException {
+    protected void executeAfterLastOperations() throws ValidationException, ConversionException {
 
         if (schema != null) {
             List<Operation> operations = schema.getAfterLastOperations();
@@ -281,7 +281,7 @@ public class JsonReader implements RecordReader {
         }
     }
 
-    private void executeBeforeFirstOperations() throws ValidationException, ConversionException {
+    protected void executeBeforeFirstOperations() throws ValidationException, ConversionException {
 
         if (schema != null) {
             List<Operation> operations = schema.getBeforeFirstOperations();

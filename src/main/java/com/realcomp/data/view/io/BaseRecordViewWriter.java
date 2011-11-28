@@ -36,13 +36,17 @@ public abstract class BaseRecordViewWriter<T> implements RecordViewWriter{
     @Override
     public void setSchema(FileSchema schema) throws SchemaException{
         writer.setSchema(schema);
-    }
+    }    
+    
+    @Override
+    public FileSchema getSchema() {
+        return writer.getSchema();
+    }    
 
     @Override
     public Severity getValidationExceptionThreshold(){
         return writer.getValidationExceptionThreshold();
     }
-
     
     @Override
     public void setValidationExceptionThreshold(Severity severity){
@@ -53,5 +57,4 @@ public abstract class BaseRecordViewWriter<T> implements RecordViewWriter{
     public long getCount(){
         return writer.getCount();
     }
-    
 }

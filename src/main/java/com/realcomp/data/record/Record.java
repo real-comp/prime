@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 /**
  * 
@@ -22,6 +24,7 @@ import java.util.Set;
  *
  * @author krenfro
  */
+@XmlRootElement
 public class Record implements Serializable {
 
     public static final long serialVersionUID = 2L;
@@ -56,6 +59,7 @@ public class Record implements Serializable {
         return data.values();
     }
 
+    @XmlTransient
     public boolean isEmpty() {
         return data.isEmpty();
     }
