@@ -68,6 +68,11 @@ public class JsonWriter implements RecordWriter{
             beforeFirstOperationsRun = true;
         }
 
+        if (!pretty && count > 0){
+            //add newline to output
+            json.writeRaw("\n");
+        }
+        
         if (schema != null){
             //modify the record, performing all operations and keeping only the fields defined in the schema
             FieldList fields = schema.classify(record);
