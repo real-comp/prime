@@ -2,6 +2,8 @@ package com.realcomp.data.record;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * The key for a value in a Record.
@@ -12,29 +14,30 @@ import java.util.List;
  */
 public class RecordKey {
 
-    private static final String KEY_DELIMITER_REGEX = "\\.";
-    private static final String KEY_DELIMITER = ".";
+    
+    protected static final Pattern pattern = Pattern.compile("([A-Za-z0-9\\_ :-]+)(?:\\[)?([0-9]+)?(?:\\])?[\\.]?");
     
     private String key;
     private int index;
 
     public RecordKey(String key) {
 
+        Matcher m = pattern.matcher(key);
+        if (!m.matches())
+            throw new IllegalArgumentException("invalid key: " + key);
+        
         index = -1;
-        int start = key.indexOf("[");
-        if (start > 0) {
-            int stop = key.indexOf("]", start);
-            if (stop > start) {
-                index = Integer.parseInt(key.substring(start + 1, stop));
-                this.key = key.substring(0, start);
-            }
-            else {
-                this.key = key;
-            }
-        }
-        else {
-            this.key = key;
-        }
+        key = m.group(1);
+        index = m.group(2) == null ? -1 : Integer.parseInt(m.group(2));
+    }
+    
+    private RecordKey(String name, int index) {
+
+        assert(name != null);
+        assert(!name.isEmpty());
+        
+        key = name;
+        this.index = index;
     }
     
     /**
@@ -42,18 +45,25 @@ public class RecordKey {
      * For example, the key "property.owner[1].name" would return
      * a list of 3 RecordKeys. 
      * 
-     * @param compositeKey not null
+     * @param compositeKey not null or empty
      * @return 
      */
     public static List<RecordKey> parse(String compositeKey) {
+        
         if (compositeKey == null)
             throw new IllegalArgumentException("compositeKey is null");
         
         List<RecordKey> list = new ArrayList<RecordKey>();
+        
         if (!compositeKey.isEmpty()){
-            for (String key : compositeKey.split(KEY_DELIMITER_REGEX))
-                list.add(new RecordKey(key));
+            Matcher m = pattern.matcher(compositeKey);
+            while (m.find()){
+                list.add(new RecordKey(
+                        m.group(1),
+                        m.group(2) == null ? -1 : Integer.parseInt(m.group(2))));
+            } 
         }
+        
         return list;
     }
 
@@ -70,7 +80,7 @@ public class RecordKey {
         StringBuilder result = new StringBuilder();
         for (int x = 0; x < keys.size(); x++){
             if (x != 0){
-                result.append(KEY_DELIMITER);
+                result.append(".");
             }
             result.append(keys.get(x));
         }
