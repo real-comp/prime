@@ -26,7 +26,7 @@ import org.apache.commons.io.IOUtils;
 import org.codehaus.jackson.JsonEncoding;
 import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonGenerator;
-import org.codehaus.jackson.impl.DefaultPrettyPrinter;
+import org.codehaus.jackson.util.DefaultPrettyPrinter;
 
 /**
  *
