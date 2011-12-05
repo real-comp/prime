@@ -4,7 +4,7 @@
     <groupId>com.realcomp.data</groupId>
     <artifactId>realcomp-data</artifactId>
     <packaging>jar</packaging>
-    <version>0.2.4</version>
+    <version>0.2.5-SNAPSHOT</version>
     <name>realcomp-data</name>
     <build>
         <plugins>
@@ -155,9 +155,9 @@
     </distributionManagement>
 
     <scm>
-        <connection>scm:svn:svn+ssh://dev.real-comp.com/opt/usr/share/rcsvn/realcomp-data/tags/realcomp-data-0.2.4</connection>
-        <developerConnection>scm:svn:svn+ssh://dev.real-comp.com/opt/usr/share/rcsvn/realcomp-data/tags/realcomp-data-0.2.4</developerConnection>
-        <url>http://dev.real-comp.com:8060/browse/rcsvn/realcomp-data/tags/realcomp-data-0.2.4</url>
+        <connection>scm:svn:svn+ssh://dev.real-comp.com/opt/usr/share/rcsvn/realcomp-data/trunk</connection>
+        <developerConnection>scm:svn:svn+ssh://dev.real-comp.com/opt/usr/share/rcsvn/realcomp-data/trunk</developerConnection>
+        <url>http://dev.real-comp.com:8060/browse/rcsvn/realcomp-data/trunk</url>
     </scm>
     
     <reporting>
