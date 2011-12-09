@@ -41,10 +41,16 @@ public interface RecordWriter {
             throws IOException, ValidationException, ConversionException, SchemaException;
 
 
-     /**
+    /**
      * Close open resources. Should be invoked when you are done with the RecordReader.
      */
     void close();
+    
+    /**
+     * Close open resources, optionally closing the original output stream passed to open().
+     * @param closeAll 
+     */
+    void close(boolean closeAll);
 
     /**
      * Open an OutputStream for writing. May be invoked multiple times with new output as needed.

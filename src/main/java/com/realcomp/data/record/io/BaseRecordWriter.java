@@ -65,9 +65,15 @@ public abstract class BaseRecordWriter implements RecordWriter{
         count = 0;        
     }
 
-
+    
     @Override
     public void close(){
+
+        close(true);
+    }
+
+    @Override
+    public void close(boolean closeAll){
 
         try {
             executeAfterLastOperations();
@@ -79,7 +85,8 @@ public abstract class BaseRecordWriter implements RecordWriter{
             log.log(Level.WARNING, null, ex);
         }
 
-        IOUtils.closeQuietly(out);
+        if (closeAll)
+            IOUtils.closeQuietly(out);
     }
 
     protected void executeAfterLastOperations() throws ValidationException, ConversionException{

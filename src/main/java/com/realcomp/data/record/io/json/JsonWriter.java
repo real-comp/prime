@@ -26,6 +26,7 @@ import org.apache.commons.io.IOUtils;
 import org.codehaus.jackson.JsonEncoding;
 import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonGenerator;
+import org.codehaus.jackson.JsonParser.Feature;
 import org.codehaus.jackson.util.DefaultPrettyPrinter;
 
 /**
@@ -50,6 +51,7 @@ public class JsonWriter implements RecordWriter{
     public JsonWriter(){
     
         jsonFactory = new JsonFactory();
+        jsonFactory.disable(JsonGenerator.Feature.AUTO_CLOSE_TARGET);
         transformer = new Transformer();
         context = new TransformContext();
         surgeon = new ValueSurgeon();
@@ -190,9 +192,14 @@ public class JsonWriter implements RecordWriter{
     }
     
     
+    @Override
+    public void close(){
+        close(true);
+    }
     
     @Override
-    public void close() {
+    public void close(boolean closeAll) {
+        
         try {
             executeAfterLastOperations();
         }
@@ -212,7 +219,8 @@ public class JsonWriter implements RecordWriter{
             }
         }
         
-        IOUtils.closeQuietly(out);
+        if (closeAll)
+            IOUtils.closeQuietly(out);
     }
 
     @Override
