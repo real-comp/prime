@@ -12,7 +12,7 @@ import java.io.InputStream;
  * 
  * @author krenfro
  */
-public abstract class BaseRecordViewReader<T> implements RecordViewReader{
+public abstract class BaseRecordViewReader<T> implements RecordViewReader<T>{
     
     protected RecordReader reader;
     

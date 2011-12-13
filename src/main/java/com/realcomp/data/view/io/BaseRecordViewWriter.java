@@ -12,7 +12,7 @@ import java.io.OutputStream;
  * 
  * @author krenfro
  */
-public abstract class BaseRecordViewWriter<T> implements RecordViewWriter{
+public abstract class BaseRecordViewWriter<T> implements RecordViewWriter<T>{
     
     protected RecordWriter writer;
     
