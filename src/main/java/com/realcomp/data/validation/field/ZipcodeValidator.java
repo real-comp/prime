@@ -23,7 +23,7 @@ public class ZipcodeValidator extends BaseFieldValidator {
     public void validate(Object value) throws ValidationException{
         
         if (value == null)
-            throw new IllegalArgumentException("value is null");
+            throw new ValidationException("cannot validate null Object");
             
         try {
             String coerced = (String) DataType.STRING.coerce(value);        

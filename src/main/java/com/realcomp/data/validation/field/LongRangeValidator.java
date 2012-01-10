@@ -22,10 +22,10 @@ public class LongRangeValidator extends BaseFieldValidator {
     public void validate(Object value) throws ValidationException{
         
         if (value == null)
-            throw new IllegalArgumentException("value is null");
+            throw new ValidationException("cannot validate null Object");
         if (min > max)
-            throw new IllegalStateException(String.format("min (%s) > max (%s)", min, max));
-
+            throw new ValidationException(String.format("schema problem: min (%s) > max (%s)", min, max));
+        
         try{
             Long coerced = (Long) DataType.LONG.coerce(value);
             

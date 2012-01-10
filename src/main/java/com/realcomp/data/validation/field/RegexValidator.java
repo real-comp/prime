@@ -29,7 +29,7 @@ public class RegexValidator extends BaseFieldValidator {
     @Override
     public void validate(Object value) throws ValidationException{
         if (value == null)
-            throw new IllegalArgumentException("value is null");
+            throw new ValidationException("cannot validate null Object");
 
         if (!pattern.matcher(value.toString()).matches()){
             throw new ValidationException(

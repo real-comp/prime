@@ -20,9 +20,9 @@ public class LengthValidator extends BaseFieldValidator {
     @Override
     public void validate(Object value) throws ValidationException{
         if (value == null)
-            throw new IllegalArgumentException("value is null");
+            throw new ValidationException("cannot validate null Object");
         if (min > max)
-            throw new IllegalStateException(String.format("min (%s) > max (%s)", min, max));
+            throw new ValidationException(String.format("Schema problem: min (%s) > max (%s)", min, max));
 
         try {
             String coerced = (String) DataType.STRING.coerce(value);
