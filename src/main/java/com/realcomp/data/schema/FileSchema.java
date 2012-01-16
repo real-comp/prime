@@ -78,7 +78,7 @@ public class FileSchema {
             if (match == null && fieldList.isDefaultClassifier()){
                 match = fieldList;
             }
-            else if (!fieldList.isDefaultClassifier() && fieldList.supports(data)){
+            else if (fieldList.supports(data)){
                 match = fieldList;  
             }
         }
@@ -89,6 +89,38 @@ public class FileSchema {
         return match;
     }
 
+    
+    /**
+     * Classify some delimited data and return the FieldList that should be used to parse the data.
+     * The number of fields in the FieldList is used to classify the data.
+     * 
+     * @param data not null
+     * @return the FieldList that should be used to parse the data. never null
+     * @throws SchemaException if no defined layout supports the data
+     */
+    public FieldList classify(String[] data) throws SchemaException{
+
+        if (data == null)
+            throw new IllegalArgumentException("data is null");
+        
+        FieldList match = null;
+        
+        for (FieldList fieldList: fieldLists){
+            if (match == null && fieldList.size() == data.length){
+                match = fieldList;
+            }
+            else if (match != null && fieldList.size() == data.length){
+                throw new SchemaException(
+                        "Ambiguous schema. Multiple field lists in the schema support records with " + data.length + " fields.");
+            }
+        }
+        
+        if (match == null)
+            throw new SchemaException("The schema does not support records with " + data.length + " fields.");
+        
+        return match;
+    }
+    
     
     /**
      * Classify a record and return the FieldList that matches.

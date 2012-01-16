@@ -67,8 +67,10 @@ public class DelimitedFileReader extends BaseRecordReader{
 
         Record record = null;
         String data = reader.readLine();
+        String[] tokens = null;
         if (data != null){
-            record = loadRecord(schema.classify(data), parser.parseLine(data));
+            tokens = parser.parseLine(data);
+            record = loadRecord(schema.classify(tokens), tokens);
         }
 
         if (record != null)

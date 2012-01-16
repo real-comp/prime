@@ -30,7 +30,7 @@ public class RequiredValidatorTest{
     }
 
 
-    @Test(expected=IllegalArgumentException.class)
+    @Test(expected=ValidationException.class)
     public void testNull() throws ValidationException{
         RequiredValidator validator = new RequiredValidator();
         validator.validate(null);

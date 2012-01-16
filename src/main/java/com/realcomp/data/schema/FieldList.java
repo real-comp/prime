@@ -77,7 +77,7 @@ public class FieldList extends ArrayList<Field> {
      * @param data not null
      * @return true if the classifier matches the specified data; else false
      */
-    public boolean supports(String data){
+    public boolean supports(String data){        
         return classifier.matcher(data).matches();
     }
     

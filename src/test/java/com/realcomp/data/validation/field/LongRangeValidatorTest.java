@@ -79,7 +79,7 @@ public class LongRangeValidatorTest {
         
     }
 
-    @Test(expected=IllegalStateException.class)
+    @Test(expected=ValidationException.class)
     public void testOutOfOrder() throws ValidationException{
         
         LongRangeValidator validator = new LongRangeValidator();

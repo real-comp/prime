@@ -18,17 +18,12 @@ public class DoubleRangeValidatorTest {
     public DoubleRangeValidatorTest() {
     }
 
-    @Test(expected=IllegalStateException.class)
-    public void testOutOfOrder(){
-        try {
-            DoubleRangeValidator validator = new DoubleRangeValidator();
-            validator.setMin(100);
-            validator.setMax(99);
-            validator.validate("100");
-        }
-        catch (ValidationException ex) {
-            fail(ex.getMessage());
-        }
+    @Test(expected=ValidationException.class)
+    public void testOutOfOrder() throws ValidationException{
+        DoubleRangeValidator validator = new DoubleRangeValidator();
+        validator.setMin(100);
+        validator.setMax(99);
+        validator.validate("100");
     }
 
     /**

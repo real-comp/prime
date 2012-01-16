@@ -27,7 +27,7 @@ public class ZipcodeValidatorTest {
         instance.validate("12345-6789");
     }
 
-    @Test(expected=IllegalArgumentException.class)
+    @Test(expected=ValidationException.class)
     public void testValidateNull() throws ValidationException{
         ZipcodeValidator instance = new ZipcodeValidator();
         instance.validate(null);

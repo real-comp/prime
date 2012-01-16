@@ -58,7 +58,7 @@ public class ValidateLengthTest{
 
 
 
-    @Test(expected=IllegalArgumentException.class)
+    @Test(expected=ValidationException.class)
     public void testNull() throws ValidationException{
         LengthValidator validator = new LengthValidator();
         validator.validate(null);

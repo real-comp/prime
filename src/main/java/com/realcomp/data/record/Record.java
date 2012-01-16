@@ -1,6 +1,5 @@
 package com.realcomp.data.record;
 
-import com.realcomp.data.schema.FileSchema;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashMap;
@@ -128,6 +127,11 @@ public class Record implements Serializable {
         else
             return null;        
     }
+    
+    public Map<String,Object> asMap(){
+        return data;
+    }
+    
         
     @Override
     public boolean equals(Object obj) {
