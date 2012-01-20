@@ -151,8 +151,6 @@ public class Field {
     }
 
     public DataType getType() {
-        if (type == null)
-            type = DataType.STRING;
         return type;
     }
 

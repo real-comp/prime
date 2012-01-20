@@ -41,7 +41,6 @@ public class FileSchema {
     
     public FileSchema(){
         fieldLists = new ArrayList<FieldList>();
-        fieldLists.add(new FieldList());
     }
 
     public FileSchema(FileSchema copy) throws SchemaException{
@@ -159,11 +158,12 @@ public class FileSchema {
      * Returns the FieldList that has the default classifier (match anything),
      * or is defined first.
      * 
-     * @return the default FieldList, or the FieldList that was defined first.
+     * @return the default FieldList, or the FieldList that was defined first, null if not FieldLists have been 
+     *  specified.
      */
     public FieldList getDefaultFieldList(){
         
-        FieldList retVal = null;
+        FieldList retVal = null;        
         for (FieldList fieldList: fieldLists){
             if (retVal == null)
                 retVal = fieldList;
@@ -202,12 +202,7 @@ public class FileSchema {
     public void addFieldList(FieldList fieldList){
         if (fieldList == null)
             throw new IllegalArgumentException("fieldList is null");
-        
-        if (fieldList.isDefaultClassifier()){
-            logger.log(Level.FINE, "replacing default field list");
-            fieldLists.remove(getDefaultFieldList());
-        }
-        
+          
         fieldLists.add(new FieldList(fieldList));
     }
     
@@ -224,15 +219,25 @@ public class FileSchema {
     
     
     public void addField(Field field){
-        getDefaultFieldList().add(field);
+        FieldList fieldList = getDefaultFieldList();
+        if (fieldList == null){
+            fieldList = new FieldList();
+            fieldList.add(field);
+            addFieldList(fieldList);
+        }
+        else{
+            fieldList.add(field);
+        }
     }
     
     public boolean removeField(Field field){
-        return getDefaultFieldList().remove(field);
+        FieldList fieldList = getDefaultFieldList();        
+        return fieldList == null ? false : fieldList.remove(field);
     }
     
     public Field getField(String name){
-        return getDefaultFieldList().get(name);
+        FieldList fieldList = getDefaultFieldList();        
+        return fieldList == null ? null : fieldList.get(name);
     }
     
     /**

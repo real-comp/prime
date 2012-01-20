@@ -1,13 +1,11 @@
 package com.realcomp.data.record.io.delimited;
 
-import com.realcomp.data.record.io.delimited.DelimitedFileReader;
 import com.realcomp.data.schema.FieldList;
 import com.realcomp.data.schema.SchemaException;
 import com.realcomp.data.schema.FileSchema;
 import com.realcomp.data.DataType;
 import com.realcomp.data.record.Record;
 import com.realcomp.data.schema.Field;
-import java.util.List;
 import org.junit.Test;
 import static org.junit.Assert.*;
 

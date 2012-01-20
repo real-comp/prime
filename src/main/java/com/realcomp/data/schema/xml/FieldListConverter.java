@@ -1,5 +1,6 @@
 package com.realcomp.data.schema.xml;
 
+import com.realcomp.data.DataType;
 import com.realcomp.data.schema.Field;
 import com.realcomp.data.schema.FieldList;
 import com.thoughtworks.xstream.converters.Converter;
@@ -54,6 +55,8 @@ public class FieldListConverter implements Converter{
         while (reader.hasMoreChildren()){
             reader.moveDown();
             Field f = (Field) uc.convertAnother(fieldList, Field.class);
+            if (f.getType() == null)
+                f.setType(DataType.STRING);
             fieldList.add(f);
             reader.moveUp();
         }

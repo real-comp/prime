@@ -43,5 +43,5 @@ public class ZipcodeValidator extends BaseFieldValidator {
     @Override
     public ZipcodeValidator copyOf(){
         return new ZipcodeValidator();
-    }
+    }    
 }

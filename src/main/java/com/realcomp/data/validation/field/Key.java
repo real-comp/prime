@@ -11,4 +11,11 @@ import com.realcomp.data.annotation.Validator;
 @Validator("key")
 public class Key extends RequiredValidator {
 
+    @Override
+    public Key copyOf() {
+        return new Key();
+    }
+    
+    
+    
 }

@@ -130,7 +130,11 @@ public class DelimitedFileWriterTest {
         Record bad = new Record();
         bad.put("foo","bar");
 
-        assertTrue(schema.getDefaultFieldList().equals(schema.classify(bad)));
+        try{
+            schema.classify(bad);
+            fail("should have throws SchemaException");
+        }
+        catch(SchemaException ok){}
 
     }
 

@@ -13,6 +13,13 @@ public class ForeignKey extends Key {
 
     protected String name;
 
+    public ForeignKey(){
+    }
+    
+    public ForeignKey(String name){
+        this.name = name;
+    }
+    
     public String getName() {
         return name;
     }
@@ -20,6 +27,12 @@ public class ForeignKey extends Key {
     public void setName(String name) {
         this.name = name;
     }
+    
+    @Override
+    public ForeignKey copyOf() {
+        return new ForeignKey(name);
+    }
+     
 
     @Override
     public boolean equals(Object obj) {

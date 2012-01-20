@@ -19,7 +19,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * Reformat a file using an input and output schema
+ * 
  * @author krenfro
  */
 public class Filter {

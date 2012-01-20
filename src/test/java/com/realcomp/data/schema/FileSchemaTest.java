@@ -1,13 +1,6 @@
 package com.realcomp.data.schema;
 
 import com.realcomp.data.conversion.Trim;
-import com.realcomp.data.DataType;
-import com.realcomp.data.Operation;
-import java.util.List;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
