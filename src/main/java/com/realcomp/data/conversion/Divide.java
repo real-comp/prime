@@ -7,20 +7,20 @@ import java.util.List;
 
 
 /**
- * Multiply, treating arguments as Doubles.
+ * Divide, treating arguments as Doubles.
  * 
  *
  * @author krenfro
  *
  */
-@com.realcomp.data.annotation.Converter("multiply")
-public class Multiply implements Converter {
+@com.realcomp.data.annotation.Converter("divide")
+public class Divide implements Converter {
 
     protected List<DataType> supportedTypes;
-    protected Double factor = 1d;
+    protected Double divisor = 1d;
     protected Double defaultValue;
     
-    public Multiply(){
+    public Divide(){
         supportedTypes = new ArrayList<DataType>();
         supportedTypes.add(DataType.STRING);
         supportedTypes.add(DataType.INTEGER);
@@ -39,17 +39,21 @@ public class Multiply implements Converter {
     }
     
     @Override
-    public Multiply copyOf(){
-        return new Multiply();
+    public Divide copyOf(){
+        return new Divide();
     }
 
-    public Double getFactor() {
-        return factor;
+    public Double getDivisor() {
+        return divisor;
     }
 
-    public void setFactor(Double factor) {
-        this.factor = factor;
+    public void setDivisor(Double divisor) {
+        if (divisor == 0){
+            throw new IllegalArgumentException("Cannot divide by zero");
+        }
+        this.divisor = divisor;
     }
+    
     
     public Double getDefault(){
         return defaultValue;
@@ -66,19 +70,19 @@ public class Multiply implements Converter {
         Object retVal = value;
         if (value != null){
             if (value.toString().isEmpty() && defaultValue != null){
-                retVal = defaultValue * factor;
+                retVal = defaultValue / divisor;
             }
             else{        
-                retVal = (Double) DataType.DOUBLE.coerce(value) * factor;
+                retVal = (Double) DataType.DOUBLE.coerce(value) / divisor;
             }
         }
+        
         return retVal;
     }
-
     
     @Override
     public boolean equals(Object other) {
-        return (other instanceof Multiply);
+        return (other instanceof Divide);
     }
 
     @Override
