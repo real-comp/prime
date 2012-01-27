@@ -1,6 +1,7 @@
 package com.realcomp.data.conversion;
 
 import com.realcomp.data.record.Record;
+import com.realcomp.data.record.RecordKeyException;
 import java.util.List;
 
 /**
@@ -38,11 +39,16 @@ public class Concat extends BaseMultiFieldConverter{
                 retVal = retVal.concat(delimiter);
             needDelimiter = true;
 
-            Object temp = record.get(fieldName);
-            if (temp == null){
-                throw new MissingFieldException(fieldName);
+            try{
+                Object temp = record.get(fieldName);
+                if (temp == null){
+                    throw new MissingFieldException(fieldName);
+                }
+                retVal = retVal.concat(temp.toString());
             }
-            retVal = retVal.concat(temp.toString());
+            catch(RecordKeyException ex){
+                throw new MissingFieldException(fieldName, ex);
+            }
         }
         return retVal;
     }

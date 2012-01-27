@@ -3,7 +3,6 @@ package com.realcomp.data.record;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
 
 /**
  * Finds a specified value in a Record.  The composite key can reference a value
@@ -13,8 +12,6 @@ import java.util.logging.Logger;
  * @author krenfro
  */
 public class RecordValueResolver {
-    
-    private static final Logger logger = Logger.getLogger(RecordValueResolver.class.getName());
     
     public static List<Object> resolve(Record record, String key){
         return resolve(record.data, key);

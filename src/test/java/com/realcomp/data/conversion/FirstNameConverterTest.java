@@ -7,7 +7,7 @@ import static org.junit.Assert.*;
  *
  * @author krenfro
  */
-public class FirstNameConverterTest extends SimpleConverterTest{
+public class FirstNameConverterTest extends StringConverterTest{
 
     public FirstNameConverterTest() {
         converter = new FirstName();

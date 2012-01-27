@@ -7,6 +7,7 @@ package com.realcomp.data.transform;
 import com.realcomp.data.conversion.ConversionException;
 import com.realcomp.data.record.Record;
 import com.realcomp.data.conversion.Trim;
+import com.realcomp.data.record.RecordKeyException;
 import com.realcomp.data.schema.Field;
 import com.realcomp.data.schema.FieldList;
 import com.realcomp.data.validation.ValidationException;
@@ -26,7 +27,7 @@ public class TransformerTest {
     }
 
     @Test
-    public void testA() throws ConversionException, ValidationException{
+    public void testA() throws ConversionException, ValidationException, RecordKeyException{
         
         Transformer t = new Transformer();
         FieldList fields = new FieldList();

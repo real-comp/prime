@@ -156,7 +156,7 @@ public class FieldList extends ArrayList<Field> {
         List<String> key = new ArrayList<String>();
         
         for (Field f: getKeys()){                       
-            Object value = record.get(f.getName());
+            Object value = record.asMap().get(f.getName());
 
             //Note: a key value may be NULL if the Record is not fully constructed.
             //For example, if a ValidationException is thrown during Record creation, the
@@ -270,7 +270,7 @@ public class FieldList extends ArrayList<Field> {
                 if (needDelimiter)
                     s.append("|");
                 needDelimiter = true;
-                fieldValue = record.get(field.getName());
+                fieldValue = record.asMap().get(field.getName());
                 if (fieldValue != null)
                     s.append(fieldValue.toString());
             }

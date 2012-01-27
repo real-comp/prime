@@ -18,8 +18,7 @@ public class MissingFieldException extends ConversionException{
         super(fieldName, cause);
         this.fieldName = fieldName;  
     }
-
-
+    
     public String getFieldName() {
         return fieldName;
     }

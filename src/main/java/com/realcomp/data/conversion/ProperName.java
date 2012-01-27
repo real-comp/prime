@@ -18,7 +18,7 @@ import java.util.List;
  * @author krenfro
  */
 @com.realcomp.data.annotation.Converter("properName")
-public class ProperName extends SimpleConverter {
+public class ProperName extends StringConverter {
     
     private boolean lastNameFirst = true;
         

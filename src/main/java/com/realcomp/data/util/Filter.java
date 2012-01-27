@@ -19,6 +19,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
+ * WARNING: This class does more than filter, it filters and runs the conversions!
+ * 
  * 
  * @author krenfro
  */

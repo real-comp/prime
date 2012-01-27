@@ -33,8 +33,7 @@ public class BooleanConverter extends SimpleConverter{
                 result = Boolean.TRUE;
             else if (falsy.equals(",*,"))
                 result = Boolean.FALSE;
-
-            if (result == null)
+            else
                 throw new ConversionException("Unable to convert [" + value + "] to a boolean value");
         }
         

@@ -5,13 +5,12 @@ package com.realcomp.data.conversion;
  * @author krenfro
  */
 @com.realcomp.data.annotation.Converter("trim")
-public class Trim extends SimpleConverter {
-
+public class Trim extends StringConverter{
+    
     @Override
     public Object convert(Object value) throws ConversionException{
         return value == null ? null : value.toString().trim();
     }
-
     
     @Override
     public Trim copyOf(){

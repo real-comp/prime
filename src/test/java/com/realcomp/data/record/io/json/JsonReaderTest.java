@@ -45,7 +45,7 @@ public class JsonReaderTest {
         Record record = reader.read();
         assertNotNull(record);
         assertEquals(1, reader.getCount());
-        assertEquals(7810, record.resolveFirst("totalValue"));
+        assertEquals(7810, record.getFirst("totalValue"));
         reader.close();
     }
     
@@ -58,7 +58,7 @@ public class JsonReaderTest {
         Record record = reader.read();
         assertNotNull(record);
         assertEquals(1, reader.getCount());
-        assertEquals("relevate", record.resolveFirst("source"));
+        assertEquals("relevate", record.getFirst("source"));
         
         assertNull(reader.read());
         assertNull(reader.read());
@@ -74,12 +74,12 @@ public class JsonReaderTest {
         record = reader.read();
         assertNotNull(record);
         assertEquals(1, reader.getCount());
-        assertEquals("8665 EPHRAIM RD", record.resolveFirst("address"));
+        assertEquals("8665 EPHRAIM RD", record.getFirst("address"));
         
         record = reader.read();
         assertNotNull(record);
         assertEquals(2, reader.getCount());
-        assertEquals("8666 EPHRAIM RD", record.resolveFirst("address"));
+        assertEquals("8666 EPHRAIM RD", record.getFirst("address"));
         
         
         assertNull(reader.read());
@@ -99,10 +99,10 @@ public class JsonReaderTest {
         Record record = reader.read();
         assertNotNull(record);
         assertEquals(1, reader.getCount());
-        assertEquals("RELEVATE", record.resolveFirst("source")); //upper-case converter
+        assertEquals("RELEVATE", record.getFirst("source")); //upper-case converter
         
-        assertEquals(null, record.resolveFirst("asdf"));
-        assertEquals("78717", record.resolveFirst("doesnotexistinjson"));
+        assertEquals(null, record.getFirst("asdf"));
+        assertEquals("78717", record.getFirst("doesnotexistinjson"));
         
         assertNull(reader.read());
         assertNull(reader.read());

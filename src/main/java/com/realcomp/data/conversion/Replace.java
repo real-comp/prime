@@ -1,9 +1,12 @@
 package com.realcomp.data.conversion;
 
+import java.util.regex.Pattern;
+
 
 /**
  * Replaces all occurrences of <i>regex</i> with <i>replacement</i>.
  * Default <i>replacement</i> is the empty string.
+ * Multiple passes will be performed until the regex is not found.
  *
  * @author krenfro
  */
@@ -12,6 +15,7 @@ public class Replace extends SimpleConverter {
 
     private String regex = "";    
     private String replacement = "";
+    private Pattern pattern = null;
 
     public Replace(){
         super();
@@ -21,6 +25,7 @@ public class Replace extends SimpleConverter {
         super();
         this.regex = regex;
         this.replacement = replacement;
+        pattern = Pattern.compile(regex);
     }
 
     @Override
@@ -31,8 +36,18 @@ public class Replace extends SimpleConverter {
     
     @Override
     public Object convert(Object value) throws ConversionException{
-
-        return value == null ? null : value.toString().replaceAll(regex, replacement);
+        
+        Object retVal = value;
+        
+        if (value != null){
+            String s = value.toString();
+            while (pattern.matcher(s).find()){
+                s = s.replaceAll(regex, replacement);
+            }
+            retVal = s;
+        }
+        
+        return retVal;
     }
 
     public String getRegex() {
@@ -41,6 +56,7 @@ public class Replace extends SimpleConverter {
 
     public void setRegex(String regex) {
         this.regex = regex;
+        pattern = Pattern.compile(regex);
     }
 
     public String getReplacement() {

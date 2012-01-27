@@ -21,7 +21,7 @@ public class RecordValueAssemblerTest {
     }
 
     @Test
-    public void testAssembly() throws RecordValueException{
+    public void testAssembly() throws RecordValueException, RecordKeyException{
  
         Map<String,Object> data = new HashMap<String,Object>();
         
@@ -34,7 +34,7 @@ public class RecordValueAssemblerTest {
         Record record = new Record();
         RecordValueAssembler.assemble(record, "name", "real-comp");
         assertEquals("real-comp", record.get("name"));
-        assertEquals("real-comp", record.resolve("name").get(0));
+        assertEquals("real-comp", record.getAll("name").get(0));
         
     }
     

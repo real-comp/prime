@@ -33,6 +33,21 @@ public class ReplaceFirstConverterTest extends SimpleConverterTest{
         assertEquals("ba", converter.convert("baa"));
         assertEquals("bb", converter.convert("bab"));
     }
+    
+    @Test
+    public void testLeadingZeros() throws Exception {
+
+        ReplaceFirst replaceFirst = new ReplaceFirst();        
+        replaceFirst.setRegex("^0");
+        replaceFirst.setReplacement("");
+        
+        assertEquals("1", replaceFirst.convert("1"));
+        assertEquals("1", replaceFirst.convert("01"));
+        assertEquals("01", replaceFirst.convert("001"));
+        assertEquals("001", replaceFirst.convert("0001"));
+        assertEquals("0001", replaceFirst.convert("00001"));
+    }
+
 
 
     @Test

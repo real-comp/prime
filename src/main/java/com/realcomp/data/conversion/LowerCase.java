@@ -5,7 +5,7 @@ package com.realcomp.data.conversion;
  * @author krenfro
  */
 @com.realcomp.data.annotation.Converter("lowerCase")
-public class LowerCase extends SimpleConverter {
+public class LowerCase extends StringConverter {
 
     @Override
     public Object convert(Object value) throws ConversionException{

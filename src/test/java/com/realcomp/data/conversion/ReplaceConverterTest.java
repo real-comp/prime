@@ -33,8 +33,45 @@ public class ReplaceConverterTest extends SimpleConverterTest{
         assertEquals("b", converter.convert("baa"));
         assertEquals("bb", converter.convert("bab"));
     }
+    
+    @Test
+    public void testRemoveMultiSpaces() throws Exception{
+        
+        Replace converter = new Replace();
+        converter.setRegex("  ");
+        converter.setReplacement(" ");
+        
+        assertEquals(" ", converter.convert("  "));
+        assertEquals(" a", converter.convert("  a"));
+        assertEquals(" a ", converter.convert("  a "));
+        assertEquals(" a ", converter.convert("  a  "));
+        assertEquals("a a", converter.convert("a  a"));
+        assertEquals("a a", converter.convert("a   a"));
+        assertEquals("a a", converter.convert("a    a"));
+        assertEquals("a a", converter.convert("a     a"));
+        assertEquals("a a ", converter.convert("a     a "));
+        assertEquals("a a ", converter.convert("a     a  "));
+        assertEquals("a a ", converter.convert("a     a   "));
+        assertEquals("a a ", converter.convert("a     a    "));
+    }
+    
+   
+    @Test
+    public void testLeadingZeros() throws Exception {
 
+        Replace replace = new Replace();        
+        replace.setRegex("^0");
+        replace.setReplacement("");
+        
+        assertEquals("1", replace.convert("1"));
+        assertEquals("1", replace.convert("01"));
+        assertEquals("1", replace.convert("001"));
+        assertEquals("1", replace.convert("0001"));
+        assertEquals("1", replace.convert("00001"));
+    }
 
+   
+   
     @Test
     public void testCopyOf() {
         Replace a = new Replace();
@@ -49,7 +86,7 @@ public class ReplaceConverterTest extends SimpleConverterTest{
         assertEquals(a.hashCode(), b.hashCode());
     }
     
-     @Test
+    @Test
     @Override
     public void testEquals() {
         

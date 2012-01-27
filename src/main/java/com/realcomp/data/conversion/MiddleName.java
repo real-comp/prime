@@ -3,7 +3,6 @@ package com.realcomp.data.conversion;
 import com.realcomp.names.IndividualName;
 import com.realcomp.names.Name;
 import com.realcomp.names.NameParser;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -13,7 +12,7 @@ import java.util.List;
  * @author krenfro
  */
 @com.realcomp.data.annotation.Converter("middleName")
-public class MiddleName extends SimpleConverter {
+public class MiddleName extends StringConverter {
     
     private boolean lastNameFirst = true;
 

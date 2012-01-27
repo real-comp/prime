@@ -102,32 +102,46 @@ public class Record implements Serializable {
     public Object put(String key, Map value) {
         return value == null ? data.remove(key) : data.put(key, value);
     }
-
-    public Object get(String key) {
-        return data.get(key);
-    }
     
-    public Object remove(String key){
-        return data.remove(key);
+    /**
+     * @param key 
+     * @return The value referenced by the <i>key</i>. Type one of supported DataTypes. Null if value does not exist.
+     * @throws RecordKeyException if the key does not refer to a single value
+     */
+    public Object get(String key) throws RecordKeyException{
+        List<Object> list = RecordValueResolver.resolve(data, key);
+        if (list != null && list.size() > 1){
+            throw new RecordKeyException(
+                    String.format("Ambiguous key [%s] references [%s] values.  "
+                                + "Use getFirst(), getAll() or a more specific key", key, list.size()));
+        }
+        
+        return list == null || list.isEmpty() ? null : list.get(0);
     }
     
     /**
      * 
      * @param key
+     * @return the <i>first</i> value referenced by the <i>key</i>, or null if it does not exist
+     */
+    public Object getFirst(String key){
+        List<Object> list = RecordValueResolver.resolve(data, key);
+        return list == null || list.isEmpty() ? null : list.get(0);
+    }
+    
+    /**
+     * Resolve all values for the specified key
+     * @param key
      * @return 
      */
-    public List<Object> resolve(String key){
+    public List<Object> getAll(String key){
         return RecordValueResolver.resolve(data, key);
     }
     
-    public Object resolveFirst(String key){
-        List<Object> list = resolve(key);
-        if (list != null && !list.isEmpty())
-            return list.get(0);
-        else
-            return null;        
-    }
-    
+    /**
+     * 
+     * @return the data contained in this record as a map.  Not a copy. Changes will be reflected in this Record.
+     */
     public Map<String,Object> asMap(){
         return data;
     }

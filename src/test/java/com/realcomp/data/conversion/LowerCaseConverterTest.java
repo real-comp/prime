@@ -7,7 +7,7 @@ import static org.junit.Assert.*;
  *
  * @author krenfro
  */
-public class LowerCaseConverterTest extends SimpleConverterTest{
+public class LowerCaseConverterTest extends StringConverterTest{
 
     public LowerCaseConverterTest() {
         converter = new LowerCase();

@@ -26,7 +26,6 @@ import org.apache.commons.io.IOUtils;
 import org.codehaus.jackson.JsonEncoding;
 import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonGenerator;
-import org.codehaus.jackson.JsonParser.Feature;
 import org.codehaus.jackson.util.DefaultPrettyPrinter;
 
 /**
@@ -110,7 +109,7 @@ public class JsonWriter implements RecordWriter{
         filter.removeAll(keep);
         
         for (String f: filter){
-            record.remove(f);
+            record.asMap().remove(f);
         }
     }
 

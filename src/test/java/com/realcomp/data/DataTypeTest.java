@@ -21,5 +21,11 @@ public class DataTypeTest {
         assertEquals(0d, (Integer) DataType.INTEGER.coerce("0"), 0.0d);
         assertEquals(0d, (Integer) DataType.INTEGER.coerce(""), 0.0d);
         assertEquals(0d, (Integer) DataType.INTEGER.coerce("0.0"), 0.0d);
+        
+        
+        assertFalse((Boolean) DataType.BOOLEAN.coerce("false"));
+        assertFalse((Boolean) DataType.BOOLEAN.coerce("FALSE"));
+        assertTrue((Boolean) DataType.BOOLEAN.coerce("true"));
+        assertTrue((Boolean) DataType.BOOLEAN.coerce("TRUE"));
     }
 }

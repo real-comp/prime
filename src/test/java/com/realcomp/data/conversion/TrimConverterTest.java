@@ -1,5 +1,8 @@
 package com.realcomp.data.conversion;
 
+import com.realcomp.data.DataType;
+import java.util.List;
+import java.util.ArrayList;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -7,7 +10,7 @@ import static org.junit.Assert.*;
  *
  * @author krenfro
  */
-public class TrimConverterTest extends SimpleConverterTest{
+public class TrimConverterTest extends StringConverterTest{
 
     public TrimConverterTest() {
         converter = new Trim();
@@ -49,7 +52,6 @@ public class TrimConverterTest extends SimpleConverterTest{
         Trim b = new Trim();
         assertEquals(a.hashCode(), b.hashCode());
     }
-    
     
     
 }

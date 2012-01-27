@@ -14,13 +14,16 @@ public class Substring extends SimpleConverter {
     protected Integer end;
     
     public Substring(){
+        super();
     }
     
     public Substring(Integer begin){
+        super();
         this.begin = begin;
     }
     
     public Substring(Integer begin, Integer end){
+        super();
         this.begin = begin;
         this.end = end;
     }
