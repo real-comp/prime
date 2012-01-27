@@ -15,7 +15,7 @@ public interface RecordView<T>{
      * @param record may be null
      * @return  an instance of T, or null if record is null
      */
-    T fromRecord(Record record);
+    T fromRecord(Record record) throws RecordViewException;
     
     /**
      * @param type the object to convert
