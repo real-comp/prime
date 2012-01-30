@@ -53,6 +53,9 @@ public class RecordValueResolver {
                             retVal.addAll(resolve(entry, workingKeys)); //recursion
                     }
                 }
+                else if (Map.class.isAssignableFrom(value.getClass())){
+                    retVal.addAll(resolve((Map) value, workingKeys));
+                }
                 else{
                     retVal.add(value);
                 }
