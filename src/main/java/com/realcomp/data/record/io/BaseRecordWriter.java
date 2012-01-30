@@ -168,11 +168,11 @@ public abstract class BaseRecordWriter implements RecordWriter{
         String id = "";
         List<Field> fields = schema.classify(record);
         if (fields.size() > 0)
-            id = id.concat(record.asMap().get(fields.get(0).getName()).toString());
+            id = id.concat(record.get(fields.get(0).getName()).toString());
         
         if (fields.size() > 1){
             id = id.concat(":");
-            id = id.concat(record.asMap().get(fields.get(0).getName()).toString());
+            id = id.concat(record.get(fields.get(0).getName()).toString());
         }
 
         return id;

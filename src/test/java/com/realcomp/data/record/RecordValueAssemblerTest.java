@@ -21,7 +21,7 @@ public class RecordValueAssemblerTest {
     }
 
     @Test
-    public void testAssembly() throws RecordValueException, RecordKeyException{
+    public void testAssembly() throws RecordValueException{
  
         Map<String,Object> data = new HashMap<String,Object>();
         

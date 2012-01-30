@@ -1,8 +1,11 @@
 package com.realcomp.data.record;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -24,11 +27,11 @@ import javax.xml.bind.annotation.XmlTransient;
  * @author krenfro
  */
 @XmlRootElement
-public class Record implements Serializable {
+public class Record implements Map<String,Object>, Serializable {
 
     public static final long serialVersionUID = 2L;
     
-    protected Map<String, Object> data;
+    Map<String, Object> data;
 
     public Record() {
         data = new HashMap<String, Object>();
@@ -45,30 +48,63 @@ public class Record implements Serializable {
         this.data = new HashMap<String, Object>();
         this.data.putAll(data);
     }
-
+    
     public boolean containsKey(String key) {
         return data.containsKey(key);
     }
 
-    public Set<String> keySet() {
-        return data.keySet();        
-    }
-
-    public Collection<Object> values() {
-        return data.values();
-    }
 
     @XmlTransient
+    @Override
     public boolean isEmpty() {
         return data.isEmpty();
     }
-
-    public Set<Entry<String, Object>> entrySet() {
-        return data.entrySet();
+    
+    
+    /**
+     * @return all leaf node keys contained in this Record. The keys may be <i>composite</i> and <i>indexed</i>.
+     */
+    @Override
+    public Set<String> keySet(){        
+        Set<String> keys = new HashSet<String>();
+        Iterator<Map.Entry<String,Object>> itr  = entrySet().iterator();
+        while (itr.hasNext()){
+            keys.add(itr.next().getKey());
+        }
+        return keys;
     }
     
+    /**
+     * 
+     * @return all leaf node values contained in this Record.
+     */
+    @Override
+    public Collection<Object> values() {        
+        List<Object> values = new ArrayList<Object>();
+        Iterator<Map.Entry<String,Object>> itr = entrySet().iterator();
+        while (itr.hasNext()){
+            values.add(itr.next().getValue());
+        }
+        
+        return values;
+    }
+    
+    /**
+     * @return all leaf node values in this Record.
+     */
+    @Override
+    public Set<Entry<String, Object>> entrySet() {                
+        return RecordEntries.getEntries(data);
+    }
+    
+    @Override
     public Object put(String key, Object value) {
         return value == null ? data.remove(key) : data.put(key, value);
+    }
+    
+    @Override
+    public void clear(){
+        data.clear();
     }
 
     public Object put(String key, String value) {
@@ -104,12 +140,13 @@ public class Record implements Serializable {
     }
     
     /**
-     * @param key 
+     * @param key evaluated as a String
      * @return The value referenced by the <i>key</i>. Type one of supported DataTypes. Null if value does not exist.
      * @throws RecordKeyException if the key does not refer to a single value
      */
-    public Object get(String key) throws RecordKeyException{
-        List<Object> list = RecordValueResolver.resolve(data, key);
+    @Override
+    public Object get(Object key){
+        List<Object> list = RecordValueResolver.resolve(data, new RecordKey(key.toString()));
         if (list != null && list.size() > 1){
             throw new RecordKeyException(
                     String.format("Ambiguous key [%s] references [%s] values.  "
@@ -117,6 +154,7 @@ public class Record implements Serializable {
         }
         
         return list == null || list.isEmpty() ? null : list.get(0);
+        
     }
     
     /**
@@ -125,7 +163,7 @@ public class Record implements Serializable {
      * @return the <i>first</i> value referenced by the <i>key</i>, or null if it does not exist
      */
     public Object getFirst(String key){
-        List<Object> list = RecordValueResolver.resolve(data, key);
+        List<Object> list = RecordValueResolver.resolve(data, new RecordKey(key));
         return list == null || list.isEmpty() ? null : list.get(0);
     }
     
@@ -135,18 +173,36 @@ public class Record implements Serializable {
      * @return 
      */
     public List<Object> getAll(String key){
-        return RecordValueResolver.resolve(data, key);
+        return RecordValueResolver.resolve(data, new RecordKey(key));
+    }
+  
+    @Override
+    public int size() {
+        return keySet().size();
     }
     
-    /**
-     * 
-     * @return the data contained in this record as a map.  Not a copy. Changes will be reflected in this Record.
-     */
-    public Map<String,Object> asMap(){
-        return data;
+    @Override
+    public boolean containsKey(Object key) {
+        return keySet().contains(key.toString());
     }
-    
-        
+
+    @Override
+    public boolean containsValue(Object value) {
+        return values().contains(value);
+    }
+
+    @Override
+    public Object remove(Object key) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public void putAll(Map<? extends String, ? extends Object> m) {        
+        for (Map.Entry entry: m.entrySet()){
+            put((String) entry.getKey(), entry.getValue());
+        }
+    }
+          
     @Override
     public boolean equals(Object obj) {
         if (obj == null)

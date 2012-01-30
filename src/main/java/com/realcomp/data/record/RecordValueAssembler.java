@@ -5,14 +5,33 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Stack;
 
 /**
- * Assembles values back into a Record for a key.
+ * Assembles values back into a map for a RecordKey.
  * 
  * @see RecordValueResolver
  * @author krenfro
  */
 public class RecordValueAssembler {
+    
+    public Object assemble(Map<String,Object> map, RecordKey key, Object value) throws RecordValueException{
+        if (map == null)
+            throw new IllegalArgumentException("map is null");
+        if (value == null)
+            throw new IllegalArgumentException("value is null");
+        if (key == null)
+            throw new IllegalArgumentException("key is null");
+        
+        
+        return assemble(map, buildKeySequence(key), value);
+    }
+    
+    
+    
+    
+    
+    /**
 
     public static void assemble(Record record, String key, Object value) throws RecordValueException{
         
@@ -53,17 +72,38 @@ public class RecordValueAssembler {
         
         assemble(data, RecordKey.parse(key), values);         
     }
+     */
+    
+    /**
+     * Builds the sequence that keys need to be resolved from the root Map. The root key will be at the
+     * top of the stack.
+     * 
+     * @param key not null
+     * @return 
+     */
+    private Stack<RecordKey> buildKeySequence(final RecordKey key){
+        assert(key != null);
+        Stack<RecordKey> sequence = new Stack<RecordKey>();
+        RecordKey current = key;
+        sequence.push(current);
+        while (current.hasParent()){
+            current = current.getParent();
+            sequence.push(current);            
+        }
+        assert(!sequence.isEmpty());
+        return sequence;
+    }
     
     
     
-    private static void createDeepMap(Map<String,Object> data, List<RecordKey> keys) 
+    private void createDeepMap(Map<String,Object> data, List<RecordKey> keys) 
             throws RecordValueException{
         
         if (!keys.isEmpty()){
             List<RecordKey> workingKeys = new ArrayList<RecordKey>(keys);
             RecordKey key = workingKeys.remove(0);
             
-            Object value = data.get(key.getKey());
+            Object value = data.get(key.getName());
             List list = null;
             Map<String,Object> map = null;
             
@@ -71,7 +111,7 @@ public class RecordValueAssembler {
                 list = new ArrayList<Map>();
                 ensureCapacity(list, key.isIndexed() ? key.getIndex() + 1 : 1);
                 map = (Map) list.get(key.isIndexed() ? key.getIndex() : 0);
-                data.put(key.getKey(), list);
+                data.put(key.getName(), list);
                 createDeepMap(map, workingKeys);
             }
             else if (DataType.getDataType(value) == DataType.LIST) {
@@ -96,31 +136,142 @@ public class RecordValueAssembler {
         }    
     }
     
-    
-    
             
-    private static void ensureCapacity(List<Map<String,Object>> list, int minCapacity){
+    private void ensureCapacity(List list, int minCapacity){
+        if (list == null)
+            list = new ArrayList();
         int diff = minCapacity - list.size();
         for (int x = 0; x < diff; x++){
-            list.add(new HashMap<String,Object>());
+            list.add(null);
         }
-    }
+    }  
+    
+    private Object assemble(List list, Integer index, Object value){
         
-    private static void assemble(Map<String,Object> data, List<RecordKey> keys, Object value) 
+        assert(index != null);        
+        if (list == null)
+        ensureCapacity(list, index + 1);
+        return list.set(index, value);
+    }
+    
+    private Object assemble(Map<String,Object> map, String name, Object value){
+        
+        assert(map != null);
+        assert(name != null);
+        return map.put(name, value);
+    }
+    
+    
+     private Object assemble(List list, Stack<RecordKey> keys, Object value) 
             throws RecordValueException{
         
-        assert(data != null);
-        assert(value != null);
+        assert(list != null);
         assert(keys != null);
         
-        
+        RecordKey key = keys.pop();
         if (keys.isEmpty()){
-            return; //done
+            
         }
+        
+        
+        
+        Object previousValue = null;
+        if (!keys.isEmpty()){
+            
+            Object temp = map.get(key.getName());
+            DataType type = DataType.getDataType(temp);
+            if (type == DataType.LIST){
+                if (key.isIndexed()){
+                    
+            }
+            else if (type == DataType.MAP){
+                
+            }
+        }
+        
+        return previousValue;
+    }
+     }
+        
+        
+    /**
+      * If the key is not indexed, then value is simply returned. If key <i>is</i> indexed,
+      * then a new List is created with the value at key.index.
+      * 
+      * @param key
+      * @param value
+      * @return value if key is not indexed, else a list that contains the value at key.index.
+      */
+    protected Object getObjectToInsert(RecordKey key, Object value){
+        assert(key != null);
+        Object result = value;
+        if (key.isIndexed()){
+            List list = new ArrayList();
+            ensureCapacity(list, key.getIndex() + 1);
+            list.set(key.getIndex(), value);
+            result = list;
+        }
+        return result;
+    }
+     
+        
+    protected Object assemble(Map<String,Object> map, Stack<RecordKey> keys, Object value) 
+            throws RecordValueException{
+        
+        assert(map != null);
+        assert(value != null);
+        assert(keys != null);
+        assert(!keys.isEmpty());
+        
+        Object previous = null;
+        RecordKey key = keys.pop();
+        if (keys.isEmpty()){
+            
+            if (key.isIndexed()){
+                List list = (List) map.get(key.getName());
+                ensureCapacity(list, key.getIndex() + 1);
+            }
+            else{
+                previous = map.put(key.getName(), value);
+            }
+        }
+            //at last key.
+            
+        }
+        else{
+            
+            
+        }
+        
+        if (existing == null){
+            existing = hydrate(key, value);
+        }
+        
+        
+        else{
+            
+        }
+            
+        
+        if (!keys.isEmpty()){
+            
+            Object temp = map.get(key.getName());
+            DataType type = DataType.getDataType(temp);
+            if (type == DataType.LIST){
+                if (key.isIndexed()){
+                    
+            }
+            else if (type == DataType.MAP){
+                
+            }
+        }
+        
+        return previous;
+        /*
         else if (keys.size() > 1){
-            String allButLastKey = RecordKey.toKey(keys.subList(0, keys.size() - 1));
-            RecordKey lastKey = keys.get(keys.size() - 1);
-            List<Object> existing = RecordValueResolver.resolve(data, allButLastKey);
+            RecordKey parentKey = RecordKey.compose(RecordKey.getParent(keys));
+            RecordKey childKey = keys.get(keys.size() - 1);
+            List<Object> existing = RecordValueResolver.resolve(data, parentKey);
             
             if (existing.size() != 1){
                 //since I only have one value, I can reliably infer the structure of the Record from the keys.
@@ -135,20 +286,22 @@ public class RecordValueAssembler {
                                  + "Unable to assemble value [%s] into the Record because I am expecting the object "
                                  + "at [%s] to be a Map, but instead it is a(n) [%s].  "
                                  + "Note: This is a valid Record, but I cannot assemble values into it reliably.",
-                                new Object[]{value, lastKey, existing.getClass().getName()}));
+                                new Object[]{value, childKey, existing.getClass().getName()}));
                 }
                     
-                Map map = (Map) existing.get(lastKey.isIndexed() ? lastKey.getIndex() : 0);
-                map.put(lastKey.getKey(), value);
+                Map map = (Map) existing.get(childKey.isIndexed() ? childKey.getIndex() : 0);
+                map.put(childKey.getName(), value);
             }
         }
         else{            
-            data.put(keys.get(0).getKey(), value);
+            data.put(keys.pop().getName(), value);
         }
+         * 
+         */
     }
     
     
-    private static void assemble(Map<String,Object> data, List<RecordKey> keys, List values)
+    private static void assemble(Map<String,Object> data, Stack<RecordKey> keys, List values)
         throws RecordValueException{
         
         assert(data != null);
@@ -158,13 +311,13 @@ public class RecordValueAssembler {
         if (keys.isEmpty()){
             return; //done
         }
-        else if (keys.size() > 1){
-            String allButLastKey = RecordKey.toKey(keys.subList(0, keys.size() - 1));
-            RecordKey lastKey = keys.get(keys.size() - 1);
+        else if (keys.size() > 1){            
+            String parentKey = RecordKey.compose(RecordKey.getParent(keys));
+            RecordKey childKey = keys.get(keys.size() - 1);
             List<Object> existing = null;
             
             try{
-                existing = RecordValueResolver.resolve(data, allButLastKey);
+                existing = RecordValueResolver.resolve(data, parentKey);
             }
             catch(ClassCastException wrongClass){
                 throw new RecordValueException(
@@ -172,7 +325,7 @@ public class RecordValueAssembler {
                             "Non-standard Record structure encountered.  "
                              + "Unable to assemble the value into the Record because I am expecting the "
                              + "object at [%s] to be a Map.  "
-                             + "Note: This is a valid Record, but I cannot assemble values into it reliably.", lastKey),
+                             + "Note: This is a valid Record, but I cannot assemble values into it reliably.", childKey),
                         wrongClass);
             }
             
@@ -191,7 +344,7 @@ public class RecordValueAssembler {
                             "Unable to assemble [%s] values into the Record because there are [%s] Maps at key [%s].  "
                             + "The number of values must match the number of entries at key [%s] for this type of "
                             + "assembly to be reliable.",
-                            new Object[]{values.size(), existing.size(), allButLastKey, allButLastKey}));
+                            new Object[]{values.size(), existing.size(), parentKey, parentKey}));
             }
             else{
                 for (int x = 0; x < values.size(); x++){
@@ -203,19 +356,19 @@ public class RecordValueAssembler {
                                      + "Unable to assemble value [%s] into the Record because I am expecting the "
                                      + "object at [%] to be a Map, but instead it is a(n) [%s].  "
                                      + "Note: This is a valid Record, but I cannot assemble values into it reliably.",
-                                    new Object[]{values.get(x), lastKey, existing.getClass().getName()}));
+                                    new Object[]{values.get(x), childKey, existing.getClass().getName()}));
                     }
                     
                     Map map = (Map) existing.get(x);
-                    map.put(lastKey.getKey(), values.get(x));
+                    map.put(childKey.getName(), values.get(x));
                 }
             }
         }
         else if (keys.size() == 1 && values.size() == 1){
-            data.put(keys.get(0).getKey(), values.get(0));
+            data.put(keys.get(0).getName(), values.get(0));
         }
         else{            
-            data.put(keys.get(0).getKey(), values);
+            data.put(keys.get(0).getName(), values);
         }
     }
  

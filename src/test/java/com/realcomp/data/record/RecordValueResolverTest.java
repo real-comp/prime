@@ -62,45 +62,44 @@ public class RecordValueResolverTest {
     @Test
     public void testResolve() {
         
-        
         Record record = getRecord();
-        List<Object> result = RecordValueResolver.resolve(record.data, "name");
+        List<Object> result = RecordValueResolver.resolve(record, "name");
         assertEquals(1, result.size());
         assertEquals("asdf", result.get(0));
         
-        result = RecordValueResolver.resolve(record.data, "owner");
+        result = RecordValueResolver.resolve(record, "owner");
         assertEquals(2, result.size());
         
-        result = RecordValueResolver.resolve(record.data, "owner.stuff");
+        result = RecordValueResolver.resolve(record, "owner.stuff");
         assertEquals(2, result.size());
         assertEquals("1", result.get(0));
         assertEquals("a", result.get(1));
         
-        result = RecordValueResolver.resolve(record.data, "owner.more");
+        result = RecordValueResolver.resolve(record, "owner.more");
         assertEquals(2, result.size());
         assertEquals("2", result.get(0));
         assertEquals("b", result.get(1));
         
-        result = RecordValueResolver.resolve(record.data, "owner[0].more");
+        result = RecordValueResolver.resolve(record, "owner[0].more");
         assertEquals(1, result.size());
         assertEquals("2", result.get(0));
         
-        result = RecordValueResolver.resolve(record.data, "owner[0].address.city");
+        result = RecordValueResolver.resolve(record, "owner[0].address.city");
         assertEquals(1, result.size());
         assertEquals("austin", result.get(0));
         
         
-        result = RecordValueResolver.resolve(record.data, "owner[1].address.city");
+        result = RecordValueResolver.resolve(record, "owner[1].address.city");
         assertEquals(1, result.size());
         assertEquals("dallas", result.get(0));
         
         //there are 2 owner records, each with one address
-        result = RecordValueResolver.resolve(record.data, "owner.address[0].city");
+        result = RecordValueResolver.resolve(record, "owner.address[0].city");
         assertEquals(2, result.size());
         assertEquals("austin", result.get(0));
         assertEquals("dallas", result.get(1));
         
-        result = RecordValueResolver.resolve(record.data, "owner.address[1].city");
+        result = RecordValueResolver.resolve(record, "owner.address[1].city");
         assertEquals(0, result.size());
         
         

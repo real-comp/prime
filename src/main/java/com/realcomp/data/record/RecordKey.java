@@ -1,108 +1,157 @@
 package com.realcomp.data.record;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
  * The key for a value in a Record.
- * A record key can also reference an item in a List. 
+ * <p>
+ * <h2>Indexed Keys</h2>
+ * A record key can also be indexed; referencing an item in a List. 
  * e.g., "owner[1]" would reference 2nd item in the list stored at key 'owner'.
+ * </p>
+ * <p>
+ * <h2>Composite Keys</h2>
+ * </p>
  * 
  * @author krenfro
  */
 public class RecordKey {
 
-    
     protected static final Pattern pattern = Pattern.compile("([A-Za-z0-9\\_ :-]+)(?:\\[)?([0-9]+)?(?:\\])?[\\.]?");
     
-    private String key;
-    private int index;
+    private RecordKey parent;
+    private String name;
+    private Integer index;
 
+    /**
+     * @param key not null. may be indexed or composite.
+     */
     public RecordKey(String key) {
 
+        if (key == null)
+            throw new IllegalArgumentException("key is null");
+        if (key.isEmpty())
+            throw new IllegalArgumentException("key is empty");
+        
         Matcher m = pattern.matcher(key);
         if (!m.matches())
-            throw new IllegalArgumentException("invalid key: " + key);
+            throw new IllegalArgumentException("invalid RecordKey [" + key + "]");
         
-        index = -1;
-        key = m.group(1);
-        index = m.group(2) == null ? -1 : Integer.parseInt(m.group(2));
+        RecordKey prev = null;
+        while (m.find()){
+            prev = new RecordKey(m.group(1), m.group(2), prev);
+        }
+        
+        key = prev.name;
+        index = prev.index;
+        parent = prev.parent;
     }
     
-    private RecordKey(String name, int index) {
-
+    public RecordKey(RecordKey copy){
+        this.name = copy.name;
+        this.index = copy.index;
+        this.parent = copy.parent;
+    }
+    
+    private RecordKey(String name, String index){
         assert(name != null);
-        assert(!name.isEmpty());
+        assert(!name.isEmpty());        
+        this.name = name;
+        this.index = index == null ? null : Integer.parseInt(index);
+        parent = null;
+        if (this.index != null && this.index < 0)
+            throw new IllegalArgumentException("RecordKey [" + name + "] index [" + index + "] < 0");        
+    }
         
-        key = name;
-        this.index = index;
+    private RecordKey(String name, String index, RecordKey parent) {
+        this(name, index);
+        this.parent = parent;
+    }
+    
+    
+    /**
+     * An indexed RecordKey represents an index into a list of values in a Record.  (e.g., "property.improvement[1]")
+     * @return true if this RecordKey has an index; else false.  
+     */
+    public boolean isIndexed() {
+        return index != null;
+    }
+
+    /**
+     * 
+     * @param name 
+     */
+    public void setName(String name) {
+        if (name == null)
+            throw new IllegalArgumentException("name is null");
+        if (name.isEmpty())
+            throw new IllegalArgumentException("name is empty");
+        if (name.contains("."))
+            throw new IllegalArgumentException(
+                    "name must not contain a '.' This character is reserved for composite keys.");
+        this.name = name;
     }
     
     /**
-     * Parses period delimited composite key for each individual RecordKey component.
-     * For example, the key "property.owner[1].name" would return
-     * a list of 3 RecordKeys. 
-     * 
-     * @param compositeKey not null or empty
-     * @return 
+     * @return the key name, without optional index and not composite.
      */
-    public static List<RecordKey> parse(String compositeKey) {
-        
-        if (compositeKey == null)
-            throw new IllegalArgumentException("compositeKey is null");
-        
-        List<RecordKey> list = new ArrayList<RecordKey>();
-        
-        if (!compositeKey.isEmpty()){
-            Matcher m = pattern.matcher(compositeKey);
-            while (m.find()){
-                list.add(new RecordKey(
-                        m.group(1),
-                        m.group(2) == null ? -1 : Integer.parseInt(m.group(2))));
-            } 
-        }
-        
-        return list;
+    public String getName() {
+        return name;
     }
 
-    public boolean isIndexed() {
-        return index >= 0;
+    /**
+     * 
+     * @return true if this RecordKey has a parent; else false.
+     */
+    public boolean hasParent(){
+        return parent != null;
+    }
+    
+    /**
+     * 
+     * @return This RecordKey's parent key; or null if there is no parent.
+     */
+    public RecordKey getParent() {
+        return parent;
     }
 
-    public String getKey() {
-        return key;
+    /**
+     * 
+     * @param parent the parent for this key.  May be null.
+     */
+    public void setParent(RecordKey parent) {
+        this.parent = parent;
     }
     
-    public static String toKey(List<RecordKey> keys){
-        
-        StringBuilder result = new StringBuilder();
-        for (int x = 0; x < keys.size(); x++){
-            if (x != 0){
-                result.append(".");
-            }
-            result.append(keys.get(x));
-        }
-        return result.toString();
-    }
-    
-    public int getIndex(){
+    /**
+     * 
+     * @return the index for the key; or null if not indexed.
+     */
+    public Integer getIndex(){
         return index;
     }
 
-    public void setIndex(int index) {
+    /**
+     * 
+     * @param index set the index for this key. may be null.
+     */
+    public void setIndex(Integer index) {
         this.index = index;
     }
-
-    public void setKey(String key) {
-        this.key = key;
-    }
-
     
     @Override
-    public String toString(){
-        return index >= 0 ? String.format("%s[%s]", new Object[]{key, index}) : key;
+    public String toString(){        
+        if (hasParent()){
+            StringBuilder s = new StringBuilder();        
+            s.append(index == null ? String.format("%s[%s]", new Object[]{name, index}) : name);        
+            s.insert(0, ".");
+            s.insert(0, parent.toString()); //will recurse up the stack.
+            return s.toString();
+        }
+        else{
+            return index == null ? String.format("%s[%s]", new Object[]{name, index}) : name;
+        }
     }
 
     @Override
@@ -112,18 +161,21 @@ public class RecordKey {
         if (getClass() != obj.getClass())
             return false;
         final RecordKey other = (RecordKey) obj;
-        if ((this.key == null) ? (other.key != null) : !this.key.equals(other.key))
+        if (this.parent != other.parent && (this.parent == null || !this.parent.equals(other.parent)))
             return false;
-        if (this.index != other.index)
+        if ((this.name == null) ? (other.name != null) : !this.name.equals(other.name))
+            return false;
+        if (this.index != other.index && (this.index == null || !this.index.equals(other.index)))
             return false;
         return true;
     }
 
     @Override
     public int hashCode() {
-        int hash = 5;
-        hash = 37 * hash + (this.key != null ? this.key.hashCode() : 0);
-        hash = 37 * hash + this.index;
+        int hash = 7;
+        hash = 37 * hash + (this.parent != null ? this.parent.hashCode() : 0);
+        hash = 37 * hash + (this.name != null ? this.name.hashCode() : 0);
+        hash = 37 * hash + (this.index != null ? this.index.hashCode() : 0);
         return hash;
     }
 }

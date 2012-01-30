@@ -109,7 +109,7 @@ public class JsonWriter implements RecordWriter{
         filter.removeAll(keep);
         
         for (String f: filter){
-            record.asMap().remove(f);
+            record.remove(f);
         }
     }
 

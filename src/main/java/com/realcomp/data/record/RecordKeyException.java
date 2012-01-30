@@ -1,6 +1,6 @@
 package com.realcomp.data.record;
 
-public class RecordKeyException extends Exception{
+public class RecordKeyException extends IllegalArgumentException{
     
     public RecordKeyException(){
         super();

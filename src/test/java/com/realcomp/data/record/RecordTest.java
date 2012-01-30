@@ -89,4 +89,27 @@ public class RecordTest {
         
         
     }
+    
+    
+    
+    @Test
+    public void testNestedMapResolution() throws RecordKeyException{
+        
+        Record record = new Record();
+        
+        Map<String,Object> child = new HashMap<String,Object>();
+        child.put("first", "Kyle");
+        child.put("last", "Renfro");
+        record.put("name", child);
+        record.put("id", 12345);
+        
+        assertEquals(12345, record.get("id"));
+        
+        Map<String,Object> result = (Map) record.get("name");
+        assertEquals(child, result);
+        
+        assertEquals("Kyle", record.get("name.first"));
+        assertEquals("Renfro", record.get("name.last"));
+    }
+    
 }
