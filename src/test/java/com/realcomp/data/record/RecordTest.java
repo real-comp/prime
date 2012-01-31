@@ -81,11 +81,12 @@ public class RecordTest {
         assertEquals("a", record.getAll("owner[1].stuff").get(0));
         assertEquals("2", record.getAll("owner[0].more").get(0));
         assertEquals("b", record.getAll("owner[1].more").get(0));
-        
-        assertEquals("1", record.getAll("owner[0].stuff[0]").get(0));
-        assertEquals("a", record.getAll("owner[1].stuff[0]").get(0));
-        assertEquals("2", record.getAll("owner[0].more[0]").get(0));
-        assertEquals("b", record.getAll("owner[1].more[0]").get(0));
+    
+        try{
+            record.getAll("owner[0].stuff[0]");
+            fail("should have thrown RecordKeyException. stuff is not a list");
+        }
+        catch(RecordKeyException ok){}
         
         
     }

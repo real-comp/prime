@@ -21,30 +21,31 @@ public class RecordKeyTest {
     public RecordKeyTest() {
     }
 
-    @Test
+    @Test(expected=RecordKeyException.class)
     public void testEmptyString(){
         
-        List<RecordKey> keys = RecordKey.parse("");
-        assertTrue(keys.isEmpty());
+        RecordKey key = new RecordKey("");
+        assertFalse(key.hasParent());
+        assertFalse(key.isIndexed());
     }
     
     @Test
     public void testPattern(){
         
         
-        assertFalse(RecordKey.pattern.matcher("").matches());
-        assertFalse(RecordKey.pattern.matcher("prop#imp").matches());        
+        assertFalse(RecordKey.parsingPattern.matcher("").matches());
+        assertFalse(RecordKey.parsingPattern.matcher("prop#imp").matches());        
         
         
-        assertTrue(RecordKey.pattern.matcher("a").matches());
-        assertTrue(RecordKey.pattern.matcher("AB").matches());
-        assertTrue(RecordKey.pattern.matcher("AB1").matches());
-        assertTrue(RecordKey.pattern.matcher("AB1_").matches());
-        assertTrue(RecordKey.pattern.matcher("AB1_:").matches());
-        assertTrue(RecordKey.pattern.matcher("AB1_:-").matches());
-        assertTrue(RecordKey.pattern.matcher("A B ").matches());
+        assertTrue(RecordKey.parsingPattern.matcher("a").matches());
+        assertTrue(RecordKey.parsingPattern.matcher("AB").matches());
+        assertTrue(RecordKey.parsingPattern.matcher("AB1").matches());
+        assertTrue(RecordKey.parsingPattern.matcher("AB1_").matches());
+        assertTrue(RecordKey.parsingPattern.matcher("AB1_:").matches());
+        assertTrue(RecordKey.parsingPattern.matcher("AB1_:-").matches());
+        assertTrue(RecordKey.parsingPattern.matcher("A B ").matches());
         
-        Matcher m = RecordKey.pattern.matcher("prop.imp");     
+        Matcher m = RecordKey.parsingPattern.matcher("prop.imp");     
         assertTrue(m.find());
         assertEquals(2, m.groupCount());
         assertEquals("prop", m.group(1));
@@ -56,7 +57,7 @@ public class RecordKeyTest {
         assertFalse(m.find());
         
         
-        m = RecordKey.pattern.matcher("prop[0].imp[1]");        
+        m = RecordKey.parsingPattern.matcher("prop[0].imp[1]");        
         assertTrue(m.find());
         assertEquals(2, m.groupCount());
         assertEquals("prop", m.group(1));

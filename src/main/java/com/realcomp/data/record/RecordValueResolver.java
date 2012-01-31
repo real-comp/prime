@@ -36,8 +36,8 @@ public class RecordValueResolver {
     }
     
     /**
-     * Builds the sequence that keys need to be resolved from the root Map. The root key will be at the
-     * top of the stack.
+     * Builds the sequence that keys need to be resolved from the root Map. 
+     * The root key will be at the top of the stack, and <i>key</i> will be at the bottom.
      * 
      * @param key not null
      * @return 
@@ -55,10 +55,12 @@ public class RecordValueResolver {
         return sequence;
     }
     
+    @SuppressWarnings("unchecked")
     private static List<Object> resolve(Map<String,Object> map, Stack<RecordKey> sequence){
         List<Object> result = null;
-        RecordKey key = sequence.isEmpty() ? null : sequence.pop();
-        if (key != null){
+        
+        if (!sequence.isEmpty()){
+            RecordKey key = sequence.pop();
             Object value = map.get(key.getName());
             if (value != null){
                 result = new ArrayList<Object>();
@@ -67,27 +69,40 @@ public class RecordValueResolver {
                     if (key.isIndexed()){
                         if (list.size() > key.getIndex())
                             result.addAll(resolve(list.get(key.getIndex()), sequence));
+                        else
+                            result = null;
+                    }
+                    else if (sequence.isEmpty()){
+                        result.addAll(list);
                     }
                     else{
-                        for (Map<String,Object> entry: list)
-                            result.addAll(resolve(entry, sequence)); //recursion
+                        for (Map<String,Object> entry: list){
+                            List<Object> temp = resolve(entry, (Stack<RecordKey>) sequence.clone()); //recursion
+                            if (temp == null)
+                                result = null;
+                            else
+                                result.addAll(temp);
+                        }
                     }
                 }
                 else if (Map.class.isAssignableFrom(value.getClass())){                    
                     if (key.isIndexed())
-                        throw new RecordKeyException("RecordKey [" + key + "] is indexed, but does not reference a List");
+                        throw new RecordKeyException(
+                                "RecordKey [" + key + "] is indexed, but does not reference a List");
                     
-                    result.addAll(resolve((Map) value, sequence));
+                    result.addAll(resolve((Map<String,Object>) value, sequence));
                 }
                 else{                    
                     if (key.isIndexed())
-                        throw new RecordKeyException("RecordKey [" + key + "] is indexed, but does not reference a List");
+                        throw new RecordKeyException(
+                                "RecordKey [" + key + "] is indexed, but does not reference a List");
                     
                     result.add(value);
                 }
             }
         }
         else{
+            result = new ArrayList<Object>();
             result.add(map);
         }
         

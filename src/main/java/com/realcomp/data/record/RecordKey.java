@@ -18,7 +18,13 @@ import java.util.regex.Pattern;
  */
 public class RecordKey {
 
-    protected static final Pattern pattern = Pattern.compile("([A-Za-z0-9\\_ :-]+)(?:\\[)?([0-9]+)?(?:\\])?[\\.]?");
+    protected static final String namePattern = "[A-Za-z0-9\\_ :-]+";
+    protected static final String optionalIndexPattern = "(\\[[0-9]\\])?";
+    protected static final Pattern validKeyPattern = 
+            Pattern.compile(
+                String.format("%s%s(\\.%s%s)*", namePattern, optionalIndexPattern, namePattern, optionalIndexPattern));
+    
+    protected static final Pattern parsingPattern = Pattern.compile("([A-Za-z0-9\\_ :-]+)(?:\\[)?([0-9]+)?(?:\\])?[\\.]?");
     
     private RecordKey parent;
     private String name;
@@ -30,22 +36,27 @@ public class RecordKey {
     public RecordKey(String key) {
 
         if (key == null)
-            throw new IllegalArgumentException("key is null");
+            throw new RecordKeyException("key is null");
         if (key.isEmpty())
-            throw new IllegalArgumentException("key is empty");
+            throw new RecordKeyException("key is empty");
         
-        Matcher m = pattern.matcher(key);
-        if (!m.matches())
-            throw new IllegalArgumentException("invalid RecordKey [" + key + "]");
+        if (!validKeyPattern.matcher(key).matches())
+            throw new RecordKeyException("invalid RecordKey [" + key + "]");
         
+        Matcher m = parsingPattern.matcher(key);
         RecordKey prev = null;
         while (m.find()){
             prev = new RecordKey(m.group(1), m.group(2), prev);
         }
         
-        key = prev.name;
-        index = prev.index;
-        parent = prev.parent;
+        if (prev == null){
+            name = key;
+        }
+        else{
+            name = prev.name;
+            index = prev.index;
+            parent = prev.parent;
+        }
     }
     
     public RecordKey(RecordKey copy){
@@ -144,13 +155,13 @@ public class RecordKey {
     public String toString(){        
         if (hasParent()){
             StringBuilder s = new StringBuilder();        
-            s.append(index == null ? String.format("%s[%s]", new Object[]{name, index}) : name);        
+            s.append(index == null ? name : String.format("%s[%s]", new Object[]{name, index}));
             s.insert(0, ".");
             s.insert(0, parent.toString()); //will recurse up the stack.
             return s.toString();
         }
         else{
-            return index == null ? String.format("%s[%s]", new Object[]{name, index}) : name;
+            return index == null ? name : String.format("%s[%s]", new Object[]{name, index});
         }
     }
 

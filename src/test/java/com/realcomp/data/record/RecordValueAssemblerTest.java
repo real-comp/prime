@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.realcomp.data.record;
 
 import java.util.List;
@@ -67,7 +63,9 @@ public class RecordValueAssemblerTest {
         assertEquals(1000, RecordValueResolver.resolve(data, "prop.imp_info[0].sqft").get(0));
         
         assertEquals(2000, RecordValueResolver.resolve(data, "prop.imp_info.sqft").get(1));
-        assertEquals(2000, RecordValueResolver.resolve(data, "prop.imp_info[1].sqft").get(0));
+        
+        //imp_info[1] does not exist. this should return null
+        assertEquals(null, RecordValueResolver.resolve(data, "prop.imp_info[1].sqft"));
 
             
     }
@@ -165,21 +163,6 @@ public class RecordValueAssemblerTest {
     
     
     @Test
-    public void testEmptyKeys() throws RecordValueException{
-        
-        Map<String,Object> data = new HashMap<String,Object>();
-        Map<String,Object> copy = new HashMap<String,Object>();
-        copy.putAll(data);
-        
-        RecordValueAssembler.assemble(data, "", "");
-        assertEquals(data, copy);
-        RecordValueAssembler.assemble(data, "", new ArrayList<Object>());
-        assertEquals(data, copy);
-        
-    }
-     
-    
-    @Test
     public void testNullParameters() throws RecordValueException{
         
         Map<String,Object> data = new HashMap<String,Object>();
@@ -190,7 +173,7 @@ public class RecordValueAssemblerTest {
         catch(IllegalArgumentException expected){}
         
         try{
-            RecordValueAssembler.assemble(data, null, "real-comp");
+            RecordValueAssembler.assemble(data, (String) null, "real-comp");
             fail("should have thrown IAE");
         }
         catch(IllegalArgumentException expected){}
@@ -208,7 +191,7 @@ public class RecordValueAssemblerTest {
         catch(IllegalArgumentException expected){}
         
         try{
-            RecordValueAssembler.assemble(data, null, new ArrayList());
+            RecordValueAssembler.assemble(data, (String) null, new ArrayList());
             fail("should have thrown IAE");
         }
         catch(IllegalArgumentException expected){}
@@ -230,7 +213,7 @@ public class RecordValueAssemblerTest {
         catch(IllegalArgumentException expected){}
         
         try{
-            RecordValueAssembler.assemble(record, null, "real-comp");
+            RecordValueAssembler.assemble(record, (RecordKey) null, "real-comp");
             fail("should have thrown IAE");
         }
         catch(IllegalArgumentException expected){}
@@ -248,7 +231,7 @@ public class RecordValueAssemblerTest {
         catch(IllegalArgumentException expected){}
         
         try{
-            RecordValueAssembler.assemble(record, null, new ArrayList());
+            RecordValueAssembler.assemble(record, (RecordKey) null, new ArrayList());
             fail("should have thrown IAE");
         }
         catch(IllegalArgumentException expected){}
