@@ -12,18 +12,22 @@ import java.util.Stack;
  * @author krenfro
  */
 public class RecordValueResolver {
-    
+    /*
     public static Object resolve(Record record, String key){
         return resolve(record.data, new RecordKey(key));
     }
+     * 
+     */
     
     public static Object resolve(Map<String,Object> map, String key){
         return resolve(map, new RecordKey(key));
     }    
-   
+   /*
     static Object resolve(Record record, RecordKey key){
         return resolve(record.data, key);
     }
+     * 
+     */
      
     static Object resolve(Map<String,Object> map, RecordKey key){
         return resolve(map, key.buildKeySequence());

@@ -10,8 +10,8 @@ import java.util.*;
  * @author krenfro
  */
 public class RecordValueAssembler {
-    
-     public static Object assemble(Record record, String key, Object value) throws RecordValueException{
+    /*
+     public static Object assemble(Record record, String key, Object value){
         if (record == null)
             throw new IllegalArgumentException("record is null");
         if (key == null)
@@ -19,8 +19,10 @@ public class RecordValueAssembler {
         
         return assemble(record.data, new RecordKey(key), value);
     }
+     * 
+     */
     
-    public static Object assemble(Map<String,Object> map, String key, Object value) throws RecordValueException{
+    public static Object assemble(Map<String,Object> map, String key, Object value){
         if (map == null)
             throw new IllegalArgumentException("map is null");
         if (key == null)
@@ -30,7 +32,8 @@ public class RecordValueAssembler {
         return assemble(map, new RecordKey(key), value);
     }
     
-    static Object assemble(Record record, RecordKey key, Object value) throws RecordValueException{
+    /*
+    static Object assemble(Record record, RecordKey key, Object value){
         if (record == null)
             throw new IllegalArgumentException("record is null");
         if (key == null)
@@ -38,8 +41,10 @@ public class RecordValueAssembler {
         
         return assemble(record.data, key.buildKeySequence(), value);
     }
+     * 
+     */
     
-    static Object assemble(Map<String,Object> map, RecordKey key, Object value) throws RecordValueException{
+    static Object assemble(Map<String,Object> map, RecordKey key, Object value){
         if (map == null)
             throw new IllegalArgumentException("map is null");
         if (key == null)
@@ -68,7 +73,7 @@ public class RecordValueAssembler {
     
     
     @SuppressWarnings({"unchecked", "unchecked"})
-    static Object assemble(Map<String,Object> map, Stack<RecordKey> keys, Object value) throws RecordValueException{
+    static Object assemble(Map<String,Object> map, Stack<RecordKey> keys, Object value){
         
         Object previous = null;
         if (!keys.isEmpty()){
@@ -77,7 +82,27 @@ public class RecordValueAssembler {
             
             if (keys.isEmpty()){
                 //this is the last (target) key. Set the value and return the previous result
-                previous = map.put(key.getName(), value);
+                if (key.isIndexed()){
+                    //indexed fields need to live in a list. Make sure one is available.
+                    List list = null;
+                    if (current == null){
+                        list = new ArrayList();
+                        ensureCapacity(list, key.getIndex() + 1);
+                        previous = list.set(key.getIndex(), value);
+                        map.put(key.getName(), list);
+                    }
+                    else if (DataType.getDataType(current) == DataType.LIST){
+                        list = (List) current;
+                        ensureCapacity(list, key.getIndex() + 1);
+                        previous = list.set(key.getIndex(), value);
+                    }
+                    else{
+                        throw new RecordKeyException("todo");
+                    }
+                }
+                else{
+                    previous = map.put(key.getName(), value);
+                }
             }
             else if (current == null){
                 //there is no value for the key. There is at least one more key in the sequence.

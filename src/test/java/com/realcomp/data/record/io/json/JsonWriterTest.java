@@ -96,7 +96,7 @@ public class JsonWriterTest {
         
         //should be close to:
         //{"f":1.2,"d":1.3434,"b":true,"s":"test string","list":["a","b","c",1,2,3],"l":7474,"i":1, "map":{"entryNumber":1,"entry":"a"}}
-        //{"l":7474,"f":1.2,"map":{"entry":"a","entryNumber":1},"d":1.3434,"list":["a","b","c",1,2,3],"s":"test string","i":1,"b":true}
+        
 
         assertTrue(Pattern.compile("\"f\"[ ]*:[ ]*[0-9\\.]+").matcher(json).find());
         assertTrue(Pattern.compile("\"d\"[ ]*:[ ]*[0-9\\.]+").matcher(json).find());
@@ -105,6 +105,8 @@ public class JsonWriterTest {
         assertTrue(Pattern.compile("\"i\"[ ]*:[ ]*[0-9\\.]+").matcher(json).find());
         assertTrue(Pattern.compile("\"s\"[ ]*:[ ]*\"test string\"").matcher(json).find());
         assertTrue(Pattern.compile("\"list\"[ ]*:[ ]*\\[[0-9a-zA-Z,\"\\. ]+\\]").matcher(json).find());
+        
+        System.out.println(json);
         assertTrue(Pattern.compile("\"map\"[ ]*:[ ]*\\{[0-9a-zA-Z,\"\\.: ]+\\}").matcher(json).find());
         
     }

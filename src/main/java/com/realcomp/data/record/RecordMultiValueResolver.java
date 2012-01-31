@@ -11,17 +11,23 @@ import java.util.Stack;
  */
 public class RecordMultiValueResolver {
     
+    /*
     public static List<Object> resolve(Record record, String key){
         return resolve(record.data, new RecordKey(key));
     }
+     * 
+     */
     
     public static List<Object> resolve(Map<String,Object> map, String key){
         return resolve(map, new RecordKey(key));
     }    
    
+    /*
     static List<Object> resolve(Record record, RecordKey key){
         return resolve(record.data, key);
     }
+     * 
+     */
      
     static List<Object> resolve(Map<String,Object> map, RecordKey key){
         return resolve(map, key.buildKeySequence());

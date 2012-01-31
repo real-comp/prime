@@ -1,6 +1,6 @@
 package com.realcomp.data.record;
 
-public class RecordValueException extends Exception{
+public class RecordValueException extends RuntimeException{
     
     public RecordValueException(){
         super();

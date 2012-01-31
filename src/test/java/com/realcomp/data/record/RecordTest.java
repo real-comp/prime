@@ -1,5 +1,6 @@
 package com.realcomp.data.record;
 
+import java.util.Map.Entry;
 import java.util.HashMap;
 import java.util.ArrayList;
 import java.util.List;
@@ -113,4 +114,72 @@ public class RecordTest {
         assertEquals("Renfro", record.get("name.last"));
     }
     
+    
+    @Test
+    public void testComplexRecord() throws RecordKeyException{
+        
+        Record record = new Record();
+        Map<String,Object> owner = new HashMap<String,Object>();
+        owner.put("first", "kyle");
+        owner.put("last", "renfro");
+        record.put("id", 12345);
+        List<Map> owners = new ArrayList<Map>();
+        owners.add(owner);
+        
+        owner = new HashMap<String,Object>();
+        owner.put("first", "brandon");
+        owner.put("last", "goering");
+        owners.add(owner);
+        
+        record.put("owners", owners);
+        
+        assertEquals(12345, record.get("id"));
+        assertEquals(owner, record.get("owners[1]"));
+        assertEquals("goering", record.get("owners[1].last"));
+        
+        boolean found = false;
+        for (Entry<String,Object> entry: record.entrySet()){
+            if (entry.getKey().equals("owners[0]")){
+               found = true;
+            }
+        }
+        assertTrue(found);
+        
+        for (Entry<String,Object> entry: record.entrySet()){
+            owner = new HashMap<String,Object>();
+            owner.put("first", "kyle");
+            owner.put("last", "renfro");
+            record.put("id", 12345);
+            if (entry.getKey().equals("owners[0]")){
+               assertEquals(owner, entry.getValue());
+            }
+        }
+    }       
+    
+    
+    @Test
+    public void testIndexedFields() throws RecordKeyException{
+        
+        Record record = new Record();
+        record.put("id", 12345);
+        
+        Map<String,Object> owner = new HashMap<String,Object>();
+        owner.put("first", "kyle");
+        owner.put("last", "renfro");
+        record.put("owners[0]", owner);
+        
+        assertEquals(owner, record.get("owners"));
+        assertEquals(owner, record.get("owners[0]"));
+        assertNull(record.get("owners[1]"));
+        
+        owner = new HashMap<String,Object>();
+        owner.put("first", "brandon");
+        owner.put("last", "goering");        
+        record.put("owners[1]", owner);
+        
+        assertEquals(owner, record.get("owners[1]"));
+        assertEquals("goering", record.get("owners[1].last"));
+        assertEquals("renfro", record.get("owners[0].last"));
+        
+    }       
 }

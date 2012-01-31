@@ -11,6 +11,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
@@ -25,7 +27,7 @@ public class Record implements Map<String,Object>, Serializable {
 
     public static final long serialVersionUID = 2L;
     
-    Map<String, Object> data;
+    private Map<String, Object> data;
 
     public Record() {
         data = new HashMap<String, Object>();
@@ -93,7 +95,10 @@ public class Record implements Map<String,Object>, Serializable {
     
     @Override
     public Object put(String key, Object value) {
-        return value == null ? data.remove(key) : data.put(key, value);
+        if (key == null)
+            throw new RecordKeyException("Record keys cannot be null.");
+        
+        return RecordValueAssembler.assemble(data, key, value);
     }
     
     @Override
@@ -101,38 +106,6 @@ public class Record implements Map<String,Object>, Serializable {
         data.clear();
     }
 
-    public Object put(String key, String value) {
-        return value == null ? data.remove(key) : data.put(key, value);
-    }
-
-    public Object put(String key, Integer value) {
-        return value == null ? data.remove(key) : data.put(key, value);
-    }
-
-    public Object put(String key, Float value) {
-        return value == null ? data.remove(key) : data.put(key, value);
-    }
-
-    public Object put(String key, Long value) {
-        return value == null ? data.remove(key) : data.put(key, value);
-    }
-
-    public Object put(String key, Double value) {
-        return value == null ? data.remove(key) : data.put(key, value);
-    }
-
-    public Object put(String key, Boolean value) {
-        return value == null ? data.remove(key) : data.put(key, value);
-    }
-
-    public Object put(String key, List value) {
-        return value == null ? data.remove(key) : data.put(key, value);
-    }
-
-    public Object put(String key, Map value) {
-        return value == null ? data.remove(key) : data.put(key, value);
-    }
-    
     /**
      * @param key evaluated as a String
      * @return The value referenced by the <i>key</i>. Type one of supported DataTypes. Null if value does not exist.

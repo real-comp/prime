@@ -71,7 +71,7 @@ class RecordEntries {
     
     /**
      * Determines if the value represents a leaf value in the record.
-     * Leaf values are maps and lists that contain lists or maps.
+     * Non-Leaf values are maps and lists that contain maps or lists.
      * @param value
      * @return 
      */
