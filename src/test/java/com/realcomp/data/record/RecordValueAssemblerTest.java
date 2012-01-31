@@ -25,12 +25,12 @@ public class RecordValueAssemblerTest {
         assertEquals("real-comp", data.get("name"));
                 
         RecordValueAssembler.assemble(data, "prop.imp_info.sqft", 1000);
-        assertEquals(1000, RecordValueResolver.resolve(data, "prop.imp_info.sqft").get(0));
+        assertEquals(1000, RecordValueResolver.resolve(data, "prop.imp_info.sqft"));
         
         Record record = new Record();
         RecordValueAssembler.assemble(record, "name", "real-comp");
         assertEquals("real-comp", record.get("name"));
-        assertEquals("real-comp", record.getAll("name").get(0));
+        //assertEquals("real-comp", record.getAll("name").get(0));
         
     }
     
@@ -43,8 +43,8 @@ public class RecordValueAssemblerTest {
         assertEquals("real-comp", data.get("name"));
                 
         RecordValueAssembler.assemble(data, "prop[0].imp_info[0].sqft", 1000);
-        assertEquals(1000, RecordValueResolver.resolve(data, "prop.imp_info.sqft").get(0));
-        assertEquals(1000, RecordValueResolver.resolve(data, "prop[0].imp_info[0].sqft").get(0));
+        assertEquals(1000, RecordValueResolver.resolve(data, "prop.imp_info.sqft"));
+        assertEquals(1000, RecordValueResolver.resolve(data, "prop[0].imp_info[0].sqft"));
         
     }
     
@@ -59,10 +59,10 @@ public class RecordValueAssemblerTest {
         //this works because there is currently no value for the key
         RecordValueAssembler.assemble(data, "prop.imp_info.sqft", list);
         
-        assertEquals(1000, RecordValueResolver.resolve(data, "prop.imp_info.sqft").get(0));
-        assertEquals(1000, RecordValueResolver.resolve(data, "prop.imp_info[0].sqft").get(0));
+        assertEquals(1000, ((List) RecordValueResolver.resolve(data, "prop.imp_info.sqft")).get(0));
+        assertEquals(1000, ((List) RecordValueResolver.resolve(data, "prop.imp_info[0].sqft")).get(0));
         
-        assertEquals(2000, RecordValueResolver.resolve(data, "prop.imp_info.sqft").get(1));
+        assertEquals(2000, ((List) RecordValueResolver.resolve(data, "prop.imp_info.sqft")).get(1));
         
         //imp_info[1] does not exist. this should return null
         assertEquals(null, RecordValueResolver.resolve(data, "prop.imp_info[1].sqft"));
@@ -71,7 +71,7 @@ public class RecordValueAssemblerTest {
     }
     
     @Test
-    public void testAssemblyFailure() throws RecordValueException{
+    public void testAssemblyOverwrite() throws RecordValueException{
         
         Map<String,Object> data = new HashMap<String,Object>();
         List<Object> list = new ArrayList();
@@ -79,15 +79,15 @@ public class RecordValueAssemblerTest {
         list.add(2000);
         
         RecordValueAssembler.assemble(data, "prop.imp_info.sqft", "2");
+        assertEquals("2", RecordValueResolver.resolve(data, "prop.imp_info.sqft"));
         
-        try{
-            //this will fail because there is already a value for the key and indexed keys are not used.
-            RecordValueAssembler.assemble(data, "prop.imp_info.sqft", list);
-            fail("should have thrown RecordValueException");
-        }
-        catch(RecordValueException expected){
-            System.out.println(expected.getMessage());
-        }
+        RecordValueAssembler.assemble(data, "prop.imp_info.sqft", list);
+        assertEquals(1000, ((List) RecordValueResolver.resolve(data, "prop.imp_info.sqft")).get(0));
+        
+        RecordValueAssembler.assemble(data, "prop.imp_info", null);
+        assertEquals(null, RecordValueResolver.resolve(data, "prop.imp_info"));
+        assertEquals(null, RecordValueResolver.resolve(data, "prop.imp_info.sqft"));
+        
     }
     
     @Test
@@ -166,11 +166,6 @@ public class RecordValueAssemblerTest {
     public void testNullParameters() throws RecordValueException{
         
         Map<String,Object> data = new HashMap<String,Object>();
-        try{
-            RecordValueAssembler.assemble(data, "name", (String) null);
-            fail("should have thrown IAE");
-        }
-        catch(IllegalArgumentException expected){}
         
         try{
             RecordValueAssembler.assemble(data, (String) null, "real-comp");
@@ -183,13 +178,7 @@ public class RecordValueAssemblerTest {
             fail("should have thrown IAE");
         }
         catch(IllegalArgumentException expected){}
-        
-        try{
-            RecordValueAssembler.assemble(data, "name", (List) null);
-            fail("should have thrown IAE");
-        }
-        catch(IllegalArgumentException expected){}
-        
+                
         try{
             RecordValueAssembler.assemble(data, (String) null, new ArrayList());
             fail("should have thrown IAE");
@@ -205,13 +194,7 @@ public class RecordValueAssemblerTest {
         
         
         Record record = new Record();
-        
-        try{
-            RecordValueAssembler.assemble(record, "name", (String) null);
-            fail("should have thrown IAE");
-        }
-        catch(IllegalArgumentException expected){}
-        
+               
         try{
             RecordValueAssembler.assemble(record, (RecordKey) null, "real-comp");
             fail("should have thrown IAE");
@@ -223,13 +206,7 @@ public class RecordValueAssemblerTest {
             fail("should have thrown IAE");
         }
         catch(IllegalArgumentException expected){}
-        
-         try{
-            RecordValueAssembler.assemble(record, "name", (List) null);
-            fail("should have thrown IAE");
-        }
-        catch(IllegalArgumentException expected){}
-        
+                
         try{
             RecordValueAssembler.assemble(record, (RecordKey) null, new ArrayList());
             fail("should have thrown IAE");

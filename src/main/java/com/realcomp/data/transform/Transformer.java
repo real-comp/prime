@@ -49,7 +49,7 @@ public class Transformer {
         
         for (Field field: fields){            
             context.setKey(field.getName());            
-            List<Object> result = surgeon.operate(getOperations(field), context);
+            Object result = surgeon.operate(getOperations(field), context);
             
             try {
                 RecordValueAssembler.assemble(context.getRecord(), field.getName(), result);

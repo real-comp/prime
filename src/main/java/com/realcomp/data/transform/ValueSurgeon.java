@@ -10,6 +10,7 @@ import com.realcomp.data.record.RecordValueResolver;
 import com.realcomp.data.validation.ValidationException;
 import com.realcomp.data.validation.Validator;
 import com.realcomp.data.validation.file.RecordCountValidator;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -27,12 +28,12 @@ public class ValueSurgeon {
      * @param record holds the value(s) to be operated on
      * @param key the key of the value(s) in the record to operate on
      * @param operations the operations to perform
-     * @return the result of the operation. never null. may be empty. One entry for each value 
-     * referenced by the key.
+     * @return the result of the operation.
+     * 
      * @throws ConversionException
      * @throws ValidationException 
      */
-    public List<Object> operate(List<Operation> operations, TransformContext context) 
+    public Object operate(List<Operation> operations, TransformContext context) 
             throws ConversionException, ValidationException{
         
         if (operations == null)
@@ -43,32 +44,16 @@ public class ValueSurgeon {
         Record record = context.getRecord();
         String key = context.getKey();
         
-        
         // The key specified may resolve to multiple values in the record
-        List<Object> values = RecordValueResolver.resolve(record, key);
+        Object value = RecordValueResolver.resolve(record, key);
         
-        if (values.isEmpty()){
-            //the key did not exist in the record, but there may still be output if there are 
-            // converters like concat or constant which can output values with null input.
-            
-            Object temp = null;
-            for (Operation op: operations){
-                temp = operate(op, temp, context);
-            }
-            if (temp != null)
-                values.add(temp);
-        }
-        else{
-            for (int x = 0; x < values.size(); x++){
-                Object temp = values.get(x);
-                for (Operation op: operations){
-                    temp = operate(op, temp, context);
-                }
-                values.set(x, temp);
-            }
+        //the value may be null in the record, but there may still be output if there are 
+        // converters like concat or constant which can output values with null input.
+        for (Operation op: operations){
+            value = operate(op, value, context);
         }
         
-        return values;
+        return value;
     }
     
 
@@ -89,8 +74,7 @@ public class ValueSurgeon {
 
         Object result = data;
 
-        if (operation instanceof Validator){
-            
+        if (operation instanceof Validator){            
             try{
                 if (operation instanceof RecordCountValidator){
                     ((Validator) operation).validate(context.getRecordCount());

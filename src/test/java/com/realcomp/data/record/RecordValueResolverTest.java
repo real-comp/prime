@@ -63,44 +63,35 @@ public class RecordValueResolverTest {
     public void testResolve() {
         
         Record record = getRecord();
-        List<Object> result = RecordValueResolver.resolve(record, "name");
-        assertEquals(1, result.size());
-        assertEquals("asdf", result.get(0));
+        Object result = RecordValueResolver.resolve(record, "name");
+        assertEquals("asdf", result);
         
         result = RecordValueResolver.resolve(record, "owner");
-        assertEquals(2, result.size());
+        assertEquals(2, ((List) result).size());
         
-        result = RecordValueResolver.resolve(record, "owner.stuff");
-        assertEquals(2, result.size());
-        assertEquals("1", result.get(0));
-        assertEquals("a", result.get(1));
+        try{
+            result = RecordValueResolver.resolve(record, "owner.stuff");
+            fail("should have thrown RecordKeyException");
+        }
+        catch(RecordKeyException expected){}
         
-        result = RecordValueResolver.resolve(record, "owner.more");
-        assertEquals(2, result.size());
-        assertEquals("2", result.get(0));
-        assertEquals("b", result.get(1));
+        try{
+            result = RecordValueResolver.resolve(record, "owner.more");
+            fail("should have thrown RecordKeyException");
+        }
+        catch(RecordKeyException expected){}
+        
         
         result = RecordValueResolver.resolve(record, "owner[0].more");
-        assertEquals(1, result.size());
-        assertEquals("2", result.get(0));
+        assertEquals("2", result);
         
         result = RecordValueResolver.resolve(record, "owner[0].address.city");
-        assertEquals(1, result.size());
-        assertEquals("austin", result.get(0));
+        assertEquals("austin", result);
         
         
         result = RecordValueResolver.resolve(record, "owner[1].address.city");
-        assertEquals(1, result.size());
-        assertEquals("dallas", result.get(0));
+        assertEquals("dallas", result);
         
-        //there are 2 owner records, each with one address
-        result = RecordValueResolver.resolve(record, "owner.address[0].city");
-        assertEquals(2, result.size());
-        assertEquals("austin", result.get(0));
-        assertEquals("dallas", result.get(1));
-        
-        result = RecordValueResolver.resolve(record, "owner.address[1].city");
-        assertEquals(0, result.size());
         
         
     }

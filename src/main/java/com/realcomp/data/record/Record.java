@@ -1,5 +1,6 @@
 package com.realcomp.data.record;
 
+import com.realcomp.data.DataType;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -14,15 +15,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
 /**
+ * A Map with support for composite keys.
  * 
- * 
- * 
- * <p>
- * A record may have more than one 'key' field.  These fields
- * are used to construct a record 'key' that may be useful.
- * By default, the 'key' is the value of the first field in the map.
- * Typically, a field is marked with a key validator in the schema.
- * </p>
  *
  * @author krenfro
  */
@@ -145,35 +139,21 @@ public class Record implements Map<String,Object>, Serializable {
      * @throws RecordKeyException if the key does not refer to a single value
      */
     @Override
-    public Object get(Object key){
-        List<Object> list = RecordValueResolver.resolve(data, new RecordKey(key.toString()));
-        if (list != null && list.size() > 1){
-            throw new RecordKeyException(
-                    String.format("Ambiguous key [%s] references [%s] values.  "
-                                + "Use getFirst(), getAll() or a more specific key", key, list.size()));
-        }
-        
-        return list == null || list.isEmpty() ? null : list.get(0);
-        
-    }
-    
-    /**
-     * 
-     * @param key
-     * @return the <i>first</i> value referenced by the <i>key</i>, or null if it does not exist
-     */
-    public Object getFirst(String key){
-        List<Object> list = RecordValueResolver.resolve(data, new RecordKey(key));
-        return list == null || list.isEmpty() ? null : list.get(0);
+    public Object get(Object key){        
+        return key == null 
+                ? null 
+                : RecordValueResolver.resolve(data, new RecordKey(key.toString()));        
     }
     
     /**
      * Resolve all values for the specified key
      * @param key
-     * @return 
+     * @return list of values, never null.
      */
     public List<Object> getAll(String key){
-        return RecordValueResolver.resolve(data, new RecordKey(key));
+        return key == null
+                ? new ArrayList<Object>() 
+                : RecordMultiValueResolver.resolve(data, new RecordKey(key.toString()));
     }
   
     @Override
@@ -183,7 +163,7 @@ public class Record implements Map<String,Object>, Serializable {
     
     @Override
     public boolean containsKey(Object key) {
-        return keySet().contains(key.toString());
+        return key == null ? false : keySet().contains(key.toString());
     }
 
     @Override
@@ -193,12 +173,34 @@ public class Record implements Map<String,Object>, Serializable {
 
     @Override
     public Object remove(Object key) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        
+        Object previous = null;
+        if (key != null){
+            RecordKey child = new RecordKey(key.toString());
+            if (child.hasParent()){
+                RecordKey parent = child.getParent();
+                Object existing = RecordValueResolver.resolve(data, parent); 
+                if (DataType.getDataType(existing) == DataType.MAP){                    
+                    if (child.isIndexed()){
+                        List<Object> list = (List<Object>) ((Map<String,Object>) existing).get(child.getName());
+                        previous = list.remove(child.getIndex());
+                    }
+                    else{
+                        previous = ((Map<String,Object>) existing).remove(child.getName());
+                    }
+                }
+            }
+            else{
+                previous = data.remove(child.getName());
+            }
+        }
+        
+        return previous;
     }
 
     @Override
     public void putAll(Map<? extends String, ? extends Object> m) {        
-        for (Map.Entry entry: m.entrySet()){
+        for (Entry entry: m.entrySet()){
             put((String) entry.getKey(), entry.getValue());
         }
     }

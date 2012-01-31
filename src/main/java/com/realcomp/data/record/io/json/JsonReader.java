@@ -78,12 +78,12 @@ public class JsonReader implements RecordReader {
                 context.setRecord(temp);
                 for (Field field : schema.classify(temp)) {
                     context.setKey(field.getName());
-                    List value = surgeon.operate(getOperations(field), context);                    
-                    if (!value.isEmpty()){
+                    Object value = surgeon.operate(getOperations(field), context);                    
+                    if (value != null){
                         //Write the results of the operations to both the final Record, and the
                         // temporary Record for subsequent field creation.
-                        record.put(field.getName(), field.getType().coerce(value.get(0)));
-                        temp.put(field.getName(), field.getType().coerce(value.get(0)));
+                        record.put(field.getName(), field.getType().coerce(value));
+                        temp.put(field.getName(), field.getType().coerce(value));
                     }
                 }
             }

@@ -1,5 +1,6 @@
 package com.realcomp.data.record;
 
+import java.util.Stack;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -7,16 +8,16 @@ import java.util.regex.Pattern;
  * The key for a value in a Record.
  * <p>
  * <h2>Indexed Keys</h2>
- * A record key can also be indexed; referencing an item in a List. 
+ * A record key can be indexed; referencing an item in a List. 
  * e.g., "owner[1]" would reference 2nd item in the list stored at key 'owner'.
  * </p>
  * <p>
  * <h2>Composite Keys</h2>
- * </p>
  * 
+ * </p>
  * @author krenfro
  */
-public class RecordKey {
+class RecordKey {
 
     protected static final String namePattern = "[A-Za-z0-9\\_ :-]+";
     protected static final String optionalIndexPattern = "(\\[[0-9]\\])?";
@@ -79,6 +80,27 @@ public class RecordKey {
         this(name, index);
         this.parent = parent;
     }
+    
+    /**
+     * Builds the sequence that keys need to be resolved from the root Map. 
+     * The root key will be at the top of the stack, and <i>key</i> will be at the bottom.
+     * 
+     * @param key not null
+     * @return 
+     */
+    public Stack<RecordKey> buildKeySequence(){
+        
+        Stack<RecordKey> sequence = new Stack<RecordKey>();
+        RecordKey current = this;
+        sequence.push(current);
+        while (current.hasParent()){
+            current = current.getParent();
+            sequence.push(current);            
+        }
+        assert(!sequence.isEmpty());
+        return sequence;
+    }
+    
     
     
     /**

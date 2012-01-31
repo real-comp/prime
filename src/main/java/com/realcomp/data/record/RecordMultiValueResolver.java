@@ -1,39 +1,37 @@
 package com.realcomp.data.record;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 
 /**
- * Finds a specified value in a Record.  A composite RecordKey can reference a value
- * arbitrarily deep within a Record. 
- * 
- * @see RecordValueAssembler
+ * @see RecordValueResolver
  * @author krenfro
  */
-public class RecordValueResolver {
+public class RecordMultiValueResolver {
     
-    public static Object resolve(Record record, String key){
+    public static List<Object> resolve(Record record, String key){
         return resolve(record.data, new RecordKey(key));
     }
     
-    public static Object resolve(Map<String,Object> map, String key){
+    public static List<Object> resolve(Map<String,Object> map, String key){
         return resolve(map, new RecordKey(key));
     }    
    
-    static Object resolve(Record record, RecordKey key){
+    static List<Object> resolve(Record record, RecordKey key){
         return resolve(record.data, key);
     }
      
-    static Object resolve(Map<String,Object> map, RecordKey key){
+    static List<Object> resolve(Map<String,Object> map, RecordKey key){
         return resolve(map, key.buildKeySequence());
     }
     
      
     @SuppressWarnings("unchecked")
-    private static Object resolve(Map<String,Object> map, Stack<RecordKey> sequence){
+    private static List<Object> resolve(Map<String,Object> map, Stack<RecordKey> sequence){
         
-        Object result = null;
+        List<Object> result = new ArrayList<Object>();
         
         if (!sequence.isEmpty()){
             RecordKey key = sequence.pop();
@@ -41,24 +39,20 @@ public class RecordValueResolver {
             if (value != null){
                 if (List.class.isAssignableFrom(value.getClass())){                    
                     List<Map<String,Object>> list = (List<Map<String,Object>>) value;
-                    if (key.isIndexed() || list.size() == 1){
+                    if (key.isIndexed()){
                         try{
-                            //allow single entry lists to be resolved without an index.
-                            result = resolve(list.get(key.isIndexed() ? key.getIndex() : 0), sequence);
+                            result.addAll(resolve(list.get(key.getIndex()), sequence));
                         }
                         catch(IndexOutOfBoundsException ex){
-                            result = null;
                         }                            
                     }
                     else if (sequence.isEmpty()){
-                        result = list;
-                    }
-                    else if (list.isEmpty()){
-                        result = null;
+                        result.addAll(list);
                     }
                     else{
-                        throw new RecordKeyException(
-                            String.format("Ambiguous key [%s] references a list of size [%s]", key, list.size()));
+                        for (Map<String,Object> entry: list){
+                            result.addAll(resolve(entry, (Stack<RecordKey>) sequence.clone()));
+                        }
                     }
                 }
                 else if (Map.class.isAssignableFrom(value.getClass())){                    
@@ -66,19 +60,19 @@ public class RecordValueResolver {
                         throw new RecordKeyException(
                                 String.format("RecordKey [%s] is indexed, but does not reference a List", key));
                     }                    
-                    result = resolve((Map<String,Object>) value, sequence);
+                    result.addAll(resolve((Map<String,Object>) value, sequence));
                 }
                 else{                    
                     if (key.isIndexed()){
                         throw new RecordKeyException(
                                 String.format("RecordKey [%s] is indexed, but does not reference a List", key));
                     }
-                    result = value;
+                    result.add(value);
                 }
             }
         }
         else{
-            result = map;
+            result.add(map);
         }
         
         return result;

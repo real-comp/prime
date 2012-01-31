@@ -93,10 +93,10 @@ public class RecordFactory {
             index = fieldList.indexOf(field);
             context.setKey(field.getName());
             record.put(field.getName(), data[index]); //seed record with initial value
-            List value = surgeon.operate(getOperations(field), context);
-            if (!value.isEmpty()){
+            Object value = surgeon.operate(getOperations(field), context);
+            if (value != null){
                 try{
-                    record.put(field.getName(), field.getType().coerce(value.get(0))); //set final value            
+                    record.put(field.getName(), field.getType().coerce(value)); //set final value            
                 }
                 catch(ConversionException ex){
                     throw new ConversionException(ex.getMessage() + " for field [" + field.getName() + "]", ex);

@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * The constrained set of types supported in the realcomp-data data model.
+ * The set of types supported in the realcomp-data data model.
  * 
  * @author krenfro
  */
@@ -21,7 +21,6 @@ public enum DataType {
     BOOLEAN("boolean"),
     MAP("map"),
     LIST("list");
-    
     
     private BooleanConverter booleanConverter;
     private String description;

@@ -109,8 +109,8 @@ public class FixedFileWriter extends BaseRecordWriter{
 
         context.setRecord(record);
         context.setKey(field.getName());
-        List<Object> values = surgeon.operate(field.getOperations(), context);
-        writer.write(resize((String) DataType.STRING.coerce(values.isEmpty() ? "" : values.get(0)), field.getLength()));
+        Object value = surgeon.operate(field.getOperations(), context);
+        writer.write(resize((String) DataType.STRING.coerce(value == null ? "" : value), field.getLength()));
     }
 
     protected String resize(String s, int length){

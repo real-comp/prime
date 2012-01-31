@@ -36,7 +36,7 @@ public class JsonWriterTest {
     }
     
     private Record getComplexRecord(){
-          Record record = new Record();
+        Record record = new Record();
         record.put("s", "test string");
         record.put("i", 1);
         record.put("f", 1.2f);
@@ -96,7 +96,8 @@ public class JsonWriterTest {
         
         //should be close to:
         //{"f":1.2,"d":1.3434,"b":true,"s":"test string","list":["a","b","c",1,2,3],"l":7474,"i":1, "map":{"entryNumber":1,"entry":"a"}}
-        
+        //{"l":7474,"f":1.2,"map":{"entry":"a","entryNumber":1},"d":1.3434,"list":["a","b","c",1,2,3],"s":"test string","i":1,"b":true}
+
         assertTrue(Pattern.compile("\"f\"[ ]*:[ ]*[0-9\\.]+").matcher(json).find());
         assertTrue(Pattern.compile("\"d\"[ ]*:[ ]*[0-9\\.]+").matcher(json).find());
         assertTrue(Pattern.compile("\"b\"[ ]*:[ ]*true").matcher(json).find());

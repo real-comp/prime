@@ -44,12 +44,12 @@ public class DelimitedFileWriter extends BaseRecordWriter{
         context.setRecord(record);
         context.setKey(field.getName());
         
-        List<Object> values = surgeon.operate(field.getOperations(), context);
+        Object value = surgeon.operate(field.getOperations(), context);
       
-        if (values.isEmpty())        
+        if (value == null)
             current.add("");
         else
-            current.add((String) DataType.STRING.coerce(values.get(0)));
+            current.add((String) DataType.STRING.coerce(value));
     }
     
     
