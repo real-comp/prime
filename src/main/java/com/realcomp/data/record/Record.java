@@ -11,8 +11,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
@@ -38,11 +36,22 @@ public class Record implements Map<String,Object>, Serializable {
         data.putAll(copy.data);
     }
 
-    public Record(Map<String, Object> data) {
-        if (data == null)
+    public Record(Map<String, Object> map) {
+        if (map == null)
             throw new IllegalArgumentException("data is null");
-        this.data = new HashMap<String, Object>();
-        this.data.putAll(data);
+        data = new HashMap<String, Object>();
+        for (Entry<String,Object> entry: map.entrySet()){
+            put(entry.getKey(), entry.getValue());
+        }
+    }
+    
+    /**
+     * Return this map as a map that does not resolve composite keys.
+     * Changes made to the map will be reflected in this Record.
+     * 
+     */
+    public Map<String,Object> asSimpleMap(){
+        return data;
     }
     
     public boolean containsKey(String key) {
@@ -92,6 +101,8 @@ public class Record implements Map<String,Object>, Serializable {
     public Set<Entry<String, Object>> entrySet() {                
         return RecordEntries.getEntries(data);
     }
+    
+        
     
     @Override
     public Object put(String key, Object value) {
