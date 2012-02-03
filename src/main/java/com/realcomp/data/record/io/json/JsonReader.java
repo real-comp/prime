@@ -62,8 +62,6 @@ public class JsonReader implements RecordReader {
         Map map = parseMap();
 
         if (map != null) {
-            
-            
             if (schema == null){
                 record = new Record(map);
             }

@@ -19,6 +19,7 @@ import java.io.OutputStream;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -79,7 +80,7 @@ public class JsonWriter implements RecordWriter{
             filterFields(record, fields);
         }
         
-        writeJson(record);
+        writeJson(record.asSimpleMap());
         
         count++;
         
@@ -114,16 +115,38 @@ public class JsonWriter implements RecordWriter{
     }
 
     
-    private void writeJson(Record record)
+    private void writeJson(Map<String,Object> map)
             throws ValidationException, ConversionException, IOException{
 
         json.writeStartObject();
         
-        for (Map.Entry<String,Object> entry: record.entrySet()){
+        for (Map.Entry<String,Object> entry: map.entrySet()){
             writeJson(entry.getKey(), entry.getValue());
         }
         
         json.writeEndObject();
+    }
+    
+    /**
+     * 
+     * @param map
+     * @return true if the map is not null and contains a list or a map.
+     */
+    private boolean isDeepMap(Map<String,Object> map){
+        
+        boolean deep = true;
+        if (map != null) {           
+            for (Object entry : (List) map) {
+                if (entry != null) {
+                    DataType entryType = DataType.getDataType(entry);
+                    if (entryType == DataType.LIST || entryType == DataType.MAP) {
+                        deep = false;
+                        break;
+                    }
+                }
+            }
+        }
+        return deep;
     }
     
     private void writeJson(String name, Object value) 
@@ -139,7 +162,7 @@ public class JsonWriter implements RecordWriter{
             switch(type){
                 case MAP:
                     json.writeFieldName(name);
-                    writeJson(new Record((Map) value));
+                    writeJson((Map<String,Object>) value);
                     break;
                 case LIST:
                     json.writeArrayFieldStart(name);
@@ -180,7 +203,7 @@ public class JsonWriter implements RecordWriter{
                 json.writeBoolean((Boolean) value);
                 break;
             case MAP:
-                writeJson(new Record((Map) value));
+                writeJson((Map<String,Object>) value);
                 break;
             case LIST:
                 for (Object entry: (List) value)

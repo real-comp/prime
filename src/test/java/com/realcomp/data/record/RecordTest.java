@@ -1,5 +1,6 @@
 package com.realcomp.data.record;
 
+import com.realcomp.data.view.RecordViewException;
 import java.util.Map.Entry;
 import java.util.HashMap;
 import java.util.ArrayList;
@@ -139,7 +140,7 @@ public class RecordTest {
         
         boolean found = false;
         for (Entry<String,Object> entry: record.entrySet()){
-            if (entry.getKey().equals("owners[0]")){
+            if (entry.getKey().equals("owners[0].last")){
                found = true;
             }
         }
@@ -182,4 +183,48 @@ public class RecordTest {
         assertEquals("renfro", record.get("owners[0].last"));
         
     }       
+    
+    
+    @Test
+    public void testSimpleMap(){
+     
+        Record record = new Record();
+        List owners = new ArrayList();
+        Map<String,Object> owner = new HashMap<String,Object>();
+        owner.put("last", "RENFRO");
+        owners.add(owner);
+        record.put("owners", owners);
+        
+        owner = new HashMap<String,Object>();
+        owner.put("last", "VRBA");
+        owners.add(owner);
+              
+        //This is a record, so composite key resolution works.
+        assertEquals("RENFRO", record.get("owners[0].last"));
+        assertEquals("VRBA", record.get("owners[1].last"));
+        
+        //Flatten the record into a dumb map. Composite key resolution should still work.
+        Map<String,Object> map = new HashMap<String,Object>();
+        for (Map.Entry<String,Object> entry: record.entrySet()){
+            String key = entry.getKey();
+            Object value = entry.getValue();
+            if (value != null)
+                map.put(key, value);            
+        }
+        assertEquals("RENFRO", map.get("owners[0].last"));
+        assertEquals("VRBA", record.get("owners[1].last"));
+        
+        //Turn the flattened map back into a Record.  
+        record = new Record(map);
+        assertEquals("RENFRO", record.get("owners[0].last"));
+        assertEquals("VRBA", record.get("owners[1].last"));
+        
+        //Treat the map as a simple map.  Composite key resolution will not work.
+        map = record.asSimpleMap();
+        assertNull(map.get("owners[0].last"));
+        assertNull(map.get("owners[1].last"));
+        
+        
+        
+    }
 }
