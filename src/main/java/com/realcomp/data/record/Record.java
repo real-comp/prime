@@ -129,6 +129,69 @@ public class Record implements Map<String,Object>, Serializable {
                 : RecordValueResolver.resolve(data, new RecordKey(key.toString()));        
     }
     
+    public String getString(String key){
+        return (String) get(key);
+    }
+    
+    public String getString(String key, String defaultValue){
+        String value = getString(key);
+        return value == null ? defaultValue : value;
+    }
+    
+    public Integer getInteger(String key){
+        return (Integer) get(key);
+    }
+    
+    public Integer getInteger(String key, Integer defaultValue){
+        Integer value = getInteger(key);
+        return value == null ? defaultValue : value;
+    }
+    
+    public Long getLong(String key){
+        return (Long) get(key);
+    }
+    
+    public Long getLong(String key, Long defaultValue){
+        Long value = getLong(key);
+        return value == null ? defaultValue : null;
+    }
+    
+    public Float getFloat(String key){
+        return (Float) get(key);
+    }
+    
+    public Float getFloat(String key, Float defaultValue){
+        Float value = getFloat(key);
+        return value == null ? defaultValue : value;
+    }
+    
+    public Double getDouble(String key){
+        return (Double) get(key);
+    }
+    
+    public Double getDouble(String key, Double defaultValue){
+        Double value = getDouble(key);
+        return value == null ? defaultValue : value;
+    }
+    
+    public Map<String,Object> getMap(String key){
+        return (Map<String,Object>) get(key);
+    }
+    
+    public Map<String,Object> getMap(String key, Map<String,Object> defaultValue){
+        Map<String,Object> value = getMap(key);
+        return value == null ? defaultValue : value;
+    }
+    
+    public List getList(String key){
+        return (List) get(key);
+    }
+    
+    public List getList(String key, List defaultValue){
+        List value = getList(key);
+        return value == null ? defaultValue : value;
+    }
+    
     /**
      * Resolve all values for the specified key
      * @param key
