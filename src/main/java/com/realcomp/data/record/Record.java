@@ -129,6 +129,12 @@ public class Record implements Map<String,Object>, Serializable {
                 : RecordValueResolver.resolve(data, new RecordKey(key.toString()));        
     }
     
+    public Object get(String key, Object defaultValue){        
+        Object value = get(key);
+        return value == null ? defaultValue : value;
+    }
+    
+    
     public String getString(String key){
         return (String) get(key);
     }
