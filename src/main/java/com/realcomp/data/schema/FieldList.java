@@ -5,6 +5,7 @@ import com.realcomp.data.schema.xml.FieldListConverter;
 import com.thoughtworks.xstream.annotations.XStreamConverter;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
@@ -122,12 +123,13 @@ public class FieldList extends ArrayList<Field> {
                 if (f.isKey())
                     keys.add(f);
             }
+            Collections.sort(keys, new FieldKeyComparator());
         }
         
         return keys;
     }
     
-       /**
+    /**
      * 
      * @return all 'foreign key' Fields, in the order defined by this FileSchema
      */
@@ -139,6 +141,7 @@ public class FieldList extends ArrayList<Field> {
                 if (f.isForeignKey())
                     foreignKeys.add(f);
             }
+            Collections.sort(foreignKeys, new FieldKeyComparator());
         }
         
         return foreignKeys;
