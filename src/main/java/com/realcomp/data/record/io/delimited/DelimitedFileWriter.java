@@ -41,10 +41,10 @@ public class DelimitedFileWriter extends BaseRecordWriter{
     protected void write(Record record, Field field)
             throws ValidationException, ConversionException, IOException{
 
-        context.setRecord(record);
-        context.setKey(field.getName());
+        transformContext.setRecord(record);
+        transformContext.setKey(field.getName());
         
-        Object value = surgeon.operate(field.getOperations(), context);
+        Object value = surgeon.operate(field.getOperations(), transformContext);
       
         if (value == null)
             current.add("");

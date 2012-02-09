@@ -4,6 +4,7 @@ import com.realcomp.data.schema.FileSchema;
 import com.realcomp.data.validation.Severity;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.charset.Charset;
 
 /**
  *
@@ -11,11 +12,21 @@ import java.io.OutputStream;
  */
 public class IOContext {
 
-    protected Severity validationExeptionThreshold;
+    protected Severity validationExeptionThreshold = Severity.HIGH;
     protected FileSchema schema;
     protected InputStream in;
     protected OutputStream out;
+    protected Charset charset = Charset.defaultCharset();
 
+    public Charset getCharset() {
+        return charset;
+    }
+
+    public void setCharset(Charset charset) {
+        this.charset = charset;
+    }
+
+    
     public InputStream getIn() {
         return in;
     }
@@ -45,6 +56,8 @@ public class IOContext {
     }
 
     public void setValidationExeptionThreshold(Severity validationExeptionThreshold) {
+        if (validationExeptionThreshold == null)
+            throw new IllegalArgumentException("validationExceptionThreshold is null");
         this.validationExeptionThreshold = validationExeptionThreshold;
     }
     

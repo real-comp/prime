@@ -107,9 +107,9 @@ public class FixedFileWriter extends BaseRecordWriter{
     protected void write(Record record, Field field)
             throws ValidationException, ConversionException, IOException{
 
-        context.setRecord(record);
-        context.setKey(field.getName());
-        Object value = surgeon.operate(field.getOperations(), context);
+        transformContext.setRecord(record);
+        transformContext.setKey(field.getName());
+        Object value = surgeon.operate(field.getOperations(), transformContext);
         writer.write(resize((String) DataType.STRING.coerce(value == null ? "" : value), field.getLength()));
     }
 

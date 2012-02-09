@@ -47,42 +47,20 @@ public interface RecordReader {
     void close();
 
     /**
-     * Open an InputStream for reading. May be invoked multiple times with new input as needed.
+     * Open an IOContext for reading. May be invoked multiple times with new input as needed.
      * close() is automatically invoked before each open();
      *
-     * @param in InputStream to parse. Not null
+     * @param context Not null
      * @throws IOException
-     */
-    void open(InputStream in) throws IOException;
-    
-    /**
-     * Set the schema that the RecordReader should use to create Records.
-     * 
-     * @param schema
      * @throws SchemaException
      */
-    void setSchema(FileSchema schema) throws SchemaException;
-
+    void open(IOContext context) throws IOException, SchemaException;
+    
     /**
-     *
-     * @return the current Schema, or null if none set
+     * @return the IOContext being operated on; or null if not yet open
      */
-    FileSchema getSchema();
-
-
-    /**
-     * @return the Severity level that will cause ValidationExceptions to be thrown instead of
-     *  logged.
-     */
-    Severity getValidationExceptionThreshold();
-
-    /**
-     * 
-     * @param severity the severity level that will cause ValidationExceptions to be thrown
-     * instead of logged. not null
-     */
-    void setValidationExceptionThreshold(Severity severity);
-
+    IOContext getIOContext();
+    
     /**
      *
      * @return number of records read; not including skipped records.

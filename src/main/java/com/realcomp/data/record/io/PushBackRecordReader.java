@@ -48,29 +48,13 @@ public class PushBackRecordReader implements RecordReader{
     }
 
     @Override
-    public void open(InputStream in) throws IOException {
-        reader.open(in);
+    public void open(IOContext context) throws IOException, SchemaException {
+        reader.open(context);
     }
 
     @Override
-    public void setSchema(FileSchema schema) throws SchemaException {
-        reader.setSchema(schema);
+    public IOContext getIOContext() {
+        return reader.getIOContext();
     }
-
-    @Override
-    public FileSchema getSchema() {
-        return reader.getSchema();
-    }
-
-    @Override
-    public Severity getValidationExceptionThreshold() {
-        return reader.getValidationExceptionThreshold();
-    }
-
-    @Override
-    public void setValidationExceptionThreshold(Severity severity) {
-        reader.setValidationExceptionThreshold(severity);
-    }
-
     
 }

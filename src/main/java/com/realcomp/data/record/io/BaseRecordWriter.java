@@ -5,15 +5,11 @@ import com.realcomp.data.conversion.ConversionException;
 import com.realcomp.data.record.Record;
 import com.realcomp.data.schema.Field;
 import com.realcomp.data.schema.FieldList;
-import com.realcomp.data.schema.FileSchema;
 import com.realcomp.data.schema.SchemaException;
 import com.realcomp.data.transform.TransformContext;
 import com.realcomp.data.transform.ValueSurgeon;
-import com.realcomp.data.validation.Severity;
 import com.realcomp.data.validation.ValidationException;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.nio.charset.Charset;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -27,40 +23,26 @@ public abstract class BaseRecordWriter implements RecordWriter{
 
     protected static final Logger log = Logger.getLogger(BaseRecordWriter.class.getName());
 
-    protected OutputStream out;
-    protected String charset = Charset.defaultCharset().name();
-    protected FileSchema schema;
+    protected IOContext ioContext;
     protected long count;
     protected boolean beforeFirstOperationsRun = false;   
-    protected TransformContext context;
+    protected TransformContext transformContext;
     protected ValueSurgeon surgeon;
     protected int skipLeading = 0;
     protected int skipTrailing = 0;
     
     public BaseRecordWriter(){
-        context = new TransformContext();
+        transformContext = new TransformContext();
         surgeon = new ValueSurgeon();
     }
     
-    
     @Override
-    public Severity getValidationExceptionThreshold() {
-        return context.getValidationExceptionThreshold();
-    }
-
-    @Override
-    public void setValidationExceptionThreshold(Severity severity) {
-        
-        context.setValidationExceptionThreshold(severity);
-    }
-    
-    @Override
-    public void open(OutputStream out) throws IOException{
-        if (out == null)
-            throw new IllegalArgumentException("out is null");
+    public void open(IOContext context) throws IOException, SchemaException{
+        if (context == null)
+            throw new IllegalArgumentException("context is null");
         
         close();
-        this.out = out;
+        this.ioContext = context;
         beforeFirstOperationsRun = true;
         count = 0;        
     }
@@ -85,17 +67,17 @@ public abstract class BaseRecordWriter implements RecordWriter{
             log.log(Level.WARNING, null, ex);
         }
 
-        if (closeAll)
-            IOUtils.closeQuietly(out);
+        if (ioContext != null && closeAll)
+            IOUtils.closeQuietly(ioContext.getOut());
     }
 
     protected void executeAfterLastOperations() throws ValidationException, ConversionException{
         
-        if (schema != null){
-            List<Operation> operations = schema.getAfterLastOperations();
+        if (ioContext.getSchema() != null){
+            List<Operation> operations = ioContext.getSchema().getAfterLastOperations();
             if (operations != null && !operations.isEmpty()){
-                context.setRecordCount(this.getCount());
-                surgeon.operate(operations, context);
+                transformContext.setRecordCount(this.getCount());
+                surgeon.operate(operations, transformContext);
             }
         }
 
@@ -104,34 +86,21 @@ public abstract class BaseRecordWriter implements RecordWriter{
 
     protected void executeBeforeFirstOperations() throws ValidationException, ConversionException{
 
-         if (schema != null){
-            List<Operation> operations = schema.getBeforeFirstOperations();            
+         if (ioContext.getSchema() != null){
+            List<Operation> operations = ioContext.getSchema().getBeforeFirstOperations();            
             if (operations != null && !operations.isEmpty()){
-                context.setRecordCount(this.getCount());
-                surgeon.operate(operations, context);
+                transformContext.setRecordCount(this.getCount());
+                surgeon.operate(operations, transformContext);
             }
         }
     }
     
-    @Override
-    public void setSchema(FileSchema schema) throws SchemaException{
-        if (schema == null)
-            throw new IllegalArgumentException("schema is null");
-        this.schema = schema;
-        context.setSchema(schema);
-    }
-
-    @Override
-    public FileSchema getSchema(){
-        return schema;
-    }
-
     
     @Override
     public void write(Record record)
             throws IOException, ValidationException, ConversionException, SchemaException{
 
-        if (schema == null)
+        if (ioContext.getSchema() == null)
             throw new IllegalStateException("schema not specified");
         if (record == null)
             throw new IllegalArgumentException("record is null");
@@ -141,7 +110,7 @@ public abstract class BaseRecordWriter implements RecordWriter{
             beforeFirstOperationsRun = true;
         }
 
-        write(record, schema.classify(record));
+        write(record, ioContext.getSchema().classify(record));
         count++;
     }
 
@@ -166,7 +135,7 @@ public abstract class BaseRecordWriter implements RecordWriter{
         if (record == null || record.isEmpty())
             return "";
         String id = "";
-        List<Field> fields = schema.classify(record);
+        List<Field> fields = ioContext.getSchema().classify(record);
         if (fields.size() > 0)
             id = id.concat(record.get(fields.get(0).getName()).toString());
         
@@ -194,7 +163,7 @@ public abstract class BaseRecordWriter implements RecordWriter{
         if (skipLeading < 0)
             throw new IllegalArgumentException(
                     String.format("skipLeading out of range: %s < 0", skipLeading));
-        if (out != null)
+        if (ioContext != null)
             throw new IllegalArgumentException("Cannot setSkipLeading after open()");
         this.skipLeading = skipLeading;
     }
@@ -215,7 +184,7 @@ public abstract class BaseRecordWriter implements RecordWriter{
         if (skipTrailing < 0)
             throw new IllegalArgumentException(
                     String.format("skipTrailing out of range: %s < 0", skipTrailing));
-        if (out != null)
+        if (ioContext != null)
             throw new IllegalArgumentException("Cannot setSkipTrailing after open()");
         this.skipTrailing = skipTrailing;
     }
@@ -226,14 +195,10 @@ public abstract class BaseRecordWriter implements RecordWriter{
     public long getCount(){
         return count;
     }
-
-    public String getCharset() {
-        return charset;
-    }
-
-    public void setCharset(String charset) {
-        if (charset == null)
-            throw new IllegalArgumentException("charset is null");
-        this.charset = charset;
+    
+    
+    @Override
+    public IOContext getIOContext(){
+        return ioContext;
     }
 }

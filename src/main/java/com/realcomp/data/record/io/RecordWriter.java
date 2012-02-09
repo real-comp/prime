@@ -21,8 +21,6 @@ import java.io.OutputStream;
  */
 public interface RecordWriter {
 
-    
-
     /**
      * If a Validator logs a warning at or above this threshold, then the warning is thrown as
      * a ValidationException. By default, Validators log at Severity.MEDIUM, so all
@@ -53,46 +51,25 @@ public interface RecordWriter {
     void close(boolean closeAll);
 
     /**
-     * Open an OutputStream for writing. May be invoked multiple times with new output as needed.
+     * Open an IOContext for writing. May be invoked multiple times with new output as needed.
      * close() is automatically invoked before each open();
      *
      * @param in OutputStream to write to. Not null
      * @throws IOException
-     */
-    void open(OutputStream out) throws IOException;
-    
-    /**
-     * Set the schema that the RecordReader should use to create Records.
-     * 
-     * @param schema
      * @throws SchemaException
      */
-    void setSchema(FileSchema schema) throws SchemaException;
-
-    /**
-     *
-     * @return the current Schema, or null if none set
-     */
-    FileSchema getSchema();
-
-
-    /**
-     * @return the Severity level that will cause ValidationExceptions to be thrown instead of
-     *  logged.
-     */
-    Severity getValidationExceptionThreshold();
-
-    /**
-     * 
-     * @param severity the severity level that will cause ValidationExceptions to be thrown
-     * instead of logged. not null
-     */
-    void setValidationExceptionThreshold(Severity severity);
-
+    void open(IOContext context) throws IOException, SchemaException;
+    
     /**
      *
      * @return number of records read; not including skipped records.
      */
     long getCount();
+    
+    
+    /**
+     * @return the IOContext being operated on; or null if not yet open
+     */
+    IOContext getIOContext();
     
 }

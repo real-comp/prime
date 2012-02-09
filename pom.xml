@@ -133,6 +133,11 @@
             <artifactId>jackson-xc</artifactId>
             <version>1.7.9</version><!--hadoop 0.22.0-rc0 is @ 1.7.3 -->
         </dependency>
+        <dependency>
+            <groupId>net.sf.jopt-simple</groupId>
+            <artifactId>jopt-simple</artifactId>
+            <version>4.3</version>
+        </dependency>
     </dependencies>
 
     <pluginRepositories>
