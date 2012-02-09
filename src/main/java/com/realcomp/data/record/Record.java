@@ -36,6 +36,13 @@ public class Record implements Map<String,Object>, Serializable {
         data.putAll(copy.data);
     }
 
+    /**
+     * Wraps a map as a Record.  
+     * 
+     * No checks are done to make sure that this map conforms to the realcomp-data
+     * data model.
+     * @param map 
+     */
     public Record(Map<String, Object> map) {
         if (map == null)
             throw new IllegalArgumentException("data is null");
