@@ -20,7 +20,7 @@ public class RecordWriterFactory {
     
     private static final Logger logger = Logger.getLogger(RecordWriterFactory.class.getName());
     
-       private static Map<String,String> types;
+    private static Map<String,String> types;
     
     static{
         types = new HashMap<String,String>();
