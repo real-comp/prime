@@ -9,7 +9,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
-import org.apache.commons.lang.StringUtils;
 
 /**
  * A List of Fields
@@ -20,6 +19,7 @@ public class FieldList extends ArrayList<Field> {
     
     private static final Logger logger = Logger.getLogger(FieldList.class.getName());
     
+    public static final String KEY_DELIMITER = "|";
     public static final Pattern DEFAULT_CLASSIFIER = Pattern.compile(".*");
     private static final long serialVersionUID = 1L;
       
@@ -44,14 +44,16 @@ public class FieldList extends ArrayList<Field> {
     public FieldList(FieldList copy){
         this();
         for (Field field: copy)
-            add(new Field(field));
+            super.add(new Field(field));
+        resetCachedValues();
         this.classifier = Pattern.compile(copy.classifier.toString());
     }
     
     public FieldList(List<Field> copy){
         this();        
         for (Field field: copy)
-            add(new Field(field));
+            super.add(new Field(field));
+        resetCachedValues();
     }
 
     private void resetCachedValues(){
@@ -152,23 +154,14 @@ public class FieldList extends ArrayList<Field> {
      * List of Strings pulled from Fields in a Record that are marked as 'Keys'.
      * 
      * @param record not null
-     * @return list of Key fieldLists, as Strings, from the specified record. 
+     * @return list of Key fieldLists from the specified record. 
      */
-    public List<String> getKeys(Record record){
-
-        List<String> key = new ArrayList<String>();
-        
+    public List<Object> resolveKeys(Record record){
+        List<Object> result = new ArrayList<Object>();        
         for (Field f: getKeys()){                       
-            Object value = record.get(f.getName());
-
-            //Note: a key value may be NULL if the Record is not fully constructed.
-            //For example, if a ValidationException is thrown during Record creation, the
-            //Record creator may try to construct a helpful message using schema.toString(record).
-            if (value != null)
-                key.add(value.toString());
-        }
-        
-        return key;
+            result.add(record.get(f.getName()));
+        }        
+        return result;
     }
 
     @Override
@@ -239,10 +232,6 @@ public class FieldList extends ArrayList<Field> {
     }
     
     
-    
-    
-    
-    
     /**
      * <p>
      * A smart toString() for a Record that uses the key fields to output a 
@@ -264,11 +253,12 @@ public class FieldList extends ArrayList<Field> {
      */
     public String toString(Record record){
         
-        String retVal = null;
-        if (getKeys(record).isEmpty()){         
-            StringBuilder s = new StringBuilder();
-            boolean needDelimiter = false;
-            Object fieldValue = null;
+        StringBuilder s = new StringBuilder();
+        List<Object> keyValues = resolveKeys(record);
+        boolean needDelimiter = false;
+        if (keyValues.isEmpty()){
+            //construct the String using all values from the Record 
+            Object fieldValue;
             for (Field field: this){
                 if (needDelimiter)
                     s.append("|");
@@ -277,13 +267,20 @@ public class FieldList extends ArrayList<Field> {
                 if (fieldValue != null)
                     s.append(fieldValue.toString());
             }
-            retVal = s.toString();   
         }
         else{
-            retVal = StringUtils.join(getKeys(record), "|");
+            //construct the String using only the values of the Key fields from the Record.
+            for (Object keyValue: keyValues){
+                if (needDelimiter)
+                    s.append(KEY_DELIMITER);
+                needDelimiter = false;
+                if (keyValue != null){
+                    s.append(keyValue.toString());
+                }
+            }
         }
         
-        return retVal;
+        return s.toString();
     }
     
     
@@ -305,8 +302,5 @@ public class FieldList extends ArrayList<Field> {
         int hash = 7;
         hash = 37 * hash + (this.classifier != null ? this.classifier.hashCode() : 0);
         return hash;
-    }
-    
-    
-    
+    }    
 }
