@@ -33,7 +33,6 @@ public class PushBackRecordReader implements RecordReader{
         return reader.getCount() - queue.size();
     }
     
-    
     @Override
     public Record read() throws IOException, ValidationException, ConversionException, SchemaException {        
         return queue.isEmpty() ? reader.read() : queue.remove();
@@ -48,7 +47,7 @@ public class PushBackRecordReader implements RecordReader{
     public void open(IOContext context) throws IOException, SchemaException {
         reader.open(context);
     }
-
+    
     @Override
     public IOContext getIOContext() {
         return reader.getIOContext();
@@ -58,15 +57,9 @@ public class PushBackRecordReader implements RecordReader{
     public void close(boolean closeIOContext) {
         reader.close(closeIOContext);
     }
-
-    @Override
-    public Map<String, String> getAttributes() {
-        return reader.getAttributes();
-    }
-
-    @Override
-    public void setAttributes(Map<String, String> attributes) {
-        reader.setAttributes(attributes);
-    }
     
+    @Override
+    public Map<String,String> getDefaults(){
+        return reader.getDefaults();
+    }
 }

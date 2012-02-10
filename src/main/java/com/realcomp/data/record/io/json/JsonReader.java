@@ -3,19 +3,16 @@ package com.realcomp.data.record.io.json;
 import com.realcomp.data.Operation;
 import com.realcomp.data.conversion.ConversionException;
 import com.realcomp.data.record.Record;
+import com.realcomp.data.record.io.BaseRecordReaderWriter;
 import com.realcomp.data.record.io.IOContext;
 import com.realcomp.data.record.io.RecordReader;
-import com.realcomp.data.schema.BeforeFirstField;
 import com.realcomp.data.schema.Field;
-import com.realcomp.data.schema.FileSchema;
+import com.realcomp.data.schema.Schema;
 import com.realcomp.data.schema.SchemaException;
 import com.realcomp.data.transform.TransformContext;
-import com.realcomp.data.transform.Transformer;
 import com.realcomp.data.transform.ValueSurgeon;
-import com.realcomp.data.validation.Severity;
 import com.realcomp.data.validation.ValidationException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -27,23 +24,21 @@ import org.codehaus.jackson.JsonParser;
 import org.codehaus.jackson.JsonToken;
 /**
  * 
- * The JSON format is rich enough that a FileSchema is <i>not</i> required to parse a Record.
+ * The JSON format is rich enough that a Schema is <i>not</i> required to parse a Record.
  * If a schema <i>is</i> specified, only the fields specified in the schema will appear in the Record.
  * 
  * 
  * @author krenfro
  */
-public class JsonReader implements RecordReader {
+public class JsonReader extends BaseRecordReaderWriter implements RecordReader {
     
     protected JsonFactory jsonFactory;
     protected JsonParser jsonParser;
-    protected long count;
-    protected boolean beforeFirstOperationsRun = false;
-    protected IOContext ioContext;
     protected ValueSurgeon surgeon;
     protected TransformContext transformContext;
 
     public JsonReader() {
+        super();
         jsonFactory = new JsonFactory();
         surgeon = new ValueSurgeon();
         transformContext = new TransformContext();
@@ -62,7 +57,7 @@ public class JsonReader implements RecordReader {
         Map map = parseMap();
 
         if (map != null) {
-            if (ioContext.getSchema() == null){
+            if (context.getSchema() == null){
                 record = new Record(map);
             }
             else{
@@ -74,7 +69,7 @@ public class JsonReader implements RecordReader {
                 record = new Record();
                 Record temp = new Record(map);
                 transformContext.setRecord(temp);
-                for (Field field : ioContext.getSchema().classify(temp)) {
+                for (Field field : context.getSchema().classify(temp)) {
                     transformContext.setKey(field.getName());
                     Object value = surgeon.operate(getOperations(field), transformContext);                    
                     if (value != null){
@@ -97,9 +92,9 @@ public class JsonReader implements RecordReader {
     private List<Operation> getOperations(Field field) {
 
         assert(field != null);
-        assert(ioContext.getSchema() != null);
+        assert(context.getSchema() != null);
 
-        FileSchema schema = ioContext.getSchema();
+        Schema schema = context.getSchema();
         List<Operation> operations = new ArrayList<Operation>();
         if (schema.getBeforeOperations() != null)
             operations.addAll(schema.getBeforeOperations());
@@ -214,88 +209,23 @@ public class JsonReader implements RecordReader {
     @Override
     public void open(IOContext context) throws IOException, SchemaException {
 
-        close();
-        ioContext = context;
-        beforeFirstOperationsRun = false;
-        count = 0;
-        jsonParser = jsonFactory.createJsonParser(ioContext.getIn());
+        super.open(context);
+        if (context.getIn() == null)
+            throw new IllegalArgumentException("Invalid IOContext. No InputStream specified");
+        
+        jsonParser = jsonFactory.createJsonParser(context.getIn());
     }
 
     @Override
-    public void close() {
+    public void close(boolean closeIOContext) {
 
+        super.close(closeIOContext);
         if (jsonParser != null) {
             try {
                 jsonParser.close();
             }
             catch (IOException ex) {
                 Logger.getLogger(JsonReader.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
-    }
-
-    @Override
-    public void setSchema(FileSchema schema) throws SchemaException {
-        this.schema = schema;
-        if (schema != null) {
-            transformContext.setSchema(schema);
-        }
-    }
-
-    @Override
-    public FileSchema getSchema() {
-        return schema;
-    }
-
-    @Override
-    public Severity getValidationExceptionThreshold() {
-        return validationExceptionThreshold;
-    }
-
-    @Override
-    public void setValidationExceptionThreshold(Severity severity) {
-        validationExceptionThreshold = severity;
-    }
-
-    @Override
-    public long getCount() {
-        return count;
-    }
-
-    protected void executeAfterLastOperations() throws ValidationException, ConversionException {
-
-        if (schema != null) {
-            List<Operation> operations = schema.getAfterLastOperations();
-            if (operations != null && !operations.isEmpty()) {
-                Transformer transformer = new Transformer();
-                List<Field> fields = new ArrayList<Field>();
-                fields.add(new BeforeFirstField());
-                transformer.setFields(fields);
-                transformer.setAfter(operations);
-                TransformContext ctx = new TransformContext();
-                ctx.setValidationExceptionThreshold(validationExceptionThreshold);
-                ctx.setRecordCount(this.getCount());
-                ctx.setSchema(schema);
-                transformer.transform(ctx);
-            }
-        }
-    }
-
-    protected void executeBeforeFirstOperations() throws ValidationException, ConversionException {
-
-        if (schema != null) {
-            List<Operation> operations = schema.getBeforeFirstOperations();
-            if (operations != null && !operations.isEmpty()) {
-                List<Field> fields = new ArrayList<Field>();
-                fields.add(new BeforeFirstField());
-                Transformer transformer = new Transformer();
-                transformer.setFields(fields);
-                transformer.setBefore(operations);
-                TransformContext ctx = new TransformContext();
-                ctx.setValidationExceptionThreshold(validationExceptionThreshold);
-                ctx.setRecordCount(this.getCount());
-                ctx.setSchema(schema);
-                transformer.transform(ctx);
             }
         }
     }

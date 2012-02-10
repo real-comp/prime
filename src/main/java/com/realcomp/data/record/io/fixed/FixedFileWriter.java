@@ -7,7 +7,7 @@ import com.realcomp.data.record.io.BaseRecordWriter;
 import com.realcomp.data.record.io.IOContext;
 import com.realcomp.data.schema.Field;
 import com.realcomp.data.schema.FieldList;
-import com.realcomp.data.schema.FileSchema;
+import com.realcomp.data.schema.Schema;
 import com.realcomp.data.schema.SchemaException;
 import com.realcomp.data.transform.TransformContext;
 import com.realcomp.data.transform.ValueSurgeon;
@@ -33,27 +33,38 @@ public class FixedFileWriter extends BaseRecordWriter{
 
     public FixedFileWriter(){
         super(); 
-        format.putDefaultValue("header", "false");
+        format.putDefault("header", "false");
         xCtx = new TransformContext();
         surgeon = new ValueSurgeon();
     }
     
     @Override
     public void open(IOContext context) throws IOException, SchemaException{
+        
         super.open(context);
+        if (context.getOut() == null)
+            throw new IllegalArgumentException("Invalid IOContext. No OutputStream specified");
+        
         ensureFieldLengthsSpecified(context.getSchema());
         xCtx.setSchema(context.getSchema());
         writer = new BufferedWriter(new OutputStreamWriter(context.getOut(), getCharset()));
     }
 
 
+    
     @Override
-    public void close(){
-        if (writer != null)
-            IOUtils.closeQuietly(writer);
+    public void close(){        
+        IOUtils.closeQuietly(writer);        
         super.close();
     }
-
+    
+    
+    @Override
+    public void close(boolean closeIOContext){
+        IOUtils.closeQuietly(writer);       
+        super.close(closeIOContext); 
+    }
+    
 
     @Override
     public void write(Record record)
@@ -80,22 +91,23 @@ public class FixedFileWriter extends BaseRecordWriter{
 
         //No operations should be run on the Record, so a temporary schema
         // is created with no operations.
+        IOContext original = context;
         try {
-            FileSchema originalSchema = context.getSchema();
-            FileSchema headerSchema = new FileSchema(context.getSchema());
+            Schema headerSchema = new Schema(context.getSchema());
             for (FieldList fields : headerSchema.getFieldLists()){
                 for (Field field: fields)
                     field.clearOperations();
             }
-            
-            context.setSchema(headerSchema);
+            context = new IOContext.Builder(context).schema(headerSchema).build();
             super.write(getHeader());
             writer.newLine();
             writer.flush();
-            context.setSchema(originalSchema); //put back the original schema
         }
         catch (SchemaException ex) {
             throw new IOException("Unable to create temporary header schema: " + ex.getMessage());
+        }
+        finally{
+            context = original;
         }
     }
     
@@ -123,7 +135,7 @@ public class FixedFileWriter extends BaseRecordWriter{
     }
 
     
-    protected void ensureFieldLengthsSpecified(FileSchema schema) throws SchemaException{        
+    protected void ensureFieldLengthsSpecified(Schema schema) throws SchemaException{        
         for (FieldList fields: schema.getFieldLists())
             ensureFieldLengthsSpecified(fields);
     }
@@ -144,7 +156,7 @@ public class FixedFileWriter extends BaseRecordWriter{
     }
 
     
-    protected boolean isHeader(){
+    public boolean isHeader(){
         return Boolean.parseBoolean(format.get("header"));
     }
     

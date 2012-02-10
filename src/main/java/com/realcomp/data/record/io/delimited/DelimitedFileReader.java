@@ -12,32 +12,41 @@ import com.realcomp.data.validation.Severity;
 import com.realcomp.data.validation.ValidationException;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.logging.Logger;
+import java.util.Map;
 
 /**
  *
  * @author krenfro
  */
 public class DelimitedFileReader extends BaseRecordReader{
-
-    private static final Logger logger = Logger.getLogger(DelimitedFileReader.class.getName());
     
     protected SkippingBufferedReader reader;
     protected CSVParser parser;
     
     public DelimitedFileReader(){
         super();
-        format.putDefaultValue("header", "false");
-        format.putDefaultValue("type", "TAB");
-        format.putDefaultValue("quoteCharacter", Character.toString(CSVParser.DEFAULT_QUOTE_CHARACTER));
-        format.putDefaultValue("escapeCharacter", Character.toString(CSVParser.DEFAULT_ESCAPE_CHARACTER));
-        format.putDefaultValue("strictQuotes", Boolean.toString(CSVParser.DEFAULT_STRICT_QUOTES));
+        format.putDefault("header", "false");
+        format.putDefault("type", "TAB");
+        format.putDefault("quoteCharacter", Character.toString(CSVParser.DEFAULT_QUOTE_CHARACTER));
+        format.putDefault("escapeCharacter", Character.toString(CSVParser.DEFAULT_ESCAPE_CHARACTER));
+        format.putDefault("strictQuotes", Boolean.toString(CSVParser.DEFAULT_STRICT_QUOTES));
+    }
+    
+    public DelimitedFileReader(DelimitedFileReader copy){
+        super(copy);
+        format.putDefault("header", "false");
+        format.putDefault("type", "TAB");
+        format.putDefault("quoteCharacter", Character.toString(CSVParser.DEFAULT_QUOTE_CHARACTER));
+        format.putDefault("escapeCharacter", Character.toString(CSVParser.DEFAULT_ESCAPE_CHARACTER));
+        format.putDefault("strictQuotes", Boolean.toString(CSVParser.DEFAULT_STRICT_QUOTES));
     }
         
     @Override
     public void open(IOContext context) throws IOException, SchemaException{
-
-        super.open(context);        
+        super.open(context);
+        if (context.getIn() == null)
+            throw new IllegalArgumentException("Invalid IOContext. No InputStream specified");
+        
         reader = new SkippingBufferedReader(new InputStreamReader(context.getIn(), getCharset()));
         reader.setSkipLeading(getSkipLeading());
         reader.setSkipTrailing(getSkipTrailing());
@@ -102,7 +111,7 @@ public class DelimitedFileReader extends BaseRecordReader{
         return recordFactory.build(fields, data);
     }
 
-    protected char getDelimiter(){
+    public char getDelimiter(){
         char delimiter;
         String type = format.get("type");
         if (type.equalsIgnoreCase("TAB")){
@@ -127,19 +136,19 @@ public class DelimitedFileReader extends BaseRecordReader{
         return value.charAt(0);
     }
     
-    protected char getEscapeCharacter(){
+    public char getEscapeCharacter(){
         return getAttributeAsChar("escapeCharacter");
     }
     
-    protected char getQuoteCharacter(){
+    public char getQuoteCharacter(){
         return getAttributeAsChar("quoteCharacter");
     }
     
-    protected boolean isStrictQuotes(){
+    public boolean isStrictQuotes(){
         return Boolean.parseBoolean(format.get("strictQuotes"));
     }
     
-    protected boolean isHeader(){
+    public boolean isHeader(){
         return Boolean.parseBoolean(format.get("header"));
     }
     

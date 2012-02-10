@@ -17,10 +17,10 @@ import java.util.Map;
 public class PrettyPrinter {
     
     private RelationalSchema relationalSchema;
-    private Map<String,FileSchema> schemas;
+    private Map<String,Schema> schemas;
 
     public PrettyPrinter(){
-        schemas = new HashMap<String,FileSchema>();
+        schemas = new HashMap<String,Schema>();
     }
     
     public RelationalSchema getRelationalSchema() {
@@ -31,12 +31,12 @@ public class PrettyPrinter {
         this.relationalSchema = relationalSchema;
     }
     
-    public void addFileSchema(FileSchema schema){
+    public void addFileSchema(Schema schema){
         schemas.put(schema.getName(), schema);
     }
     
-    public void addFileSchemas(List<FileSchema> schemas){
-        for (FileSchema s: schemas)
+    public void addFileSchemas(List<Schema> schemas){
+        for (Schema s: schemas)
             addFileSchema(s);
     }
     
@@ -61,7 +61,7 @@ public class PrettyPrinter {
         for (int x = 0; x < indent; x++)
             out.print(" ");
         
-        FileSchema schema = schemas.get(table.getName());
+        Schema schema = schemas.get(table.getName());
         out.print(table.getName());
         out.print("[");
         try{

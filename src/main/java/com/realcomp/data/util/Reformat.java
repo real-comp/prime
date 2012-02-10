@@ -2,22 +2,15 @@ package com.realcomp.data.util;
 
 import com.realcomp.data.conversion.ConversionException;
 import com.realcomp.data.record.Record;
-import com.realcomp.data.record.io.FormatException;
-import com.realcomp.data.record.io.RecordReader;
-import com.realcomp.data.record.io.RecordReaderFactory;
-import com.realcomp.data.record.io.RecordWriter;
-import com.realcomp.data.record.io.RecordWriterFactory;
-import com.realcomp.data.schema.FileSchema;
+import com.realcomp.data.record.io.*;
 import com.realcomp.data.schema.SchemaException;
 import com.realcomp.data.schema.SchemaFactory;
 import com.realcomp.data.validation.ValidationException;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.io.*;
+import java.util.Arrays;
+import joptsimple.OptionException;
+import joptsimple.OptionParser;
+import joptsimple.OptionSet;
 
 /**
  * Reformat a file using an input and output schema
@@ -25,23 +18,14 @@ import java.util.logging.Logger;
  */
 public class Reformat {
 
-    private static final Logger logger =  Logger.getLogger(Reformat.class.getName());
 
-
-    private FileSchema inputSchema;
-    private FileSchema outputSchema;
-
-    public Reformat(){
-    }
-
-
-    public void reformat(InputStream in, OutputStream out) 
+    public void reformat(IOContext in, IOContext out) 
             throws SchemaException, IOException, ValidationException, ConversionException {
 
-        RecordReader reader = RecordReaderFactory.build(inputSchema);
+        RecordReader reader = RecordReaderFactory.build(in.getSchema());
         reader.open(in);
         
-        RecordWriter writer = RecordWriterFactory.build(outputSchema);
+        RecordWriter writer = RecordWriterFactory.build(out.getSchema());
         writer.open(out);
         
         Record record = reader.read();
@@ -54,63 +38,80 @@ public class Reformat {
         reader.close();
     }
 
-    public void setInputSchema(InputStream in) throws IOException{
-        this.inputSchema = SchemaFactory.buildFileSchema(in);
-    }
 
-    public void setInputSchema(FileSchema schema){
-        if (schema == null)
-            throw new IllegalArgumentException("schema is null");
-        this.inputSchema = schema;
+    
+    private static void printHelp(OptionParser parser){
+        try {
+            parser.printHelpOn(System.err);
+        }
+        catch (IOException ignored) {
+        }
     }
-
-    public void setOutputSchema(InputStream in) throws IOException{
-        this.outputSchema = SchemaFactory.buildFileSchema(in);
-    }
-
-    public void setOutputSchema(FileSchema schema){
-        if (schema == null)
-            throw new IllegalArgumentException("schema is null");
-        this.outputSchema = schema;
-    }
-
+    
 
     public static void main(String[] args){
 
-        if (args.length < 2 || args[0].equalsIgnoreCase("-h") || args[0].equals("--help")) {
-            System.err.println("Usage: ");
-            System.err.println("  Reformat <input schema> <output schema> [<in file> <out file>]");
-            System.exit(1);
-        }
-
-        if (args.length == 3 ) {
-            System.err.println("Both input AND output files must be specified.");
-            System.err.println("Usage: ");
-            System.err.println("  Reformat <input schema> <output schema> [<in file> <out file>]");
-            System.exit(1);
-        }
-
-        try {
-            Reformat reformatter = new Reformat();
-            reformatter.setInputSchema(new FileInputStream(args[0]));
-            reformatter.setOutputSchema(new FileInputStream(args[1]));
-            InputStream in = null;
-            OutputStream out = null;
-            if (args.length == 4){
-                in = new FileInputStream(args[2]);
-                out = new FileOutputStream(args[3]);
+         OptionParser parser = new OptionParser(){{
+            acceptsAll(Arrays.asList("is","input-schema"), "input schema" )
+                    .withRequiredArg().describedAs("schema").required();
+            
+            acceptsAll(Arrays.asList("os", "output-schema"), "output schema" )
+                    .withRequiredArg().describedAs("schema").required();
+            
+            accepts("in", "input file (default: STDIN)").withRequiredArg().describedAs("file");
+            accepts("out", "output file (default: STDOUT)").withRequiredArg().describedAs("file");
+            acceptsAll(Arrays.asList("h", "?", "help"), "help");
+        }};
+        
+        int result = 1;
+        
+        try{
+            OptionSet options = parser.parse(args);
+            if (options.has("?")){
+                printHelp(parser);
             }
             else{
-                in = System.in;
-                out = System.out;
+                Reformat reformatter = new Reformat();
+                IOContext.Builder inputBuilder = new IOContext.Builder();                
+                inputBuilder.schema(
+                        SchemaFactory.buildSchema(new FileInputStream((String) options.valueOf("is"))));
+                inputBuilder.in(
+                        options.has("in") ? 
+                            new BufferedInputStream(new FileInputStream((String) options.valueOf("in"))) : 
+                            new BufferedInputStream(System.in));
+                
+                IOContext.Builder outputBuilder = new IOContext.Builder();                
+                outputBuilder.schema(
+                        SchemaFactory.buildSchema(new FileInputStream((String) options.valueOf("os"))));
+                outputBuilder.out(
+                        options.has("out") ? 
+                            new BufferedOutputStream(new FileOutputStream((String) options.valueOf("out"))) :
+                            new BufferedOutputStream(System.out));
+                
+                reformatter.reformat(inputBuilder.build(), outputBuilder.build());
+                result = 0;
             }
-
-            reformatter.reformat(in, out);
         }
-        catch (Exception ex) {
-            ex.printStackTrace();
-            logger.log(Level.SEVERE, ex.getMessage());
-            System.exit(1);
+        catch (SchemaException ex){
+            System.err.println(ex.getMessage());
         }
+        catch (ConversionException ex){
+            System.err.println(ex.getMessage());
+        }
+        catch (ValidationException ex){
+            System.err.println(ex.getMessage());
+        }
+        catch (FileNotFoundException ex){
+            System.err.println(ex.getMessage());
+        }
+        catch (IOException ex){
+            System.err.println(ex.getMessage());
+        }
+        catch (OptionException ex){
+            System.err.println(ex.getMessage());
+            printHelp(parser);
+        }
+        
+        System.exit(result);
     }
 }

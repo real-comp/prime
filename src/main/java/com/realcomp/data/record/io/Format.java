@@ -1,7 +1,7 @@
 package com.realcomp.data.record.io;
 
 
-import com.realcomp.data.schema.xml.FormatConverter;
+import com.realcomp.data.schema.xml.AttributesConverter;
 import com.thoughtworks.xstream.annotations.XStreamConverter;
 import java.util.Collection;
 import java.util.HashMap;
@@ -9,58 +9,80 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * A map of format attributes, with some convenience methods for reading values with defaults.
+ * Collection of formatting attributes with support for default values.
+ * 
+ * 
  * @author krenfro
  */
-@XStreamConverter(FormatConverter.class)
+@XStreamConverter(AttributesConverter.class)
 public class Format implements Map<String,String> {
     
     private Map<String,String> attributes;
-    private Map<String,String> defaultValues;
+    private Map<String,String> defaults;
     
     public Format(){
         attributes = new HashMap<String,String>();
-        defaultValues = new HashMap<String,String>();
+        defaults = new HashMap<String,String>();
     }
     
     public Format(Format copy){
         attributes = new HashMap<String,String>();
         if (copy.attributes != null)
             attributes.putAll(copy.attributes);
-        defaultValues = new HashMap<String,String>();
+        defaults = new HashMap<String,String>();
     }
     
     public Format(Map<String,String> map){
         attributes = new HashMap<String,String>();
         attributes.putAll(map);
-        defaultValues = new HashMap<String,String>();
+        defaults = new HashMap<String,String>();
     }
     
+    public Map<String,String> getDefaults(){
+        return defaults;
+    }
+    
+    /**
+     * Builds a map of all the attributes that do not match a default value.
+     * 
+     * @return relative complement of the defaults relative to the attributes (attributes \ defaults)
+     */
     public Map<String,String> filterDefaultValues(){
         Map<String,String> filtered = new HashMap<String,String>();
         filtered.putAll(attributes);
         
         for (Entry<String,String> entry: attributes.entrySet()){
             String key = entry.getKey();
-            if (key != null && key.equals(defaultValues.get(key))){
+            if (key != null && key.equals(defaults.get(key))){
                 filtered.remove(key);
             }
         }
         return filtered;
     }
 
-    
+
+    /**
+     * 
+     * @param name
+     * @return the value for the named attribute, or the default value (if available); else null
+     */
     @Override
     public String get(Object name){
-        String value = get(name);
+        String value = attributes.get(name);
         if (value == null){
-            value = defaultValues.get(name);
+            value = defaults.get(name);
         }
         return value;
     }
     
-    public String putDefaultValue(String name, String value){
-        return defaultValues.put(name, value);
+    /**
+     * Store a default value for a named attribute.
+     * @param name
+     * @param value
+     * @return previous value for the default.
+     */
+    public String putDefault(String name, String value){
+        return defaults.put(name, value);
     }
     
     /**
@@ -104,6 +126,10 @@ public class Format implements Map<String,String> {
     public void putAll(Map<? extends String, ? extends String> map) {
         attributes.putAll(map);
     }
+    
+    public void putDefaults(Map<? extends String, ? extends String> defaults){
+        this.defaults.putAll(defaults);
+    }
 
     @Override
     public void clear() {
@@ -134,7 +160,7 @@ public class Format implements Map<String,String> {
         final Format other = (Format) obj;
         if (this.attributes != other.attributes && (this.attributes == null || !this.attributes.equals(other.attributes)))
             return false;
-        if (this.defaultValues != other.defaultValues && (this.defaultValues == null || !this.defaultValues.equals(other.defaultValues)))
+        if (this.defaults != other.defaults && (this.defaults == null || !this.defaults.equals(other.defaults)))
             return false;
         return true;
     }
@@ -143,7 +169,7 @@ public class Format implements Map<String,String> {
     public int hashCode() {
         int hash = 7;
         hash = 59 * hash + (this.attributes != null ? this.attributes.hashCode() : 0);
-        hash = 59 * hash + (this.defaultValues != null ? this.defaultValues.hashCode() : 0);
+        hash = 59 * hash + (this.defaults != null ? this.defaults.hashCode() : 0);
         return hash;
     }
     

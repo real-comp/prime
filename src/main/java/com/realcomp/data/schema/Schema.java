@@ -3,24 +3,24 @@ package com.realcomp.data.schema;
 import com.realcomp.data.MultiFieldOperation;
 import com.realcomp.data.Operation;
 import com.realcomp.data.record.Record;
-import com.realcomp.data.record.io.Format;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import java.util.logging.Level;
+import java.util.Map;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
 /**
- *
+ * 
  * @author krenfro
  */
-@XStreamAlias("file-schema")
-public class FileSchema {
+@XStreamAlias("schema")
+public class Schema {
 
-    private static final Logger logger = Logger.getLogger(FileSchema.class.getName());
+    private static final Logger logger = Logger.getLogger(Schema.class.getName());
     protected static final Pattern DEFAULT_CLASSIFIER = Pattern.compile(".*");
 
     @XStreamAsAttribute
@@ -29,7 +29,10 @@ public class FileSchema {
     @XStreamAsAttribute
     private String version;
     
-    private Format format;
+    @XStreamAsAttribute
+    private boolean strict = true;
+    
+    private Map<String,String> format;
 
     private List<Operation> beforeFirst;
     private List<Operation> before;
@@ -39,12 +42,15 @@ public class FileSchema {
     @XStreamImplicit(itemFieldName="fields")
     private List<FieldList> fieldLists;
     
-    public FileSchema(){
+    public Schema(){
+        format = new HashMap<String,String>();
         fieldLists = new ArrayList<FieldList>();
     }
 
-    public FileSchema(FileSchema copy) throws SchemaException{
+    public Schema(Schema copy){
+        format = new HashMap<String,String>();
         fieldLists = new ArrayList<FieldList>();
+        strict = copy.strict;
         for (FieldList fieldList: copy.fieldLists)
             fieldLists.add(new FieldList(fieldList));
         
@@ -55,6 +61,8 @@ public class FileSchema {
         setAfterLastOperations(copy.getAfterLastOperations());
         setAfterOperations(copy.getAfterOperations());
     }
+    
+    
     
     
     /**
@@ -121,6 +129,7 @@ public class FileSchema {
     }
     
     
+      
     /**
      * Classify a record and return the FieldList that matches.
      * If multiple FieldLists support the specified Record, then the FieldList that
@@ -129,7 +138,7 @@ public class FileSchema {
      *
      * @param record not null
      * @return the FieldList that should be used for the Record. never null
-     * @throws SchemaException if no defined layout supports the Record
+     * @throws SchemaException if no defined layout supports the Record and strict is true
      */
     public FieldList classify(Record record) throws SchemaException{
         
@@ -147,12 +156,16 @@ public class FileSchema {
             }
         }
         
-        if (match == null)
-            throw new SchemaException("The schema does not support the specified Record");
+        if (match == null && strict){
+            throw new SchemaException("The schema does not support the specified Record.");
+        }
+        else{
+            match = getDefaultFieldList();
+        }
         
         return match;
     }
-    
+       
     
     /**
      * Returns the FieldList that has the default classifier (match anything),
@@ -176,7 +189,7 @@ public class FileSchema {
 
     /**
      * 
-     * @return the FieldLists supported by this FileSchema
+     * @return the FieldLists supported by this Schema
      */
     public List<FieldList> getFieldLists() {
         return fieldLists;
@@ -442,12 +455,14 @@ public class FileSchema {
         this.version = version;
     }
 
-    public Format getFormat() {
-        return new Format(format);
+    public Map<String,String> getFormat() {
+        return format;
     }
 
-    public void setFormat(Format format) {
-        this.format = new Format(format);
+    public void setFormat(Map<String,String> format) {
+        if (format == null)
+            throw new IllegalArgumentException("format is null");
+        this.format = format;
     }
 
     
@@ -469,16 +484,26 @@ public class FileSchema {
         }
     }
 
+    public boolean isStrict() {
+        return strict;
+    }
+
+    public void setStrict(boolean strict) {
+        this.strict = strict;
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (obj == null)
             return false;
         if (getClass() != obj.getClass())
             return false;
-        final FileSchema other = (FileSchema) obj;
+        final Schema other = (Schema) obj;
         if ((this.name == null) ? (other.name != null) : !this.name.equals(other.name))
             return false;
         if ((this.version == null) ? (other.version != null) : !this.version.equals(other.version))
+            return false;
+        if (this.strict != other.strict)
             return false;
         if (this.format != other.format && (this.format == null || !this.format.equals(other.format)))
             return false;
@@ -497,19 +522,16 @@ public class FileSchema {
 
     @Override
     public int hashCode() {
-        int hash = 3;
-        hash = 61 * hash + (this.name != null ? this.name.hashCode() : 0);
-        hash = 61 * hash + (this.version != null ? this.version.hashCode() : 0);
-        hash = 61 * hash + (this.format != null ? this.format.hashCode() : 0);
-        hash = 61 * hash + (this.beforeFirst != null ? this.beforeFirst.hashCode() : 0);
-        hash = 61 * hash + (this.before != null ? this.before.hashCode() : 0);
-        hash = 61 * hash + (this.after != null ? this.after.hashCode() : 0);
-        hash = 61 * hash + (this.afterLast != null ? this.afterLast.hashCode() : 0);
-        hash = 61 * hash + (this.fieldLists != null ? this.fieldLists.hashCode() : 0);
+        int hash = 5;
+        hash = 73 * hash + (this.name != null ? this.name.hashCode() : 0);
+        hash = 73 * hash + (this.version != null ? this.version.hashCode() : 0);
+        hash = 73 * hash + (this.strict ? 1 : 0);
+        hash = 73 * hash + (this.format != null ? this.format.hashCode() : 0);
+        hash = 73 * hash + (this.beforeFirst != null ? this.beforeFirst.hashCode() : 0);
+        hash = 73 * hash + (this.before != null ? this.before.hashCode() : 0);
+        hash = 73 * hash + (this.after != null ? this.after.hashCode() : 0);
+        hash = 73 * hash + (this.afterLast != null ? this.afterLast.hashCode() : 0);
+        hash = 73 * hash + (this.fieldLists != null ? this.fieldLists.hashCode() : 0);
         return hash;
     }
-    
-    
-
-    
 }

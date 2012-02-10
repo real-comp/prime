@@ -52,7 +52,8 @@ public interface RecordWriter {
      * @param closeIOContext if true, the ioContext.close() method will be invoked
      */
     void close(boolean closeIOContext);
-
+    
+    
     /**
      * Open an IOContext for writing. May be invoked multiple times with new output as needed.
      * close() is automatically invoked before each open();
@@ -74,9 +75,4 @@ public interface RecordWriter {
      * @return the IOContext being operated on; or null if not yet open
      */
     IOContext getIOContext();
-    
-    
-    Map<String,String> getAttributes();
-    
-    void setAttributes(Map<String,String> attributes);
 }

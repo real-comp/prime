@@ -1,7 +1,8 @@
 package com.realcomp.data.record.io.json;
 
-import com.realcomp.data.schema.FileSchema;
+import com.realcomp.data.schema.Schema;
 import com.realcomp.data.record.Record;
+import com.realcomp.data.record.io.IOContext;
 import com.realcomp.data.schema.SchemaFactory;
 import java.io.ByteArrayInputStream;
 import org.junit.Test;
@@ -39,9 +40,10 @@ public class JsonReaderTest {
     @Test
     public void testReadFromString() throws Exception{
         
+        IOContext ctx = new IOContext.Builder()
+                .in(new ByteArrayInputStream(getJsonTestString1().getBytes())).build();
         JsonReader reader = new JsonReader();
-        ByteArrayInputStream in = new ByteArrayInputStream(getJsonTestString1().getBytes());
-        reader.open(in);
+        reader.open(ctx);
         Record record = reader.read();
         assertNotNull(record);
         assertEquals(1, reader.getCount());
@@ -53,8 +55,11 @@ public class JsonReaderTest {
     @Test
     public void testReadFromFile() throws Exception{
         
+        IOContext ctx = new IOContext.Builder()
+                .in(this.getClass().getResourceAsStream("sample.json")).build();        
         JsonReader reader = new JsonReader();
-        reader.open(this.getClass().getResourceAsStream("sample.json"));
+        reader.open(ctx);
+        
         Record record = reader.read();
         assertNotNull(record);
         assertEquals(1, reader.getCount());
@@ -69,8 +74,11 @@ public class JsonReaderTest {
         assertEquals(record, sample);
         
         
-        reader = new JsonReader();
-        reader.open(this.getClass().getResourceAsStream("multiRecordSample.json"));
+        reader = new JsonReader();  
+        ctx = new IOContext.Builder(ctx)
+                .in(this.getClass().getResourceAsStream("multiRecordSample.json")).build();
+        
+        reader.open(ctx);
         record = reader.read();
         assertNotNull(record);
         assertEquals(1, reader.getCount());
@@ -91,10 +99,15 @@ public class JsonReaderTest {
     @Test
     public void testWithSchema() throws Exception{
         
+        IOContext ctx = new IOContext.Builder()
+                .schema(SchemaFactory.buildSchema(this.getClass().getResourceAsStream("sample.schema")))
+                .in(this.getClass().getResourceAsStream("sample.json"))
+                .build();
+        
+        assertFalse(ctx.getSchema().isStrict());
+        
         JsonReader reader = new JsonReader();
-        reader.open(this.getClass().getResourceAsStream("sample.json"));
-        FileSchema schema = SchemaFactory.buildFileSchema(this.getClass().getResourceAsStream("sample.schema"));
-        reader.setSchema(schema);
+        reader.open(ctx);
         
         Record record = reader.read();
         assertNotNull(record);

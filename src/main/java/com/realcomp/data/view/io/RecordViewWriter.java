@@ -1,12 +1,10 @@
 package com.realcomp.data.view.io;
 
 import com.realcomp.data.conversion.ConversionException;
-import com.realcomp.data.schema.FileSchema;
+import com.realcomp.data.record.io.IOContext;
 import com.realcomp.data.schema.SchemaException;
-import com.realcomp.data.validation.Severity;
 import com.realcomp.data.validation.ValidationException;
 import java.io.IOException;
-import java.io.OutputStream;
 
 /**
  *
@@ -30,43 +28,15 @@ public interface RecordViewWriter<T> {
      *
      * @param in OutputStream to write to. Not null
      * @throws IOException
-     */
-    void open(OutputStream out) throws IOException;
-    
-    /**
-     * Set the schema that the RecordReader should use to create Records.
-     * 
-     * @param schema
      * @throws SchemaException
      */
-    void setSchema(FileSchema schema) throws SchemaException;
+    void open(IOContext context) throws IOException, SchemaException;
 
-    /**
-     *
-     * @return the current Schema, or null if none set
-     */
-    FileSchema getSchema();
-
-
-    /**
-     * @return the Severity level that will cause ValidationExceptions to be thrown instead of
-     *  logged.
-     */
-    Severity getValidationExceptionThreshold();
-
-    /**
-     * 
-     * @param severity the severity level that will cause ValidationExceptions to be thrown
-     * instead of logged. not null
-     */
-    void setValidationExceptionThreshold(Severity severity);
-
+    
     /**
      *
      * @return number of records read; not including skipped records.
      */
     long getCount();
     
-    
-
 }

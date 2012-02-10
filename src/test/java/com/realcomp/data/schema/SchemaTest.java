@@ -8,9 +8,9 @@ import static org.junit.Assert.*;
  *
  * @author krenfro
  */
-public class FileSchemaTest {
+public class SchemaTest {
     
-    public FileSchemaTest() {
+    public SchemaTest() {
     }
 
 
@@ -20,12 +20,12 @@ public class FileSchemaTest {
     public void testCopyConstructor() throws SchemaException{
         
         
-        FileSchema a = new FileSchema();
+        Schema a = new Schema();
         Field original = new Field("original");
         original.addOperation(new Trim());        
         a.addField(original);
         
-        FileSchema b = new FileSchema(a);
+        Schema b = new Schema(a);
         
         assertEquals(a, b);
         assertTrue(a.getDefaultFieldList().size() == 1);
@@ -39,7 +39,7 @@ public class FileSchemaTest {
         assertTrue(a.getDefaultFieldList().size() == 1);
         assertTrue(a.getDefaultFieldList().get(0).getOperations().size() == 1);
         assertTrue(b.getDefaultFieldList().size() == 1);
-        assertTrue(b.getDefaultFieldList().get(0).getOperations().size() == 0);
+        assertTrue(b.getDefaultFieldList().get(0).getOperations().isEmpty());
         
     }
 

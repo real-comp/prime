@@ -1,18 +1,19 @@
 package com.realcomp.data.record.io.delimited;
 
+import com.realcomp.data.DataType;
+import com.realcomp.data.record.Record;
+import com.realcomp.data.record.io.IOContext;
+import com.realcomp.data.schema.Field;
 import com.realcomp.data.schema.FieldList;
+import com.realcomp.data.schema.Schema;
 import com.realcomp.data.schema.SchemaException;
 import com.realcomp.data.validation.ValidationException;
-import com.realcomp.data.schema.FileSchema;
-import com.realcomp.data.DataType;
 import java.io.ByteArrayInputStream;
-import com.realcomp.data.record.Record;
-import com.realcomp.data.schema.Field;
 import java.io.IOException;
-import java.io.InputStream;
-import java.util.List;
-import org.junit.Test;
+import java.util.HashMap;
+import java.util.Map;
 import static org.junit.Assert.*;
+import org.junit.Test;
 
 /**
  *
@@ -32,24 +33,27 @@ public class DelimitedFileReaderTest {
     @Test
     public void testOpenClose() throws IOException, SchemaException {
 
-        DelimitedFileReader instance = new DelimitedFileReader();
-        InputStream in = null;
+        DelimitedFileReader reader = new DelimitedFileReader();
+        
         try{
-            instance.open(in);
+            reader.open(null);
             fail("should have thrown IllegalArgumentException");
         }
         catch(IllegalArgumentException expected){}
 
-        instance.close();
-        instance.close();
+        reader.close();
+        reader.close();
 
         String data = "a\tb\tc";
         
-        instance.open(new ByteArrayInputStream(data.getBytes()));
-        instance.setSchema(get3FieldSchema());
-        instance.close();
-        instance.close();
-
+        IOContext ctx = new IOContext.Builder()
+                    .schema(get3FieldSchema())
+                    .in(new ByteArrayInputStream(data.getBytes()))
+                    .build();
+        
+        reader.open(ctx);
+        reader.close();
+        reader.close();
     }
 
 
@@ -57,30 +61,27 @@ public class DelimitedFileReaderTest {
      * Test of getType method, of class DelimitedFileParser.
      */
     @Test
-    public void testGetType() {
+    public void testGetType() throws IOException, SchemaException {
 
+        DelimitedFileReader reader = new DelimitedFileReader();
+        assertEquals("TAB", reader.getDefaults().get("type"));
+        assertTrue('\t' == reader.getDelimiter());
         
-        DelimitedFileReader instance = new DelimitedFileReader();
-        assertEquals("TAB", instance.getDelimiter());
-        instance.setDelimiter("CSV");
-        assertEquals("CSV", instance.getDelimiter());
-        instance.setDelimiter("TAB");
-        assertEquals("TAB", instance.getDelimiter());
-        instance.setDelimiter("-");
-        assertEquals("-", instance.getDelimiter());
+        
+        IOContext ctx = new IOContext.Builder()
+                .attribute("type", "CSV")
+                .in(new ByteArrayInputStream(new byte[1]))
+                .build();
+        reader.open(ctx);
 
-        try{
-            instance.setDelimiter(null);
-            fail("should have thrown IllegalArgumentException");
-        }
-        catch(IllegalArgumentException expected){}
+        assertTrue(',' == reader.getDelimiter());
+        ctx = new IOContext.Builder(ctx).attribute("type", "TAB").build();
+        reader.open(ctx);
+        assertTrue('\t' == reader.getDelimiter());
         
-        try{
-            instance.setDelimiter("12");
-            fail("should have thrown IllegalArgumentException");
-        }
-        catch(IllegalArgumentException expected){}
-        
+        ctx = new IOContext.Builder(ctx).attribute("type", "-").build();
+        reader.open(ctx);
+        assertTrue('-' == reader.getDelimiter());
     }
     
   
@@ -90,96 +91,113 @@ public class DelimitedFileReaderTest {
     @Test
     public void testNext() throws Exception {
 
-
-        DelimitedFileReader instance = new DelimitedFileReader();
-        String data = "a\tb\tc\nd\te\tf";
-        instance.setSchema(get3FieldSchema());
-        instance.open(new ByteArrayInputStream(data.getBytes()));
         
+        String data = "a\tb\tc\nd\te\tf";
+        IOContext ctx = new IOContext.Builder()
+                .schema(get3FieldSchema())
+                .in(new ByteArrayInputStream(data.getBytes()))
+                .build();
+        
+        DelimitedFileReader reader = new DelimitedFileReader();
+        reader.open(ctx);
 
-        Record record = instance.read();
+        Record record = reader.read();
         assertNotNull(record);
-        record = instance.read();
+        record = reader.read();
         assertNotNull(record);
-        record = instance.read();
+        record = reader.read();
         assertNull(record);
         
-        instance.close();
+        reader.close();
     }
 
 
     @Test
     public void testCSV() throws Exception {
 
-        DelimitedFileReader instance = new DelimitedFileReader();
-        instance.setDelimiter("CSV");
         String data = "\"a123\",\"b123\",\"c123\"";
-        instance.setSchema(get3FieldSchema());
-        instance.open(new ByteArrayInputStream(data.getBytes()));
+        
+        Map<String,String> attributes = new HashMap<String,String>();
+        attributes.put("type", "CSV");
+        IOContext ctx = new IOContext.Builder()
+                .schema(get3FieldSchema())
+                .in(new ByteArrayInputStream(data.getBytes()))
+                .attributes(attributes)
+                .build();
+        
+        DelimitedFileReader reader = new DelimitedFileReader();
+        reader.open(ctx);
         
 
-        Record record = instance.read();
+        Record record = reader.read();
         assertNotNull(record);
         assertEquals("a123", record.get("a"));
         assertEquals("b123", record.get("b"));
         assertEquals("c123", record.get("c"));
-        assertNull(instance.read());
-        instance.close();
+        assertNull(reader.read());
+        reader.close();
 
         //embedded comma
         data = "\"a123\",\"b1,23\",\"c123\"";
-        instance.open(new ByteArrayInputStream(data.getBytes()));
-        instance.setSchema(get3FieldSchema());
+        ctx = new IOContext.Builder(ctx)
+                .in(new ByteArrayInputStream(data.getBytes()))
+                .build();
+        reader.open(ctx);
 
-        record = instance.read();
+        record = reader.read();
         assertNotNull(record);
         assertEquals("a123", record.get("a"));
         assertEquals("b1,23", record.get("b"));
         assertEquals("c123", record.get("c"));
-        assertNull(instance.read());
-        instance.close();
+        assertNull(reader.read());
+        reader.close();
 
 
         //embedded comma
         data = "\"a123\",\"b1,23\",\"c123\"";
-        instance.setSchema(get3FieldSchema());
-        instance.open(new ByteArrayInputStream(data.getBytes()));
+        ctx = new IOContext.Builder(ctx)
+                .in(new ByteArrayInputStream(data.getBytes()))
+                .build();
+        reader.open(ctx);
         
 
-        record = instance.read();
+        record = reader.read();
         assertNotNull(record);
         assertEquals("a123", record.get("a"));
         assertEquals("b1,23", record.get("b"));
         assertEquals("c123", record.get("c"));
-        assertNull(instance.read());
-        instance.close();
+        assertNull(reader.read());
+        reader.close();
 
          //embedded quote
         data = "\"a123\",\"b1\"\"23\",\"c123\"";
-        instance.setSchema(get3FieldSchema());
-        instance.open(new ByteArrayInputStream(data.getBytes()));
-        
+        ctx = new IOContext.Builder(ctx)
+                .in(new ByteArrayInputStream(data.getBytes()))
+                .build();
+        reader.open(ctx);        
 
-        record = instance.read();
+        record = reader.read();
         assertNotNull(record);
         assertEquals("a123", record.get("a"));
         assertEquals("b1\"23", record.get("b"));
         assertEquals("c123", record.get("c"));
-        assertNull(instance.read());
-        instance.close();
+        assertNull(reader.read());
+        reader.close();
 
         //embedded quote at end
         data = "\"a123\",\"b123\"\"\",\"c123\"";
-        instance.setSchema(get3FieldSchema());
-        instance.open(new ByteArrayInputStream(data.getBytes()));
+        ctx = new IOContext.Builder(ctx)
+                .in(new ByteArrayInputStream(data.getBytes()))
+                .build();
+        reader.open(ctx);
         
-        record = instance.read();
+        record = reader.read();
         assertNotNull(record);
         assertEquals("a123", record.get("a"));
         assertEquals("b123\"", record.get("b"));
         assertEquals("c123", record.get("c"));
-        assertNull(instance.read());
-        instance.close();
+        assertNull(reader.read());
+        reader.close();
 
     }
 
@@ -191,13 +209,18 @@ public class DelimitedFileReaderTest {
     @Test
     public void testLoadRecordMissingFields() throws Exception {
 
-        FieldList fields = get3FieldSchema().getDefaultFieldList();
-
         String[] data = new String[]{"a123","b123"};
-        DelimitedFileReader instance = new DelimitedFileReader();
-        instance.setSchema(get3FieldSchema());
+        FieldList fields = get3FieldSchema().getDefaultFieldList();
+        
+        IOContext ctx = new IOContext.Builder()
+                .schema(get3FieldSchema())
+                .in(new ByteArrayInputStream(new byte[10]))
+                .build();
+        
+        DelimitedFileReader reader = new DelimitedFileReader();
+        reader.open(ctx);
         try{
-            instance.loadRecord(fields, data);
+            reader.loadRecord(fields, data);
             fail("should have thrown ValidationException");
         }
         catch(ValidationException expected){}
@@ -205,23 +228,23 @@ public class DelimitedFileReaderTest {
 
         try{
             data = new String[]{"a123","b123","c123","d123"};
-            instance.loadRecord(fields, data);
+            reader.loadRecord(fields, data);
             fail("should have thrown ValidationException");
         }
         catch(ValidationException expected){}
 
         try{
             data = new String[]{};
-            instance.loadRecord(fields, data);
+            reader.loadRecord(fields, data);
             fail("should have thrown ValidationException");
         }
         catch(ValidationException expected){}
 
     }
 
-    protected FileSchema get3FieldSchema() throws SchemaException{
+    protected Schema get3FieldSchema() throws SchemaException{
         
-        FileSchema schema = new FileSchema();
+        Schema schema = new Schema();
         schema.setName("test");
         schema.setVersion("0");
         

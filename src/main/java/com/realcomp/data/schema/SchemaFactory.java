@@ -11,12 +11,12 @@ import java.io.InputStream;
 public class SchemaFactory {
 
 
-    public static FileSchema buildFileSchema(InputStream in){
+    public static Schema buildSchema(InputStream in){
         
         if (in == null)
             throw new IllegalArgumentException("InputStream is null");
         XStream xstream = XStreamFactory.build();    
-        return (FileSchema) xstream.fromXML(in);
+        return (Schema) xstream.fromXML(in);
     }
 
     public static RelationalSchema buildRelationalSchema(InputStream in){

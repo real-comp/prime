@@ -1,12 +1,9 @@
 package com.realcomp.data.schema;
 
 
-import com.realcomp.data.record.io.Format;
-import com.realcomp.data.record.io.delimited.DelimitedFileReader;
 import com.realcomp.data.Operation;
 import com.realcomp.data.conversion.ReplaceFirst;
 import java.util.logging.Logger;
-import com.realcomp.data.record.io.ParsePlanException;
 import com.realcomp.data.conversion.Concat;
 import java.io.ByteArrayInputStream;
 import java.util.List;
@@ -38,9 +35,9 @@ public class DoubleQuote {
     }
 
 
-    protected FileSchema getSchema() throws SchemaException{
+    protected Schema getSchema() throws SchemaException{
 
-        FileSchema schema = new FileSchema();
+        Schema schema = new Schema();
         schema.setName("test");
         schema.setVersion("1.0");
         schema.addField(new Field("pid", DataType.LONG, 10));
@@ -62,7 +59,7 @@ public class DoubleQuote {
         schema.addField(new Field("zip", DataType.INTEGER, 5));
         schema.addField(new Field("value", DataType.FLOAT, 7));
         
-        schema.setFormat(new Format("TAB"));
+        schema.getFormat().put("type", "TAB");
         return schema;
     }
 
@@ -80,7 +77,7 @@ public class DoubleQuote {
         String xml = xstream.toXML(getSchema());
         System.out.println(xml);
 
-        FileSchema schema = SchemaFactory.buildFileSchema(new ByteArrayInputStream(xml.getBytes()));
+        Schema schema = SchemaFactory.buildSchema(new ByteArrayInputStream(xml.getBytes()));
 
         Field field = schema.getField("owner");
         boolean foundIt = false;

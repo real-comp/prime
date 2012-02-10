@@ -2,7 +2,7 @@ package com.realcomp.data;
 
 import com.realcomp.data.schema.AfterLastField;
 import com.realcomp.data.schema.BeforeFirstField;
-import com.realcomp.data.schema.FileSchema;
+import com.realcomp.data.schema.Schema;
 import com.realcomp.data.schema.Field;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,7 +20,7 @@ public class Operations {
      * @param field
      * @return All operations for a field, including any <i>before</i> and <i>after</i> operations.
      */
-    public static List<Operation> getOperations(FileSchema schema, Field field){
+    public static List<Operation> getOperations(Schema schema, Field field){
 
         List<Operation> operations = new ArrayList<Operation>();
         

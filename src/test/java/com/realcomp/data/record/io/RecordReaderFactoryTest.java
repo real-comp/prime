@@ -4,11 +4,18 @@
  */
 package com.realcomp.data.record.io;
 
+import com.realcomp.data.record.io.FormatException;
+import com.realcomp.data.record.io.IOContext;
+import com.realcomp.data.record.io.RecordReader;
+import com.realcomp.data.record.io.RecordReaderFactory;
 import com.realcomp.data.record.io.delimited.DelimitedFileReader;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
+import com.realcomp.data.schema.SchemaException;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+import static org.junit.Assert.assertTrue;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 /**
  *
@@ -20,16 +27,23 @@ public class RecordReaderFactoryTest {
     }
 
     @Test
-    public void readerTest() throws FormatException{
+    public void readerTest() throws FormatException, IOException, SchemaException{
         
-        Format format = new Format("TAB");
-        format.setAttribute("header", "true");
-        format.setAttribute("doesnotexist", "blabla");
-        
+        Map<String,String> format = new HashMap<String,String>();
+        format.put("type", "TAB");
+        format.put("header", "true");
+        format.put("doesnotexist", "blabla");
         
         RecordReader reader = RecordReaderFactory.build(format);
+        
+        IOContext ctx = new IOContext.Builder()
+                    .attributes(format)
+                    .in(new ByteArrayInputStream(new byte[10]))
+                    .build();
+        reader.open(ctx);
+        
         assertTrue(reader.getClass() == DelimitedFileReader.class);
-        assertTrue(((DelimitedFileReader) reader).getSkipLeading() == 1);
+        assertTrue('\t' == ((DelimitedFileReader) reader).getDelimiter());
         assertTrue(((DelimitedFileReader) reader).isHeader());
     }
     

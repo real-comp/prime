@@ -52,11 +52,12 @@ public interface RecordReader {
      */
     void close(boolean closeIOContext);
 
+
     /**
      * Open an IOContext for reading. May be invoked multiple times with new input as needed.
      * close() is automatically invoked before each open();
      *
-     * @param context Not null
+     * @param context not null
      * @throws IOException
      * @throws SchemaException
      */
@@ -73,7 +74,6 @@ public interface RecordReader {
      */
     long getCount();
     
-    Map<String,String> getAttributes();
     
-    void setAttributes(Map<String,String> attributes);
+    Map<String,String> getDefaults();
 }

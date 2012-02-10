@@ -1,4 +1,4 @@
-<file-schema name="test" version="1.0">
+<schema name="test" version="1.0" strict="false">
     
   <format type="JSON"/>
   
@@ -16,4 +16,4 @@
         <concat fields="zip"/>
     </field>
   </fields>
-</file-schema>
+</schema>

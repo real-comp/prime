@@ -9,7 +9,7 @@ import com.realcomp.data.record.io.BaseRecordWriter;
 import com.realcomp.data.record.io.IOContext;
 import com.realcomp.data.schema.Field;
 import com.realcomp.data.schema.FieldList;
-import com.realcomp.data.schema.FileSchema;
+import com.realcomp.data.schema.Schema;
 import com.realcomp.data.schema.SchemaException;
 import com.realcomp.data.transform.TransformContext;
 import com.realcomp.data.transform.ValueSurgeon;
@@ -33,11 +33,24 @@ public class DelimitedFileWriter extends BaseRecordWriter {
     
     public DelimitedFileWriter(){
         super();
-        format.putDefaultValue("header", "false");
-        format.putDefaultValue("type", "TAB");
-        format.putDefaultValue("quoteCharacter", Character.toString(CSVParser.DEFAULT_QUOTE_CHARACTER));
-        format.putDefaultValue("escapeCharacter", Character.toString(CSVParser.DEFAULT_ESCAPE_CHARACTER));
-        format.putDefaultValue("strictQuotes", Boolean.toString(CSVParser.DEFAULT_STRICT_QUOTES));
+        format.putDefault("header", "false");
+        format.putDefault("type", "TAB");
+        format.putDefault("quoteCharacter", Character.toString(CSVParser.DEFAULT_QUOTE_CHARACTER));
+        format.putDefault("escapeCharacter", Character.toString(CSVParser.DEFAULT_ESCAPE_CHARACTER));
+        format.putDefault("strictQuotes", Boolean.toString(CSVParser.DEFAULT_STRICT_QUOTES));
+        
+        current = new ArrayList<String>();
+        xCtx = new TransformContext();
+        surgeon = new ValueSurgeon();
+    }
+    
+    public DelimitedFileWriter(DelimitedFileWriter copy){
+        super(copy);
+        format.putDefault("header", "false");
+        format.putDefault("type", "TAB");
+        format.putDefault("quoteCharacter", Character.toString(CSVParser.DEFAULT_QUOTE_CHARACTER));
+        format.putDefault("escapeCharacter", Character.toString(CSVParser.DEFAULT_ESCAPE_CHARACTER));
+        format.putDefault("strictQuotes", Boolean.toString(CSVParser.DEFAULT_STRICT_QUOTES));
         
         current = new ArrayList<String>();
         xCtx = new TransformContext();
@@ -79,6 +92,10 @@ public class DelimitedFileWriter extends BaseRecordWriter {
 
         super.open(context);
         xCtx.setSchema(context.getSchema());
+        if (context.getOut() == null)
+            throw new IllegalArgumentException("Invalid IOContext. No OutputStream specified");
+        
+        
         switch (getDelimiter()) {
             case '\t':
                 writer = new CSVWriter(new BufferedWriter(
@@ -103,22 +120,25 @@ public class DelimitedFileWriter extends BaseRecordWriter {
 
         //No operations should be run on the Record, so a temporary schema
         // is created with no operations.
+        IOContext original = context;
         try {
-            FileSchema originalSchema = context.getSchema();
-            FileSchema headerSchema = new FileSchema(context.getSchema());
+            Schema headerSchema = new Schema(context.getSchema());
             for (FieldList fields : headerSchema.getFieldLists()) {
                 for (Field field : fields) {
                     field.clearOperations();
                 }
             }
-
-            context.setSchema(headerSchema);
+            
+            context = new IOContext.Builder(context).schema(headerSchema).build();
             super.write(getHeader());
             writer.writeNext(current.toArray(new String[current.size()]));
-            writer.flush();
-            context.setSchema(originalSchema); //put back the original schema
-        } catch (SchemaException ex) {
+            writer.flush();            
+        } 
+        catch (SchemaException ex) {
             throw new IOException("Unable to create temporary header schema: " + ex.getMessage());
+        }
+        finally{
+            context = original;
         }
     }
 
@@ -130,7 +150,7 @@ public class DelimitedFileWriter extends BaseRecordWriter {
         return retVal;
     }
 
-    protected char getDelimiter(){
+    public char getDelimiter(){
         char delimiter;
         String type = format.get("type");
         if (type.equalsIgnoreCase("TAB")){
@@ -155,19 +175,19 @@ public class DelimitedFileWriter extends BaseRecordWriter {
         return value.charAt(0);
     }
     
-    protected char getEscapeCharacter(){
+    public char getEscapeCharacter(){
         return getAttributeAsChar("escapeCharacter");
     }
     
-    protected char getQuoteCharacter(){
+    public char getQuoteCharacter(){
         return getAttributeAsChar("quoteCharacter");
     }
     
-    protected boolean isStrictQuotes(){
+    public boolean isStrictQuotes(){
         return Boolean.parseBoolean(format.get("strictQuotes"));
     }
     
-    protected boolean isHeader(){
+    public boolean isHeader(){
         return Boolean.parseBoolean(format.get("header"));
     }
     
