@@ -4,15 +4,14 @@ import au.com.bytecode.opencsv.CSVParser;
 import com.realcomp.data.conversion.ConversionException;
 import com.realcomp.data.record.Record;
 import com.realcomp.data.record.io.BaseRecordReader;
+import com.realcomp.data.record.io.IOContext;
 import com.realcomp.data.record.io.SkippingBufferedReader;
 import com.realcomp.data.schema.FieldList;
 import com.realcomp.data.schema.SchemaException;
 import com.realcomp.data.validation.Severity;
 import com.realcomp.data.validation.ValidationException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.nio.charset.Charset;
 import java.util.logging.Logger;
 
 /**
@@ -24,32 +23,35 @@ public class DelimitedFileReader extends BaseRecordReader{
     private static final Logger logger = Logger.getLogger(DelimitedFileReader.class.getName());
     
     protected SkippingBufferedReader reader;
-    
-    protected boolean header = false;
-    protected char delimiter = '\t';
-    protected char quoteCharacter = CSVParser.DEFAULT_QUOTE_CHARACTER;
-    protected char escapeCharacter = CSVParser.DEFAULT_ESCAPE_CHARACTER;
-    protected boolean strictQuotes = CSVParser.DEFAULT_STRICT_QUOTES;
     protected CSVParser parser;
     
+    public DelimitedFileReader(){
+        super();
+        format.putDefaultValue("header", "false");
+        format.putDefaultValue("type", "TAB");
+        format.putDefaultValue("quoteCharacter", Character.toString(CSVParser.DEFAULT_QUOTE_CHARACTER));
+        format.putDefaultValue("escapeCharacter", Character.toString(CSVParser.DEFAULT_ESCAPE_CHARACTER));
+        format.putDefaultValue("strictQuotes", Boolean.toString(CSVParser.DEFAULT_STRICT_QUOTES));
+    }
         
     @Override
-    public void open(InputStream in) throws IOException{
+    public void open(IOContext context) throws IOException, SchemaException{
 
-        super.open(in);
+        super.open(context);        
+        reader = new SkippingBufferedReader(new InputStreamReader(context.getIn(), getCharset()));
+        reader.setSkipLeading(getSkipLeading());
+        reader.setSkipTrailing(getSkipTrailing());
         
-        Charset c = charset == null ? Charset.defaultCharset() : Charset.forName(charset);
-        reader = new SkippingBufferedReader(new InputStreamReader(in, c));
-        reader.setSkipLeading(skipLeading);
-        reader.setSkipTrailing(skipTrailing);
-        charset = c.name();
+        if (isHeader() && reader.getSkipLeading() == 0){
+            reader.setSkipLeading(1);
+        }
         
-        switch(delimiter){
+        switch(getDelimiter()){
             case '\t':
-                parser = new CSVParser(delimiter, '\u0000', escapeCharacter, strictQuotes);
+                parser = new CSVParser(getDelimiter(), '\u0000', getEscapeCharacter(), isStrictQuotes());
                 break;
             default:
-                parser = new CSVParser(delimiter, quoteCharacter, escapeCharacter, strictQuotes);
+                parser = new CSVParser(getDelimiter(), getQuoteCharacter(), getEscapeCharacter(), isStrictQuotes());
         }
     }
     
@@ -57,7 +59,7 @@ public class DelimitedFileReader extends BaseRecordReader{
     @Override
     public Record read() throws IOException, ValidationException, ConversionException, SchemaException{
 
-        if (schema == null)
+        if (context.getSchema() == null)
             throw new IllegalStateException("schema not specified");
 
         if (!beforeFirstOperationsRun){
@@ -67,10 +69,10 @@ public class DelimitedFileReader extends BaseRecordReader{
 
         Record record = null;
         String data = reader.readLine();
-        String[] tokens = null;
+        String[] tokens;
         if (data != null){
             tokens = parser.parseLine(data);
-            record = loadRecord(schema.classify(tokens), tokens);
+            record = loadRecord(context.getSchema().classify(tokens), tokens);
         }
 
         if (record != null)
@@ -99,68 +101,56 @@ public class DelimitedFileReader extends BaseRecordReader{
 
         return recordFactory.build(fields, data);
     }
-    
-    public char getEscapeCharacter() {
-        return escapeCharacter;
-    }
 
-    public void setEscapeCharacter(char escapeCharacter) {
-        this.escapeCharacter = escapeCharacter;
-    }
-
-    public char getQuoteCharacter() {
-        return quoteCharacter;
-    }
-
-    public void setQuoteCharacter(char quoteCharacter) {
-        this.quoteCharacter = quoteCharacter;
-    }
-
-    public boolean isStrictQuotes() {
-        return strictQuotes;
-    }
-
-    public void setStrictQuotes(boolean strictQuotes) {
-        this.strictQuotes = strictQuotes;
-    }
-
-    public String getDelimiter() {
-        if (delimiter == '\t')
-            return "TAB";
-        else if (delimiter == ',')
-            return "CSV";
-        else
-            return "" + delimiter;
-    }
-
-    public void setDelimiter(String delimiter) {
-        
-        if (delimiter == null)
-            throw new IllegalArgumentException("delimiter is null");
-        else if (delimiter.equalsIgnoreCase("TAB"))
-            this.delimiter = '\t';
-        else if (delimiter.equalsIgnoreCase("CSV"))
-            this.delimiter = ',';
+    protected char getDelimiter(){
+        char delimiter;
+        String type = format.get("type");
+        if (type.equalsIgnoreCase("TAB")){
+            delimiter = '\t';
+        }
+        else if (type.equalsIgnoreCase("CSV")){
+            delimiter = ',';
+        }
         else{
-            if (delimiter.length() != 1)
-                throw new IllegalArgumentException("invalid delimiter [" + delimiter + "]");
-            this.delimiter = delimiter.charAt(0);
+            if (type.length() != 1)
+                throw new IllegalArgumentException("invalid type [" + type + "]");
+            delimiter = type.charAt(0);
         }   
-    }
-
-    public boolean isHeader() {
-        return header;
-    }
-
-    public void setHeader(boolean header) {
-        this.header = header;
-        if (header && skipLeading == 0)
-            skipLeading = 1;
-        else if (!header && skipLeading == 1)
-            skipLeading = 0;
+        
+        return delimiter;
     }
     
+    protected char getAttributeAsChar(String name){
+        String value = format.get(name);
+        if (value.length() != 1)
+            throw new IllegalArgumentException(String.format("invalid attribute [%s] = [%s]", name, value));
+        return value.charAt(0);
+    }
     
+    protected char getEscapeCharacter(){
+        return getAttributeAsChar("escapeCharacter");
+    }
     
+    protected char getQuoteCharacter(){
+        return getAttributeAsChar("quoteCharacter");
+    }
+    
+    protected boolean isStrictQuotes(){
+        return Boolean.parseBoolean(format.get("strictQuotes"));
+    }
+    
+    protected boolean isHeader(){
+        return Boolean.parseBoolean(format.get("header"));
+    }
+    
+    @Override
+    protected void validateAttributes(){
+        super.validateAttributes();
+        getDelimiter();
+        getEscapeCharacter();
+        getQuoteCharacter();
+        isStrictQuotes();
+        isHeader();
+    }
     
 }

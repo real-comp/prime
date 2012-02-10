@@ -10,7 +10,6 @@ import com.realcomp.data.record.RecordValueResolver;
 import com.realcomp.data.validation.ValidationException;
 import com.realcomp.data.validation.Validator;
 import com.realcomp.data.validation.file.RecordCountValidator;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -25,11 +24,9 @@ public class ValueSurgeon {
             
     
     /**
-     * @param record holds the value(s) to be operated on
-     * @param key the key of the value(s) in the record to operate on
+     * @param context 
      * @param operations the operations to perform
-     * @return the result of the operation.
-     * 
+     * @return the result of the operation.     * 
      * @throws ConversionException
      * @throws ValidationException 
      */

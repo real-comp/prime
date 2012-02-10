@@ -10,195 +10,204 @@ import com.realcomp.data.transform.TransformContext;
 import com.realcomp.data.transform.ValueSurgeon;
 import com.realcomp.data.validation.ValidationException;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.apache.commons.io.IOUtils;
 
 /**
  *
  * @author krenfro
  */
-public abstract class BaseRecordWriter implements RecordWriter{
+public abstract class BaseRecordWriter implements RecordWriter {
 
-    protected static final Logger log = Logger.getLogger(BaseRecordWriter.class.getName());
-
-    protected IOContext ioContext;
+    private static final Logger logger = Logger.getLogger(BaseRecordWriter.class.getName());
+    protected IOContext context;
+    protected Format format;
     protected long count;
-    protected boolean beforeFirstOperationsRun = false;   
-    protected TransformContext transformContext;
-    protected ValueSurgeon surgeon;
-    protected int skipLeading = 0;
-    protected int skipTrailing = 0;
-    
-    public BaseRecordWriter(){
-        transformContext = new TransformContext();
-        surgeon = new ValueSurgeon();
+    protected boolean beforeFirstOperationsRun = false;
+
+    public BaseRecordWriter() {
+        format = new Format();
+        format.putDefaultValue("charset", Charset.defaultCharset().name());
+        format.putDefaultValue("skipLeading", "0");
+        format.putDefaultValue("skipTrailing", "0");
+
     }
-    
+
     @Override
-    public void open(IOContext context) throws IOException, SchemaException{
+    public void open(IOContext context) throws IOException, SchemaException {
         if (context == null)
             throw new IllegalArgumentException("context is null");
-        
+
         close();
-        this.ioContext = context;
+        this.context = context;
         beforeFirstOperationsRun = true;
-        count = 0;        
+        count = 0;
     }
 
-    
     @Override
-    public void close(){
-
+    public void close() {
         close(true);
     }
 
     @Override
-    public void close(boolean closeAll){
+    public void close(boolean closeIOContext) {
 
         try {
             executeAfterLastOperations();
-        }
-        catch (ValidationException ex) {
-            log.log(Level.WARNING, null, ex);
-        }
-        catch (ConversionException ex) {
-            log.log(Level.WARNING, null, ex);
+        } catch (ValidationException ex) {
+            logger.log(Level.WARNING, null, ex);
+        } catch (ConversionException ex) {
+            logger.log(Level.WARNING, null, ex);
         }
 
-        if (ioContext != null && closeAll)
-            IOUtils.closeQuietly(ioContext.getOut());
+        if (context != null && closeIOContext)
+            context.close();
+
+        context = null;
     }
 
-    protected void executeAfterLastOperations() throws ValidationException, ConversionException{
-        
-        if (ioContext.getSchema() != null){
-            List<Operation> operations = ioContext.getSchema().getAfterLastOperations();
-            if (operations != null && !operations.isEmpty()){
-                transformContext.setRecordCount(this.getCount());
-                surgeon.operate(operations, transformContext);
-            }
-        }
+    protected void executeAfterLastOperations() throws ValidationException, ConversionException {
 
-            
-    }
-
-    protected void executeBeforeFirstOperations() throws ValidationException, ConversionException{
-
-         if (ioContext.getSchema() != null){
-            List<Operation> operations = ioContext.getSchema().getBeforeFirstOperations();            
-            if (operations != null && !operations.isEmpty()){
-                transformContext.setRecordCount(this.getCount());
-                surgeon.operate(operations, transformContext);
+        if (context.getSchema() != null) {
+            List<Operation> operations = context.getSchema().getAfterLastOperations();
+            if (operations != null && !operations.isEmpty()) {
+                TransformContext ctx = new TransformContext();
+                ctx.setValidationExceptionThreshold(context.getValidationExeptionThreshold());
+                ctx.setRecordCount(count);
+                ctx.setSchema(context.getSchema());
+                ValueSurgeon surgeon = new ValueSurgeon();
+                surgeon.operate(operations, ctx);
             }
         }
     }
-    
-    
+
+    protected void executeBeforeFirstOperations() throws ValidationException, ConversionException {
+
+        if (context.getSchema() != null) {
+            List<Operation> operations = context.getSchema().getBeforeFirstOperations();
+            if (operations != null && !operations.isEmpty()) {
+                TransformContext ctx = new TransformContext();
+                ctx.setValidationExceptionThreshold(context.getValidationExeptionThreshold());
+                ctx.setRecordCount(count);
+                ctx.setSchema(context.getSchema());
+                ValueSurgeon surgeon = new ValueSurgeon();
+                surgeon.operate(operations, ctx);
+            }
+        }
+    }
+
     @Override
     public void write(Record record)
-            throws IOException, ValidationException, ConversionException, SchemaException{
+            throws IOException, ValidationException, ConversionException, SchemaException {
 
-        if (ioContext.getSchema() == null)
+        if (context.getSchema() == null)
             throw new IllegalStateException("schema not specified");
         if (record == null)
             throw new IllegalArgumentException("record is null");
 
-        if (!beforeFirstOperationsRun){
+        if (!beforeFirstOperationsRun) {
             executeBeforeFirstOperations();
             beforeFirstOperationsRun = true;
         }
 
-        write(record, ioContext.getSchema().classify(record));
+        write(record, context.getSchema().classify(record));
         count++;
     }
 
-    
     protected void write(Record record, FieldList fields)
-            throws ValidationException, ConversionException, IOException{
+            throws ValidationException, ConversionException, IOException {
 
-        for (Field field: fields)
+        for (Field field : fields) {
             write(record, field);
+        }
     }
 
-
     protected abstract void write(Record record, Field field)
-       throws ValidationException, ConversionException, IOException;
+            throws ValidationException, ConversionException, IOException;
 
-  
     /**
-     * @param data
+     * @param record 
      * @return first two fields from the record
+     * @throws SchemaException  
      */
-    protected String getRecordIdentifier(Record record) throws SchemaException{
+    protected String getRecordIdentifier(Record record) throws SchemaException {
         if (record == null || record.isEmpty())
             return "";
         String id = "";
-        List<Field> fields = ioContext.getSchema().classify(record);
+        List<Field> fields = context.getSchema().classify(record);
         if (fields.size() > 0)
             id = id.concat(record.get(fields.get(0).getName()).toString());
-        
-        if (fields.size() > 1){
+
+        if (fields.size() > 1) {
             id = id.concat(":");
             id = id.concat(record.get(fields.get(0).getName()).toString());
         }
 
         return id;
     }
-    
-    /**
-     *
-     * @return number of leading records to skip. default 0
-     */
-    public int getSkipLeading() {
-        return skipLeading;
-    }
 
     /**
-     *
-     * @param skipLeading number of leading records to skip. >= 0
+     * {@inheritDoc}
      */
-    public void setSkipLeading(int skipLeading) {
-        if (skipLeading < 0)
-            throw new IllegalArgumentException(
-                    String.format("skipLeading out of range: %s < 0", skipLeading));
-        if (ioContext != null)
-            throw new IllegalArgumentException("Cannot setSkipLeading after open()");
-        this.skipLeading = skipLeading;
-    }
-
-    /**
-     *
-     * @return number of trailing records to skip. default 0
-     */
-    public int getSkipTrailing() {
-        return skipTrailing;
-    }
-
-    /**
-     *
-     * @param skipTrailing number of trailing records to skip. >= 0
-     */
-    public void setSkipTrailing(int skipTrailing) {
-        if (skipTrailing < 0)
-            throw new IllegalArgumentException(
-                    String.format("skipTrailing out of range: %s < 0", skipTrailing));
-        if (ioContext != null)
-            throw new IllegalArgumentException("Cannot setSkipTrailing after open()");
-        this.skipTrailing = skipTrailing;
-    }
-
-
-    /** {@inheritDoc} */
     @Override
-    public long getCount(){
+    public long getCount() {
         return count;
     }
+
+    @Override
+    public IOContext getIOContext() {
+        return context;
+    }
+
     
+
+    protected Charset getCharset(){
+        return Charset.forName(format.get("charset"));
+    }
+    
+    protected int getSkipLeading(){
+        return Integer.parseInt(format.get("skipLeading"));
+    }
+    
+    protected int getSkipTrailing(){
+        return Integer.parseInt(format.get("skipTrailing"));
+    }
     
     @Override
-    public IOContext getIOContext(){
-        return ioContext;
+    public Map<String, String> getAttributes() {
+        return format.filterDefaultValues();
+    }
+    
+    @Override
+    public void setAttributes(Map<String, String> attributes) {        
+        if (context != null)
+            throw new IllegalArgumentException("Cannot set attributes after open()");
+        
+        format.clear();
+        format.putAll(attributes);
+        validateAttributes();
+    }    
+    
+    /**
+     * Validates that all attributes contain valid values.
+     * @throws IllegalArgumentException
+     */
+    protected void validateAttributes(){        
+        getCharset();
+        
+        int skipTrailing = getSkipTrailing();
+        if (skipTrailing < 0){
+            throw new IllegalArgumentException(
+                    String.format("skipTrailing out of range: %s < 0", skipTrailing));
+        }
+        
+        int skipLeading = getSkipLeading();
+        if (skipLeading < 0){
+            throw new IllegalArgumentException(
+                    String.format("skipLeading out of range: %s < 0", skipLeading));
+        }
     }
 }

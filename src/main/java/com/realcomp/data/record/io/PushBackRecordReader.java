@@ -2,13 +2,11 @@ package com.realcomp.data.record.io;
 
 import com.realcomp.data.conversion.ConversionException;
 import com.realcomp.data.record.Record;
-import com.realcomp.data.schema.FileSchema;
 import com.realcomp.data.schema.SchemaException;
-import com.realcomp.data.validation.Severity;
 import com.realcomp.data.validation.ValidationException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.Queue;
 
 /**
@@ -37,8 +35,7 @@ public class PushBackRecordReader implements RecordReader{
     
     
     @Override
-    public Record read() throws IOException, ValidationException, ConversionException, SchemaException {
-        
+    public Record read() throws IOException, ValidationException, ConversionException, SchemaException {        
         return queue.isEmpty() ? reader.read() : queue.remove();
     }
 
@@ -55,6 +52,21 @@ public class PushBackRecordReader implements RecordReader{
     @Override
     public IOContext getIOContext() {
         return reader.getIOContext();
+    }
+
+    @Override
+    public void close(boolean closeIOContext) {
+        reader.close(closeIOContext);
+    }
+
+    @Override
+    public Map<String, String> getAttributes() {
+        return reader.getAttributes();
+    }
+
+    @Override
+    public void setAttributes(Map<String, String> attributes) {
+        reader.setAttributes(attributes);
     }
     
 }

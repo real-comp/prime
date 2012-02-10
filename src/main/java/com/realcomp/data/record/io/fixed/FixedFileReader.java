@@ -3,17 +3,16 @@ package com.realcomp.data.record.io.fixed;
 import com.realcomp.data.conversion.ConversionException;
 import com.realcomp.data.record.Record;
 import com.realcomp.data.record.io.BaseRecordReader;
+import com.realcomp.data.record.io.IOContext;
 import com.realcomp.data.record.io.SkippingBufferedReader;
-import com.realcomp.data.schema.FileSchema;
-import com.realcomp.data.schema.SchemaException;
 import com.realcomp.data.schema.Field;
 import com.realcomp.data.schema.FieldList;
+import com.realcomp.data.schema.FileSchema;
+import com.realcomp.data.schema.SchemaException;
 import com.realcomp.data.validation.Severity;
 import com.realcomp.data.validation.ValidationException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.nio.charset.Charset;
 import java.util.List;
 import java.util.logging.Logger;
 import org.apache.commons.io.IOUtils;
@@ -28,30 +27,30 @@ public class FixedFileReader extends BaseRecordReader{
     
     private static final Logger logger = Logger.getLogger(FixedFileReader.class.getName());
     
-    protected boolean header = false;
     protected SkippingBufferedReader reader;
     
     public FixedFileReader(){
         super();
+        format.putDefaultValue("header", "false");
+        
     }
     
     public FixedFileReader(FixedFileReader copy){
         super(copy);
     }
     
-    
-    
     @Override
-    public void open(InputStream in) throws IOException{
+    public void open(IOContext context) throws IOException, SchemaException{        
+        super.open(context);
+        ensureFieldLengthsSpecified(context.getSchema());
+        reader = new SkippingBufferedReader(new InputStreamReader(context.getIn(), getCharset()));
+        reader.setSkipLeading(getSkipLeading());
+        reader.setSkipTrailing(getSkipTrailing());
         
-        close();
-        super.open(in);
+        if (isHeader() && reader.getSkipLeading() == 0){
+            reader.setSkipLeading(1);
+        }
         
-        Charset c = charset == null ? Charset.defaultCharset() : Charset.forName(charset);
-        reader = new SkippingBufferedReader(new InputStreamReader(in, c));
-        reader.setSkipLeading(skipLeading);
-        reader.setSkipTrailing(skipTrailing);
-        charset = c.name();
         count = 0;
     }
 
@@ -66,7 +65,7 @@ public class FixedFileReader extends BaseRecordReader{
     public Record read()
             throws IOException, ValidationException, ConversionException, SchemaException{
 
-        if (schema == null)
+        if (context.getSchema() == null)
             throw new IllegalStateException("schema not specified");
 
         if (!beforeFirstOperationsRun){
@@ -77,7 +76,7 @@ public class FixedFileReader extends BaseRecordReader{
         Record record = null;
         String data = reader.readLine();
         if (data != null){
-            FieldList fields = schema.classify(data);            
+            FieldList fields = context.getSchema().classify(data);            
             String[] parsed = parse(data, fields);
             record = loadRecord(fields, parsed);
         }
@@ -107,12 +106,7 @@ public class FixedFileReader extends BaseRecordReader{
 
         return recordFactory.build(fields, data);
     }
-    
-    @Override
-    public void setSchema(FileSchema schema) throws SchemaException{
-        ensureFieldLengthsSpecified(schema);
-        super.setSchema(schema);
-    }
+   
 
     protected String[] parse(String record, FieldList fields)
             throws ValidationException, SchemaException{
@@ -134,7 +128,7 @@ public class FixedFileReader extends BaseRecordReader{
         String[] result = new String[fields.size()];
         int index = 0;
         int start = 0;
-        int stop = -1;
+        int stop;
         
         for (Field field: fields){
             stop = start + field.getLength();
@@ -148,8 +142,7 @@ public class FixedFileReader extends BaseRecordReader{
 
 
 
-    protected void ensureFieldLengthsSpecified(FileSchema schema) throws SchemaException{
-        
+    protected void ensureFieldLengthsSpecified(FileSchema schema) throws SchemaException{        
         for (FieldList fields: schema.getFieldLists())
             ensureFieldLengthsSpecified(fields);
     }
@@ -167,23 +160,19 @@ public class FixedFileReader extends BaseRecordReader{
         assert(fields != null);
         int retVal = 0;
         for (Field field: fields)
-            retVal = retVal + field.getLength();
+            retVal += field.getLength();
         return retVal;
     }
     
     
-    public boolean isHeader() {
-        return header;
-    }
-
-    public void setHeader(boolean header) {
-        this.header = header;
-        if (header && skipLeading == 0)
-            skipLeading = 1;
-        else if (!header && skipLeading == 1)
-            skipLeading = 0;
+    protected boolean isHeader(){
+        return Boolean.parseBoolean(format.get("header"));
     }
     
-    
+    @Override
+    protected void validateAttributes(){
+        super.validateAttributes();
+        isHeader();
+    }
     
 }

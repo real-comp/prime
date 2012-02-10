@@ -3,6 +3,7 @@ package com.realcomp.data.record.io.json;
 import com.realcomp.data.Operation;
 import com.realcomp.data.conversion.ConversionException;
 import com.realcomp.data.record.Record;
+import com.realcomp.data.record.io.IOContext;
 import com.realcomp.data.record.io.RecordReader;
 import com.realcomp.data.schema.BeforeFirstField;
 import com.realcomp.data.schema.Field;
@@ -38,15 +39,14 @@ public class JsonReader implements RecordReader {
     protected JsonParser jsonParser;
     protected long count;
     protected boolean beforeFirstOperationsRun = false;
-    protected FileSchema schema;
-    protected Severity validationExceptionThreshold = DEFAULT_VALIDATION_THREASHOLD;
+    protected IOContext ioContext;
     protected ValueSurgeon surgeon;
-    protected TransformContext context;
+    protected TransformContext transformContext;
 
     public JsonReader() {
         jsonFactory = new JsonFactory();
         surgeon = new ValueSurgeon();
-        context = new TransformContext();
+        transformContext = new TransformContext();
     }
 
     @Override
@@ -62,7 +62,7 @@ public class JsonReader implements RecordReader {
         Map map = parseMap();
 
         if (map != null) {
-            if (schema == null){
+            if (ioContext.getSchema() == null){
                 record = new Record(map);
             }
             else{
@@ -73,10 +73,10 @@ public class JsonReader implements RecordReader {
                  */
                 record = new Record();
                 Record temp = new Record(map);
-                context.setRecord(temp);
-                for (Field field : schema.classify(temp)) {
-                    context.setKey(field.getName());
-                    Object value = surgeon.operate(getOperations(field), context);                    
+                transformContext.setRecord(temp);
+                for (Field field : ioContext.getSchema().classify(temp)) {
+                    transformContext.setKey(field.getName());
+                    Object value = surgeon.operate(getOperations(field), transformContext);                    
                     if (value != null){
                         //Write the results of the operations to both the final Record, and the
                         // temporary Record for subsequent field creation.
@@ -97,8 +97,9 @@ public class JsonReader implements RecordReader {
     private List<Operation> getOperations(Field field) {
 
         assert(field != null);
-        assert(schema != null);
+        assert(ioContext.getSchema() != null);
 
+        FileSchema schema = ioContext.getSchema();
         List<Operation> operations = new ArrayList<Operation>();
         if (schema.getBeforeOperations() != null)
             operations.addAll(schema.getBeforeOperations());
@@ -211,12 +212,13 @@ public class JsonReader implements RecordReader {
     }
 
     @Override
-    public void open(InputStream in) throws IOException {
+    public void open(IOContext context) throws IOException, SchemaException {
 
         close();
+        ioContext = context;
         beforeFirstOperationsRun = false;
         count = 0;
-        jsonParser = jsonFactory.createJsonParser(in);
+        jsonParser = jsonFactory.createJsonParser(ioContext.getIn());
     }
 
     @Override
@@ -236,7 +238,7 @@ public class JsonReader implements RecordReader {
     public void setSchema(FileSchema schema) throws SchemaException {
         this.schema = schema;
         if (schema != null) {
-            context.setSchema(schema);
+            transformContext.setSchema(schema);
         }
     }
 

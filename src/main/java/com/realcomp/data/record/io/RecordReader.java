@@ -2,12 +2,11 @@ package com.realcomp.data.record.io;
 
 import com.realcomp.data.conversion.ConversionException;
 import com.realcomp.data.record.Record;
-import com.realcomp.data.schema.FileSchema;
 import com.realcomp.data.schema.SchemaException;
 import com.realcomp.data.validation.Severity;
 import com.realcomp.data.validation.ValidationException;
 import java.io.IOException;
-import java.io.InputStream;
+import java.util.Map;
 
 
 /**
@@ -42,9 +41,16 @@ public interface RecordReader {
     Record read() throws IOException, ValidationException, ConversionException, SchemaException;
 
     /**
-     * Close open resources. Should be invoked when you are done with the RecordReader.
+     * Close open resources including the resources of the IOContext. 
+     * Should be invoked when you are done with the RecordReader.
      */
     void close();
+    
+    /**
+     * Close open resources, optionally closing the  resources of the IOContext.
+     * @param closeIOContext if true, the ioContext.close() method will be invoked
+     */
+    void close(boolean closeIOContext);
 
     /**
      * Open an IOContext for reading. May be invoked multiple times with new input as needed.
@@ -66,4 +72,8 @@ public interface RecordReader {
      * @return number of records read; not including skipped records.
      */
     long getCount();
+    
+    Map<String,String> getAttributes();
+    
+    void setAttributes(Map<String,String> attributes);
 }

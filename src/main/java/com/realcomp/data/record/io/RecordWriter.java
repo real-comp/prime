@@ -2,12 +2,11 @@ package com.realcomp.data.record.io;
 
 import com.realcomp.data.conversion.ConversionException;
 import com.realcomp.data.record.Record;
-import com.realcomp.data.schema.FileSchema;
 import com.realcomp.data.schema.SchemaException;
 import com.realcomp.data.validation.Severity;
 import com.realcomp.data.validation.ValidationException;
 import java.io.IOException;
-import java.io.OutputStream;
+import java.util.Map;
 
 
 /**
@@ -34,27 +33,31 @@ public interface RecordWriter {
      * write a Record
      * @param record the Record to write; not null
      * @throws IOException
+     * @throws ValidationException
+     * @throws ConversionException
+     * @throws SchemaException  
      */
     void write(Record record)
             throws IOException, ValidationException, ConversionException, SchemaException;
 
 
     /**
-     * Close open resources. Should be invoked when you are done with the RecordReader.
+     * Close open resources including the resources of the IOContext. 
+     * Should be invoked when you are done with the RecordReader.
      */
     void close();
     
     /**
-     * Close open resources, optionally closing the original output stream passed to open().
-     * @param closeAll 
+     * Close open resources, optionally closing the  resources of the IOContext.
+     * @param closeIOContext if true, the ioContext.close() method will be invoked
      */
-    void close(boolean closeAll);
+    void close(boolean closeIOContext);
 
     /**
      * Open an IOContext for writing. May be invoked multiple times with new output as needed.
      * close() is automatically invoked before each open();
      *
-     * @param in OutputStream to write to. Not null
+     * @param context 
      * @throws IOException
      * @throws SchemaException
      */
@@ -72,4 +75,8 @@ public interface RecordWriter {
      */
     IOContext getIOContext();
     
+    
+    Map<String,String> getAttributes();
+    
+    void setAttributes(Map<String,String> attributes);
 }

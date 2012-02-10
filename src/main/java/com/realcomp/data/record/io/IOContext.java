@@ -4,10 +4,11 @@ import com.realcomp.data.schema.FileSchema;
 import com.realcomp.data.validation.Severity;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.nio.charset.Charset;
+import org.apache.commons.io.IOUtils;
 
 /**
- *
+ * Context for I/O operations
+ * 
  * @author krenfro
  */
 public class IOContext {
@@ -16,16 +17,11 @@ public class IOContext {
     protected FileSchema schema;
     protected InputStream in;
     protected OutputStream out;
-    protected Charset charset = Charset.defaultCharset();
 
-    public Charset getCharset() {
-        return charset;
+    public void close(){
+        IOUtils.closeQuietly(in);
+        IOUtils.closeQuietly(out);
     }
-
-    public void setCharset(Charset charset) {
-        this.charset = charset;
-    }
-
     
     public InputStream getIn() {
         return in;
@@ -59,6 +55,5 @@ public class IOContext {
         if (validationExeptionThreshold == null)
             throw new IllegalArgumentException("validationExceptionThreshold is null");
         this.validationExeptionThreshold = validationExeptionThreshold;
-    }
-    
+    } 
 }
