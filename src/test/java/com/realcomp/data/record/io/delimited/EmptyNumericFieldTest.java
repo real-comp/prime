@@ -6,6 +6,7 @@ import com.realcomp.data.schema.Schema;
 import com.realcomp.data.DataType;
 import com.realcomp.data.record.Record;
 import com.realcomp.data.record.io.IOContext;
+import com.realcomp.data.record.io.IOContextBuilder;
 import com.realcomp.data.schema.Field;
 import java.io.ByteArrayInputStream;
 import org.junit.Test;
@@ -27,7 +28,7 @@ public class EmptyNumericFieldTest {
     public void testEmptyFields() throws Exception {
 
         FieldList fields = getSchema().getDefaultFieldList();
-        IOContext context = new IOContext.Builder()
+        IOContext context = new IOContextBuilder()
                 .schema(getSchema())
                 .in(new ByteArrayInputStream(new byte[1]))
                 .build();

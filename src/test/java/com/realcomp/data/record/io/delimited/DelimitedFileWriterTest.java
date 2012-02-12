@@ -3,6 +3,7 @@ package com.realcomp.data.record.io.delimited;
 import com.realcomp.data.DataType;
 import com.realcomp.data.record.Record;
 import com.realcomp.data.record.io.IOContext;
+import com.realcomp.data.record.io.IOContextBuilder;
 import com.realcomp.data.schema.Field;
 import com.realcomp.data.schema.Schema;
 import com.realcomp.data.schema.SchemaException;
@@ -51,7 +52,7 @@ public class DelimitedFileWriterTest {
         assertEquals("TAB", writer.getDefaults().get("type"));
         assertTrue('\t' == writer.getDelimiter());
         
-        IOContext ctx = new IOContext.Builder()
+        IOContext ctx = new IOContextBuilder()
             .attribute("type", "CSV")
             .out(new ByteArrayOutputStream())
             .build();
@@ -59,13 +60,13 @@ public class DelimitedFileWriterTest {
         
         assertTrue(',' == writer.getDelimiter());
         
-        ctx = new IOContext.Builder(ctx)
+        ctx = new IOContextBuilder(ctx)
             .attribute("type", "TAB")
             .build();
         writer.open(ctx);
         assertTrue('\t' == writer.getDelimiter());
         
-        ctx = new IOContext.Builder(ctx)
+        ctx = new IOContextBuilder(ctx)
             .attribute("type", "-")
             .build();
         writer.open(ctx);
@@ -79,7 +80,7 @@ public class DelimitedFileWriterTest {
 
         String data = "\"a123\",\"b123\",\"c123\"";
         
-        IOContext ctx = new IOContext.Builder()
+        IOContext ctx = new IOContextBuilder()
             .schema(get3FieldSchema())
             .attribute("type", "CSV")
             .out(new ByteArrayOutputStream())
@@ -108,7 +109,7 @@ public class DelimitedFileWriterTest {
         
         //copy output to new input
         byte[] bytes = ((ByteArrayOutputStream) ctx.getOut()).toByteArray();
-        ctx = new IOContext.Builder(ctx).in(new ByteArrayInputStream(bytes)).build();
+        ctx = new IOContextBuilder(ctx).in(new ByteArrayInputStream(bytes)).build();
         reader.open(ctx);
         Record b = reader.read();
         assertEquals(a, b);

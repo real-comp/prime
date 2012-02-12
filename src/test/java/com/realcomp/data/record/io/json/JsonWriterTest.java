@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.io.ByteArrayOutputStream;
 import com.realcomp.data.record.Record;
 import com.realcomp.data.record.io.IOContext;
+import com.realcomp.data.record.io.IOContextBuilder;
 import java.io.ByteArrayInputStream;
 import java.util.regex.Pattern;
 import org.junit.Test;
@@ -65,7 +66,7 @@ public class JsonWriterTest {
     @Test
     public void testWrite() throws Exception{
         
-        IOContext ctx = new IOContext.Builder()
+        IOContext ctx = new IOContextBuilder()
                 .out(new ByteArrayOutputStream())
                 .build();
         
@@ -79,7 +80,7 @@ public class JsonWriterTest {
         
         //read the json string back into a Record
         JsonReader reader = new JsonReader();
-        ctx = new IOContext.Builder(ctx)
+        ctx = new IOContextBuilder(ctx)
                 .in(new ByteArrayInputStream(json.getBytes()))
                 .build();
         
@@ -97,7 +98,7 @@ public class JsonWriterTest {
     public void testWriteTypes() throws Exception{
         
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        IOContext ctx = new IOContext.Builder()
+        IOContext ctx = new IOContextBuilder()
                 .out(out)
                 .build();
         
@@ -132,7 +133,7 @@ public class JsonWriterTest {
     public void testPrettyPrint() throws Exception{
         
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        IOContext ctx = new IOContext.Builder()
+        IOContext ctx = new IOContextBuilder()
                 .attribute("pretty", "true")
                 .out(out)
                 .build();
@@ -161,7 +162,7 @@ public class JsonWriterTest {
     public void testWriteWithSchema() throws Exception{
         
         Schema schema = SchemaFactory.buildSchema(this.getClass().getResourceAsStream("sample.schema"));
-        IOContext ctx = new IOContext.Builder()
+        IOContext ctx = new IOContextBuilder()
                 .schema(schema)
                 .in(this.getClass().getResourceAsStream("sample.json"))
                 .build();
@@ -179,7 +180,7 @@ public class JsonWriterTest {
         
         //write the Record to json string.
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        ctx = new IOContext.Builder(ctx).out(out).build();
+        ctx = new IOContextBuilder(ctx).out(out).build();
         JsonWriter writer = new JsonWriter();
         writer.open(ctx);
         writer.write(record);

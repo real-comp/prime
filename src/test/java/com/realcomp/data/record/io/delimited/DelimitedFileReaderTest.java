@@ -3,6 +3,7 @@ package com.realcomp.data.record.io.delimited;
 import com.realcomp.data.DataType;
 import com.realcomp.data.record.Record;
 import com.realcomp.data.record.io.IOContext;
+import com.realcomp.data.record.io.IOContextBuilder;
 import com.realcomp.data.schema.Field;
 import com.realcomp.data.schema.FieldList;
 import com.realcomp.data.schema.Schema;
@@ -46,7 +47,7 @@ public class DelimitedFileReaderTest {
 
         String data = "a\tb\tc";
         
-        IOContext ctx = new IOContext.Builder()
+        IOContext ctx = new IOContextBuilder()
                     .schema(get3FieldSchema())
                     .in(new ByteArrayInputStream(data.getBytes()))
                     .build();
@@ -68,18 +69,18 @@ public class DelimitedFileReaderTest {
         assertTrue('\t' == reader.getDelimiter());
         
         
-        IOContext ctx = new IOContext.Builder()
+        IOContext ctx = new IOContextBuilder()
                 .attribute("type", "CSV")
                 .in(new ByteArrayInputStream(new byte[1]))
                 .build();
         reader.open(ctx);
 
         assertTrue(',' == reader.getDelimiter());
-        ctx = new IOContext.Builder(ctx).attribute("type", "TAB").build();
+        ctx = new IOContextBuilder(ctx).attribute("type", "TAB").build();
         reader.open(ctx);
         assertTrue('\t' == reader.getDelimiter());
         
-        ctx = new IOContext.Builder(ctx).attribute("type", "-").build();
+        ctx = new IOContextBuilder(ctx).attribute("type", "-").build();
         reader.open(ctx);
         assertTrue('-' == reader.getDelimiter());
     }
@@ -93,7 +94,7 @@ public class DelimitedFileReaderTest {
 
         
         String data = "a\tb\tc\nd\te\tf";
-        IOContext ctx = new IOContext.Builder()
+        IOContext ctx = new IOContextBuilder()
                 .schema(get3FieldSchema())
                 .in(new ByteArrayInputStream(data.getBytes()))
                 .build();
@@ -119,7 +120,7 @@ public class DelimitedFileReaderTest {
         
         Map<String,String> attributes = new HashMap<String,String>();
         attributes.put("type", "CSV");
-        IOContext ctx = new IOContext.Builder()
+        IOContext ctx = new IOContextBuilder()
                 .schema(get3FieldSchema())
                 .in(new ByteArrayInputStream(data.getBytes()))
                 .attributes(attributes)
@@ -139,7 +140,7 @@ public class DelimitedFileReaderTest {
 
         //embedded comma
         data = "\"a123\",\"b1,23\",\"c123\"";
-        ctx = new IOContext.Builder(ctx)
+        ctx = new IOContextBuilder(ctx)
                 .in(new ByteArrayInputStream(data.getBytes()))
                 .build();
         reader.open(ctx);
@@ -155,7 +156,7 @@ public class DelimitedFileReaderTest {
 
         //embedded comma
         data = "\"a123\",\"b1,23\",\"c123\"";
-        ctx = new IOContext.Builder(ctx)
+        ctx = new IOContextBuilder(ctx)
                 .in(new ByteArrayInputStream(data.getBytes()))
                 .build();
         reader.open(ctx);
@@ -171,7 +172,7 @@ public class DelimitedFileReaderTest {
 
          //embedded quote
         data = "\"a123\",\"b1\"\"23\",\"c123\"";
-        ctx = new IOContext.Builder(ctx)
+        ctx = new IOContextBuilder(ctx)
                 .in(new ByteArrayInputStream(data.getBytes()))
                 .build();
         reader.open(ctx);        
@@ -186,7 +187,7 @@ public class DelimitedFileReaderTest {
 
         //embedded quote at end
         data = "\"a123\",\"b123\"\"\",\"c123\"";
-        ctx = new IOContext.Builder(ctx)
+        ctx = new IOContextBuilder(ctx)
                 .in(new ByteArrayInputStream(data.getBytes()))
                 .build();
         reader.open(ctx);
@@ -212,7 +213,7 @@ public class DelimitedFileReaderTest {
         String[] data = new String[]{"a123","b123"};
         FieldList fields = get3FieldSchema().getDefaultFieldList();
         
-        IOContext ctx = new IOContext.Builder()
+        IOContext ctx = new IOContextBuilder()
                 .schema(get3FieldSchema())
                 .in(new ByteArrayInputStream(new byte[10]))
                 .build();

@@ -9,6 +9,7 @@ import com.realcomp.data.schema.Schema;
 import java.io.ByteArrayInputStream;
 import com.realcomp.data.record.Record;
 import com.realcomp.data.record.io.IOContext;
+import com.realcomp.data.record.io.IOContextBuilder;
 import com.realcomp.data.schema.Field;
 import java.io.IOException;
 import java.io.InputStream;
@@ -51,7 +52,7 @@ public class FixedFileReaderTest {
         schema.addFieldList(fields);
         
         String data = "abc";
-        IOContext ctx = new IOContext.Builder().schema(schema).in(new ByteArrayInputStream(data.getBytes())).build();
+        IOContext ctx = new IOContextBuilder().schema(schema).in(new ByteArrayInputStream(data.getBytes())).build();
         reader.open(ctx);
         reader.close();
         reader.close();
@@ -75,7 +76,7 @@ public class FixedFileReaderTest {
         schema.addField(new Field("c", DataType.STRING)); //<-- missing length
         
         try{
-            IOContext ctx = new IOContext.Builder().schema(schema).in(new ByteArrayInputStream(data.getBytes())).build();
+            IOContext ctx = new IOContextBuilder().schema(schema).in(new ByteArrayInputStream(data.getBytes())).build();
             instance.open(ctx);
             fail("should have thrown SchemaException");
         }
@@ -93,7 +94,7 @@ public class FixedFileReaderTest {
     public void testNext() throws Exception {
 
         String data = "abcdef\nghijkl";
-        IOContext ctx = new IOContext.Builder()
+        IOContext ctx = new IOContextBuilder()
                 .schema(get3FieldSchema())
                 .in(new ByteArrayInputStream(data.getBytes()))
                 .build();
@@ -109,7 +110,7 @@ public class FixedFileReaderTest {
         assertNull(record);
         reader.close();
 
-        ctx = new IOContext.Builder(ctx).in(new ByteArrayInputStream(data.getBytes())).build();
+        ctx = new IOContextBuilder(ctx).in(new ByteArrayInputStream(data.getBytes())).build();
         reader.open(ctx);
         
         record = reader.read();
@@ -131,7 +132,7 @@ public class FixedFileReaderTest {
     public void testNumericSchema() throws Exception{
 
         String data = "    1    2    3    4a";        
-        IOContext ctx = new IOContext.Builder()
+        IOContext ctx = new IOContextBuilder()
                 .schema(getNumericSchema())
                 .in(new ByteArrayInputStream(data.getBytes()))
                 .build();
@@ -148,7 +149,7 @@ public class FixedFileReaderTest {
         assertEquals("a", record.get("string"));
 
         data = "  001  2.000003 04.4a";
-        ctx = new IOContext.Builder(ctx).in(new ByteArrayInputStream(data.getBytes())).build();
+        ctx = new IOContextBuilder(ctx).in(new ByteArrayInputStream(data.getBytes())).build();
         reader.open(ctx);
         record = reader.read();
         assertNotNull(record);
@@ -189,7 +190,7 @@ public class FixedFileReaderTest {
     @Test
     public void testShortRecord() throws Exception{
         String shortByOneCharacter = "    1    2    3    4";
-        IOContext ctx = new IOContext.Builder()
+        IOContext ctx = new IOContextBuilder()
                 .schema(getNumericSchema())
                 .in(new ByteArrayInputStream(shortByOneCharacter.getBytes()))
                 .build();
@@ -209,7 +210,7 @@ public class FixedFileReaderTest {
     public void testLongRecord() throws Exception{
 
         String longByOneCharacter = "    1    2    3    4ab";        
-        IOContext ctx = new IOContext.Builder()
+        IOContext ctx = new IOContextBuilder()
                 .schema(getNumericSchema())
                 .in(new ByteArrayInputStream(longByOneCharacter.getBytes()))
                 .build();        

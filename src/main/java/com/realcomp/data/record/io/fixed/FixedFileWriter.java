@@ -5,6 +5,7 @@ import com.realcomp.data.conversion.ConversionException;
 import com.realcomp.data.record.Record;
 import com.realcomp.data.record.io.BaseRecordWriter;
 import com.realcomp.data.record.io.IOContext;
+import com.realcomp.data.record.io.IOContextBuilder;
 import com.realcomp.data.schema.Field;
 import com.realcomp.data.schema.FieldList;
 import com.realcomp.data.schema.Schema;
@@ -98,7 +99,7 @@ public class FixedFileWriter extends BaseRecordWriter{
                 for (Field field: fields)
                     field.clearOperations();
             }
-            context = new IOContext.Builder(context).schema(headerSchema).build();
+            context = new IOContextBuilder(context).schema(headerSchema).build();
             super.write(getHeader());
             writer.newLine();
             writer.flush();

@@ -3,6 +3,7 @@ package com.realcomp.data.record.io.json;
 import com.realcomp.data.schema.Schema;
 import com.realcomp.data.record.Record;
 import com.realcomp.data.record.io.IOContext;
+import com.realcomp.data.record.io.IOContextBuilder;
 import com.realcomp.data.schema.SchemaFactory;
 import java.io.ByteArrayInputStream;
 import org.junit.Test;
@@ -40,7 +41,7 @@ public class JsonReaderTest {
     @Test
     public void testReadFromString() throws Exception{
         
-        IOContext ctx = new IOContext.Builder()
+        IOContext ctx = new IOContextBuilder()
                 .in(new ByteArrayInputStream(getJsonTestString1().getBytes())).build();
         JsonReader reader = new JsonReader();
         reader.open(ctx);
@@ -55,7 +56,7 @@ public class JsonReaderTest {
     @Test
     public void testReadFromFile() throws Exception{
         
-        IOContext ctx = new IOContext.Builder()
+        IOContext ctx = new IOContextBuilder()
                 .in(this.getClass().getResourceAsStream("sample.json")).build();        
         JsonReader reader = new JsonReader();
         reader.open(ctx);
@@ -75,7 +76,7 @@ public class JsonReaderTest {
         
         
         reader = new JsonReader();  
-        ctx = new IOContext.Builder(ctx)
+        ctx = new IOContextBuilder(ctx)
                 .in(this.getClass().getResourceAsStream("multiRecordSample.json")).build();
         
         reader.open(ctx);
@@ -99,7 +100,7 @@ public class JsonReaderTest {
     @Test
     public void testWithSchema() throws Exception{
         
-        IOContext ctx = new IOContext.Builder()
+        IOContext ctx = new IOContextBuilder()
                 .schema(SchemaFactory.buildSchema(this.getClass().getResourceAsStream("sample.schema")))
                 .in(this.getClass().getResourceAsStream("sample.json"))
                 .build();

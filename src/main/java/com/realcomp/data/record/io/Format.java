@@ -17,8 +17,8 @@ import java.util.Set;
 @XStreamConverter(AttributesConverter.class)
 public class Format implements Map<String,String> {
     
-    private Map<String,String> attributes;
-    private Map<String,String> defaults;
+    protected Map<String,String> attributes;
+    protected Map<String,String> defaults;
     
     public Format(){
         attributes = new HashMap<String,String>();

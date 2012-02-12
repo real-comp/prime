@@ -72,7 +72,7 @@ public class Reformat {
             }
             else{
                 Reformat reformatter = new Reformat();
-                IOContext.Builder inputBuilder = new IOContext.Builder();                
+                IOContextBuilder inputBuilder = new IOContextBuilder();                
                 inputBuilder.schema(
                         SchemaFactory.buildSchema(new FileInputStream((String) options.valueOf("is"))));
                 inputBuilder.in(
@@ -80,7 +80,7 @@ public class Reformat {
                             new BufferedInputStream(new FileInputStream((String) options.valueOf("in"))) : 
                             new BufferedInputStream(System.in));
                 
-                IOContext.Builder outputBuilder = new IOContext.Builder();                
+                IOContextBuilder outputBuilder = new IOContextBuilder();                
                 outputBuilder.schema(
                         SchemaFactory.buildSchema(new FileInputStream((String) options.valueOf("os"))));
                 outputBuilder.out(

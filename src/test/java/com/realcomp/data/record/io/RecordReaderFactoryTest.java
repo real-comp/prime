@@ -36,7 +36,7 @@ public class RecordReaderFactoryTest {
         
         RecordReader reader = RecordReaderFactory.build(format);
         
-        IOContext ctx = new IOContext.Builder()
+        IOContext ctx = new IOContextBuilder()
                     .attributes(format)
                     .in(new ByteArrayInputStream(new byte[10]))
                     .build();

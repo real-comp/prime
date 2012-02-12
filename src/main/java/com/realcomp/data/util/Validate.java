@@ -2,6 +2,7 @@ package com.realcomp.data.util;
 
 import com.realcomp.data.conversion.ConversionException;
 import com.realcomp.data.record.io.IOContext;
+import com.realcomp.data.record.io.IOContextBuilder;
 import com.realcomp.data.record.io.RecordReader;
 import com.realcomp.data.record.io.RecordReaderFactory;
 import com.realcomp.data.schema.SchemaException;
@@ -78,7 +79,7 @@ public class Validate {
             }
             else{
                 Validate validator = new Validate();             
-                IOContext.Builder inputBuilder = new IOContext.Builder();                
+                IOContextBuilder inputBuilder = new IOContextBuilder();                
                 inputBuilder.schema(
                         SchemaFactory.buildSchema(new FileInputStream((String) options.valueOf("is"))));
                 inputBuilder.in(

@@ -15,6 +15,7 @@ import org.apache.commons.io.IOUtils;
  * @author krenfro
  */
 public class IOContext implements Serializable{
+    private static final long serialVersionUID = 1L;
 
     protected Schema schema;
     protected Map<String,String> attributes;
@@ -22,72 +23,12 @@ public class IOContext implements Serializable{
     protected transient OutputStream out;
     protected Severity validationExeptionThreshold = Severity.HIGH;
     
-    private IOContext(Builder builder){
+    IOContext(IOContextBuilder builder){
         schema = builder.schema;
         attributes = builder.attributes;
         in = builder.in;
         out = builder.out;
         validationExeptionThreshold = builder.validationExceptionThreshold;
-    }
-    
-    public static class Builder{
-        private Schema schema;
-        private InputStream in;
-        private OutputStream out;
-        private Map<String,String> attributes;
-        private Severity validationExceptionThreshold = Severity.HIGH;
-        
-        public Builder(){
-            attributes = new HashMap<String,String>();
-        }
-        
-        public Builder(IOContext context){
-            attributes = new HashMap<String,String>();
-            attributes.putAll(context.attributes);
-            if (context.schema != null)
-                schema = new Schema(context.schema);
-            in = context.in;
-            out = context.out;
-            validationExceptionThreshold = context.validationExeptionThreshold;
-        }
-        
-        public Builder schema(Schema schema){
-            if (schema != null)
-                this.schema = new Schema(schema);
-            return this;
-        }
-        
-        public Builder in(InputStream in){
-            this.in = in;
-            return this;
-        }
-        
-        public Builder out(OutputStream out){
-            this.out = out;
-            return this;
-        }
-        
-        public Builder attributes(Map<String,String> attributes){            
-            if (attributes != null)
-                this.attributes.putAll(attributes);
-            return this;
-        }
-        
-        public Builder attribute(String name, String value){
-            attributes.put(name, value);
-            return this;
-        }
-        
-        public Builder validationExceptionThreshold(Severity severity){
-            if (severity == null)
-                throw new IllegalArgumentException("severity is null");
-            validationExceptionThreshold = severity;
-            return this;
-        }
-        
-        public IOContext build(){
-            return new IOContext(this);
-        }
     }
 
     public void close(){
