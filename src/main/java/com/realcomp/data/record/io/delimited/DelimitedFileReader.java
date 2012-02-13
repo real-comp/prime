@@ -12,7 +12,6 @@ import com.realcomp.data.validation.Severity;
 import com.realcomp.data.validation.ValidationException;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.Map;
 
 /**
  *

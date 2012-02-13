@@ -42,24 +42,6 @@ public class Format implements Map<String,String> {
         return defaults;
     }
     
-    /**
-     * Builds a map of all the attributes that do not match a default value.
-     * 
-     * @return relative complement of the defaults relative to the attributes (attributes \ defaults)
-     */
-    public Map<String,String> filterDefaultValues(){
-        Map<String,String> filtered = new HashMap<String,String>();
-        filtered.putAll(attributes);
-        
-        for (Entry<String,String> entry: attributes.entrySet()){
-            String key = entry.getKey();
-            if (key != null && key.equals(defaults.get(key))){
-                filtered.remove(key);
-            }
-        }
-        return filtered;
-    }
-
 
     /**
      * 
@@ -76,7 +58,7 @@ public class Format implements Map<String,String> {
     }
     
     /**
-     * Store a default value for a named attribute.
+     * Store a default value for a named default attribute.
      * @param name
      * @param value
      * @return previous value for the default.
@@ -86,14 +68,20 @@ public class Format implements Map<String,String> {
     }
     
     /**
-     * 
+     * If the value is already set as a default, then this is a no-op.
      * @param name
      * @param value
      * @return
      */
     @Override
     public String put(String name, String value){
-        return attributes.put(name, value);
+        String retVal = null;
+        String d = defaults.get(name);
+        if (d == null || !d.equals(value)){
+            retVal = attributes.put(name, value);
+        }
+        
+        return retVal;
     }
     
 
@@ -124,7 +112,11 @@ public class Format implements Map<String,String> {
 
     @Override
     public void putAll(Map<? extends String, ? extends String> map) {
-        attributes.putAll(map);
+        if (map != null){
+            for (Entry<? extends String,? extends String> entry: map.entrySet()){
+                put(entry.getKey(), entry.getValue());
+            }
+        }
     }
     
     public void putDefaults(Map<? extends String, ? extends String> defaults){

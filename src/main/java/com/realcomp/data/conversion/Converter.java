@@ -3,7 +3,6 @@ package com.realcomp.data.conversion;
 import com.realcomp.data.DataType;
 import com.realcomp.data.Operation;
 import java.util.Collection;
-import java.util.List;
 
 /**
  * An Operation that converts the value of an Object in some way.

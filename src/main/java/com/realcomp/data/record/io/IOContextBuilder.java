@@ -1,4 +1,3 @@
-
 package com.realcomp.data.record.io;
 
 import com.realcomp.data.schema.Schema;

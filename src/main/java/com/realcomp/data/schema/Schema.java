@@ -232,6 +232,8 @@ public class Schema {
     
     
     public void addField(Field field){
+        if (field == null)
+            throw new IllegalArgumentException("field is null");
         FieldList fieldList = getDefaultFieldList();
         if (fieldList == null){
             fieldList = new FieldList();
@@ -244,6 +246,8 @@ public class Schema {
     }
     
     public boolean removeField(Field field){
+        if (field == null)
+            throw new IllegalArgumentException("field is null");
         FieldList fieldList = getDefaultFieldList();        
         return fieldList == null ? false : fieldList.remove(field);
     }

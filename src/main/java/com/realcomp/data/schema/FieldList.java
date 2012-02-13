@@ -43,6 +43,8 @@ public class FieldList extends ArrayList<Field> {
     
     public FieldList(FieldList copy){
         this();
+        if (copy == null)
+            throw new IllegalArgumentException("copy is ");
         for (Field field: copy)
             super.add(new Field(field));
         resetCachedValues();

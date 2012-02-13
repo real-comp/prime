@@ -86,21 +86,5 @@ public class FormatTest {
         assertEquals(a.hashCode(), b.hashCode());
     }
     
-    @Test
-    public void testFilterDefaults(){
-        
-       Format format = new Format();
-       format.put("a","2");
-       format.putDefault("b", "2");
-       
-       assertEquals(1, format.filterDefaultValues().size());
-       assertEquals("2", format.filterDefaultValues().get("a"));
-       assertNull(format.filterDefaultValues().get("b"));
-       
-       format.put("b","not the default value");
-       assertEquals(2, format.filterDefaultValues().size());
-       assertEquals("2", format.filterDefaultValues().get("a"));
-       assertEquals("not the default value", format.filterDefaultValues().get("b"));
-       
-    }
+    
 }

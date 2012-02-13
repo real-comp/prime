@@ -12,6 +12,7 @@ import org.apache.commons.io.IOUtils;
 /**
  * Unmodifiable context for I/O operations.
  * 
+ * 
  * @author krenfro
  */
 public class IOContext implements Serializable{
@@ -31,15 +32,19 @@ public class IOContext implements Serializable{
         validationExeptionThreshold = builder.validationExceptionThreshold;
     }
 
+    /**
+     * Quietly close the input and output streams
+     */
     public void close(){
         IOUtils.closeQuietly(in);
         IOUtils.closeQuietly(out);
     }
 
     /**
-     * Attributes of this IOContext override (hide) attributes specified in the Schema's format attributes.
+     * All the attributes of this IOContext, including any available attributes in the schema.
      * 
-     * @return copy of all attributes, including any format attributes of the schema
+     * 
+     * @return copy of all attributes, including any attributes of the schema
      */
     public Map<String, String> getAttributes() {        
         Map<String,String> copy = new HashMap<String,String>();
@@ -49,6 +54,14 @@ public class IOContext implements Serializable{
         return copy;
     }
     
+    /**
+     * Get a named attribute, first from the attributes of this IOContext, or if not available, the attribute 
+     * from the schema.
+     * 
+     * Attributes of this IOContext override (hide) attributes specified in the Schema's format attributes.
+     * @param name
+     * @return 
+     */
     public String getAttribute(String name){
         String value = null;
         if (schema != null && schema.getFormat() != null)
@@ -66,8 +79,11 @@ public class IOContext implements Serializable{
         return out;
     }
 
+    /**
+     * @return copy of the schema
+     */
     public Schema getSchema() {
-        return schema;
+        return schema == null ? null : new Schema(schema);
     }
 
     public Severity getValidationExeptionThreshold() {
