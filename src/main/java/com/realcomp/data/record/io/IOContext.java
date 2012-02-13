@@ -24,7 +24,7 @@ public class IOContext implements Serializable{
     protected transient OutputStream out;
     protected Severity validationExeptionThreshold = Severity.HIGH;
     
-    IOContext(IOContextBuilder builder){
+    protected IOContext(IOContextBuilder builder){
         schema = builder.schema;
         attributes = builder.attributes;
         in = builder.in;
