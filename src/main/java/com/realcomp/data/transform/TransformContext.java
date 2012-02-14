@@ -25,7 +25,7 @@ public class TransformContext {
     private List<Field> fields;
     private String key;
     private Record record;
-    private Severity validationExceptionThreshold = Severity.getDefault();
+    private Severity validationExceptionThreshold = Severity.HIGH;
     private long recordCount;
     
     public TransformContext(){

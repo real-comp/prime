@@ -7,6 +7,7 @@ import com.realcomp.data.schema.SchemaException;
 import com.realcomp.data.schema.SchemaFactory;
 import com.realcomp.data.transform.TransformContext;
 import com.realcomp.data.transform.Transformer;
+import com.realcomp.data.validation.Severity;
 import com.realcomp.data.validation.ValidationException;
 import java.io.*;
 import java.util.*;
@@ -37,10 +38,10 @@ public class Reformat {
         
         RecordWriter writer = RecordWriterFactory.build(out.getSchema());
         writer.open(out);
-        
                 
         Record record = reader.read();
         TransformContext ctx = new TransformContext();
+        ctx.setValidationExceptionThreshold(in.getValidationExeptionThreshold());
         while (record != null){
             ctx.setRecord(record);
             
