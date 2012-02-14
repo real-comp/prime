@@ -52,6 +52,7 @@ public class Field {
         this();
         checkName(name);
         this.name = name;
+        this.type = DataType.STRING;
     }
 
     public Field(String name, DataType type){

@@ -1,19 +1,13 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.realcomp.data.transform;
 
-import com.thoughtworks.xstream.XStream;
+import com.realcomp.data.conversion.Round;
+import com.realcomp.data.conversion.Trim;
+import com.realcomp.data.schema.Field;
 import com.realcomp.data.schema.xml.XStreamFactory;
 import com.realcomp.data.validation.field.Key;
-import com.realcomp.data.conversion.Round;
-import com.realcomp.data.schema.Field;
-import com.realcomp.data.conversion.Trim;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
+import com.thoughtworks.xstream.XStream;
+import static org.junit.Assert.assertEquals;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 /**
  *

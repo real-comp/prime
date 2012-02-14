@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
 /**
@@ -20,8 +19,7 @@ import java.util.regex.Pattern;
 @XStreamAlias("schema")
 public class Schema {
 
-    private static final Logger logger = Logger.getLogger(Schema.class.getName());
-    protected static final Pattern DEFAULT_CLASSIFIER = Pattern.compile(".*");
+     protected static final Pattern DEFAULT_CLASSIFIER = Pattern.compile(".*");
 
     @XStreamAsAttribute
     private String name;

@@ -148,13 +148,14 @@ public class JsonWriter extends BaseRecordReaderWriter implements RecordWriter{
     private void writeJson(String name, Object value) 
             throws IOException, ValidationException, ConversionException{
         
+        
         if (value == null){
             json.writeFieldName(name);
             json.writeNull();
         }
         else{
-            DataType type = DataType.getDataType(value);
-
+            
+            DataType type = DataType.getDataType(value);            
             switch(type){
                 case MAP:
                     json.writeFieldName(name);

@@ -8,7 +8,6 @@ import com.thoughtworks.xstream.converters.MarshallingContext;
 import com.thoughtworks.xstream.converters.UnmarshallingContext;
 import com.thoughtworks.xstream.io.HierarchicalStreamReader;
 import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
-import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
 /**
@@ -17,10 +16,7 @@ import java.util.regex.Pattern;
  * @author krenfro
  */
 public class FieldListConverter implements Converter{
-    
-    private static final Logger logger = Logger.getLogger(FieldListConverter.class.getName());
-    
-    
+        
     @Override
     public boolean canConvert(Class type){
         return FieldList.class.isAssignableFrom(type);
