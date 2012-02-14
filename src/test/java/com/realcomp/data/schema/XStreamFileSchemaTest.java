@@ -36,7 +36,8 @@ public class XStreamFileSchemaTest {
         new XStreamFactory();
     }
     
-
+    
+    
     protected Schema getSchema() throws SchemaException{
         Schema schema = new Schema();
         schema.setName("test");

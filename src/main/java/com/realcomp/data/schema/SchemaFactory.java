@@ -1,6 +1,7 @@
 package com.realcomp.data.schema;
 
 import com.realcomp.data.schema.xml.XStreamFactory;
+import com.realcomp.data.transform.Transformer;
 import com.thoughtworks.xstream.XStream;
 import java.io.InputStream;
 
@@ -17,6 +18,13 @@ public class SchemaFactory {
             throw new IllegalArgumentException("InputStream is null");
         XStream xstream = XStreamFactory.build();    
         return (Schema) xstream.fromXML(in);
+    }
+    
+    public static Transformer buildTransformer(InputStream in){
+        if (in == null)
+            throw new IllegalArgumentException("inputStream is null");
+        XStream xstream = XStreamFactory.build();
+        return (Transformer) xstream.fromXML(in);
     }
 
     public static RelationalSchema buildRelationalSchema(InputStream in){

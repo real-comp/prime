@@ -135,17 +135,6 @@ public class DelimitedFileWriterTest {
         Record bad = new Record();
         bad.put("foo","bar");
 
-        
-        try{
-            //with (default) strict matching, exception is thrown for failed classification.
-            schema.classify(bad);
-            fail("should have throws SchemaException");
-        }
-        catch(SchemaException ok){}
-
-        
-        //the record does not classify, so default is returned.
-        schema.setStrict(false);
         assertEquals(schema.getDefaultFieldList(), schema.classify(bad));
         
     }

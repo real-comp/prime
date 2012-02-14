@@ -43,12 +43,6 @@ public class SchemaTest {
         
         
         try{
-            schema.classify((String[]) null);
-            fail("should have thrown IAE");
-        }
-        catch(IllegalArgumentException expected){}
-        
-        try{
             schema.classify(new Record());  
             fail("should have thrown SchemaException");
         }
@@ -83,11 +77,9 @@ public class SchemaTest {
         catch(SchemaException expected){}
         
         schema.addFieldList(fieldList);
-        schema.setStrict(false);
         assertEquals(fieldList, schema.classify(new Record()));
         
         try{
-            schema.setStrict(true);
             assertEquals(fieldList, schema.classify(new Record()));
         }
         catch(SchemaException expected){}

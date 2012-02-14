@@ -44,6 +44,7 @@ public class JsonWriter extends BaseRecordReaderWriter implements RecordWriter{
     
         super();
         format.putDefault("pretty", "false");
+        format.putDefault("type", "JSON");
         
         jsonFactory = new JsonFactory();
         jsonFactory.disable(JsonGenerator.Feature.AUTO_CLOSE_TARGET);

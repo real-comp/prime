@@ -5,9 +5,12 @@ import com.realcomp.data.record.Record;
 import com.realcomp.data.record.io.*;
 import com.realcomp.data.schema.SchemaException;
 import com.realcomp.data.schema.SchemaFactory;
+import com.realcomp.data.transform.TransformContext;
+import com.realcomp.data.transform.Transformer;
 import com.realcomp.data.validation.ValidationException;
 import java.io.*;
-import java.util.Arrays;
+import java.util.*;
+import java.util.Map.Entry;
 import joptsimple.OptionException;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
@@ -18,7 +21,14 @@ import joptsimple.OptionSet;
  */
 public class Reformat {
 
+    private List<Transformer> transformers;
+    private Map<String,String> constants;
 
+    public Reformat(){
+        transformers = new ArrayList<Transformer>();
+        constants = new HashMap<String,String>();
+    }
+    
     public void reformat(IOContext in, IOContext out) 
             throws SchemaException, IOException, ValidationException, ConversionException {
 
@@ -28,16 +38,36 @@ public class Reformat {
         RecordWriter writer = RecordWriterFactory.build(out.getSchema());
         writer.open(out);
         
+                
         Record record = reader.read();
+        TransformContext ctx = new TransformContext();
         while (record != null){
-            writer.write(record);
+            ctx.setRecord(record);
+            
+            for (Entry<String,String> constant: constants.entrySet()){
+                record.put(constant.getKey(), constant.getValue());
+            }
+            
+            for (Transformer t: transformers){
+                t.transform(ctx);
+            }
+            writer.write(ctx.getRecord());
             record = reader.read();
         }
 
         writer.close();
         reader.close();
     }
+    
+    public void addTransformer(String file) throws FileNotFoundException{
+        Transformer t = SchemaFactory.buildTransformer(new FileInputStream(file));
+        transformers.add(t);
+    }
 
+    
+    public void addConstantValue(String name, String value){
+        constants.put(name, value);
+    }
 
     
     private static void printHelp(OptionParser parser){
@@ -60,6 +90,8 @@ public class Reformat {
             
             accepts("in", "input file (default: STDIN)").withRequiredArg().describedAs("file");
             accepts("out", "output file (default: STDOUT)").withRequiredArg().describedAs("file");
+            acceptsAll(Arrays.asList("t","transform"), "transform schema(s)" ).withRequiredArg().describedAs("transform");
+            accepts( "c" ).withOptionalArg().describedAs( "constant(s) set in every Record (i.e., orderId:4844)" );
             acceptsAll(Arrays.asList("h", "?", "help"), "help");
         }};
         
@@ -87,6 +119,17 @@ public class Reformat {
                         options.has("out") ? 
                             new BufferedOutputStream(new FileOutputStream((String) options.valueOf("out"))) :
                             new BufferedOutputStream(System.out));
+                
+                for (Object t:  options.valuesOf("t")){
+                    reformatter.addTransformer(t.toString());
+                }
+                
+                for (String constant: (List<String>) options.valuesOf("c")){
+                    int pos = constant.indexOf(":");
+                    if (pos > 0){
+                        reformatter.addConstantValue(constant.substring(0, pos), constant.substring(pos + 1));
+                    }
+                }
                 
                 reformatter.reformat(inputBuilder.build(), outputBuilder.build());
                 result = 0;

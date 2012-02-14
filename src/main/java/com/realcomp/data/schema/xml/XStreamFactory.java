@@ -53,6 +53,7 @@ public class XStreamFactory {
         xstream.processAnnotations(Transformer.class);
         xstream.processAnnotations(Format.class);
         
+        
         xstream.registerConverter(new OperationConverter());
         xstream.registerConverter(new DataTypeConverter());
         xstream.registerConverter(new FieldListConverter());

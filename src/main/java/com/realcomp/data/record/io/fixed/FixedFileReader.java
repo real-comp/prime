@@ -84,7 +84,7 @@ public class FixedFileReader extends BaseRecordReader{
         Record record = null;
         String data = reader.readLine();
         if (data != null){
-            FieldList fields = context.getSchema().classify(data);            
+            FieldList fields = classify(context.getSchema(), data);            
             String[] parsed = parse(data, fields);
             record = loadRecord(fields, parsed);
         }
@@ -96,7 +96,38 @@ public class FixedFileReader extends BaseRecordReader{
         
         return record;
     }
+    
+    /**
+     * Classify some data and return the FieldList that should be used to parse the data.
+     * If only one FieldList is defined, then it is returned.
+     * If multiple FieldLists are defined, then the first FieldList who's regex classifier matches
+     * the data is returned
+     * 
+     * @param data not null
+     * @return the FieldList that should be used to parse the data. never null
+     * @throws SchemaException if no defined layout supports the data.
+     */
+    protected FieldList classify(Schema schema, String data) throws SchemaException{
 
+        if (data == null)
+            throw new IllegalArgumentException("data is null");
+        
+        FieldList match = schema.getDefaultFieldList();
+        
+        if (schema.getFieldLists().size() > 1){
+            for (FieldList fieldList: schema.getFieldLists()){
+                if (fieldList.supports(data)){
+                    match = fieldList;  
+                }
+            }
+        }
+        
+        if (match == null)
+            throw new SchemaException("The schema [" + schema.getName() + "] does not support the specified data.");
+        
+        return match;
+    }
+    
     
     protected Record loadRecord(FieldList fields, String[] data)
             throws ValidationException, ConversionException{

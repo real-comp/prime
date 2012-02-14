@@ -105,7 +105,6 @@ public class JsonReaderTest {
                 .in(this.getClass().getResourceAsStream("sample.json"))
                 .build();
         
-        assertFalse(ctx.getSchema().isStrict());
         
         JsonReader reader = new JsonReader();
         reader.open(ctx);

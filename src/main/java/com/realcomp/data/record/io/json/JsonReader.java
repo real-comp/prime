@@ -39,6 +39,7 @@ public class JsonReader extends BaseRecordReaderWriter implements RecordReader {
 
     public JsonReader() {
         super();
+        format.putDefault("type", "JSON");
         jsonFactory = new JsonFactory();
         surgeon = new ValueSurgeon();
         transformContext = new TransformContext();

@@ -45,10 +45,15 @@ public class Transformer {
     
     public void transform(TransformContext context) throws ConversionException, ValidationException{
         
+        if (surgeon == null)
+            surgeon = new ValueSurgeon();
+        
         context.setFields(fields);
         
         for (Field field: fields){            
-            context.setKey(field.getName());            
+            context.setKey(field.getName());        
+            if (surgeon == null)
+                throw new IllegalStateException("surgeon is null");
             Object result = surgeon.operate(getOperations(field), context);
             
             try {
@@ -174,6 +179,29 @@ public class Transformer {
         this.before.add(op);
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        final Transformer other = (Transformer) obj;
+        if (this.before != other.before && (this.before == null || !this.before.equals(other.before)))
+            return false;
+        if (this.after != other.after && (this.after == null || !this.after.equals(other.after)))
+            return false;
+        if (this.fields != other.fields && (this.fields == null || !this.fields.equals(other.fields)))
+            return false;
+        return true;
+    }
 
+    @Override
+    public int hashCode() {
+        int hash = 5;
+        hash = 59 * hash + (this.before != null ? this.before.hashCode() : 0);
+        hash = 59 * hash + (this.after != null ? this.after.hashCode() : 0);
+        hash = 59 * hash + (this.fields != null ? this.fields.hashCode() : 0);
+        return hash;
+    }
     
 }

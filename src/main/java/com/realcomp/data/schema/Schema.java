@@ -28,10 +28,7 @@ public class Schema {
 
     @XStreamAsAttribute
     private String version;
-    
-    @XStreamAsAttribute
-    private boolean strict = true;
-    
+        
     private Map<String,String> format;
 
     private List<Operation> beforeFirst;
@@ -51,7 +48,6 @@ public class Schema {
         format = new HashMap<String,String>();
         format.putAll(copy.format);
         fieldLists = new ArrayList<FieldList>();
-        strict = copy.strict;
         for (FieldList fieldList: copy.fieldLists)
             fieldLists.add(new FieldList(fieldList));
         
@@ -63,107 +59,41 @@ public class Schema {
         setAfterOperations(copy.getAfterOperations());
     }
     
-    
-    
-    
-    /**
-     * Classify some data and return the FieldList that should be used to parse the data.
-     * If no classifiers have been specified, or there is not a classifier match, the
-     * default FieldList is returned.
-     * 
-     * @param data not null
-     * @return the FieldList that should be used to parse the data. never null
-     * @throws SchemaException if no defined layout supports the data
-     */
-    public FieldList classify(String data) throws SchemaException{
-
-        if (data == null)
-            throw new IllegalArgumentException("data is null");
-        
-        FieldList match = null;
-        
-        for (FieldList fieldList: fieldLists){
-            if (match == null && fieldList.isDefaultClassifier()){
-                match = fieldList;
-            }
-            else if (fieldList.supports(data)){
-                match = fieldList;  
-            }
-        }
-        
-        if (match == null)
-            throw new SchemaException("The schema does not support the specified data.");
-        
-        return match;
-    }
-
-    
-    /**
-     * Classify some delimited data and return the FieldList that should be used to parse the data.
-     * The number of fields in the FieldList is used to classify the data.
-     * 
-     * @param data not null
-     * @return the FieldList that should be used to parse the data. never null
-     * @throws SchemaException if no defined layout supports the data
-     */
-    public FieldList classify(String[] data) throws SchemaException{
-
-        if (data == null)
-            throw new IllegalArgumentException("data is null");
-        
-        FieldList match = null;
-        
-        for (FieldList fieldList: fieldLists){
-            if (match == null && fieldList.size() == data.length){
-                match = fieldList;
-            }
-            else if (match != null && fieldList.size() == data.length){
-                throw new SchemaException(
-                        "Ambiguous schema. Multiple field lists in the schema support records with " + data.length + " fields.");
-            }
-        }
-        
-        if (match == null)
-            throw new SchemaException("The schema does not support records with " + data.length + " fields.");
-        
-        return match;
-    }
-    
-    
       
     /**
      * Classify a record and return the FieldList that matches.
+     * If only one FieldList is defined, it is returned.
      * If multiple FieldLists support the specified Record, then the FieldList that
-     * is not the <i>default</i> is returned.  If multiple FieldLists support the specified Record,
-     * and neither are the <i>default</i> then the one defined first is returned.
+     * is not the <i>default</i> is returned.  
+     * If multiple FieldLists support the specified Record, and neither are the <i>default</i> then the 
+     * one defined first is returned.
      *
      * @param record not null
      * @return the FieldList that should be used for the Record. never null
-     * @throws SchemaException if no defined layout supports the Record and strict is true
+     * @throws SchemaException if no defined layout supports the Record
      */
     public FieldList classify(Record record) throws SchemaException{
         
         if (record == null)
             throw new IllegalArgumentException("record is null");
         
-        FieldList match = null;
         
-        for (FieldList fieldList: fieldLists){            
-            if (match == null && fieldList.isDefaultClassifier()){
-                match = fieldList;
+        FieldList match = getDefaultFieldList();
+        
+        if (fieldLists.size() > 1){
+            for (FieldList fieldList: fieldLists){            
+                if (!fieldList.isDefaultClassifier() && fieldList.supports(record)){                
+                    match = fieldList;  
+                }
+                else if (fieldList.supports(record)){
+                    match = fieldList;
+                }
             }
-            else if (!fieldList.isDefaultClassifier() && fieldList.supports(record)){                
-                match = fieldList;  
-            }
         }
         
-        if (match == null && strict){
-            throw new SchemaException("The schema does not support the specified Record.");
-        }
-        else{
-            match = getDefaultFieldList();
-        }
-        
+        if (match == null)
+            throw new SchemaException("The schema [" + getName() + "] does not support the Record.");
+                
         return match;
     }
        
@@ -489,13 +419,6 @@ public class Schema {
         }
     }
 
-    public boolean isStrict() {
-        return strict;
-    }
-
-    public void setStrict(boolean strict) {
-        this.strict = strict;
-    }
 
     @Override
     public boolean equals(Object obj) {
@@ -507,8 +430,6 @@ public class Schema {
         if ((this.name == null) ? (other.name != null) : !this.name.equals(other.name))
             return false;
         if ((this.version == null) ? (other.version != null) : !this.version.equals(other.version))
-            return false;
-        if (this.strict != other.strict)
             return false;
         if (this.format != other.format && (this.format == null || !this.format.equals(other.format)))
             return false;
@@ -528,15 +449,16 @@ public class Schema {
     @Override
     public int hashCode() {
         int hash = 5;
-        hash = 73 * hash + (this.name != null ? this.name.hashCode() : 0);
-        hash = 73 * hash + (this.version != null ? this.version.hashCode() : 0);
-        hash = 73 * hash + (this.strict ? 1 : 0);
-        hash = 73 * hash + (this.format != null ? this.format.hashCode() : 0);
-        hash = 73 * hash + (this.beforeFirst != null ? this.beforeFirst.hashCode() : 0);
-        hash = 73 * hash + (this.before != null ? this.before.hashCode() : 0);
-        hash = 73 * hash + (this.after != null ? this.after.hashCode() : 0);
-        hash = 73 * hash + (this.afterLast != null ? this.afterLast.hashCode() : 0);
-        hash = 73 * hash + (this.fieldLists != null ? this.fieldLists.hashCode() : 0);
+        hash = 83 * hash + (this.name != null ? this.name.hashCode() : 0);
+        hash = 83 * hash + (this.version != null ? this.version.hashCode() : 0);
+        hash = 83 * hash + (this.format != null ? this.format.hashCode() : 0);
+        hash = 83 * hash + (this.beforeFirst != null ? this.beforeFirst.hashCode() : 0);
+        hash = 83 * hash + (this.before != null ? this.before.hashCode() : 0);
+        hash = 83 * hash + (this.after != null ? this.after.hashCode() : 0);
+        hash = 83 * hash + (this.afterLast != null ? this.afterLast.hashCode() : 0);
+        hash = 83 * hash + (this.fieldLists != null ? this.fieldLists.hashCode() : 0);
         return hash;
     }
+    
+    
 }

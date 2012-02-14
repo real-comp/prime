@@ -7,6 +7,7 @@ import com.realcomp.data.record.io.BaseRecordReader;
 import com.realcomp.data.record.io.IOContext;
 import com.realcomp.data.record.io.SkippingBufferedReader;
 import com.realcomp.data.schema.FieldList;
+import com.realcomp.data.schema.Schema;
 import com.realcomp.data.schema.SchemaException;
 import com.realcomp.data.validation.Severity;
 import com.realcomp.data.validation.ValidationException;
@@ -80,7 +81,7 @@ public class DelimitedFileReader extends BaseRecordReader{
         String[] tokens;
         if (data != null){
             tokens = parser.parseLine(data);
-            record = loadRecord(context.getSchema().classify(tokens), tokens);
+            record = loadRecord(classify(context.getSchema(), tokens), tokens);
         }
 
         if (record != null)
@@ -90,6 +91,48 @@ public class DelimitedFileReader extends BaseRecordReader{
         
         return record;
     }
+    
+    
+    /**
+     * Classify some delimited data and return the FieldList that should be used to parse the data.
+     * If only one FieldList is defined, then it is returned.
+     * If multiple FieldLists are defined, then the first FieldList has the same number of fields as the data
+     * is returned.
+     * 
+     * @param schema
+     * @param data not null
+     * @return the FieldList that should be used to parse the data. never null
+     * @throws SchemaException if more than one FieldList is defined and there is ambiguity
+     */
+    protected FieldList classify(Schema schema, String[] data) throws SchemaException{
+
+        if (data == null)
+            throw new IllegalArgumentException("data is null");
+        
+        FieldList match = schema.getDefaultFieldList();
+        
+        if (schema.getFieldLists().size() > 1){
+            int matchCount = 0;
+            for (FieldList fieldList: schema.getFieldLists()){
+                if (fieldList.size() == data.length){
+                    match = fieldList;
+                    matchCount++;
+                    if (matchCount > 1){
+                        throw new SchemaException(
+                                "Ambiguous schema [" + schema.getName() + "]. "
+                                + "Multiple field lists in the schema support records with "
+                                + data.length + " fields.");
+                    }
+                }
+            }
+        }
+        
+        if (match == null)
+            throw new SchemaException("The schema [" + schema.getName() + "] does not support the specified data.");
+                
+        return match;
+    }
+    
     
     
     protected Record loadRecord(FieldList fields, String[] data)
