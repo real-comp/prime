@@ -6,7 +6,6 @@ import com.realcomp.data.schema.SchemaException;
 import com.realcomp.data.validation.Severity;
 import com.realcomp.data.validation.ValidationException;
 import java.io.IOException;
-import java.util.Map;
 
 
 /**
