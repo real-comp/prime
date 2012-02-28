@@ -3,33 +3,31 @@ package com.realcomp.data.schema;
 import com.realcomp.data.MultiFieldOperation;
 import com.realcomp.data.Operation;
 import com.realcomp.data.record.Record;
-import com.realcomp.data.record.io.Format;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 /**
- *
+ * 
  * @author krenfro
  */
-@XStreamAlias("file-schema")
-public class FileSchema {
+@XStreamAlias("schema")
+public class Schema {
 
-    private static final Logger logger = Logger.getLogger(FileSchema.class.getName());
-    protected static final Pattern DEFAULT_CLASSIFIER = Pattern.compile(".*");
+     protected static final Pattern DEFAULT_CLASSIFIER = Pattern.compile(".*");
 
     @XStreamAsAttribute
     private String name;
 
     @XStreamAsAttribute
     private String version;
-    
-    private Format format;
+        
+    private Map<String,String> format;
 
     private List<Operation> beforeFirst;
     private List<Operation> before;
@@ -39,11 +37,14 @@ public class FileSchema {
     @XStreamImplicit(itemFieldName="fields")
     private List<FieldList> fieldLists;
     
-    public FileSchema(){
+    public Schema(){
+        format = new HashMap<String,String>();
         fieldLists = new ArrayList<FieldList>();
     }
 
-    public FileSchema(FileSchema copy) throws SchemaException{
+    public Schema(Schema copy){
+        format = new HashMap<String,String>();
+        format.putAll(copy.format);
         fieldLists = new ArrayList<FieldList>();
         for (FieldList fieldList: copy.fieldLists)
             fieldLists.add(new FieldList(fieldList));
@@ -56,76 +57,14 @@ public class FileSchema {
         setAfterOperations(copy.getAfterOperations());
     }
     
-    
-    /**
-     * Classify some data and return the FieldList that should be used to parse the data.
-     * If no classifiers have been specified, or there is not a classifier match, the
-     * default FieldList is returned.
-     * 
-     * @param data not null
-     * @return the FieldList that should be used to parse the data. never null
-     * @throws SchemaException if no defined layout supports the data
-     */
-    public FieldList classify(String data) throws SchemaException{
-
-        if (data == null)
-            throw new IllegalArgumentException("data is null");
-        
-        FieldList match = null;
-        
-        for (FieldList fieldList: fieldLists){
-            if (match == null && fieldList.isDefaultClassifier()){
-                match = fieldList;
-            }
-            else if (fieldList.supports(data)){
-                match = fieldList;  
-            }
-        }
-        
-        if (match == null)
-            throw new SchemaException("The schema does not support the specified data.");
-        
-        return match;
-    }
-
-    
-    /**
-     * Classify some delimited data and return the FieldList that should be used to parse the data.
-     * The number of fields in the FieldList is used to classify the data.
-     * 
-     * @param data not null
-     * @return the FieldList that should be used to parse the data. never null
-     * @throws SchemaException if no defined layout supports the data
-     */
-    public FieldList classify(String[] data) throws SchemaException{
-
-        if (data == null)
-            throw new IllegalArgumentException("data is null");
-        
-        FieldList match = null;
-        
-        for (FieldList fieldList: fieldLists){
-            if (match == null && fieldList.size() == data.length){
-                match = fieldList;
-            }
-            else if (match != null && fieldList.size() == data.length){
-                throw new SchemaException(
-                        "Ambiguous schema. Multiple field lists in the schema support records with " + data.length + " fields.");
-            }
-        }
-        
-        if (match == null)
-            throw new SchemaException("The schema does not support records with " + data.length + " fields.");
-        
-        return match;
-    }
-    
-    
+      
     /**
      * Classify a record and return the FieldList that matches.
+     * If only one FieldList is defined, it is returned.
      * If multiple FieldLists support the specified Record, then the FieldList that
-     * is not the <i>default</i> is returned.  If multiple FieldLists support the specified Record,
-     * and neither are the <i>default</i> then the one defined first is returned.
+     * is not the <i>default</i> is returned.  
+     * If multiple FieldLists support the specified Record, and neither are the <i>default</i> then the 
+     * one defined first is returned.
      *
      * @param record not null
      * @return the FieldList that should be used for the Record. never null
@@ -136,23 +75,26 @@ public class FileSchema {
         if (record == null)
             throw new IllegalArgumentException("record is null");
         
-        FieldList match = null;
         
-        for (FieldList fieldList: fieldLists){            
-            if (match == null && fieldList.isDefaultClassifier()){
-                match = fieldList;
-            }
-            else if (!fieldList.isDefaultClassifier() && fieldList.supports(record)){                
-                match = fieldList;  
+        FieldList match = getDefaultFieldList();
+        
+        if (fieldLists.size() > 1){
+            for (FieldList fieldList: fieldLists){            
+                if (!fieldList.isDefaultClassifier() && fieldList.supports(record)){                
+                    match = fieldList;  
+                }
+                else if (fieldList.supports(record)){
+                    match = fieldList;
+                }
             }
         }
         
         if (match == null)
-            throw new SchemaException("The schema does not support the specified Record");
-        
+            throw new SchemaException("The schema [" + getName() + "] does not support the Record.");
+                
         return match;
     }
-    
+       
     
     /**
      * Returns the FieldList that has the default classifier (match anything),
@@ -176,7 +118,7 @@ public class FileSchema {
 
     /**
      * 
-     * @return the FieldLists supported by this FileSchema
+     * @return the FieldLists supported by this Schema
      */
     public List<FieldList> getFieldLists() {
         return fieldLists;
@@ -219,6 +161,8 @@ public class FileSchema {
     
     
     public void addField(Field field){
+        if (field == null)
+            throw new IllegalArgumentException("field is null");
         FieldList fieldList = getDefaultFieldList();
         if (fieldList == null){
             fieldList = new FieldList();
@@ -231,6 +175,8 @@ public class FileSchema {
     }
     
     public boolean removeField(Field field){
+        if (field == null)
+            throw new IllegalArgumentException("field is null");
         FieldList fieldList = getDefaultFieldList();        
         return fieldList == null ? false : fieldList.remove(field);
     }
@@ -442,12 +388,14 @@ public class FileSchema {
         this.version = version;
     }
 
-    public Format getFormat() {
-        return new Format(format);
+    public Map<String,String> getFormat() {
+        return format;
     }
 
-    public void setFormat(Format format) {
-        this.format = new Format(format);
+    public void setFormat(Map<String,String> format) {
+        if (format == null)
+            throw new IllegalArgumentException("format is null");
+        this.format = format;
     }
 
     
@@ -469,13 +417,14 @@ public class FileSchema {
         }
     }
 
+
     @Override
     public boolean equals(Object obj) {
         if (obj == null)
             return false;
         if (getClass() != obj.getClass())
             return false;
-        final FileSchema other = (FileSchema) obj;
+        final Schema other = (Schema) obj;
         if ((this.name == null) ? (other.name != null) : !this.name.equals(other.name))
             return false;
         if ((this.version == null) ? (other.version != null) : !this.version.equals(other.version))
@@ -497,19 +446,17 @@ public class FileSchema {
 
     @Override
     public int hashCode() {
-        int hash = 3;
-        hash = 61 * hash + (this.name != null ? this.name.hashCode() : 0);
-        hash = 61 * hash + (this.version != null ? this.version.hashCode() : 0);
-        hash = 61 * hash + (this.format != null ? this.format.hashCode() : 0);
-        hash = 61 * hash + (this.beforeFirst != null ? this.beforeFirst.hashCode() : 0);
-        hash = 61 * hash + (this.before != null ? this.before.hashCode() : 0);
-        hash = 61 * hash + (this.after != null ? this.after.hashCode() : 0);
-        hash = 61 * hash + (this.afterLast != null ? this.afterLast.hashCode() : 0);
-        hash = 61 * hash + (this.fieldLists != null ? this.fieldLists.hashCode() : 0);
+        int hash = 5;
+        hash = 83 * hash + (this.name != null ? this.name.hashCode() : 0);
+        hash = 83 * hash + (this.version != null ? this.version.hashCode() : 0);
+        hash = 83 * hash + (this.format != null ? this.format.hashCode() : 0);
+        hash = 83 * hash + (this.beforeFirst != null ? this.beforeFirst.hashCode() : 0);
+        hash = 83 * hash + (this.before != null ? this.before.hashCode() : 0);
+        hash = 83 * hash + (this.after != null ? this.after.hashCode() : 0);
+        hash = 83 * hash + (this.afterLast != null ? this.afterLast.hashCode() : 0);
+        hash = 83 * hash + (this.fieldLists != null ? this.fieldLists.hashCode() : 0);
         return hash;
     }
     
-    
-
     
 }

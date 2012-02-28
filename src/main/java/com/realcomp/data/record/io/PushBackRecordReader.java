@@ -2,13 +2,11 @@ package com.realcomp.data.record.io;
 
 import com.realcomp.data.conversion.ConversionException;
 import com.realcomp.data.record.Record;
-import com.realcomp.data.schema.FileSchema;
 import com.realcomp.data.schema.SchemaException;
-import com.realcomp.data.validation.Severity;
 import com.realcomp.data.validation.ValidationException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.Queue;
 
 /**
@@ -35,10 +33,8 @@ public class PushBackRecordReader implements RecordReader{
         return reader.getCount() - queue.size();
     }
     
-    
     @Override
-    public Record read() throws IOException, ValidationException, ConversionException, SchemaException {
-        
+    public Record read() throws IOException, ValidationException, ConversionException, SchemaException {        
         return queue.isEmpty() ? reader.read() : queue.remove();
     }
 
@@ -48,29 +44,22 @@ public class PushBackRecordReader implements RecordReader{
     }
 
     @Override
-    public void open(InputStream in) throws IOException {
-        reader.open(in);
+    public void open(IOContext context) throws IOException, SchemaException {
+        reader.open(context);
     }
-
-    @Override
-    public void setSchema(FileSchema schema) throws SchemaException {
-        reader.setSchema(schema);
-    }
-
-    @Override
-    public FileSchema getSchema() {
-        return reader.getSchema();
-    }
-
-    @Override
-    public Severity getValidationExceptionThreshold() {
-        return reader.getValidationExceptionThreshold();
-    }
-
-    @Override
-    public void setValidationExceptionThreshold(Severity severity) {
-        reader.setValidationExceptionThreshold(severity);
-    }
-
     
+    @Override
+    public IOContext getIOContext() {
+        return reader.getIOContext();
+    }
+
+    @Override
+    public void close(boolean closeIOContext) {
+        reader.close(closeIOContext);
+    }
+    
+    @Override
+    public Map<String,String> getDefaults(){
+        return reader.getDefaults();
+    }
 }

@@ -5,6 +5,7 @@ package com.realcomp.data.conversion;
  * @author krenfro
  */
 public class MissingFieldException extends ConversionException{
+    private static final long serialVersionUID = 1L;
 
     private String fieldName;
 

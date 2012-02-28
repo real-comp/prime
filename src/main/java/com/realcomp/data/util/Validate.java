@@ -1,18 +1,19 @@
 package com.realcomp.data.util;
 
 import com.realcomp.data.conversion.ConversionException;
+import com.realcomp.data.record.io.IOContext;
+import com.realcomp.data.record.io.IOContextBuilder;
 import com.realcomp.data.record.io.RecordReader;
 import com.realcomp.data.record.io.RecordReaderFactory;
-import com.realcomp.data.schema.FileSchema;
 import com.realcomp.data.schema.SchemaException;
 import com.realcomp.data.schema.SchemaFactory;
 import com.realcomp.data.validation.ValidationException;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.logging.Level;
+import java.io.*;
+import java.util.Arrays;
 import java.util.logging.Logger;
+import joptsimple.OptionException;
+import joptsimple.OptionParser;
+import joptsimple.OptionSet;
 
 /**
  * Validates a file against a schema
@@ -22,32 +23,13 @@ public class Validate {
 
     private static final Logger logger =  Logger.getLogger(Validate.class.getName());
 
-    private FileSchema schema;
-
-    public Validate(){
-    }
 
 
-    public void setSchema(InputStream in) throws IOException{
-        schema = SchemaFactory.buildFileSchema(in);
-    }
-
-    public void setSchema(FileSchema schema){
-        if (schema == null)
-            throw new IllegalArgumentException("schema is null");
-        this.schema = schema;
-    }
-
-    public void validate(File file) 
-            throws SchemaException, IOException, ValidationException, ConversionException{
-        validate(new FileInputStream(file));
-    }
-
-    public void validate(InputStream in) 
+    public void validate(IOContext context) 
             throws SchemaException, IOException, ValidationException, ConversionException {
 
-        RecordReader reader = RecordReaderFactory.build(schema);
-        reader.open(in);
+        RecordReader reader = RecordReaderFactory.build(context.getSchema());
+        reader.open(context);
         
         long lineNumber = 1;
         try {
@@ -67,29 +49,67 @@ public class Validate {
     }
 
 
+    
+    
+    private static void printHelp(OptionParser parser){
+        try {
+            parser.printHelpOn(System.err);
+        }
+        catch (IOException ignored) {
+        }
+    }
+    
+
     public static void main(String[] args){
 
-        if (args.length < 1 || args[0].equalsIgnoreCase("-h") || args[0].equals("--help")) {
-            System.err.println("Usage: ");
-            System.err.println("  Validate <schema> [file]");
-            System.exit(1);
+         OptionParser parser = new OptionParser(){{
+            acceptsAll(Arrays.asList("s","schema","is"), "schema" )
+                    .withRequiredArg().describedAs("schema").required();
+            
+            accepts("in", "input file (default: STDIN)").withRequiredArg().describedAs("file");
+            acceptsAll(Arrays.asList("h", "?", "help"), "help");
+        }};
+        
+        int result = 1;
+        
+        try{
+            OptionSet options = parser.parse(args);
+            if (options.has("?")){
+                printHelp(parser);
+            }
+            else{
+                Validate validator = new Validate();             
+                IOContextBuilder inputBuilder = new IOContextBuilder();                
+                inputBuilder.schema(
+                        SchemaFactory.buildSchema(new FileInputStream((String) options.valueOf("is"))));
+                inputBuilder.in(
+                        options.has("in") ? 
+                            new BufferedInputStream(new FileInputStream((String) options.valueOf("in"))) : 
+                            new BufferedInputStream(System.in));
+                validator.validate(inputBuilder.build());
+                result = 0;
+            }
         }
-
-        try {
-            Validate validator = new Validate();
-            validator.setSchema(new FileInputStream(args[0]));
-            InputStream in = null;
-            if (args.length == 2)
-                in = new FileInputStream(args[1]);
-            else
-                in = System.in;
-
-            validator.validate(in);
+        catch (SchemaException ex){
+            System.err.println(ex.getMessage());
         }
-        catch (Exception ex) {
-            ex.printStackTrace();
-            logger.log(Level.SEVERE, ex.getMessage());
-            System.exit(1);
+        catch (ConversionException ex){
+            System.err.println(ex.getMessage());
         }
+        catch (ValidationException ex){
+            System.err.println(ex.getMessage());
+        }
+        catch (FileNotFoundException ex){
+            System.err.println(ex.getMessage());
+        }
+        catch (IOException ex){
+            System.err.println(ex.getMessage());
+        }
+        catch (OptionException ex){
+            System.err.println(ex.getMessage());
+            printHelp(parser);
+        }
+        
+        System.exit(result);
     }
 }

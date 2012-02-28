@@ -4,14 +4,12 @@ import com.realcomp.data.Operation;
 import com.realcomp.data.record.Record;
 import com.realcomp.data.schema.Field;
 import com.realcomp.data.schema.FieldList;
-import com.realcomp.data.schema.FileSchema;
-import com.realcomp.data.schema.SchemaException;
+import com.realcomp.data.schema.Schema;
 import com.realcomp.data.validation.Severity;
 import com.realcomp.data.validation.ValidationException;
 import com.realcomp.data.validation.Validator;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -23,11 +21,11 @@ public class TransformContext {
     
     private static final Logger logger = Logger.getLogger(TransformContext.class.getName());
     
-    private FileSchema schema;
+    private Schema schema;
     private List<Field> fields;
     private String key;
     private Record record;
-    private Severity validationExceptionThreshold = Severity.getDefault();
+    private Severity validationExceptionThreshold = Severity.HIGH;
     private long recordCount;
     
     public TransformContext(){
@@ -37,14 +35,8 @@ public class TransformContext {
     public TransformContext(TransformContext copy){
         this();
         
-        try {
-            schema = new FileSchema(copy.schema);
-        }
-        catch (SchemaException ex) {
-            throw new IllegalStateException(ex);//should not happen
-        }
-        
-        
+        schema = new Schema(copy.schema);
+      
         if (copy.fields != null){
             fields = new ArrayList<Field>();
             for (Field field: copy.fields){
@@ -106,11 +98,11 @@ public class TransformContext {
         this.record = record;
     }
 
-    public FileSchema getSchema() {
+    public Schema getSchema() {
         return schema;
     }
 
-    public void setSchema(FileSchema schema) {
+    public void setSchema(Schema schema) {
         this.schema = schema;
     }
 

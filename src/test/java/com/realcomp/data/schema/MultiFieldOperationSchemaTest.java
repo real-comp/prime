@@ -30,9 +30,9 @@ public class MultiFieldOperationSchemaTest {
     }
 
 
-    protected FileSchema getSchema() throws SchemaException{
+    protected Schema getSchema() throws SchemaException{
 
-        FileSchema schema = new FileSchema();
+        Schema schema = new Schema();
         schema.setName("test");
         schema.setVersion("1.0");
         schema.addField(new Field("pid", DataType.LONG, 10));
@@ -50,8 +50,7 @@ public class MultiFieldOperationSchemaTest {
         schema.addField(new Field("zip", DataType.INTEGER, 5));
         schema.addField(new Field("value", DataType.FLOAT, 7));
 
-        schema.setFormat(new Format("TAB"));
-
+        schema.getFormat().put("type", "TAB");
         return schema;
     }
     
@@ -69,7 +68,7 @@ public class MultiFieldOperationSchemaTest {
         String xml = xstream.toXML(getSchema());
         System.out.println(xml);
 
-        FileSchema schema = SchemaFactory.buildFileSchema(new ByteArrayInputStream(xml.getBytes()));
+        Schema schema = SchemaFactory.buildSchema(new ByteArrayInputStream(xml.getBytes()));
 
         
 

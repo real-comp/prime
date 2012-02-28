@@ -6,10 +6,9 @@ package com.realcomp.data.conversion;
  * @author krenfro
  */
 @com.realcomp.data.annotation.Converter("append")
-public class Append extends SimpleConverter {
+public class Append extends SimpleConverter implements NullValueConverter{
 
     private String value = "";    
-    
 
     public Append(){
     }

@@ -10,7 +10,7 @@ import com.realcomp.data.DataType;
 import com.realcomp.data.conversion.Resize;
 import com.realcomp.data.conversion.Trim;
 import com.realcomp.data.schema.Field;
-import com.realcomp.data.schema.FileSchema;
+import com.realcomp.data.schema.Schema;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -25,9 +25,9 @@ public class RecordFactoryTest {
     public RecordFactoryTest() {
     }
     
-    private FileSchema getSchema(){
+    private Schema getSchema(){
         
-        FileSchema schema = new FileSchema();
+        Schema schema = new Schema();
         Field a = new Field("a", DataType.STRING);
         a.addOperation(new Trim());
         Field b = new Field("b", DataType.STRING);
@@ -44,7 +44,7 @@ public class RecordFactoryTest {
     @Test
     public void factoryTest() throws Exception {
         
-        FileSchema schema = getSchema();
+        Schema schema = getSchema();
         RecordFactory factory = new RecordFactory(getSchema());
         
         String[] data = new String[]{"asdf ", "stuff", "1.4"};

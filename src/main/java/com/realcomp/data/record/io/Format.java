@@ -1,81 +1,146 @@
 package com.realcomp.data.record.io;
 
 
-import com.realcomp.data.schema.xml.FormatConverter;
+import com.realcomp.data.schema.xml.AttributesConverter;
 import com.thoughtworks.xstream.annotations.XStreamConverter;
-import com.thoughtworks.xstream.annotations.XStreamImplicit;
+import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
- *
+ * Collection of formatting attributes with support for default values.
+ * 
+ * 
  * @author krenfro
  */
-@XStreamConverter(FormatConverter.class)
-public class Format {
+@XStreamConverter(AttributesConverter.class)
+public class Format implements Map<String,String> {
     
-    private String type;    
-        
-    private Map<String,String> attributes;
+    protected Map<String,String> attributes;
+    protected Map<String,String> defaults;
     
     public Format(){
         attributes = new HashMap<String,String>();
-    }
-    
-    public Format(String type){
-        if (type == null)
-            throw new IllegalArgumentException("type is null");
-        attributes = new HashMap<String,String>();
-        this.type = type;
+        defaults = new HashMap<String,String>();
     }
     
     public Format(Format copy){
-        this();
-        type = copy.type;        
+        attributes = new HashMap<String,String>();
         if (copy.attributes != null)
             attributes.putAll(copy.attributes);
-    }
-
-    public Map<String, String> getAttributes() {
-        return attributes;
-    }
-
-    public void setAttributes(Map<String, String> attributes) {
-        this.attributes.clear();
-        if (attributes != null)            
-            this.attributes.putAll(attributes);
+        defaults = new HashMap<String,String>();
     }
     
-    public String getAttribute(String name){
-        return attributes.get(name);
+    public Format(Map<String,String> map){
+        attributes = new HashMap<String,String>();
+        attributes.putAll(map);
+        defaults = new HashMap<String,String>();
     }
     
-    public String setAttribute(String name, String value){
-        return attributes.put(name, value);
+    public Map<String,String> getDefaults(){
+        return defaults;
     }
+    
 
-    public String removeAttribute(String name){
+    /**
+     * 
+     * @param name
+     * @return the value for the named attribute, or the default value (if available); else null
+     */
+    @Override
+    public String get(Object name){
+        String value = attributes.get(name);
+        if (value == null){
+            value = defaults.get(name);
+        }
+        return value;
+    }
+    
+    /**
+     * Store a default value for a named default attribute.
+     * @param name
+     * @param value
+     * @return previous value for the default.
+     */
+    public String putDefault(String name, String value){
+        return defaults.put(name, value);
+    }
+    
+    /**
+     * If the value is already set as a default, then this is a no-op.
+     * @param name
+     * @param value
+     * @return
+     */
+    @Override
+    public String put(String name, String value){
+        String retVal = null;
+        String d = defaults.get(name);
+        if (d == null || !d.equals(value)){
+            retVal = attributes.put(name, value);
+        }
+        
+        return retVal;
+    }
+    
+
+    @Override
+    public String remove(Object name){
         return attributes.remove(name);
     }
-    
-    public String getType() {
-        return type;
+        
+    @Override
+    public int size() {
+        return attributes.size();
     }
 
-    public void setType(String type) {
-        this.type = type;
+    @Override
+    public boolean isEmpty() {
+        return attributes.isEmpty();
+    }
+
+    @Override
+    public boolean containsKey(Object o) {
+        return attributes.containsKey(o);
+    }
+
+    @Override
+    public boolean containsValue(Object o) {
+        return attributes.containsValue(o);
+    }
+
+    @Override
+    public void putAll(Map<? extends String, ? extends String> map) {
+        if (map != null){
+            for (Entry<? extends String,? extends String> entry: map.entrySet()){
+                put(entry.getKey(), entry.getValue());
+            }
+        }
     }
     
+    public void putDefaults(Map<? extends String, ? extends String> defaults){
+        this.defaults.putAll(defaults);
+    }
+
     @Override
-    public String toString(){
-        
-        StringBuilder s = new StringBuilder();
-        s.append("Format (type=");
-        s.append(type);
-        s.append(") attributes:");
-        s.append(attributes.toString());
-        return s.toString();
+    public void clear() {
+        attributes.clear();
+    }
+
+    @Override
+    public Set<String> keySet() {
+        return attributes.keySet();
+    }
+
+    @Override
+    public Collection<String> values() {
+        return attributes.values();
+    }
+
+    @Override
+    public Set<Entry<String, String>> entrySet() {
+        return attributes.entrySet();
     }
 
     @Override
@@ -85,18 +150,18 @@ public class Format {
         if (getClass() != obj.getClass())
             return false;
         final Format other = (Format) obj;
-        if ((this.type == null) ? (other.type != null) : !this.type.equals(other.type))
-            return false;
         if (this.attributes != other.attributes && (this.attributes == null || !this.attributes.equals(other.attributes)))
+            return false;
+        if (this.defaults != other.defaults && (this.defaults == null || !this.defaults.equals(other.defaults)))
             return false;
         return true;
     }
 
     @Override
     public int hashCode() {
-        int hash = 5;
-        hash = 67 * hash + (this.type != null ? this.type.hashCode() : 0);
-        hash = 67 * hash + (this.attributes != null ? this.attributes.hashCode() : 0);
+        int hash = 7;
+        hash = 59 * hash + (this.attributes != null ? this.attributes.hashCode() : 0);
+        hash = 59 * hash + (this.defaults != null ? this.defaults.hashCode() : 0);
         return hash;
     }
     

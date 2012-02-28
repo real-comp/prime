@@ -1,4 +1,4 @@
-<file-schema name="test" version="1.0">
+<schema name="test" version="1.0">
     
   <format type="CSV"/>
   
@@ -24,4 +24,4 @@
     <field name="zip5" type="int" length="5"/>
     <field name="zip4" type="int" length="4"/>
   </fields>
-</file-schema>
+</schema>

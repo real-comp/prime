@@ -1,12 +1,14 @@
 package com.realcomp.data.record.io.json;
 
 import com.realcomp.data.schema.SchemaFactory;
-import com.realcomp.data.schema.FileSchema;
+import com.realcomp.data.schema.Schema;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.ArrayList;
 import java.io.ByteArrayOutputStream;
 import com.realcomp.data.record.Record;
+import com.realcomp.data.record.io.IOContext;
+import com.realcomp.data.record.io.IOContextBuilder;
 import java.io.ByteArrayInputStream;
 import java.util.regex.Pattern;
 import org.junit.Test;
@@ -64,17 +66,25 @@ public class JsonWriterTest {
     @Test
     public void testWrite() throws Exception{
         
+        IOContext ctx = new IOContextBuilder()
+                .out(new ByteArrayOutputStream())
+                .build();
+        
         //write the Record to json string.
         JsonWriter writer = new JsonWriter();
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        writer.open(out);
+        writer.open(ctx);
         writer.write(getSampleRecord());
-        writer.close();        
-        String json = new String(out.toByteArray());
+        writer.close();  
+        
+        String json = new String(((ByteArrayOutputStream) ctx.getOut()).toByteArray());
         
         //read the json string back into a Record
         JsonReader reader = new JsonReader();
-        reader.open(new ByteArrayInputStream(json.getBytes()));
+        ctx = new IOContextBuilder(ctx)
+                .in(new ByteArrayInputStream(json.getBytes()))
+                .build();
+        
+        reader.open(ctx);
         Record record = reader.read();
         reader.close();
         
@@ -87,9 +97,13 @@ public class JsonWriterTest {
     @Test
     public void testWriteTypes() throws Exception{
         
-        JsonWriter writer = new JsonWriter();
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        writer.open(out);
+        IOContext ctx = new IOContextBuilder()
+                .out(out)
+                .build();
+        
+        JsonWriter writer = new JsonWriter();
+        writer.open(ctx);
         writer.write(getComplexRecord());
         writer.close();        
         String json = new String(out.toByteArray());
@@ -118,11 +132,14 @@ public class JsonWriterTest {
     @Test
     public void testPrettyPrint() throws Exception{
         
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        IOContext ctx = new IOContextBuilder()
+                .attribute("pretty", "true")
+                .out(out)
+                .build();
         
         JsonWriter writer = new JsonWriter();
-        writer.setPretty(true);
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        writer.open(out);
+        writer.open(ctx);
         writer.write(getComplexRecord());
         writer.close();        
         String json = new String(out.toByteArray());
@@ -144,11 +161,14 @@ public class JsonWriterTest {
     @Test
     public void testWriteWithSchema() throws Exception{
         
-         
+        Schema schema = SchemaFactory.buildSchema(this.getClass().getResourceAsStream("sample.schema"));
+        IOContext ctx = new IOContextBuilder()
+                .schema(schema)
+                .in(this.getClass().getResourceAsStream("sample.json"))
+                .build();
+        
         JsonReader reader = new JsonReader();
-        reader.open(this.getClass().getResourceAsStream("sample.json"));
-        FileSchema schema = SchemaFactory.buildFileSchema(this.getClass().getResourceAsStream("sample.schema"));
-        reader.setSchema(schema);
+        reader.open(ctx);
         
         Record record = reader.read();
         
@@ -159,10 +179,10 @@ public class JsonWriterTest {
         record.put("source", "relevate");//lower-case
         
         //write the Record to json string.
-        JsonWriter writer = new JsonWriter();
-        writer.setSchema(schema);
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        writer.open(out);
+        ctx = new IOContextBuilder(ctx).out(out).build();
+        JsonWriter writer = new JsonWriter();
+        writer.open(ctx);
         writer.write(record);
         writer.close();        
         String json = new String(out.toByteArray());

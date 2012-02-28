@@ -5,10 +5,12 @@ import com.realcomp.data.Operation;
 import com.realcomp.data.conversion.ConversionException;
 import com.realcomp.data.record.RecordValueAssembler;
 import com.realcomp.data.record.RecordValueException;
-import com.realcomp.data.schema.FieldList;
 import com.realcomp.data.schema.Field;
+import com.realcomp.data.schema.FieldList;
+import com.realcomp.data.schema.xml.FieldListConverter;
 import com.realcomp.data.validation.ValidationException;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
+import com.thoughtworks.xstream.annotations.XStreamConverter;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,8 +27,8 @@ public class Transformer {
     private List<Operation> before;
     private List<Operation> after;
     
-    @XStreamImplicit
-    private List<Field> fields;
+    @XStreamConverter(FieldListConverter.class)
+    private FieldList fields;
     private ValueSurgeon surgeon;
     
     public Transformer(){
@@ -45,11 +47,23 @@ public class Transformer {
     
     public void transform(TransformContext context) throws ConversionException, ValidationException{
         
+        if (surgeon == null)
+            surgeon = new ValueSurgeon();
+        
         context.setFields(fields);
         
         for (Field field: fields){            
-            context.setKey(field.getName());            
+            context.setKey(field.getName());        
+            if (surgeon == null)
+                throw new IllegalStateException("surgeon is null");
             Object result = surgeon.operate(getOperations(field), context);
+            
+            if (result != null){
+                if (field.getType() == null){
+                    throw new IllegalStateException("Field [" + field.getName() + "] does not have a type");
+                }
+                result = field.getType().coerce(result);
+            }
             
             try {
                 RecordValueAssembler.assemble(context.getRecord(), field.getName(), result);
@@ -76,17 +90,16 @@ public class Transformer {
     }
     
 
-    public List<Field> getFields() {
+    public FieldList getFields() {
         return fields;
     }
 
-    public void setFields(List<Field> fields) {
+    public void setFields(FieldList fields) {
         if (fields == null)
             throw new IllegalArgumentException("fields is null");
         
         this.fields.clear();
-        for (Field field: fields)
-            addField(field);
+        this.fields = new FieldList(fields);
     }
 
     
@@ -174,6 +187,29 @@ public class Transformer {
         this.before.add(op);
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        final Transformer other = (Transformer) obj;
+        if (this.before != other.before && (this.before == null || !this.before.equals(other.before)))
+            return false;
+        if (this.after != other.after && (this.after == null || !this.after.equals(other.after)))
+            return false;
+        if (this.fields != other.fields && (this.fields == null || !this.fields.equals(other.fields)))
+            return false;
+        return true;
+    }
 
+    @Override
+    public int hashCode() {
+        int hash = 5;
+        hash = 83 * hash + (this.before != null ? this.before.hashCode() : 0);
+        hash = 83 * hash + (this.after != null ? this.after.hashCode() : 0);
+        hash = 83 * hash + (this.fields != null ? this.fields.hashCode() : 0);
+        return hash;
+    }
     
 }

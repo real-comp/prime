@@ -6,14 +6,17 @@ import com.realcomp.data.DataType;
 import com.realcomp.data.conversion.ConversionException;
 import com.realcomp.data.record.Record;
 import com.realcomp.data.record.io.BaseRecordWriter;
+import com.realcomp.data.record.io.IOContext;
+import com.realcomp.data.record.io.IOContextBuilder;
 import com.realcomp.data.schema.Field;
 import com.realcomp.data.schema.FieldList;
-import com.realcomp.data.schema.FileSchema;
+import com.realcomp.data.schema.Schema;
 import com.realcomp.data.schema.SchemaException;
+import com.realcomp.data.transform.TransformContext;
+import com.realcomp.data.transform.ValueSurgeon;
 import com.realcomp.data.validation.ValidationException;
 import java.io.BufferedWriter;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,43 +25,59 @@ import java.util.List;
  *
  * @author krenfro
  */
-public class DelimitedFileWriter extends BaseRecordWriter{
+public class DelimitedFileWriter extends BaseRecordWriter {
 
-    protected char delimiter = '\t';
-    protected char quoteCharacter = CSVParser.DEFAULT_QUOTE_CHARACTER;
-    protected char escapeCharacter = CSVParser.DEFAULT_ESCAPE_CHARACTER;
-    protected boolean strictQuotes = CSVParser.DEFAULT_STRICT_QUOTES;
-    
     protected CSVWriter writer;
     protected List<String> current;
-    protected boolean header = false;
+    protected TransformContext xCtx;
+    protected ValueSurgeon surgeon;
     
-    public DelimitedFileWriter(){    
-       current = new ArrayList<String>();
+    public DelimitedFileWriter(){
+        super();
+        format.putDefault("header", "false");
+        format.putDefault("type", "TAB");
+        format.putDefault("quoteCharacter", Character.toString(CSVParser.DEFAULT_QUOTE_CHARACTER));
+        format.putDefault("escapeCharacter", Character.toString(CSVParser.DEFAULT_ESCAPE_CHARACTER));
+        format.putDefault("strictQuotes", Boolean.toString(CSVParser.DEFAULT_STRICT_QUOTES));
+        
+        current = new ArrayList<String>();
+        xCtx = new TransformContext();
+        surgeon = new ValueSurgeon();
     }
     
+    public DelimitedFileWriter(DelimitedFileWriter copy){
+        super(copy);
+        format.putDefault("header", "false");
+        format.putDefault("type", "TAB");
+        format.putDefault("quoteCharacter", Character.toString(CSVParser.DEFAULT_QUOTE_CHARACTER));
+        format.putDefault("escapeCharacter", Character.toString(CSVParser.DEFAULT_ESCAPE_CHARACTER));
+        format.putDefault("strictQuotes", Boolean.toString(CSVParser.DEFAULT_STRICT_QUOTES));
+        
+        current = new ArrayList<String>();
+        xCtx = new TransformContext();
+        surgeon = new ValueSurgeon();
+    }
+
     @Override
     protected void write(Record record, Field field)
-            throws ValidationException, ConversionException, IOException{
+            throws ValidationException, ConversionException, IOException {
 
-        context.setRecord(record);
-        context.setKey(field.getName());
-        
-        Object value = surgeon.operate(field.getOperations(), context);
-      
+        xCtx.setRecord(record);
+        xCtx.setKey(field.getName());
+        Object value = surgeon.operate(field.getOperations(), xCtx);
+
         if (value == null)
             current.add("");
         else
             current.add((String) DataType.STRING.coerce(value));
     }
-    
-    
+
     @Override
     public void write(Record record)
-            throws IOException, ValidationException, ConversionException, SchemaException{
+            throws IOException, ValidationException, ConversionException, SchemaException {
 
         //optionally write header record
-        if (header && count == 0){
+        if (count == 0 && isHeader()) {
             current.clear();
             writeHeader();
         }
@@ -68,124 +87,119 @@ public class DelimitedFileWriter extends BaseRecordWriter{
         writer.writeNext(current.toArray(new String[current.size()]));
         writer.flush();
     }
-    
-    
-    
+
     @Override
-    public void open(OutputStream out) throws IOException{
+    public void open(IOContext context) throws IOException, SchemaException {
 
-        close();
-        super.open(out);
-
-        switch(delimiter){
+        super.open(context);
+        xCtx.setSchema(context.getSchema());
+        if (context.getOut() == null)
+            throw new IllegalArgumentException("Invalid IOContext. No OutputStream specified");
+        
+        
+        switch (getDelimiter()) {
             case '\t':
-                writer = new CSVWriter(new BufferedWriter(new OutputStreamWriter(out, charset)), '\t', '\u0000');
+                writer = new CSVWriter(new BufferedWriter(
+                        new OutputStreamWriter(context.getOut(), getCharset())), '\t', '\u0000');
                 break;
             default:
-                writer = new CSVWriter(new BufferedWriter(new OutputStreamWriter(out, charset)), delimiter, quoteCharacter, escapeCharacter);
-                break;
+                writer = new CSVWriter(new BufferedWriter(
+                        new OutputStreamWriter(
+                        context.getOut(), getCharset())), getDelimiter(), getQuoteCharacter(), getEscapeCharacter());
         }
     }
-    
-   
+
     
     /**
      * Write a header record, constructed from a Record.
-     * 
-     * @param record
+     *
      * @throws IOException
      * @throws ValidationException
      * @throws ConversionException
      */
-    protected void writeHeader() throws IOException, ValidationException, ConversionException{
+    protected void writeHeader() throws IOException, ValidationException, ConversionException {
 
         //No operations should be run on the Record, so a temporary schema
         // is created with no operations.
+        IOContext original = context;
         try {
-            FileSchema originalSchema = getSchema();
-            FileSchema headerSchema = new FileSchema(getSchema());
-            for (FieldList fields : headerSchema.getFieldLists()){
-                for (Field field: fields)
+            Schema headerSchema = new Schema(context.getSchema());
+            for (FieldList fields : headerSchema.getFieldLists()) {
+                for (Field field : fields) {
                     field.clearOperations();
+                }
             }
-             
-            setSchema(headerSchema);
+            
+            context = new IOContextBuilder(context).schema(headerSchema).build();
             super.write(getHeader());
             writer.writeNext(current.toArray(new String[current.size()]));
-            writer.flush();
-            setSchema(originalSchema); //put back the original schema
-        }
+            writer.flush();            
+        } 
         catch (SchemaException ex) {
             throw new IOException("Unable to create temporary header schema: " + ex.getMessage());
         }
+        finally{
+            context = original;
+        }
     }
-    
-    
-    protected Record getHeader(){
+
+    protected Record getHeader() {
         Record retVal = new Record();
-        for(Field field: schema.getDefaultFieldList())
+        for (Field field : context.getSchema().getDefaultFieldList()) {
             retVal.put(field.getName(), field.getName());
+        }
         return retVal;
     }
 
-    
-    
-    public char getEscapeCharacter() {
-        return escapeCharacter;
-    }
-
-    public void setEscapeCharacter(char escapeCharacter) {
-        this.escapeCharacter = escapeCharacter;
-    }
-
-    public char getQuoteCharacter() {
-        return quoteCharacter;
-    }
-
-    public void setQuoteCharacter(char quoteCharacter) {
-        this.quoteCharacter = quoteCharacter;
-    }
-
-    public boolean isStrictQuotes() {
-        return strictQuotes;
-    }
-
-    public void setStrictQuotes(boolean strictQuotes) {
-        this.strictQuotes = strictQuotes;
-    }
-
-    public String getDelimiter() {
-        if (delimiter == '\t')
-            return "TAB";
-        else if (delimiter == ',')
-            return "CSV";
-        else
-            return "" + delimiter;
-    }
-
-    public void setDelimiter(String delimiter) {
-        
-        if (delimiter == null)
-            throw new IllegalArgumentException("delimiter is null");        
-        else if (delimiter.equalsIgnoreCase("TAB"))
-            this.delimiter = '\t';
-        else if (delimiter.equalsIgnoreCase("CSV"))
-            this.delimiter = ',';
+    public char getDelimiter(){
+        char delimiter;
+        String type = format.get("type");
+        if (type.equalsIgnoreCase("TAB")){
+            delimiter = '\t';
+        }
+        else if (type.equalsIgnoreCase("CSV")){
+            delimiter = ',';
+        }
         else{
-            if (delimiter.length() != 1)
-                throw new IllegalArgumentException("invalid delimiter [" + delimiter + "]");
-            this.delimiter = delimiter.charAt(0);
+            if (type.length() != 1)
+                throw new IllegalArgumentException("invalid type [" + type + "]");
+            delimiter = type.charAt(0);
         }   
+        
+        return delimiter;
+    }
+    
+    protected char getAttributeAsChar(String name){
+        String value = format.get(name);
+        if (value.length() != 1)
+            throw new IllegalArgumentException(String.format("invalid attribute [%s] = [%s]", name, value));
+        return value.charAt(0);
+    }
+    
+    public char getEscapeCharacter(){
+        return getAttributeAsChar("escapeCharacter");
+    }
+    
+    public char getQuoteCharacter(){
+        return getAttributeAsChar("quoteCharacter");
+    }
+    
+    public boolean isStrictQuotes(){
+        return Boolean.parseBoolean(format.get("strictQuotes"));
+    }
+    
+    public boolean isHeader(){
+        return Boolean.parseBoolean(format.get("header"));
+    }
+    
+    @Override
+    protected void validateAttributes(){
+        super.validateAttributes();
+        getDelimiter();
+        getEscapeCharacter();
+        getQuoteCharacter();
+        isStrictQuotes();
+        isHeader();
     }
 
-    public boolean isHeader() {
-        return header;
-    }
-
-    public void setHeader(boolean header) {
-        this.header = header;
-    }
-    
-    
-    
 }

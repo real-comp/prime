@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
 /**
@@ -17,7 +16,6 @@ import java.util.regex.Pattern;
 @XStreamConverter(FieldListConverter.class)
 public class FieldList extends ArrayList<Field> {
     
-    private static final Logger logger = Logger.getLogger(FieldList.class.getName());
     
     public static final String KEY_DELIMITER = "|";
     public static final Pattern DEFAULT_CLASSIFIER = Pattern.compile(".*");
@@ -43,6 +41,8 @@ public class FieldList extends ArrayList<Field> {
     
     public FieldList(FieldList copy){
         this();
+        if (copy == null)
+            throw new IllegalArgumentException("copy is ");
         for (Field field: copy)
             super.add(new Field(field));
         resetCachedValues();

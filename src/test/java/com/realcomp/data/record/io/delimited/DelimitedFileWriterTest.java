@@ -1,16 +1,18 @@
 package com.realcomp.data.record.io.delimited;
 
-import java.io.IOException;
-import java.io.ByteArrayOutputStream;
-import java.io.OutputStream;
-import com.realcomp.data.schema.SchemaException;
-import com.realcomp.data.schema.FileSchema;
 import com.realcomp.data.DataType;
-import java.io.ByteArrayInputStream;
 import com.realcomp.data.record.Record;
+import com.realcomp.data.record.io.IOContext;
+import com.realcomp.data.record.io.IOContextBuilder;
 import com.realcomp.data.schema.Field;
-import org.junit.Test;
+import com.realcomp.data.schema.Schema;
+import com.realcomp.data.schema.SchemaException;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.util.Map;
 import static org.junit.Assert.*;
+import org.junit.Test;
 
 /**
  *
@@ -26,18 +28,17 @@ public class DelimitedFileWriterTest {
      * Test of open method, of class DelimitedFileParser.
      */
     @Test
-    public void testOpenClose() throws IOException{
+    public void testOpenClose() throws IOException, SchemaException{
 
-        DelimitedFileWriter instance = new DelimitedFileWriter();
-        OutputStream out = null;
+        DelimitedFileWriter writer = new DelimitedFileWriter();
         try{
-            instance.open(out);
+            writer.open(null);
             fail("should have thrown IllegalArgumentException");
         }
         catch(IllegalArgumentException expected){}
 
-        instance.close();
-        instance.close();
+        writer.close();
+        writer.close();
     }
 
 
@@ -45,30 +46,31 @@ public class DelimitedFileWriterTest {
      * Test of getType method, of class DelimitedFileParser.
      */
     @Test
-    public void testGetType() {
+    public void testGetType() throws IOException, SchemaException {
 
-        DelimitedFileWriter instance = new DelimitedFileWriter();
-        assertEquals("TAB", instance.getDelimiter());
-        instance.setDelimiter("CSV");
-        assertEquals("CSV", instance.getDelimiter());
-        instance.setDelimiter("TAB");
-        assertEquals("TAB", instance.getDelimiter());
-        instance.setDelimiter("-");
-        assertEquals("-", instance.getDelimiter());
-
-        try{
-            instance.setDelimiter(null);
-            fail("should have thrown IllegalArgumentException");
-        }
-        catch(IllegalArgumentException expected){}
+        DelimitedFileWriter writer = new DelimitedFileWriter();
+        assertEquals("TAB", writer.getDefaults().get("type"));
+        assertTrue('\t' == writer.getDelimiter());
         
+        IOContext ctx = new IOContextBuilder()
+            .attribute("type", "CSV")
+            .out(new ByteArrayOutputStream())
+            .build();
+        writer.open(ctx);
         
-        try{
-            instance.setDelimiter("12");
-            fail("should have thrown IllegalArgumentException");
-        }
-        catch(IllegalArgumentException expected){}
-      
+        assertTrue(',' == writer.getDelimiter());
+        
+        ctx = new IOContextBuilder(ctx)
+            .attribute("type", "TAB")
+            .build();
+        writer.open(ctx);
+        assertTrue('\t' == writer.getDelimiter());
+        
+        ctx = new IOContextBuilder(ctx)
+            .attribute("type", "-")
+            .build();
+        writer.open(ctx);
+        assertTrue('-' == writer.getDelimiter());
     }
     
 
@@ -76,28 +78,28 @@ public class DelimitedFileWriterTest {
     @Test
     public void testCSV() throws Exception {
 
-        DelimitedFileWriter writer = new DelimitedFileWriter();
-        writer.setSchema(get3FieldSchema());
-        writer.setDelimiter("CSV");
-
-        DelimitedFileReader reader = new DelimitedFileReader();
-        reader.setSchema(get3FieldSchema());
-        reader.setDelimiter("CSV");
-
-        
         String data = "\"a123\",\"b123\",\"c123\"";
-        ByteArrayInputStream in = new ByteArrayInputStream(data.getBytes());
-        reader.open(in);
+        
+        IOContext ctx = new IOContextBuilder()
+            .schema(get3FieldSchema())
+            .attribute("type", "CSV")
+            .out(new ByteArrayOutputStream())
+            .in(new ByteArrayInputStream(data.getBytes()))
+            .build();
+         
+        
+        DelimitedFileReader reader = new DelimitedFileReader();
+        reader.open(ctx);
+        
         Record a = reader.read();
         assertNotNull(a);
         assertEquals("a123", a.get("a"));
         assertEquals("b123", a.get("b"));
         assertEquals("c123", a.get("c"));
         
-        
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        writer.open(out);
-        writer.setSchema(get3FieldSchema());
+        DelimitedFileWriter writer = new DelimitedFileWriter();
+        writer.open(ctx);
+
         writer.write(a);
         writer.write(a);
         writer.write(a);
@@ -105,8 +107,10 @@ public class DelimitedFileWriterTest {
         writer.close();
         reader.close();
         
-        in = new ByteArrayInputStream(out.toByteArray());
-        reader.open(in);        
+        //copy output to new input
+        byte[] bytes = ((ByteArrayOutputStream) ctx.getOut()).toByteArray();
+        ctx = new IOContextBuilder(ctx).in(new ByteArrayInputStream(bytes)).build();
+        reader.open(ctx);
         Record b = reader.read();
         assertEquals(a, b);
         assertEquals(a, reader.read());
@@ -119,7 +123,8 @@ public class DelimitedFileWriterTest {
     @Test
     public void testClassification() throws SchemaException{
 
-        FileSchema schema = get3FieldSchema();
+        Schema schema = get3FieldSchema();
+        
         Record good = new Record();
         good.put("a", "1");
         good.put("b", "2");
@@ -130,18 +135,14 @@ public class DelimitedFileWriterTest {
         Record bad = new Record();
         bad.put("foo","bar");
 
-        try{
-            schema.classify(bad);
-            fail("should have throws SchemaException");
-        }
-        catch(SchemaException ok){}
-
+        assertEquals(schema.getDefaultFieldList(), schema.classify(bad));
+        
     }
 
 
-    protected FileSchema get3FieldSchema() throws SchemaException{
+    protected Schema get3FieldSchema() throws SchemaException{
         
-        FileSchema schema = new FileSchema();
+        Schema schema = new Schema();
         schema.setName("test");
         schema.setVersion("0");
         schema.addField(new Field("a", DataType.STRING));

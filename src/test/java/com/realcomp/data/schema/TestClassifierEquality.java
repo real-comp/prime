@@ -23,7 +23,7 @@ public class TestClassifierEquality {
     @Test
     public void testDefaultClassifier(){
         
-        assertTrue(FileSchema.DEFAULT_CLASSIFIER.matcher("asdf").matches());
+        assertTrue(Schema.DEFAULT_CLASSIFIER.matcher("asdf").matches());
         assertTrue(Pattern.compile("(.){4}").matcher("asdf").matches());
         assertFalse(Pattern.compile("(.){5}").matcher("asdf").matches());
         

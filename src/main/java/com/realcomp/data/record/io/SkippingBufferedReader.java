@@ -60,7 +60,7 @@ public class SkippingBufferedReader extends Reader{
         }
 
         //fill queue to trailing + 1 records
-        String record = null;
+        String record;
         for (int x = queue.size(); x <= skipTrailing; x++){
             record = reader.readLine();
             if (record != null)

@@ -5,7 +5,7 @@ import com.realcomp.data.annotation.Validator;
 import com.realcomp.data.conversion.ComplexConverter;
 import com.realcomp.data.conversion.SimpleConverter;
 import com.realcomp.data.record.io.Format;
-import com.realcomp.data.schema.FileSchema;
+import com.realcomp.data.schema.Schema;
 import com.realcomp.data.schema.RelationalSchema;
 import com.realcomp.data.schema.Field;
 import com.realcomp.data.schema.FieldList;
@@ -43,7 +43,7 @@ public class XStreamFactory {
         mxBean.setLoggerLevel(Reflections.class.getName(), Level.WARNING.getName());
         
         XStream xstream = new XStream(new StaxDriver());
-        xstream.processAnnotations(FileSchema.class);
+        xstream.processAnnotations(Schema.class);
         xstream.processAnnotations(RelationalSchema.class);
         xstream.processAnnotations(Table.class);
         xstream.processAnnotations(Field.class);
@@ -53,10 +53,11 @@ public class XStreamFactory {
         xstream.processAnnotations(Transformer.class);
         xstream.processAnnotations(Format.class);
         
+        
         xstream.registerConverter(new OperationConverter());
         xstream.registerConverter(new DataTypeConverter());
         xstream.registerConverter(new FieldListConverter());
-        xstream.registerConverter(new FormatConverter());
+        xstream.registerConverter(new AttributesConverter());
         
 
         /* use reflection to get all classes on the classpath annotated as a validator or converter */

@@ -4,7 +4,7 @@ import com.realcomp.data.Operation;
 import com.realcomp.data.conversion.ConversionException;
 import com.realcomp.data.record.Record;
 import com.realcomp.data.schema.Field;
-import com.realcomp.data.schema.FileSchema;
+import com.realcomp.data.schema.Schema;
 import com.realcomp.data.schema.FieldList;
 import com.realcomp.data.transform.TransformContext;
 import com.realcomp.data.transform.ValueSurgeon;
@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Creates Records from a String[] using a FileSchema.
+ * Creates Records from a String[] using a Schema.
  * The creation of this object is expensive, so you are encouraged to reuse instances as much
  * as possible.
  *
@@ -39,11 +39,11 @@ public class RecordFactory {
      */
     protected ParsePlan parsePlan;
     
-    protected FileSchema schema;    
+    protected Schema schema;    
     protected ValueSurgeon surgeon;
     protected TransformContext context;
     
-    public RecordFactory(FileSchema schema) throws ParsePlanException{
+    public RecordFactory(Schema schema) throws ParsePlanException{
 
         if (schema == null)
             throw new IllegalArgumentException("schema is null");

@@ -9,7 +9,7 @@ import java.util.List;
  * @author krenfro
  */
 @com.realcomp.data.annotation.Converter("concat")
-public class Concat extends BaseMultiFieldConverter{
+public class Concat extends BaseMultiFieldConverter implements NullValueConverter{
 
     private String delimiter = "";
 
