@@ -49,6 +49,7 @@ public abstract class BaseRecordReaderWriter{
         validateAttributes();
         beforeFirstOperationsRun = false;
         count = 0;        
+        
         if (context.getSchema() != null){
             recordFactory = new RecordFactory(context.getSchema());
             recordFactory.setValidationExceptionThreshold(context.getValidationExeptionThreshold());

@@ -5,6 +5,7 @@ import com.realcomp.data.record.Record;
 import com.realcomp.data.record.io.*;
 import com.realcomp.data.schema.SchemaException;
 import com.realcomp.data.schema.SchemaFactory;
+import com.realcomp.data.validation.Severity;
 import com.realcomp.data.validation.ValidationException;
 import java.io.*;
 import java.util.Arrays;
@@ -107,6 +108,7 @@ public class Filter {
                         options.has("in") ? 
                             new BufferedInputStream(new FileInputStream((String) options.valueOf("in"))) : 
                             new BufferedInputStream(System.in));
+                inputBuilder.validationExceptionThreshold(Severity.MEDIUM);
                 
                 IOContextBuilder outputBuilder = new IOContextBuilder();                
                 outputBuilder.schema(

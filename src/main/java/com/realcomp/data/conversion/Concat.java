@@ -41,10 +41,9 @@ public class Concat extends BaseMultiFieldConverter implements NullValueConverte
 
             try{
                 Object temp = record.get(fieldName);
-                if (temp == null){
-                    throw new MissingFieldException(fieldName);
+                if (temp != null){
+                    retVal = retVal.concat(temp.toString());
                 }
-                retVal = retVal.concat(temp.toString());
             }
             catch(RecordKeyException ex){
                 throw new MissingFieldException(fieldName, ex);

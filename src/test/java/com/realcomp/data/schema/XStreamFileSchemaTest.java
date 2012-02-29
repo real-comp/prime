@@ -12,6 +12,8 @@ import com.realcomp.data.conversion.Trim;
 import org.junit.Before;
 import com.realcomp.data.DataType;
 import com.thoughtworks.xstream.XStream;
+import com.thoughtworks.xstream.io.xml.PrettyPrintWriter;
+import java.io.StringWriter;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -79,7 +81,7 @@ public class XStreamFileSchemaTest {
     
         String xml = xstream.toXML(getSchema());
         System.out.println(xml);
-
+        
         Schema deserialized = (Schema) xstream.fromXML(xml);
         assertEquals(1, deserialized.getAfterOperations().size());
         assertTrue(deserialized.getAfterOperations().get(0).getClass().equals(Trim.class));

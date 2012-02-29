@@ -11,9 +11,9 @@ import com.realcomp.data.schema.xml.FieldListConverter;
 import com.realcomp.data.validation.ValidationException;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamConverter;
-import com.thoughtworks.xstream.annotations.XStreamImplicit;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
@@ -24,6 +24,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 public class Transformer {
     
+    private static final Logger logger = Logger.getLogger(Transformer.class.getName());
+            
     private List<Operation> before;
     private List<Operation> after;
     
@@ -57,7 +59,6 @@ public class Transformer {
             if (surgeon == null)
                 throw new IllegalStateException("surgeon is null");
             Object result = surgeon.operate(getOperations(field), context);
-            
             if (result != null){
                 if (field.getType() == null){
                     throw new IllegalStateException("Field [" + field.getName() + "] does not have a type");

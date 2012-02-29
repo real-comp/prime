@@ -68,12 +68,9 @@ public class ConcatConverterTest extends MultiFieldConverterTest {
         record.put("a", "real");
         record.put("b", "comp");
         
-        try{
-            concat.convert("", record);
-            fail("should have thrown MissingFieldException");
-        }
-        catch(MissingFieldException expected){}
         
+        concat.convert("", record); //ok
+            
         
         
     }

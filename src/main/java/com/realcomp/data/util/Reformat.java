@@ -7,7 +7,6 @@ import com.realcomp.data.schema.SchemaException;
 import com.realcomp.data.schema.SchemaFactory;
 import com.realcomp.data.transform.TransformContext;
 import com.realcomp.data.transform.Transformer;
-import com.realcomp.data.validation.Severity;
 import com.realcomp.data.validation.ValidationException;
 import java.io.*;
 import java.util.*;

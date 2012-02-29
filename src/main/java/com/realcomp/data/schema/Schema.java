@@ -46,8 +46,10 @@ public class Schema {
         format = new HashMap<String,String>();
         format.putAll(copy.format);
         fieldLists = new ArrayList<FieldList>();
-        for (FieldList fieldList: copy.fieldLists)
-            fieldLists.add(new FieldList(fieldList));
+        if (copy.fieldLists != null){
+            for (FieldList fieldList: copy.fieldLists)
+                fieldLists.add(new FieldList(fieldList));
+        }
         
         this.name = copy.name;
         this.version = copy.version;

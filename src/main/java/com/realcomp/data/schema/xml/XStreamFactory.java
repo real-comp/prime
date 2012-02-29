@@ -29,8 +29,12 @@ import org.reflections.util.ConfigurationBuilder;
 public class XStreamFactory {
 
 
-
     public static XStream build(){
+        return build(false);
+    }
+
+    public static XStream build(boolean pretty){
+        
 
         //use reflection to find all Validatior and Converter annotated classes.
         Configuration conf = new ConfigurationBuilder()
@@ -42,7 +46,7 @@ public class XStreamFactory {
         LoggingMXBean mxBean = LogManager.getLoggingMXBean();
         mxBean.setLoggerLevel(Reflections.class.getName(), Level.WARNING.getName());
         
-        XStream xstream = new XStream(new StaxDriver());
+        XStream xstream = pretty ? new XStream() : new XStream(new StaxDriver());
         xstream.processAnnotations(Schema.class);
         xstream.processAnnotations(RelationalSchema.class);
         xstream.processAnnotations(Table.class);
