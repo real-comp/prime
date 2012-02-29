@@ -22,17 +22,30 @@ import org.reflections.Configuration;
 import org.reflections.Reflections;
 import org.reflections.util.ClasspathHelper;
 import org.reflections.util.ConfigurationBuilder;
+
+
 /**
- *
+ * Creates correctly configured XStream instances.
+ * 
+ * 
  * @author krenfro
  */
 public class XStreamFactory {
 
 
+    /**
+     * 
+     * @return new XStream instance without pretty printing.
+     */
     public static XStream build(){
         return build(false);
     }
 
+    /**
+     * 
+     * @param pretty should serialization be pretty printed at the cost of performance.
+     * @return 
+     */
     public static XStream build(boolean pretty){
         
 
