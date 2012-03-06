@@ -3,10 +3,7 @@ package com.realcomp.data.schema;
 import com.realcomp.data.record.Record;
 import com.realcomp.data.schema.xml.FieldListConverter;
 import com.thoughtworks.xstream.annotations.XStreamConverter;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.regex.Pattern;
 
 /**
@@ -14,13 +11,12 @@ import java.util.regex.Pattern;
  * @author krenfro
  */
 @XStreamConverter(FieldListConverter.class)
-public class FieldList extends ArrayList<Field> {
-    
+public class FieldList implements List<Field> {
     
     public static final String KEY_DELIMITER = "|";
     public static final Pattern DEFAULT_CLASSIFIER = Pattern.compile(".*");
-    private static final long serialVersionUID = 1L;
-      
+    
+    private List<Field> fields;
     private Pattern classifier = DEFAULT_CLASSIFIER;
     
     /* Several caches of information that are cleared when any change occurs to the List of Fields */
@@ -29,7 +25,8 @@ public class FieldList extends ArrayList<Field> {
     private transient List<Field> foreignKeys;
     
     public FieldList(){
-        super();
+        fields = new ArrayList<Field>();
+        classifier = DEFAULT_CLASSIFIER;
     }
     
     public FieldList(Pattern classifier){
@@ -44,7 +41,7 @@ public class FieldList extends ArrayList<Field> {
         if (copy == null)
             throw new IllegalArgumentException("copy is ");
         for (Field field: copy)
-            super.add(new Field(field));
+            fields.add(new Field(field));
         resetCachedValues();
         this.classifier = Pattern.compile(copy.classifier.toString());
     }
@@ -52,7 +49,7 @@ public class FieldList extends ArrayList<Field> {
     public FieldList(List<Field> copy){
         this();        
         for (Field field: copy)
-            super.add(new Field(field));
+            fields.add(new Field(field));
         resetCachedValues();
     }
 
@@ -167,68 +164,62 @@ public class FieldList extends ArrayList<Field> {
     @Override
     public boolean add(Field e) {
         resetCachedValues();
-        return super.add(e);
+        return fields.add(e);
     }
 
     @Override
     public void add(int index, Field element) {
         resetCachedValues();
-        super.add(index, element);
+        fields.add(index, element);
     }
 
     @Override
     public boolean addAll(Collection<? extends Field> c) {
         resetCachedValues();
-        return super.addAll(c);
+        return fields.addAll(c);
     }
 
     @Override
     public boolean addAll(int index,
                           Collection<? extends Field> c) {
         resetCachedValues();
-        return super.addAll(index, c);
+        return fields.addAll(index, c);
     }
 
     @Override
     public void clear() {
         resetCachedValues();
-        super.clear();
+        fields.clear();
     }
 
     @Override
     public Field remove(int index) {
         resetCachedValues();
-        return super.remove(index);
+        return fields.remove(index);
     }
 
     @Override
     public boolean remove(Object o) {
         resetCachedValues();
-        return super.remove(o);
+        return fields.remove(o);
     }
 
     @Override
     public boolean removeAll(Collection<?> c) {
         resetCachedValues();
-        return super.removeAll(c);
-    }
-
-    @Override
-    protected void removeRange(int fromIndex, int toIndex) {
-        resetCachedValues();
-        super.removeRange(fromIndex, toIndex);
+        return fields.removeAll(c);
     }
 
     @Override
     public boolean retainAll(Collection<?> c) {
         resetCachedValues();
-        return super.retainAll(c);
+        return fields.retainAll(c);
     }
 
     @Override
     public Field set(int index, Field element) {
         resetCachedValues();
-        return super.set(index, element);
+        return fields.set(index, element);
     }
     
     
@@ -285,22 +276,92 @@ public class FieldList extends ArrayList<Field> {
     
     
     @Override
+    public int size() {
+        return fields.size();
+    }
+
+    @Override
+    public boolean isEmpty() {
+        return fields.isEmpty();
+    }
+
+    @Override
+    public boolean contains(Object o) {
+        return fields.contains(o);
+    }
+
+    @Override
+    public Iterator<Field> iterator() {
+        return fields.iterator();
+    }
+
+    @Override
+    public Object[] toArray() {
+        return fields.toArray();
+    }
+
+    @Override
+    public <T> T[] toArray(T[] a) {
+        return fields.toArray(a);
+    }
+
+    @Override
+    public boolean containsAll(Collection<?> c) {
+        return fields.containsAll(c);
+    }
+
+    @Override
+    public Field get(int index) {
+        return fields.get(index);
+    }
+
+    @Override
+    public int indexOf(Object o) {
+        return fields.indexOf(o);
+    }
+
+    @Override
+    public int lastIndexOf(Object o) {
+        return fields.lastIndexOf(o);
+    }
+
+    @Override
+    public ListIterator<Field> listIterator() {
+        return fields.listIterator();
+    }
+
+    @Override
+    public ListIterator<Field> listIterator(int index) {
+        return fields.listIterator(index);
+    }
+
+    @Override
+    public List<Field> subList(int fromIndex, int toIndex) {
+        return fields.subList(fromIndex, toIndex);
+    }
+
+    @Override
     public boolean equals(Object obj) {
         if (obj == null)
             return false;
         if (getClass() != obj.getClass())
             return false;
         final FieldList other = (FieldList) obj;
-        if (this.classifier != other.classifier && (this.classifier == null || !this.classifier.toString().equals(other.classifier.toString())))
+        if (this.fields != other.fields && (this.fields == null || !this.fields.equals(other.fields)))
             return false;
-        
-        return super.equals(obj); //DANGER
+        //pattern does not implement .equals()
+        String a = this.classifier == null ? null : this.classifier.toString();
+        String b = other.classifier == null ? null : other.classifier.toString();
+        if (a != b && (a == null || !a.equals(b)))
+            return false;
+        return true;
     }
 
     @Override
     public int hashCode() {
         int hash = 7;
-        hash = 37 * hash + (this.classifier != null ? this.classifier.hashCode() : 0);
+        hash = 43 * hash + (this.fields != null ? this.fields.hashCode() : 0);
+        hash = 43 * hash + (this.classifier != null ? this.classifier.toString().hashCode() : 0);
         return hash;
-    }    
+    }
 }

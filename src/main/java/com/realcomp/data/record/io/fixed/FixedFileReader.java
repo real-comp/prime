@@ -32,11 +32,14 @@ public class FixedFileReader extends BaseRecordReader{
     public FixedFileReader(){
         super();
         format.putDefault("header", "false");
+        format.putDefault("type", "fixed");
+        
     }
     
     public FixedFileReader(FixedFileReader copy){
         super(copy);        
         format.putDefault("header", "false");
+        format.putDefault("type", "fixed");
     }
     
     @Override

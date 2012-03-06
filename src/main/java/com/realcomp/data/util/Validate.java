@@ -63,7 +63,7 @@ public class Validate {
     public static void main(String[] args){
 
          OptionParser parser = new OptionParser(){{
-            acceptsAll(Arrays.asList("s","schema","is"), "schema" )
+            accepts("is", "input schema" )
                     .withRequiredArg().describedAs("schema").required();
             
             accepts("in", "input file (default: STDIN)").withRequiredArg().describedAs("file");

@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 /**
  * Creates Records from a String[] using a Schema.
@@ -23,7 +24,6 @@ import java.util.Map;
  * @author krenfro
  */
 public class RecordFactory {
-
 
     /**
      * Cache of the parse plan for each unique FieldList.
@@ -110,7 +110,7 @@ public class RecordFactory {
     protected final void buildParsePlan() throws ParsePlanException{
         
         parsePlan = new ParsePlan(schema.getDefaultFieldList());
-
+        
         if (schema.getFieldLists().size() > 1){
             parsePlanCache = new HashMap<FieldList, ParsePlan>();
             for (FieldList fieldList: schema.getFieldLists()){
@@ -118,6 +118,8 @@ public class RecordFactory {
             }
         }
     }
+    
+    
     /**
      * Returns the pre-computed parse plan for the specified FieldList
      * @param schemaFieldList
@@ -125,10 +127,7 @@ public class RecordFactory {
      */
     protected ParsePlan getParsePlan(FieldList fieldList){
 
-        ParsePlan plan = parsePlan;
-        if (parsePlanCache != null)
-            plan = parsePlanCache.get(fieldList);
-        return plan;
+        return parsePlanCache == null ? parsePlan : parsePlanCache.get(fieldList);
     }
 
     
