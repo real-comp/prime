@@ -2,7 +2,6 @@ package com.realcomp.data.record.io;
 
 import com.realcomp.data.record.io.delimited.DelimitedFileReader;
 import com.realcomp.data.record.io.fixed.FixedFileReader;
-import com.realcomp.data.record.io.json.JsonReader;
 import com.realcomp.data.schema.Schema;
 import com.realcomp.data.schema.SchemaException;
 import java.util.HashMap;
@@ -14,14 +13,13 @@ import java.util.Map;
  */
 public class RecordReaderFactory {
         
-    private static Map<String,String> types;
+    private static final Map<String,String> types;
     
     static{
         types = new HashMap<String,String>();
         types.put("CSV", DelimitedFileReader.class.getName());
         types.put("TAB", DelimitedFileReader.class.getName());
         types.put("FIXED", FixedFileReader.class.getName());
-        types.put("JSON", JsonReader.class.getName());
     }
     
     public static void registerReader(String type, String readerClass){

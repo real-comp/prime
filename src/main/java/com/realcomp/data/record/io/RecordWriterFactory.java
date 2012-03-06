@@ -2,7 +2,6 @@ package com.realcomp.data.record.io;
 
 import com.realcomp.data.record.io.delimited.DelimitedFileWriter;
 import com.realcomp.data.record.io.fixed.FixedFileWriter;
-import com.realcomp.data.record.io.json.JsonWriter;
 import com.realcomp.data.schema.Schema;
 import com.realcomp.data.schema.SchemaException;
 import java.util.HashMap;
@@ -17,14 +16,13 @@ public class RecordWriterFactory {
     
     private static final Logger logger = Logger.getLogger(RecordWriterFactory.class.getName());
     
-    private static Map<String,String> types;
+    private static final Map<String,String> types;
     
     static{
         types = new HashMap<String,String>();
         types.put("CSV", DelimitedFileWriter.class.getName());
         types.put("TAB", DelimitedFileWriter.class.getName());
         types.put("FIXED", FixedFileWriter.class.getName());
-        types.put("JSON", JsonWriter.class.getName());
     }
     
     
