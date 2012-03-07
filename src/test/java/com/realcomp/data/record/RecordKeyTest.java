@@ -69,4 +69,15 @@ public class RecordKeyTest {
         assertFalse(m.find());
         
     }
+    
+    @Test
+    public void testKey(){
+        
+        new RecordKey("improvements[1].value");
+        new RecordKey("improvements[10].value");
+        new RecordKey("improvements[18].value");
+        
+        
+    }
+    
 }

@@ -20,7 +20,7 @@ import java.util.regex.Pattern;
 class RecordKey {
 
     protected static final String namePattern = "[A-Za-z0-9\\_ :-]+";
-    protected static final String optionalIndexPattern = "(\\[[0-9]\\])?";
+    protected static final String optionalIndexPattern = "(\\[[0-9]+\\])?";
     protected static final Pattern validKeyPattern = 
             Pattern.compile(
                 String.format("%s%s(\\.%s%s)*", namePattern, optionalIndexPattern, namePattern, optionalIndexPattern));

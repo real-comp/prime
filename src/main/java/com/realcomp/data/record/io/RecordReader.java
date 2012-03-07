@@ -75,5 +75,9 @@ public interface RecordReader {
     long getCount();
     
     
+    /**
+     * 
+     * @return default format attributes
+     */
     Map<String,String> getDefaults();
 }
