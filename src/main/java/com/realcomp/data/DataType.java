@@ -117,6 +117,7 @@ public enum DataType {
 
     /**
      * Convert the value to an Integer. If the value is a String, and empty, then default 0 is returned.
+     * Leading zeros are supported.
      * @param value
      * @return
      * @throws ConversionException 
@@ -128,7 +129,8 @@ public enum DataType {
         try {
             switch (DataType.getDataType(value)) {
                 case STRING:
-                    result = ((Double) Double.parseDouble(value.toString().isEmpty() ? "0" : value.toString())).intValue();
+                    String s = value.toString().replaceAll("^0","");
+                    result = ((Double) Double.parseDouble(s.isEmpty() ? "0" : s)).intValue();
                     break;
                 case INTEGER:
                     result = (Integer) value;
@@ -167,40 +169,54 @@ public enum DataType {
 
     /**
      * Convert the value to a Long. If value is a String, and empty, then the default 0 is returned.
+     * Leading zeros are supported.
      * @param value
      * @return
      * @throws ConversionException 
      */
     private Long coerceToLong(Object value) throws ConversionException {
 
+        Long result = null;
         try {
             switch (DataType.getDataType(value)) {
-                case STRING:
-                    return Long.parseLong(value.toString().isEmpty() ? "0" : value.toString());
+                case STRING:                    
+                    String s = value.toString().replaceAll("^0","");
+                    result = ((Double) Double.parseDouble(s.isEmpty() ? "0" : s)).longValue();
+                    break;
                 case INTEGER:
-                    return ((Integer) value).longValue();
+                    result = ((Integer) value).longValue();
+                    break;
                 case FLOAT:
-                    return ((Float) value).longValue();
+                    result = ((Float) value).longValue();
+                    break;
                 case LONG:
-                    return (Long) value;
+                    result = (Long) value;
+                    break;
                 case DOUBLE:
-                    return ((Double) value).longValue();
+                    result = ((Double) value).longValue();
+                    break;
                 case BOOLEAN:
-                    return ((Boolean) value) ? 1l : 0l;
+                    result = ((Boolean) value) ? 1l : 0l;
+                    break;
                 case LIST:
                     if (((List) value).size() == 1)
-                        return coerceToLong(((List) value).get(0));
+                        result = coerceToLong(((List) value).get(0));
+                    break;
             }
-        } catch (NumberFormatException nfe) {
+        } 
+        catch (NumberFormatException nfe) {
             throw new ConversionException(
                     String.format("Unable to coerce [%s] of type [%s] to type [%s]",
                     value, DataType.getDataType(value), LONG));
         }
 
-        throw new ConversionException(
-                String.format("Unable to coerce [%s] of type [%s] to type [%s]",
-                value, DataType.getDataType(value), LONG));
-
+        if (result == null){
+            throw new ConversionException(
+                    String.format("Unable to coerce [%s] of type [%s] to type [%s]",
+                    value, DataType.getDataType(value), LONG));
+        }
+        
+        return result;
     }
 
     @SuppressWarnings("unchecked")
@@ -232,7 +248,7 @@ public enum DataType {
 
     /**
      * Convert the value to a Float.  If values is a String, and empty, then the default 0 is
-     * returned.
+     * returned. Leading zeros are supported.
      * 
      * @param value
      * @return
@@ -240,62 +256,86 @@ public enum DataType {
      */
     private Float coerceToFloat(Object value) throws ConversionException {
 
+        Float result = null;
         try {
             switch (DataType.getDataType(value)) {
-                case STRING:
-                    return Float.parseFloat(value.toString().isEmpty() ? "0" : value.toString());
+                case STRING:                    
+                    String s = value.toString().replaceAll("^0","");
+                    result = ((Float) Float.parseFloat(s.isEmpty() ? "0" : s));
+                    break;
                 case INTEGER:
-                    return ((Integer) value).floatValue();
+                    result = ((Integer) value).floatValue();
+                    break;
                 case FLOAT:
-                    return (Float) value;
+                    result = (Float) value;
+                    break;
                 case LONG:
-                    return ((Long) value).floatValue();
+                    result = ((Long) value).floatValue();
+                    break;
                 case DOUBLE:
-                    return ((Double) value).floatValue();
+                    result = ((Double) value).floatValue();
+                    break;
                 case BOOLEAN:
-                    return ((Boolean) value) ? 1f : 0f;
+                    result = ((Boolean) value) ? 1f : 0f;
+                    break;
                 case LIST:
                     if (((List) value).size() == 1)
-                        return coerceToFloat(((List) value).get(0));
+                        result = coerceToFloat(((List) value).get(0));
+                    break;
             }
-        } catch (NumberFormatException nfe) {
+        } 
+        catch (NumberFormatException nfe) {
             throw new ConversionException(
                     String.format("Unable to coerce [%s] of type [%s] to type [%s]",
                     value, DataType.getDataType(value), FLOAT));
         }
 
-        throw new ConversionException(
-                String.format("Unable to coerce [%s] of type [%s] to type [%s]",
-                value, DataType.getDataType(value), FLOAT));
+        if (result == null){
+            throw new ConversionException(
+                    String.format("Unable to coerce [%s] of type [%s] to type [%s]",
+                    value, DataType.getDataType(value), FLOAT));
+        }
+        
+        return result;
     }
 
     /**
      * Convert the value to a Double.  If the value is a String, and empty, then the default 0 is
-     * returned.
+     * returned. Leading zeros are supported.
      * 
      * @param value
      * @return
      * @throws ConversionException 
      */
     private Double coerceToDouble(Object value) throws ConversionException {
+        
+        Double result = null;
 
         try {
             switch (DataType.getDataType(value)) {
-                case STRING:
-                    return Double.parseDouble(value.toString().isEmpty() ? "0" : value.toString());
+                case STRING:                    
+                    String s = value.toString().replaceAll("^0","");
+                    result = Double.parseDouble(s.isEmpty() ? "0" : s);
+                    break;
                 case INTEGER:
-                    return ((Integer) value).doubleValue();
+                    result = ((Integer) value).doubleValue();
+                    break;
                 case FLOAT:
-                    return ((Float) value).doubleValue();
+                    result = ((Float) value).doubleValue();
+                    break;
                 case LONG:
-                    return ((Long) value).doubleValue();
+                    result = ((Long) value).doubleValue();
+                    break;
                 case DOUBLE:
-                    return (Double) value;
+                    result = (Double) value;
+                    break;
                 case BOOLEAN:
-                    return ((Boolean) value) ? 1d : 0d;
+                    result = ((Boolean) value) ? 1d : 0d;
+                    break;
                 case LIST:
                     if (((List) value).size() == 1)
-                        return coerceToDouble(((List) value).get(0));
+                        result = coerceToDouble(((List) value).get(0));
+                    break;
             }
         } catch (NumberFormatException nfe) {
             throw new ConversionException(
@@ -303,9 +343,12 @@ public enum DataType {
                     value, DataType.getDataType(value), DOUBLE));
         }
 
-        throw new ConversionException(
-                String.format("Unable to coerce [%s] of type [%s] to type [%s]",
-                value, DataType.getDataType(value), DOUBLE));
+        if (result == null){
+            throw new ConversionException(
+                    String.format("Unable to coerce [%s] of type [%s] to type [%s]",
+                    value, DataType.getDataType(value), DOUBLE));
+        }
+        return result;
     }
 
     /**
