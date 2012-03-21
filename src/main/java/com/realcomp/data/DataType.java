@@ -2,6 +2,7 @@ package com.realcomp.data;
 
 import com.realcomp.data.conversion.BooleanConverter;
 import com.realcomp.data.conversion.ConversionException;
+import com.realcomp.data.conversion.RemoveLeading;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -23,11 +24,13 @@ public enum DataType {
     LIST("list");
     
     private BooleanConverter booleanConverter;
+    private RemoveLeading removeLeadingZeros;
     private String description;
 
     private DataType(String description) {
         this.description = description;
         booleanConverter = new BooleanConverter();
+        removeLeadingZeros = new RemoveLeading("0");
     }
 
     public String getDescription() {
@@ -129,7 +132,7 @@ public enum DataType {
         try {
             switch (DataType.getDataType(value)) {
                 case STRING:
-                    String s = value.toString().replaceAll("^0","");
+                    String s = (String) removeLeadingZeros.convert(value.toString());
                     result = ((Double) Double.parseDouble(s.isEmpty() ? "0" : s)).intValue();
                     break;
                 case INTEGER:
@@ -180,7 +183,7 @@ public enum DataType {
         try {
             switch (DataType.getDataType(value)) {
                 case STRING:                    
-                    String s = value.toString().replaceAll("^0","");
+                    String s = (String) removeLeadingZeros.convert(value.toString());
                     result = ((Double) Double.parseDouble(s.isEmpty() ? "0" : s)).longValue();
                     break;
                 case INTEGER:
@@ -260,7 +263,7 @@ public enum DataType {
         try {
             switch (DataType.getDataType(value)) {
                 case STRING:                    
-                    String s = value.toString().replaceAll("^0","");
+                    String s = (String) removeLeadingZeros.convert(value.toString());
                     result = ((Float) Float.parseFloat(s.isEmpty() ? "0" : s));
                     break;
                 case INTEGER:
@@ -314,7 +317,7 @@ public enum DataType {
         try {
             switch (DataType.getDataType(value)) {
                 case STRING:                    
-                    String s = value.toString().replaceAll("^0","");
+                    String s = (String) removeLeadingZeros.convert(value.toString());
                     result = Double.parseDouble(s.isEmpty() ? "0" : s);
                     break;
                 case INTEGER:

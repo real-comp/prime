@@ -100,7 +100,7 @@
         <dependency>
             <groupId>com.realcomp.names</groupId>
             <artifactId>realcomp-names</artifactId>
-            <version>3.1.2</version>
+            <version>3.2.2</version>
             <optional>true</optional>
         </dependency>
         <dependency>

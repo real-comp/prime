@@ -28,4 +28,19 @@ public class DataTypeTest {
         assertTrue((Boolean) DataType.BOOLEAN.coerce("true"));
         assertTrue((Boolean) DataType.BOOLEAN.coerce("TRUE"));
     }
+    
+    @Test
+    public void testLeadingZeros() throws ConversionException{
+        
+        assertEquals(123d, (Double) DataType.DOUBLE.coerce("123"), 0.0d);
+        assertEquals(123d, (Double) DataType.DOUBLE.coerce("0123"), 0.0d);
+        assertEquals(123d, (Double) DataType.DOUBLE.coerce("00123"), 0.0d);
+        assertEquals(123d, (Double) DataType.DOUBLE.coerce("000123"), 0.0d);
+        
+        assertEquals(123l, (Long) DataType.LONG.coerce("123"), 0.0d);
+        assertEquals(123l, (Long) DataType.LONG.coerce("0123"), 0.0d);
+        assertEquals(123l, (Long) DataType.LONG.coerce("00123"), 0.0d);
+        assertEquals(123l, (Long) DataType.LONG.coerce("000123"), 0.0d);
+        
+    }
 }

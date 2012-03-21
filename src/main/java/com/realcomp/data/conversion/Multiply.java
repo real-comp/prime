@@ -28,7 +28,7 @@ public class Multiply implements Converter {
         supportedTypes.add(DataType.DOUBLE);
         supportedTypes.add(DataType.LONG);        
     }
-
+    
     /**
      * 
      * @return List of DataTypes supported by this converter. All Types except Map and List
@@ -40,7 +40,10 @@ public class Multiply implements Converter {
     
     @Override
     public Multiply copyOf(){
-        return new Multiply();
+        Multiply copy = new Multiply();
+        copy.setFactor(factor);
+        copy.setDefault(defaultValue);
+        return copy;
     }
 
     public Double getFactor() {

@@ -51,6 +51,7 @@ public class Reformat {
             for (Transformer t: transformers){
                 t.transform(ctx);
             }
+            
             writer.write(ctx.getRecord());
             record = reader.read();
         }

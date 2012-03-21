@@ -19,6 +19,7 @@ public class Divide implements Converter {
     protected List<DataType> supportedTypes;
     protected Double divisor = 1d;
     protected Double defaultValue;
+    protected RemoveLeading removeLeadingZeros;
     
     public Divide(){
         supportedTypes = new ArrayList<DataType>();
@@ -40,7 +41,10 @@ public class Divide implements Converter {
     
     @Override
     public Divide copyOf(){
-        return new Divide();
+        Divide copy = new Divide();
+        copy.setDivisor(divisor);
+        copy.setDefault(defaultValue);
+        return copy;
     }
 
     public Double getDivisor() {

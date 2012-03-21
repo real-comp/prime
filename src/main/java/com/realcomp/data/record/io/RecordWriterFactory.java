@@ -23,6 +23,7 @@ public class RecordWriterFactory {
         types.put("CSV", DelimitedFileWriter.class.getName());
         types.put("TAB", DelimitedFileWriter.class.getName());
         types.put("FIXED", FixedFileWriter.class.getName());
+        types.put("JSON", "com.realcomp.data.record.io.json.JsonWriter");
     }
     
     

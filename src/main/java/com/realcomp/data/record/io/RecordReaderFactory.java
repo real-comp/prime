@@ -20,6 +20,7 @@ public class RecordReaderFactory {
         types.put("CSV", DelimitedFileReader.class.getName());
         types.put("TAB", DelimitedFileReader.class.getName());
         types.put("FIXED", FixedFileReader.class.getName());
+        types.put("JSON", "com.realcomp.data.record.io.json.JsonReader");
     }
     
     public static void registerReader(String type, String readerClass){

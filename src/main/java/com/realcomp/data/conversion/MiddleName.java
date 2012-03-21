@@ -24,18 +24,10 @@ public class MiddleName extends StringConverter {
         if (value != null){
             retVal = "";
             List<Name> names = NameParser.parse(value.toString(), lastNameFirst);
-
             if (!names.isEmpty()){
                 Name name = names.get(0);
                 if (name instanceof IndividualName){
-                    List<String> middleNames = ((IndividualName) name).getMiddle();
-                    if (middleNames != null){
-                        for (int x = 0; x < middleNames.size(); x++){
-                            if (x > 0)
-                                retVal = retVal.concat(" ");
-                            retVal = retVal.concat(middleNames.get(x));
-                        }
-                    }
+                    retVal = ((IndividualName) name).getMiddle();
                 }
             }
         }
