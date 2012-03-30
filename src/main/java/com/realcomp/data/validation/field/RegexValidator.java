@@ -33,7 +33,7 @@ public class RegexValidator extends BaseFieldValidator {
 
         if (!pattern.matcher(value.toString()).matches()){
             throw new ValidationException(
-                    String.format("pattern [%s] did not match ", pattern.pattern()), 
+                    String.format("pattern [%s] did not match", pattern.pattern()), 
                     value,
                     getSeverity());
         }
