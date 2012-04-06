@@ -142,18 +142,18 @@
     <distributionManagement>
         <repository>
             <id>nexus</id>
-            <url>http://dev.real-comp.com:8081/nexus/content/repositories/releases</url>
+            <url>http://nexus.real-comp.com/nexus/content/repositories/releases</url>
         </repository>
         <snapshotRepository>
             <id>nexus</id>
-            <url>http://dev.real-comp.com:8081/nexus/content/repositories/snapshots</url>
+            <url>http://nexus.real-comp.com/nexus/content/repositories/snapshots</url>
         </snapshotRepository>
     </distributionManagement>
 
     <scm>
         <connection>scm:svn:svn+ssh://dev.real-comp.com/opt/usr/share/rcsvn/realcomp-data/trunk</connection>
         <developerConnection>scm:svn:svn+ssh://dev.real-comp.com/opt/usr/share/rcsvn/realcomp-data/trunk</developerConnection>
-        <url>http://dev.real-comp.com:8060/browse/rcsvn/realcomp-data/trunk</url>
+        <url>http://fisheye.real-comp.com/browse/rcsvn/realcomp-data/trunk</url>
     </scm>
     
     <reporting>
