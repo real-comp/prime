@@ -4,8 +4,6 @@ import com.realcomp.data.DataType;
 import com.realcomp.data.annotation.Validator;
 import com.realcomp.data.conversion.ConversionException;
 import com.realcomp.data.validation.ValidationException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 
 /**
@@ -46,6 +44,7 @@ public class LongRangeValidator extends BaseFieldValidator {
     @Override
     public LongRangeValidator copyOf(){
         LongRangeValidator copy = new LongRangeValidator();
+        copy.setSeverity(severity);
         copy.min = min;
         copy.max = max;
         return copy;

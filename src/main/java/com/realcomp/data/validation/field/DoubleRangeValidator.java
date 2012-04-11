@@ -19,6 +19,7 @@ public class DoubleRangeValidator extends BaseFieldValidator {
     @Override
     public DoubleRangeValidator copyOf(){
         DoubleRangeValidator copy = new DoubleRangeValidator();
+        copy.setSeverity(severity);
         copy.min = min;
         copy.max = max;
         return copy;

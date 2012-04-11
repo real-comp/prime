@@ -42,6 +42,7 @@ public class RegexValidator extends BaseFieldValidator {
     @Override
     public RegexValidator copyOf(){
         RegexValidator copy = new RegexValidator();
+        copy.setSeverity(severity);
         copy.setRegex(regex);
         return copy;
     }

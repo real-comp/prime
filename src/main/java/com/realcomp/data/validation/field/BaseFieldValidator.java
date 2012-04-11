@@ -11,6 +11,7 @@ import com.realcomp.data.validation.Validator;
  */
 public abstract class BaseFieldValidator implements Validator {
 
+    
     protected Severity severity = Validator.DEFAULT_SEVERITY;
 
 

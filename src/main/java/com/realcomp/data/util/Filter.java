@@ -31,9 +31,8 @@ public class Filter {
 
         RecordReader reader = RecordReaderFactory.build(in.getSchema());
         reader.open(in);
-        
         RecordWriter writer = RecordWriterFactory.build(out.getSchema());
-        writer.open(out);
+        writer.open(out);    
         
         Record record = getNextRecord(reader);
         while (record != null){
@@ -55,9 +54,8 @@ public class Filter {
     protected Record getNextRecord(RecordReader reader)
             throws IOException, SchemaException, ConversionException{
 
-        Record r = null;
         try {
-            r = reader.read();
+            return reader.read();
         }
         catch (ValidationException ex) {
             logger.log(Level.INFO, 
@@ -66,7 +64,6 @@ public class Filter {
             
             return getNextRecord(reader);
         }
-        return r;
     }
     
     private static void printHelp(OptionParser parser){
@@ -117,7 +114,8 @@ public class Filter {
                         options.has("out") ? 
                             new BufferedOutputStream(new FileOutputStream((String) options.valueOf("out"))) :
                             new BufferedOutputStream(System.out));
-                
+                outputBuilder.validationExceptionThreshold(Severity.MEDIUM);
+               
                 filterer.filter(inputBuilder.build(), outputBuilder.build());
                 result = 0;
             }

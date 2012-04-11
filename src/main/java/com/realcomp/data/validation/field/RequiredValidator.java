@@ -40,7 +40,9 @@ public class RequiredValidator extends BaseFieldValidator {
     
     @Override
     public RequiredValidator copyOf(){
-        return new RequiredValidator();
+        RequiredValidator copy = new RequiredValidator();
+        copy.setSeverity(severity);
+        return copy;
     }
     
 }

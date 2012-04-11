@@ -29,8 +29,10 @@ public class ForeignKey extends Key {
     }
     
     @Override
-    public ForeignKey copyOf() {
-        return new ForeignKey(name);
+    public ForeignKey copyOf() {        
+        ForeignKey copy = new ForeignKey(name);
+        copy.setSeverity(severity);
+        return copy;
     }
      
 

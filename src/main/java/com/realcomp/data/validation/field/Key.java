@@ -24,8 +24,10 @@ public class Key extends BaseFieldValidator {
     protected Integer index;
     
     @Override
-    public Key copyOf() {
-        return new Key();
+    public Key copyOf() {        
+        Key copy = new Key();
+        copy.setSeverity(severity);
+        return copy;
     }
 
     public Integer getIndex() {

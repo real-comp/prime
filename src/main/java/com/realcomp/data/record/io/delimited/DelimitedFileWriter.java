@@ -29,7 +29,7 @@ public class DelimitedFileWriter extends BaseRecordWriter {
 
     protected CSVWriter writer;
     protected List<String> current;
-    protected TransformContext xCtx;
+    protected TransformContext transformContext;
     protected ValueSurgeon surgeon;
     
     public DelimitedFileWriter(){
@@ -41,7 +41,7 @@ public class DelimitedFileWriter extends BaseRecordWriter {
         format.putDefault("strictQuotes", Boolean.toString(CSVParser.DEFAULT_STRICT_QUOTES));
         
         current = new ArrayList<String>();
-        xCtx = new TransformContext();
+        transformContext = new TransformContext();        
         surgeon = new ValueSurgeon();
     }
     
@@ -54,7 +54,7 @@ public class DelimitedFileWriter extends BaseRecordWriter {
         format.putDefault("strictQuotes", Boolean.toString(CSVParser.DEFAULT_STRICT_QUOTES));
         
         current = new ArrayList<String>();
-        xCtx = new TransformContext();
+        transformContext = new TransformContext(copy.transformContext);        
         surgeon = new ValueSurgeon();
     }
 
@@ -62,9 +62,9 @@ public class DelimitedFileWriter extends BaseRecordWriter {
     protected void write(Record record, Field field)
             throws ValidationException, ConversionException, IOException {
 
-        xCtx.setRecord(record);
-        xCtx.setKey(field.getName());
-        Object value = surgeon.operate(field.getOperations(), xCtx);
+        transformContext.setRecord(record);
+        transformContext.setKey(field.getName());
+        Object value = surgeon.operate(field.getOperations(), transformContext);
 
         if (value == null)
             current.add("");
@@ -92,7 +92,8 @@ public class DelimitedFileWriter extends BaseRecordWriter {
     public void open(IOContext context) throws IOException, SchemaException {
 
         super.open(context);
-        xCtx.setSchema(context.getSchema());
+        transformContext.setSchema(context.getSchema());
+        transformContext.setValidationExceptionThreshold(context.getValidationExeptionThreshold());
         if (context.getOut() == null)
             throw new IllegalArgumentException("Invalid IOContext. No OutputStream specified");
         

@@ -25,6 +25,8 @@ import java.util.logging.Logger;
  */
 public class RecordFactory {
 
+    private static final Logger logger = Logger.getLogger(RecordFactory.class.getName());
+    
     /**
      * Cache of the parse plan for each unique FieldList.
      * When classifiers are used, the FieldList for a record may

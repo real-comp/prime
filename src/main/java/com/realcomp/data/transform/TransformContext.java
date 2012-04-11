@@ -44,6 +44,7 @@ public class TransformContext {
             }
         }
         key = copy.key;
+        
         validationExceptionThreshold = copy.validationExceptionThreshold;
         record = new Record(copy.record);
         recordCount = copy.recordCount;
@@ -63,14 +64,12 @@ public class TransformContext {
         }
     }
     
-    public void handleValidationException(Operation op, ValidationException ex) 
-            throws ValidationException{
+    public void handleValidationException(Validator validator, ValidationException ex) throws ValidationException{
         
-        Severity severity = ((Validator) op).getSeverity();
-        String message = String.format("%s for [%s] in record [%s]",
-                            new Object[]{ex.getMessage(), key, toString()});
+        Severity severity = validator.getSeverity();
+        String message = String.format("%s for [%s] in record [%s]", new Object[]{ex.getMessage(), key, toString()});
         
-        if (severity.ordinal() >= validationExceptionThreshold.ordinal()){            
+        if (severity.ordinal() >= validationExceptionThreshold.ordinal()){    
             throw new ValidationException(message, ex);
         }
         else{        
@@ -105,8 +104,6 @@ public class TransformContext {
     public void setSchema(Schema schema) {
         this.schema = schema;
     }
-
-    
     
     public List<Field> getFields() {
         return fields;
@@ -141,5 +138,35 @@ public class TransformContext {
     public void setRecordCount(long recordCount) {
         this.recordCount = recordCount;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        final TransformContext other = (TransformContext) obj;
+        if (this.schema != other.schema && (this.schema == null || !this.schema.equals(other.schema)))
+            return false;
+        if (this.fields != other.fields && (this.fields == null || !this.fields.equals(other.fields)))
+            return false;
+        if ((this.key == null) ? (other.key != null) : !this.key.equals(other.key))
+            return false;
+        if (this.validationExceptionThreshold != other.validationExceptionThreshold)
+            return false;
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 79 * hash + (this.schema != null ? this.schema.hashCode() : 0);
+        hash = 79 * hash + (this.fields != null ? this.fields.hashCode() : 0);
+        hash = 79 * hash + (this.key != null ? this.key.hashCode() : 0);
+        hash = 79 * hash + (this.validationExceptionThreshold != null ? this.validationExceptionThreshold.hashCode() : 0);
+        return hash;
+    }
+    
+    
     
 }

@@ -11,7 +11,6 @@ import com.realcomp.data.validation.ValidationException;
 import com.realcomp.data.validation.Validator;
 import com.realcomp.data.validation.file.RecordCountValidator;
 import java.util.List;
-import java.util.logging.Logger;
 
 /**
  * Performs <i>Operations</i> on the value(s) of a field in a Record.
@@ -20,7 +19,6 @@ import java.util.logging.Logger;
  */
 public class ValueSurgeon {
    
-    private static final Logger logger = Logger.getLogger(ValueSurgeon.class.getName());
             
     
     /**
@@ -81,7 +79,7 @@ public class ValueSurgeon {
                 }
             }
             catch(ValidationException ve){
-                context.handleValidationException(operation, ve);
+                context.handleValidationException((Validator) operation, ve);
             }
         }
         else if (operation instanceof MultiFieldConverter){

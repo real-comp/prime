@@ -29,13 +29,13 @@ public class FixedFileWriter extends BaseRecordWriter{
 
     protected static final Logger logger = Logger.getLogger(BaseRecordWriter.class.getName());
     protected BufferedWriter writer;
-    protected TransformContext xCtx;
+    protected TransformContext transformContext;
     protected ValueSurgeon surgeon;
 
     public FixedFileWriter(){
         super(); 
         format.putDefault("header", "false");
-        xCtx = new TransformContext();
+        transformContext = new TransformContext();
         surgeon = new ValueSurgeon();
     }
     
@@ -47,7 +47,8 @@ public class FixedFileWriter extends BaseRecordWriter{
             throw new IllegalArgumentException("Invalid IOContext. No OutputStream specified");
         
         ensureFieldLengthsSpecified(context.getSchema());
-        xCtx.setSchema(context.getSchema());
+        transformContext.setSchema(context.getSchema());
+        transformContext.setValidationExceptionThreshold(context.getValidationExeptionThreshold());
         writer = new BufferedWriter(new OutputStreamWriter(context.getOut(), getCharset()));
     }
 
@@ -125,9 +126,9 @@ public class FixedFileWriter extends BaseRecordWriter{
     protected void write(Record record, Field field)
             throws ValidationException, ConversionException, IOException{
 
-        xCtx.setRecord(record);
-        xCtx.setKey(field.getName());
-        Object value = surgeon.operate(field.getOperations(), xCtx);
+        transformContext.setRecord(record);
+        transformContext.setKey(field.getName());
+        Object value = surgeon.operate(field.getOperations(), transformContext);
         writer.write(resize((String) DataType.STRING.coerce(value == null ? "" : value), field.getLength()));
     }
 
