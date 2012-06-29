@@ -13,6 +13,7 @@ import com.realcomp.data.record.io.IOContextBuilder;
 import com.realcomp.data.schema.Field;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashMap;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -127,6 +128,35 @@ public class FixedFileReaderTest {
 
     }
 
+    
+    
+    @Test
+    public void testLengthSpecified() throws Exception {
+
+        String data = "1234567890";
+        IOContext ctx = new IOContextBuilder()
+                .schema(getLengthSpecifiedSchema())
+                .in(new ByteArrayInputStream(data.getBytes()))
+                .build();
+        
+        FixedFileReader reader = new FixedFileReader();
+        reader.open(ctx);
+        
+        Record record = reader.read();
+        assertNotNull(record);
+        assertEquals("12345", record.get("a"));
+        
+        record = reader.read();
+        assertNotNull(record);
+        assertEquals("67890", record.get("a"));
+        
+        record = reader.read();
+        assertNull(record);
+        reader.close();
+    }
+
+     
+     
 
     @Test
     public void testNumericSchema() throws Exception{
@@ -173,6 +203,18 @@ public class FixedFileReaderTest {
         return schema;
     }
 
+    
+    protected Schema getLengthSpecifiedSchema() throws SchemaException{
+        Schema schema = new Schema();
+        HashMap<String,String> format = new HashMap<String,String>();
+        format.put("length", "5");
+        schema.setFormat(format);
+        schema.setName("test");
+        schema.setVersion("0");
+        schema.addField(new Field("a", DataType.STRING, 5));
+        return schema;
+    }
+      
     protected Schema getNumericSchema() throws SchemaException{
         Schema schema = new Schema();
         schema.setName("test");

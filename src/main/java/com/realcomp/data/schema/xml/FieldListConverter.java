@@ -48,6 +48,11 @@ public class FieldListConverter implements Converter{
             fieldList.setClassifier(Pattern.compile(classifier));
         }
         
+        String name = reader.getAttribute("name");
+        if (name != null){
+            fieldList.setName(name);  
+        }
+        
         while (reader.hasMoreChildren()){
             reader.moveDown();
             Field f = (Field) uc.convertAnother(fieldList, Field.class);

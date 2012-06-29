@@ -18,6 +18,7 @@ public class FieldList implements List<Field> {
     
     private List<Field> fields;
     private Pattern classifier = DEFAULT_CLASSIFIER;
+    private String name;
     
     /* Several caches of information that are cleared when any change occurs to the List of Fields */
     private transient List<String> names;
@@ -340,6 +341,21 @@ public class FieldList implements List<Field> {
         return fields.subList(fromIndex, toIndex);
     }
 
+    /**
+     * An optional name for this field list.
+     */
+    public String getName() {
+        return name;
+    }
+
+    /**
+     * An optional name for this field list.
+     */
+    public void setName(String name) {
+        this.name = name;
+    }
+    
+    
     @Override
     public boolean equals(Object obj) {
         if (obj == null)
@@ -348,8 +364,12 @@ public class FieldList implements List<Field> {
             return false;
         final FieldList other = (FieldList) obj;
         if (this.fields != other.fields && (this.fields == null || !this.fields.equals(other.fields)))
+            return false;        
+        if ((this.name == null) ? (other.name != null) : !this.name.equals(other.name)) {
             return false;
-        //pattern does not implement .equals()
+        }
+        
+        //Pattern does not implement .equals()
         String a = this.classifier == null ? null : this.classifier.toString();
         String b = other.classifier == null ? null : other.classifier.toString();
         if (a != b && (a == null || !a.equals(b)))
@@ -364,4 +384,5 @@ public class FieldList implements List<Field> {
         hash = 43 * hash + (this.classifier != null ? this.classifier.toString().hashCode() : 0);
         return hash;
     }
+    
 }

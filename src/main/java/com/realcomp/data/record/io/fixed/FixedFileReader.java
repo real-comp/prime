@@ -33,13 +33,14 @@ public class FixedFileReader extends BaseRecordReader{
         super();
         format.putDefault("header", "false");
         format.putDefault("type", "fixed");
-        
+        format.putDefault("length","");
     }
     
     public FixedFileReader(FixedFileReader copy){
         super(copy);        
         format.putDefault("header", "false");
         format.putDefault("type", "fixed");
+        format.putDefault("length","");
     }
     
     @Override
@@ -56,6 +57,9 @@ public class FixedFileReader extends BaseRecordReader{
         if (isHeader() && reader.getSkipLeading() == 0){
             reader.setSkipLeading(1);
         }
+        
+        if (getLength() > 0)
+            reader.setLength(getLength());
     }
 
 
@@ -159,11 +163,11 @@ public class FixedFileReader extends BaseRecordReader{
             throw new IllegalArgumentException("fields is empty");
 
         int expectedLength = getExpectedLength(fields);
-        int length = record.length();
+        int actualLength = record.length();
 
-        if (expectedLength != length)
+        if (expectedLength != actualLength)
             throw new ValidationException(
-                String.format("Record length != expected length (%s != %s)", length, expectedLength),
+                String.format("Record length != expected length (%s != %s)", actualLength, expectedLength),
                 record,
                 Severity.HIGH);
 
@@ -200,15 +204,27 @@ public class FixedFileReader extends BaseRecordReader{
     protected int getExpectedLength(List<Field> fields){
 
         assert(fields != null);
-        int retVal = 0;
-        for (Field field: fields)
-            retVal += field.getLength();
-        return retVal;
+        if (getLength() > 0){
+            return getLength();
+        }
+        else{
+            int retVal = 0;
+            for (Field field: fields)
+                retVal += field.getLength();
+            return retVal;
+        }
     }
         
     public boolean isHeader(){
         return Boolean.parseBoolean(format.get("header"));
     }
+
+    
+    public int getLength(){
+        String length = format.get("length");
+        return length == null || length.isEmpty() ? 0 : Integer.parseInt(length);
+    }
+    
     
     @Override
     protected void validateAttributes(){

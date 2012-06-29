@@ -17,8 +17,9 @@ public class SkippingBufferedReader extends Reader{
     protected BufferedReader reader;
     protected int skipLeading = 0;
     protected int skipTrailing = 0;
+    protected int length = 0;
     protected Queue<String> queue = null;
-
+    
     public SkippingBufferedReader(Reader in){
         reader = new BufferedReader(in);
     }
@@ -43,6 +44,17 @@ public class SkippingBufferedReader extends Reader{
 
         this.skipTrailing = trailing;
     }
+    
+    public int getLength() {
+        return length;
+    }
+
+    public void setLength(int length) {
+        if (length < 0)
+            throw new IllegalArgumentException("length < 0");
+        this.length = length;
+    }
+    
 
     public String readLine() throws IOException{
         fillQueue();
@@ -53,21 +65,51 @@ public class SkippingBufferedReader extends Reader{
 
         if (queue == null){
             queue = new LinkedList<String>();
-
+            
             //skip leading records
             for (int x = 0; x < skipLeading; x++)
-                reader.readLine();
+                readLine();
         }
-
+        
         //fill queue to trailing + 1 records
         String record;
         for (int x = queue.size(); x <= skipTrailing; x++){
-            record = reader.readLine();
+            record = readRecord();
             if (record != null)
                 queue.add(record);
         }
     }
-
+    
+    private String readFixedLengthString() throws IOException {
+        if (length < 0)
+            throw new IndexOutOfBoundsException();
+        int n = 0;
+        int off = 0;
+        char[] cbuf = new char[length];
+        int len = length;
+        while (n < len) {
+            int count = reader.read(cbuf, off + n, len - n);
+            if (count < 0)
+                return null;
+            n += count;
+        }
+        return new String(cbuf);
+    }
+    
+    
+    private String readRecord() throws IOException{
+        String record;
+        if (length == 0){
+            record = reader.readLine();
+        }
+        else{
+            record = readFixedLengthString();
+        }
+        
+        return record;
+    }
+    
+    
     @Override
     public void close() throws IOException {
         reader.close();
@@ -77,7 +119,6 @@ public class SkippingBufferedReader extends Reader{
 
     @Override
     public int read(char[] cbuf, int off, int len) throws IOException {
-        throw new UnsupportedOperationException("Not supported. Use readLine() only.");
-    }
-    
+        return reader.read(cbuf, off, len);
+    }    
 }

@@ -15,7 +15,7 @@
         <trim/>
     </after>
     
-    <fields>
+    <fields name="A">
         <field name="" type="int">
             <key/>
         </field>
@@ -29,7 +29,7 @@
     </fields>
     
     
-    <fields classifier="[A-Z]{19}">
+    <fields classifier="[A-Z]{19}" name="B">
         <field name="" type="int">
             <key/>
         </field>

@@ -146,19 +146,4 @@ public class SkippingBufferedReaderTest {
         assertNull(instance.readLine());
     }
 
-    /**
-     * Test of read method, of class SkippingBufferedReader.
-     */
-    @Test
-    public void testRead() throws Exception {
-        
-        try{
-            SkippingBufferedReader instance = new SkippingBufferedReader(new StringReader(getData(1)));
-            instance.read(null, 0, 0);
-            fail("Should have throws UnsupportedOperationException");
-        }
-        catch(UnsupportedOperationException expected){}
-        
-    }
-
 }
