@@ -55,9 +55,9 @@ public class XStreamFactory {
             //.setScanners(new TypeElementsScanner());
 
         //turn off INFO logging of Reflections
-        Logger.getLogger(Reflections.class.getName());
-        LoggingMXBean mxBean = LogManager.getLoggingMXBean();
-        mxBean.setLoggerLevel(Reflections.class.getName(), Level.WARNING.getName());
+       // Logger.getLogger(Reflections.class.getName());
+       // LoggingMXBean mxBean = LogManager.getLoggingMXBean();
+       // mxBean.setLoggerLevel(Reflections.class.getName(), Level.WARNING.getName());
         
         XStream xstream = pretty ? new XStream() : new XStream(new StaxDriver());
         xstream.processAnnotations(Schema.class);
