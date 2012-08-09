@@ -19,7 +19,7 @@ public class SkippingBufferedReader extends Reader{
     protected int skipTrailing = 0;
     protected int length = 0;
     protected Queue<String> queue = null;
-    
+
     public SkippingBufferedReader(Reader in){
         reader = new BufferedReader(in);
     }
@@ -44,7 +44,7 @@ public class SkippingBufferedReader extends Reader{
 
         this.skipTrailing = trailing;
     }
-    
+
     public int getLength() {
         return length;
     }
@@ -54,7 +54,7 @@ public class SkippingBufferedReader extends Reader{
             throw new IllegalArgumentException("length < 0");
         this.length = length;
     }
-    
+
 
     public String readLine() throws IOException{
         fillQueue();
@@ -65,12 +65,12 @@ public class SkippingBufferedReader extends Reader{
 
         if (queue == null){
             queue = new LinkedList<String>();
-            
+
             //skip leading records
             for (int x = 0; x < skipLeading; x++)
                 readLine();
         }
-        
+
         //fill queue to trailing + 1 records
         String record;
         for (int x = queue.size(); x <= skipTrailing; x++){
@@ -79,7 +79,7 @@ public class SkippingBufferedReader extends Reader{
                 queue.add(record);
         }
     }
-    
+
     private String readFixedLengthString() throws IOException {
         if (length < 0)
             throw new IndexOutOfBoundsException();
@@ -95,8 +95,8 @@ public class SkippingBufferedReader extends Reader{
         }
         return new String(cbuf);
     }
-    
-    
+
+
     private String readRecord() throws IOException{
         String record;
         if (length == 0){
@@ -105,11 +105,11 @@ public class SkippingBufferedReader extends Reader{
         else{
             record = readFixedLengthString();
         }
-        
+
         return record;
     }
-    
-    
+
+
     @Override
     public void close() throws IOException {
         reader.close();
@@ -120,5 +120,5 @@ public class SkippingBufferedReader extends Reader{
     @Override
     public int read(char[] cbuf, int off, int len) throws IOException {
         return reader.read(cbuf, off, len);
-    }    
+    }
 }

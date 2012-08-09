@@ -19,10 +19,10 @@ import java.io.InputStreamReader;
  * @author krenfro
  */
 public class DelimitedFileReader extends BaseRecordReader{
-    
+
     protected SkippingBufferedReader reader;
     protected CSVParser parser;
-    
+
     public DelimitedFileReader(){
         super();
         format.putDefault("header", "false");
@@ -31,7 +31,7 @@ public class DelimitedFileReader extends BaseRecordReader{
         format.putDefault("escapeCharacter", Character.toString(CSVParser.DEFAULT_ESCAPE_CHARACTER));
         format.putDefault("strictQuotes", Boolean.toString(CSVParser.DEFAULT_STRICT_QUOTES));
     }
-    
+
     public DelimitedFileReader(DelimitedFileReader copy){
         super(copy);
         format.putDefault("header", "false");
@@ -40,21 +40,21 @@ public class DelimitedFileReader extends BaseRecordReader{
         format.putDefault("escapeCharacter", Character.toString(CSVParser.DEFAULT_ESCAPE_CHARACTER));
         format.putDefault("strictQuotes", Boolean.toString(CSVParser.DEFAULT_STRICT_QUOTES));
     }
-        
+
     @Override
     public void open(IOContext context) throws IOException, SchemaException{
         super.open(context);
         if (context.getIn() == null)
             throw new IllegalArgumentException("Invalid IOContext. No InputStream specified");
-        
+
         reader = new SkippingBufferedReader(new InputStreamReader(context.getIn(), getCharset()));
         reader.setSkipLeading(getSkipLeading());
         reader.setSkipTrailing(getSkipTrailing());
-        
+
         if (isHeader() && reader.getSkipLeading() == 0){
             reader.setSkipLeading(1);
         }
-        
+
         switch(getDelimiter()){
             case '\t':
                 parser = new CSVParser(getDelimiter(), '\u0000', getEscapeCharacter(), isStrictQuotes());
@@ -63,8 +63,8 @@ public class DelimitedFileReader extends BaseRecordReader{
                 parser = new CSVParser(getDelimiter(), getQuoteCharacter(), getEscapeCharacter(), isStrictQuotes());
         }
     }
-    
-    
+
+
     @Override
     public Record read() throws IOException, ValidationException, ConversionException, SchemaException{
 
@@ -88,17 +88,17 @@ public class DelimitedFileReader extends BaseRecordReader{
             count++;
         else
             executeAfterLastOperations();
-        
+
         return record;
     }
-    
-    
+
+
     /**
      * Classify some delimited data and return the FieldList that should be used to parse the data.
      * If only one FieldList is defined, then it is returned.
      * If multiple FieldLists are defined, then the first FieldList has the same number of fields as the data
      * is returned.
-     * 
+     *
      * @param schema
      * @param data not null
      * @return the FieldList that should be used to parse the data. never null
@@ -108,9 +108,9 @@ public class DelimitedFileReader extends BaseRecordReader{
 
         if (data == null)
             throw new IllegalArgumentException("data is null");
-        
+
         FieldList match = schema.getDefaultFieldList();
-        
+
         if (schema.getFieldLists().size() > 1){
             int matchCount = 0;
             for (FieldList fieldList: schema.getFieldLists()){
@@ -126,15 +126,15 @@ public class DelimitedFileReader extends BaseRecordReader{
                 }
             }
         }
-        
+
         if (match == null)
             throw new SchemaException("The schema [" + schema.getName() + "] does not support the specified data.");
-                
+
         return match;
     }
-    
-    
-    
+
+
+
     protected Record loadRecord(FieldList fields, String[] data)
             throws ValidationException, ConversionException{
 
@@ -166,34 +166,34 @@ public class DelimitedFileReader extends BaseRecordReader{
             if (type.length() != 1)
                 throw new IllegalArgumentException("invalid type [" + type + "]");
             delimiter = type.charAt(0);
-        }   
-        
+        }
+
         return delimiter;
     }
-    
+
     protected char getAttributeAsChar(String name){
         String value = format.get(name);
         if (value.length() != 1)
             throw new IllegalArgumentException(String.format("invalid attribute [%s] = [%s]", name, value));
         return value.charAt(0);
     }
-    
+
     public char getEscapeCharacter(){
         return getAttributeAsChar("escapeCharacter");
     }
-    
+
     public char getQuoteCharacter(){
         return getAttributeAsChar("quoteCharacter");
     }
-    
+
     public boolean isStrictQuotes(){
         return Boolean.parseBoolean(format.get("strictQuotes"));
     }
-    
+
     public boolean isHeader(){
         return Boolean.parseBoolean(format.get("header"));
     }
-    
+
     @Override
     protected void validateAttributes(){
         super.validateAttributes();
@@ -203,5 +203,5 @@ public class DelimitedFileReader extends BaseRecordReader{
         isStrictQuotes();
         isHeader();
     }
-    
+
 }

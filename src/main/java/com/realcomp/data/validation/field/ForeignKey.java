@@ -2,10 +2,11 @@
 package com.realcomp.data.validation.field;
 
 import com.realcomp.data.annotation.Validator;
+import com.realcomp.data.validation.Severity;
 
 /**
  * Marks the value as a 'foreign key'.
- * 
+ *
  * @author krenfro
  */
 @Validator("foreignKey")
@@ -14,12 +15,14 @@ public class ForeignKey extends Key {
     protected String name;
 
     public ForeignKey(){
+        super();
+        severity = Severity.HIGH;
     }
-    
+
     public ForeignKey(String name){
         this.name = name;
     }
-    
+
     public String getName() {
         return name;
     }
@@ -27,14 +30,14 @@ public class ForeignKey extends Key {
     public void setName(String name) {
         this.name = name;
     }
-    
+
     @Override
-    public ForeignKey copyOf() {        
+    public ForeignKey copyOf() {
         ForeignKey copy = new ForeignKey(name);
         copy.setSeverity(severity);
         return copy;
     }
-     
+
 
     @Override
     public boolean equals(Object obj) {
