@@ -5,81 +5,55 @@ import java.util.*;
 
 /**
  * Assembles a value into a Map, creating any necessary parent elements specified by the key.
- * 
+ *
  * @see RecordValueResolver
  * @author krenfro
  */
 public class RecordValueAssembler {
-    /*
-     public static Object assemble(Record record, String key, Object value){
-        if (record == null)
-            throw new IllegalArgumentException("record is null");
-        if (key == null)
-            throw new IllegalArgumentException("key is null");
-        
-        return assemble(record.data, new RecordKey(key), value);
-    }
-     * 
-     */
-    
+
+    private static Map<String,Stack<RecordKey>> keyCache = new HashMap<String,Stack<RecordKey>>();
+
     public static Object assemble(Map<String,Object> map, String key, Object value){
         if (map == null)
             throw new IllegalArgumentException("map is null");
         if (key == null)
             throw new IllegalArgumentException("key is null");
-        
-        
-        return assemble(map, new RecordKey(key), value);
+
+        Stack<RecordKey> recordKeySequence = keyCache.get(key);
+        if (recordKeySequence == null){
+            recordKeySequence = new RecordKey(key).buildKeySequence();
+            keyCache.put(key, recordKeySequence);
+        }
+
+        return assemble(map, (Stack<RecordKey>) recordKeySequence.clone(), value);
     }
-    
-    /*
-    static Object assemble(Record record, RecordKey key, Object value){
-        if (record == null)
-            throw new IllegalArgumentException("record is null");
-        if (key == null)
-            throw new IllegalArgumentException("key is null");
-        
-        return assemble(record.data, key.buildKeySequence(), value);
-    }
-     * 
-     */
-    
-    static Object assemble(Map<String,Object> map, RecordKey key, Object value){
-        if (map == null)
-            throw new IllegalArgumentException("map is null");
-        if (key == null)
-            throw new IllegalArgumentException("key is null");
-                
-        return assemble(map, key.buildKeySequence(), value);
-    }
-    
-    
-    
+
+
     /**
      * Create new List that contains a new Map at key.index and add it to the map at key.name
-     * 
+     *
      * @param map
      * @param key
-     * @return 
+     * @return
      */
-    static Map<String,Object> createMissingEntry(Map<String,Object> map, RecordKey key){        
+    static Map<String,Object> createMissingEntry(Map<String,Object> map, RecordKey key){
         List list = new ArrayList();
         ensureCapacity(list, key.isIndexed() ? key.getIndex() + 1 : 1);
         Map<String,Object> entry = new HashMap<String,Object>();
         list.set(key.isIndexed() ? key.getIndex() : 0, entry);
         map.put(key.getName(), list);
-        return entry;        
+        return entry;
     }
-    
-    
+
+
     @SuppressWarnings({"unchecked", "unchecked"})
     static Object assemble(Map<String,Object> map, Stack<RecordKey> keys, Object value){
-        
+
         Object previous = null;
         if (!keys.isEmpty()){
             RecordKey key = keys.pop();
             Object current = map.get(key.getName());
-            
+
             if (keys.isEmpty()){
                 //this is the last (target) key. Set the value and return the previous result
                 if (key.isIndexed()){
@@ -140,18 +114,18 @@ public class RecordValueAssembler {
                 }
             }
         }
-        
+
         return previous;
     }
-        
-    
-    
+
+
+
     /**
      * Optionally expand the list to the specified capacity.
      * If the list is already at the capacity, this is a no-op.
-     * 
+     *
      * @param list
-     * @param capacity 
+     * @param capacity
      */
     @SuppressWarnings("unchecked")
     static void ensureCapacity(List list, int capacity){
@@ -161,6 +135,6 @@ public class RecordValueAssembler {
         for (int x = 0; x < diff; x++){
             list.add(null);
         }
-    }  
-    
+    }
+
 }
