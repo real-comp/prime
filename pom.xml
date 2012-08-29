@@ -100,7 +100,7 @@
         <dependency>
             <groupId>com.realcomp.names</groupId>
             <artifactId>realcomp-names</artifactId>
-            <version>3.2.2</version>
+            <version>3.2.5</version>
             <optional>true</optional>
         </dependency>
         <dependency>
@@ -122,7 +122,7 @@
             <groupId>com.thoughtworks.xstream</groupId>
             <artifactId>xstream</artifactId>
             <version>1.4.2</version>
-        </dependency> 
+        </dependency>
         <dependency>
             <groupId>net.sf.jopt-simple</groupId>
             <artifactId>jopt-simple</artifactId>
@@ -155,7 +155,7 @@
         <developerConnection>scm:svn:svn+ssh://dev.real-comp.com/opt/usr/share/rcsvn/realcomp-data/trunk</developerConnection>
         <url>http://fisheye.real-comp.com/browse/rcsvn/realcomp-data/trunk</url>
     </scm>
-    
+
     <reporting>
       <plugins>
         <plugin>
