@@ -1,5 +1,8 @@
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.realcomp.data</groupId>
     <artifactId>realcomp-data</artifactId>
@@ -68,7 +71,6 @@
             </plugins>
         </pluginManagement>
     </build>
-
     <dependencies>
         <dependency>
             <groupId>junit</groupId>
@@ -129,7 +131,6 @@
             <version>4.3</version>
         </dependency>
     </dependencies>
-
     <pluginRepositories>
          <pluginRepository>
                 <id>maven2-repository.dev.java.net</id>
@@ -138,24 +139,21 @@
                 <layout>default</layout>
         </pluginRepository>
     </pluginRepositories>
-
     <distributionManagement>
         <repository>
             <id>nexus</id>
-            <url>http://nexus.real-comp.com:8081/nexus/content/repositories/releases</url>
+            <url>http://nexus.real-comp.com/nexus/content/repositories/releases</url>
         </repository>
         <snapshotRepository>
             <id>nexus</id>
-            <url>http://nexus.real-comp.com:8081/nexus/content/repositories/snapshots</url>
+            <url>http://nexus.real-comp.com/nexus/content/repositories/snapshots</url>
         </snapshotRepository>
     </distributionManagement>
-
     <scm>
         <connection>scm:svn:svn+ssh://dev.real-comp.com/opt/usr/share/rcsvn/realcomp-data/trunk</connection>
         <developerConnection>scm:svn:svn+ssh://dev.real-comp.com/opt/usr/share/rcsvn/realcomp-data/trunk</developerConnection>
         <url>http://fisheye.real-comp.com/browse/rcsvn/realcomp-data/trunk</url>
     </scm>
-
     <reporting>
       <plugins>
         <plugin>
@@ -165,5 +163,4 @@
         </plugin>
       </plugins>
     </reporting>
-
 </project>
