@@ -19,11 +19,11 @@ public class ReflectionTest {
     @Test
     public void testValidatorAnnotations(){
 
-        Configuration conf = new ConfigurationBuilder()
-                .setUrls(ClasspathHelper.getUrlsForPackagePrefix("com.realcomp.data"));
+        //Configuration conf = new ConfigurationBuilder()
+         //       .setUrls(ClasspathHelper.getUrlsForPackagePrefix("com.realcomp.data"));
                 //.setScanners(new TypeElementsScanner());
 
-        Reflections reflections = new Reflections(conf);
+        Reflections reflections = new Reflections("com.realcomp");
         Set<Class<?>> annotated = reflections.getTypesAnnotatedWith(Validator.class);
         assertFalse(annotated.isEmpty());
         assertTrue(annotated.contains(LengthValidator.class));

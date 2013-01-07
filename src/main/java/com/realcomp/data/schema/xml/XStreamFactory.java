@@ -4,6 +4,7 @@ import com.realcomp.data.annotation.Converter;
 import com.realcomp.data.annotation.Validator;
 import com.realcomp.data.conversion.ComplexConverter;
 import com.realcomp.data.conversion.SimpleConverter;
+import com.realcomp.data.conversion.Trim;
 import com.realcomp.data.record.io.Format;
 import com.realcomp.data.schema.Schema;
 import com.realcomp.data.schema.RelationalSchema;
@@ -22,7 +23,7 @@ import org.reflections.util.ConfigurationBuilder;
 
 /**
  * Creates correctly configured XStream instances.
- * 
+ *
  *
  * @author krenfro
  */
@@ -44,11 +45,14 @@ public class XStreamFactory {
      */
     public static XStream build(boolean pretty){
 
-
+/*
         //use reflection to find all Validatior and Converter annotated classes.
         Configuration conf = new ConfigurationBuilder()
             .setUrls(ClasspathHelper.getUrlsForPackagePrefix("com.realcomp"));
             //.setScanners(new TypeElementsScanner());
+*/
+
+        Reflections reflections = new Reflections("com.realcomp");
 
         //turn off INFO logging of Reflections
        // Logger.getLogger(Reflections.class.getName());
@@ -65,6 +69,7 @@ public class XStreamFactory {
         xstream.processAnnotations(FieldList.class);
         xstream.processAnnotations(Transformer.class);
         xstream.processAnnotations(Format.class);
+        xstream.processAnnotations(Trim.class);
 
 
         xstream.registerConverter(new OperationConverter());
@@ -74,7 +79,7 @@ public class XStreamFactory {
 
 
         /* use reflection to get all classes on the classpath annotated as a validator or converter */
-        Reflections reflections = new Reflections(conf);
+        //Reflections reflections = new Reflections(conf);
         Set<Class<?>> validators = reflections.getTypesAnnotatedWith(Validator.class);
         Set<Class<?>> converters = reflections.getTypesAnnotatedWith(Converter.class);
 

@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rc:schema
+   xmlns:rc="http://www.real-comp.com/realcomp-data/schema/file-schema/1.2"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://www.real-comp.com/realcomp-data/schema/file-schema/1.2 http://www.real-comp.com/realcomp-data/schema/file-schema/1.2/file-schema.xsd"
+   name="facl">
+
+    <format type="fixed" header="false"/>
+
+    <after>
+        <trim/>
+        <upperCase/>
+    </after>
+
+
+    <fields>
+        <field name="fips" length="5">
+            <validateRegex regex="[0-9]{5}" severity="HIGH"/>
+            <key/>
+        </field>
+        <field name="fipsSubCode" length="3"/>
+        <field name="unformattedAPN" length="45"/>
+        <field name="filler01" length="3"/>
+        <field name="apn" length="45">
+            <key/>
+        </field>
+        <field name="originalAPN" length="45"/>
+        <field name="filler02" length="5"/>
+        <field name="filler03" length="5"/>
+        <field name="filler04" length="3"/>
+        <field name="filler05" length="3"/>
+        <field name="filler06" length="3"/>
+        <field name="filler07" length="3"/>
+        <field name="filler08" length="11"/>
+        <field name="filler09" length="8"/>
+        <field name="filler10" length="9"/>
+        <field name="filler11" length="4"/>
+        <field name="homesteadExemption" length="1"/>
+        <field name="absenteeOwner" length="1"/>
+        <field name="filler12" length="10"/>
+        <field name="landUse" length="10"/>
+        <field name="countyUse1" length="10"/>
+        <field name="countyUse2" length="10"/>
+        <field name="propertyIndicator" length="3"/>
+        <field name="filler13" length="30"/>
+        <field name="filler14" length="3"/>
+        <field name="filler15" length="3"/>
+        <field name="filler16" length="3"/>
+        <field name="filler17" length="15"/>
+        <field name="filler18" length="6"/>
+        <field name="filler19" length="6"/>
+        <field name="filler20" length="30"/>
+        <field name="addressIndicator" length="1"/>
+        <field name="houseNumberPrefix" length="5"/>
+        <field name="houseNumber" length="10">
+            <removeLeading value="0"/>
+        </field>
+        <field name="houseNumberSuffix" length="10"/>
+        <field name="direction" length="2"/>
+        <field name="streetName" length="30">
+            <removeLeading value="0"/>
+        </field>
+        <field name="mode" length="5"/>
+        <field name="quadrant" length="2"/>
+        <field name="aptUnitNumber" length="6"/>
+        <field name="city" length="40"/>
+        <field name="state" length="2"/>
+        <field name="zip" length="9"/>
+        <field name="crrt" length="4"/>
+        <field name="matchCode" length="4"/>
+        <field name="ownerCorporateFlag" length="1"/>
+        <field name="ownerName1" length="30"/>
+        <field name="ownerName2" length="30"/>
+        <field name="ownerName3" length="60"/>
+        <field name="ownerName4" length="60"/>
+        <field name="ownerPhone" length="10"/>
+        <field name="filler21" length="1"/>
+        <field name="ownerEtalFlag" length="1"/>
+        <field name="filler22" length="3"/>
+        <field name="filler23" length="2"/>
+        <field name="houseNumberPrefix2" length="5"/>
+        <field name="houseNumber2" length="10">
+            <removeLeading value="0"/>
+        </field>
+        <field name="houseNumberSuffix2" length="10"/>
+        <field name="direction2" length="2"/>
+        <field name="streetName2" length="30"/>
+        <field name="mode2" length="5"/>
+        <field name="quadrant2" length="2"/>
+        <field name="aptUnitNum2" length="6"/>
+        <field name="city2" length="40"/>
+        <field name="state2" length="2"/>
+        <field name="zip2" length="9"/>
+        <field name="crrt2" length="4"/>
+        <field name="matchCode2" length="4"/>
+        <field name="filler24" length="1"/>
+        <field name="totalValue" length="11" type="long">
+            <trim/>
+        </field>
+        <field name="landValue" length="11" type="long">
+            <trim/>
+        </field>
+        <field name="improvementValue" length="11" type="long">
+            <trim/>
+        </field>
+        <field name="totalValueMethod" length="1"/>
+        <field name="landValueMethod" length="1"/>
+        <field name="improvementValueMethod" length="1"/>
+        <field name="filler31" length="11"/>
+        <field name="filler32" length="11"/>
+        <field name="filler33" length="11"/>
+        <field name="filler34" length="11"/>
+        <field name="filler35" length="11"/>
+        <field name="filler36" length="11"/>
+        <field name="filler37" length="11"/>
+        <field name="filler38" length="11"/>
+        <field name="filler39" length="11"/>
+        <field name="filler40" length="11"/>
+        <field name="filler41" length="4"/>
+        <field name="recordingDate" length="8"/>
+        <field name="saleDate" length="8"/>
+        <field name="filler42" length="7"/>
+        <field name="filler43" length="7"/>
+        <field name="filler44" length="13"/>
+        <field name="filler45" length="9"/>
+        <field name="filler46" length="20"/>
+        <field name="universalBuildingSqft" length="9" type="int">
+            <!-- The Building Square Footage that can most accurately be used for assessments or comparables (e.g., Living, Adjusted, Gross). -->
+        </field>
+        <field name="buildingSqftFlag" length="1">
+            <!-- The codes appearing in this field indicates the source used to populate the UNIVERSAL BUILDING SQUARE FEET field (e.g., Living, Adjusted, Gross). -->
+        </field>
+        <field name="buildingSqft" length="9" type="int">
+            <!-- The size of the building in Square Feet.  This field is most commonly populated as a cumulative total when a county does not differentiate between Living and Non-living areas. -->
+        </field>
+        <field name="livingSqft" length="7" type="int"/>
+        <field name="groundFloorSqft" length="7" type="int">
+            <!-- Square footage of the part of the building which is level with the ground (typically the front of the building).  This is generally above the basement(s) and below the second floor. -->
+        </field>
+        <field name="grossSqft" length="7" type="int">
+            <!-- This is the square footage for the entire building.  Typically this represents all square feet under the roof. -->
+        </field>
+        <field name="adjustedGrossSqft" length="7" type="int">
+            <!-- This is the square footage used by the county or local taxing / assessment authority to determine Improvement Value.
+                 This figure is typically 100% of the living area, plus lower percentage of non-living area. -->
+        </field>
+        <field name="basementSqft" length="7" type="int"/>
+        <field name="garageParkingSqft" length="7" type="int"/>
+        <field name="yearBuilt" length="4" type="int"/>
+        <field name="effectiveYearBuilt" length="4" type="int"/>
+        <field name="filler47" length="5"/>
+        <field name="filler48" length="5"/>
+        <field name="TotalBathsCalculated" length="7" type="int"/>
+        <field name="TotalBaths" length="7" type="int"/>
+        <field name="fullBaths" length="5" type="int"/>
+        <field name="halfBaths" length="5" type="int"/>
+        <field name="1QtrBaths" length="5" type="int"/>
+        <field name="3QtrBaths" length="5" type="int"/>
+        <field name="filler49" length="5"/>
+        <field name="airConditioning" length="3"/>
+        <field name="basementFinish" length="3"/>
+        <field name="bldgCode" length="3"/>
+        <field name="bldgImprvCode" length="3"/>
+        <field name="condition" length="3"/>
+        <field name="constructionType" length="3"/>
+        <field name="exteriorWalls" length="3"/>
+        <field name="fireplaceFlag" length="1"/>
+        <field name="fireplaceNumber" length="3" type="int"/>
+        <field name="fireplaceType" length="3"/>
+        <field name="foundation" length="3"/>
+        <field name="floor" length="3"/>
+        <field name="frame" length="3"/>
+        <field name="garage" length="3"/>
+        <field name="heating" length="3"/>
+        <field name="mobileHomeFlag" length="1"/>
+        <field name="parkingSpaces" length="5" type="int"/>
+        <field name="parkingType" length="3"/>
+        <field name="pool" length="1"/>
+        <field name="poolCode" length="3"/>
+        <field name="quality" length="3"/>
+        <field name="roofCover" length="3"/>
+        <field name="roofType" length="3"/>
+        <field name="storiesCode" length="3"/>
+        <field name="storiesNumber" length="5" type="float">
+            <divide divisor="100"/>
+        </field>
+        <field name="style" length="3"/>
+        <field name="unitsNumber" length="5"/>
+        <field name="filler50" length="3"/>
+        <field name="filler51" length="3"/>
+        <field name="phoneOptOutFlag" length="3"/>
+        <field name="mailingOptOutFlag" length="3"/>
+        <field name="aboveGradeArea" length="11"/>
+        <field name="basementArea" length="11"/>
+        <field name="secondFloorArea" length="9"/>
+        <field name="sumLivingArea" length="15" type="int"/>
+        <field name="totalBuildingSqft" length="8" type="int"/>
+   </fields>
+</rc:schema>

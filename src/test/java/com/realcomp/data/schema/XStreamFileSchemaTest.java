@@ -29,17 +29,17 @@ public class XStreamFileSchemaTest {
     public void init(){
 
         xstream = XStreamFactory.build();
-        
+
     }
 
-    
+
     @Test
     public void testConstructor(){
         new XStreamFactory();
     }
-    
-    
-    
+
+
+
     protected Schema getSchema() throws SchemaException{
         Schema schema = new Schema();
         schema.setName("test");
@@ -49,7 +49,7 @@ public class XStreamFileSchemaTest {
         Field owner = new Field("owner", DataType.STRING, 20);
         Replace replace = new Replace(":", "-");
         owner.addOperation(replace);
-        
+
         schema.addField(owner);
         schema.addField(new Field("zip", DataType.INTEGER, 5));
         schema.addField(new Field("value", DataType.FLOAT, 7));
@@ -68,20 +68,20 @@ public class XStreamFileSchemaTest {
         typeB.add(new Field("pid", DataType.LONG, 10));
         typeB.add(new Field("zip5", DataType.INTEGER, 5));
         typeB.add(new Field("zip4", DataType.INTEGER, 4));
-        
+
         schema.addFieldList(typeB);
-        
+
         schema.getFormat().put("type","TAB");
 
         return schema;
     }
-    
+
     @Test
     public void testSerialization() throws SchemaException{
-    
+
         String xml = xstream.toXML(getSchema());
         System.out.println(xml);
-        
+
         Schema deserialized = (Schema) xstream.fromXML(xml);
         assertEquals(1, deserialized.getAfterOperations().size());
         assertTrue(deserialized.getAfterOperations().get(0).getClass().equals(Trim.class));
@@ -92,22 +92,30 @@ public class XStreamFileSchemaTest {
         assertTrue(getSchema().equals(deserialized));
     }
 
+
+    @Test
+    public void testAnotherDeserialization() throws SchemaException{
+
+        Schema schema = SchemaFactory.buildSchema(
+                XStreamFileSchemaTest.class.getResourceAsStream("facl.schema"));
+    }
+
     @Test
     public void testDeserialization() throws SchemaException{
 
         Schema schema = SchemaFactory.buildSchema(
                 XStreamFileSchemaTest.class.getResourceAsStream("test_1.schema"));
         assertEquals("TAB", schema.getFormat().get("type"));
-        
+
         assertEquals(2, schema.getFieldLists().size());
         assertEquals(6, schema.getDefaultFieldList().size());
         assertEquals(1, schema.getBeforeOperations().size());
         assertEquals(1, schema.getAfterOperations().size());
-        
+
         schema = SchemaFactory.buildSchema(
                 XStreamFileSchemaTest.class.getResourceAsStream("test_2.schema"));
         assertEquals("CSV", schema.getFormat().get("type"));
-        
+
         schema = SchemaFactory.buildSchema(
                 XStreamFileSchemaTest.class.getResourceAsStream("test_3.schema"));
         assertEquals("CSV", schema.getFormat().get("type"));
@@ -117,8 +125,8 @@ public class XStreamFileSchemaTest {
                 XStreamFileSchemaTest.class.getResourceAsStream("test_4.schema"));
         assertEquals("CSV", schema.getFormat().get("type"));
         assertEquals("true", schema.getFormat().get("header"));
-        
-        
+
+
         Field f = schema.getField("name");
         assertEquals(1, f.getOperations().size());
         FirstName firstName = (FirstName) f.getOperations().get(0);
@@ -137,5 +145,5 @@ public class XStreamFileSchemaTest {
         //assertTrue(field.getOperations().contains(new Trim()));
     }
 
-    
+
 }
