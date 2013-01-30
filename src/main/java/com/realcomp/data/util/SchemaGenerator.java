@@ -1,17 +1,17 @@
 package com.realcomp.data.util;
 
 import au.com.bytecode.opencsv.CSVParser;
-import com.realcomp.data.record.io.Format;
 import com.realcomp.data.schema.Field;
 import com.realcomp.data.schema.Schema;
 import com.realcomp.data.schema.xml.XStreamFactory;
 import com.thoughtworks.xstream.XStream;
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.io.StringWriter;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -36,6 +36,15 @@ public class SchemaGenerator {
         String[] fieldNames = getFieldNames(header);
         Schema schema = buildSchema(fieldNames);
         writeSchema(schema, out);
+    }
+
+    public Schema generate(File file) throws IOException{
+        String header = null;
+        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+            header = reader.readLine();
+        }
+        String[] fieldNames = getFieldNames(header);
+        return buildSchema(fieldNames);
     }
 
     protected String toXml(Schema schema){
