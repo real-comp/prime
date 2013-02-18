@@ -3,7 +3,8 @@ package com.realcomp.data.conversion;
 import org.apache.commons.lang.StringUtils;
 
 /**
- * 
+ *
+ * @deprecated use the more useful leftPad and rightPad converters instead of this
  * @author krenfro
  */
 @com.realcomp.data.annotation.Converter("resize")
@@ -12,21 +13,21 @@ public class Resize extends SimpleConverter {
     private static final int USE_ORIGINAL_LENGTH = -1;
 
     private int length = USE_ORIGINAL_LENGTH;
-    
+
     public Resize(){
         super();
     }
-    
+
     public Resize(int length){
         super();
         if (length < 0)
             throw new IllegalArgumentException("length < 0");
         this.length = length;
     }
-    
+
     @Override
     public Object convert(Object value) throws ConversionException{
-        
+
         if (length == USE_ORIGINAL_LENGTH)
             return value;
         else
@@ -39,7 +40,7 @@ public class Resize extends SimpleConverter {
         copy.length = length;
         return copy;
     }
-            
+
     public int getLength() {
         return length;
     }
