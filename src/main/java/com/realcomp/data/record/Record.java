@@ -145,10 +145,7 @@ public class Record implements Map<String,Object>, Serializable {
     }
 
     public Integer getInteger(String key){
-        //casting to Number for Json serialization.
-        //Json stores as double, and deserialization from JSON to Record will lose specific numeric type information.
-        Number value = (Number) get(key);
-        return value == null ? null : value.intValue();
+        return (Integer) get(key);
     }
 
     public Integer getInteger(String key, Integer defaultValue){
@@ -157,10 +154,7 @@ public class Record implements Map<String,Object>, Serializable {
     }
 
     public Long getLong(String key){
-        //casting to Number for Json serialization.
-        //Json stores as double, and deserialization from JSON to Record will lose specific numeric type information.
-        Number value = (Number) get(key);
-        return value == null ? null : value.longValue();
+        return (Long) get(key);
     }
 
     public Long getLong(String key, Long defaultValue){
@@ -169,10 +163,7 @@ public class Record implements Map<String,Object>, Serializable {
     }
 
     public Float getFloat(String key){
-        //casting to Number for Json serialization.
-        //Json stores as double, and deserialization from JSON to Record will lose specific numeric type information.
-        Number value = (Number) get(key);
-        return value == null ? null : value.floatValue();
+        return (Float) get(key);
     }
 
     public Float getFloat(String key, Float defaultValue){
@@ -181,10 +172,7 @@ public class Record implements Map<String,Object>, Serializable {
     }
 
     public Double getDouble(String key){
-        //casting to Number for Json serialization.
-        //Json stores as double, and deserialization from JSON to Record will lose specific numeric type information.
-        Number value = (Number) get(key);
-        return value == null ? null : value.doubleValue();
+        return (Double) get(key);
     }
 
     public Double getDouble(String key, Double defaultValue){
