@@ -5,7 +5,6 @@ import com.realcomp.data.schema.*;
 import com.realcomp.data.validation.field.ForeignKey;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -58,7 +57,8 @@ public class RelationalRecordJoiner{
         if (recordCount > 0){
 
             if (relationalSchema == null && recordCount == 1){
-                result.addAll(remainingRecords.keySet());
+                result.add(remainingRecords.keySet().iterator().next());
+                remainingRecords.clear();
             }
             else if (relationalSchema == null){
                 logger.log(Level.WARNING,
@@ -66,6 +66,7 @@ public class RelationalRecordJoiner{
                            new Object[]{recordCount});
 
                 result.addAll(remainingRecords.keySet());
+                remainingRecords.clear();
             }
             else{
                 //do a full relational join
