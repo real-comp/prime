@@ -1,45 +1,43 @@
 package com.realcomp.data.conversion;
 
-import com.realcomp.names.CompanyName;
-import com.realcomp.names.IndividualName;
 import com.realcomp.names.Name;
 import com.realcomp.names.NameParser;
 import java.util.List;
 
 /**
- * Parses a name, returning the 'last name' if the name is and instance of 
+ * Parses a name, returning the 'last name' if the name is and instance of
  * IndividualName; else return the cleaned up company name.
- * 
+ *
  * @author krenfro
  */
 @com.realcomp.data.annotation.Converter("lastName")
 public class LastName extends StringConverter {
 
     private boolean lastNameFirst = true;
-        
-    
+
+
     @Override
     public Object convert(Object value) throws ConversionException{
-        
+
         String retVal = null;
-        if (value != null){        
+        if (value != null){
             List<Name> names = NameParser.parse(value.toString(), lastNameFirst);
             retVal = "";
             if (!names.isEmpty()){
                 Name name = names.get(0);
-                if (name instanceof IndividualName){
-                    retVal = ((IndividualName) name).getLast();
+                if (!name.isCompanyName()){
+                    retVal = name.getLast();
                 }
                 else{
-                    retVal = ((CompanyName) name).toString();
+                    retVal = name.toString();
                 }
             }
         }
-        
+
         return retVal;
     }
-    
-    
+
+
     public boolean isLastNameFirst() {
         return lastNameFirst;
     }
@@ -73,5 +71,5 @@ public class LastName extends StringConverter {
         hash = 89 * hash + (this.lastNameFirst ? 1 : 0);
         return hash;
     }
-    
+
 }

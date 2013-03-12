@@ -1,22 +1,21 @@
 package com.realcomp.data.conversion;
 
-import com.realcomp.names.IndividualName;
 import com.realcomp.names.Name;
 import com.realcomp.names.NameParser;
 import java.util.List;
 
 /**
- * Parses a name, returning the 'middle name' if the name is and instance of 
+ * Parses a name, returning the 'middle name' if the name is and instance of
  * IndividualName; else ""
- * 
+ *
  * @author krenfro
  */
 @com.realcomp.data.annotation.Converter("middleName")
 public class MiddleName extends StringConverter {
-    
+
     private boolean lastNameFirst = true;
 
-    
+
     @Override
     public Object convert(Object value) throws ConversionException{
 
@@ -26,12 +25,12 @@ public class MiddleName extends StringConverter {
             List<Name> names = NameParser.parse(value.toString(), lastNameFirst);
             if (!names.isEmpty()){
                 Name name = names.get(0);
-                if (name instanceof IndividualName){
-                    retVal = ((IndividualName) name).getMiddle();
+                if (!name.isCompanyName()){
+                    retVal = name.getMiddle();
                 }
             }
         }
-        
+
         return retVal;
     }
 
@@ -42,7 +41,7 @@ public class MiddleName extends StringConverter {
     public void setLastNameFirst(boolean lastNameFirst) {
         this.lastNameFirst = lastNameFirst;
     }
-    
+
     @Override
     public MiddleName copyOf(){
         MiddleName copy = new MiddleName();

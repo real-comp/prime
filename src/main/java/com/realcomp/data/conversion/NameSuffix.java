@@ -5,30 +5,27 @@ import com.realcomp.names.NameParser;
 import java.util.List;
 
 /**
- * Parses a name, returning the 'first name' if the name is and instance of
- * IndividualName; else ""
+ * Parses a name, returning the name prefix if the name is and instance of IndividualName; else ""
  *
  * @author krenfro
  */
-@com.realcomp.data.annotation.Converter("firstName")
-public class FirstName extends StringConverter {
+@com.realcomp.data.annotation.Converter("nameSuffix")
+public class NameSuffix extends StringConverter {
 
     private boolean lastNameFirst = true;
+
 
     @Override
     public Object convert(Object value) throws ConversionException{
 
         String retVal = null;
-
         if (value != null){
-            List<Name> names = NameParser.parse(value.toString(), lastNameFirst);
             retVal = "";
+            List<Name> names = NameParser.parse(value.toString(), lastNameFirst);
             if (!names.isEmpty()){
                 Name name = names.get(0);
                 if (!name.isCompanyName()){
-                    retVal = name.getFirst();
-                    if (retVal == null)
-                        retVal = "";
+                    retVal = name.getSuffix();
                 }
             }
         }
@@ -45,8 +42,8 @@ public class FirstName extends StringConverter {
     }
 
     @Override
-    public FirstName copyOf(){
-        FirstName copy = new FirstName();
+    public NameSuffix copyOf(){
+        NameSuffix copy = new NameSuffix();
         copy.setLastNameFirst(lastNameFirst);
         return copy;
     }
@@ -57,7 +54,7 @@ public class FirstName extends StringConverter {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        final FirstName other = (FirstName) obj;
+        final NameSuffix other = (NameSuffix) obj;
         if (this.lastNameFirst != other.lastNameFirst)
             return false;
         return true;
@@ -65,8 +62,7 @@ public class FirstName extends StringConverter {
 
     @Override
     public int hashCode() {
-        int hash = 5;
-        hash = 89 * hash + (this.lastNameFirst ? 1 : 0);
+        int hash = 7;
         hash = 67 * hash + (this.lastNameFirst ? 1 : 0);
         return hash;
     }

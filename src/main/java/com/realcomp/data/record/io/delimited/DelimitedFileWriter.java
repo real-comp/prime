@@ -31,7 +31,7 @@ public class DelimitedFileWriter extends BaseRecordWriter {
     protected List<String> current;
     protected TransformContext transformContext;
     protected ValueSurgeon surgeon;
-    
+
     public DelimitedFileWriter(){
         super();
         format.putDefault("header", "false");
@@ -39,12 +39,13 @@ public class DelimitedFileWriter extends BaseRecordWriter {
         format.putDefault("quoteCharacter", Character.toString(CSVParser.DEFAULT_QUOTE_CHARACTER));
         format.putDefault("escapeCharacter", Character.toString(CSVParser.DEFAULT_ESCAPE_CHARACTER));
         format.putDefault("strictQuotes", Boolean.toString(CSVParser.DEFAULT_STRICT_QUOTES));
-        
+
         current = new ArrayList<String>();
-        transformContext = new TransformContext();        
+        transformContext = new TransformContext();
         surgeon = new ValueSurgeon();
+        
     }
-    
+
     public DelimitedFileWriter(DelimitedFileWriter copy){
         super(copy);
         format.putDefault("header", "false");
@@ -52,9 +53,9 @@ public class DelimitedFileWriter extends BaseRecordWriter {
         format.putDefault("quoteCharacter", Character.toString(CSVParser.DEFAULT_QUOTE_CHARACTER));
         format.putDefault("escapeCharacter", Character.toString(CSVParser.DEFAULT_ESCAPE_CHARACTER));
         format.putDefault("strictQuotes", Boolean.toString(CSVParser.DEFAULT_STRICT_QUOTES));
-        
+
         current = new ArrayList<String>();
-        transformContext = new TransformContext(copy.transformContext);        
+        transformContext = new TransformContext(copy.transformContext);
         surgeon = new ValueSurgeon();
     }
 
@@ -96,8 +97,8 @@ public class DelimitedFileWriter extends BaseRecordWriter {
         transformContext.setValidationExceptionThreshold(context.getValidationExeptionThreshold());
         if (context.getOut() == null)
             throw new IllegalArgumentException("Invalid IOContext. No OutputStream specified");
-        
-        
+
+
         switch (getDelimiter()) {
             case '\t':
                 writer = new CSVWriter(new BufferedWriter(
@@ -110,7 +111,7 @@ public class DelimitedFileWriter extends BaseRecordWriter {
         }
     }
 
-    
+
     /**
      * Write a header record, constructed from a Record.
      *
@@ -130,12 +131,12 @@ public class DelimitedFileWriter extends BaseRecordWriter {
                     field.clearOperations();
                 }
             }
-            
+
             context = new IOContextBuilder(context).schema(headerSchema).build();
             super.write(getHeader());
             writer.writeNext(current.toArray(new String[current.size()]));
-            writer.flush();            
-        } 
+            writer.flush();
+        }
         catch (SchemaException ex) {
             throw new IOException("Unable to create temporary header schema: " + ex.getMessage());
         }
@@ -165,34 +166,34 @@ public class DelimitedFileWriter extends BaseRecordWriter {
             if (type.length() != 1)
                 throw new IllegalArgumentException("invalid type [" + type + "]");
             delimiter = type.charAt(0);
-        }   
-        
+        }
+
         return delimiter;
     }
-    
+
     protected char getAttributeAsChar(String name){
         String value = format.get(name);
         if (value.length() != 1)
             throw new IllegalArgumentException(String.format("invalid attribute [%s] = [%s]", name, value));
         return value.charAt(0);
     }
-    
+
     public char getEscapeCharacter(){
         return getAttributeAsChar("escapeCharacter");
     }
-    
+
     public char getQuoteCharacter(){
         return getAttributeAsChar("quoteCharacter");
     }
-    
+
     public boolean isStrictQuotes(){
         return Boolean.parseBoolean(format.get("strictQuotes"));
     }
-    
+
     public boolean isHeader(){
         return Boolean.parseBoolean(format.get("header"));
     }
-    
+
     @Override
     protected void validateAttributes(){
         super.validateAttributes();
