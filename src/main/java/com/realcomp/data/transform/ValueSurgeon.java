@@ -48,6 +48,12 @@ public class ValueSurgeon {
             value = operate(op, value, context);
         }
 
+        if (context.getSchema() != null && context.getSchema().getAfterOperations() != null){
+            for (Operation op: context.getSchema().getAfterOperations()){
+                value = operate(op, value, context);
+            }
+        }
+
         return value;
     }
 
