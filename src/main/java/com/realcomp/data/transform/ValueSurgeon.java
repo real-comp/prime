@@ -24,7 +24,7 @@ public class ValueSurgeon {
     /**
      * @param context
      * @param operations the operations to perform
-     * @return the result of the operation.     *
+     * @return the result of the operation.   
      * @throws ConversionException
      * @throws ValidationException
      */

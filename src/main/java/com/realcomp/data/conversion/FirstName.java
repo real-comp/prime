@@ -14,6 +14,8 @@ import java.util.List;
 public class FirstName extends StringConverter {
 
     private boolean lastNameFirst = true;
+    private boolean recognizeCompanyNames = true;
+    private boolean recognizeTrusts = true;
 
     @Override
     public Object convert(Object value) throws ConversionException{
@@ -21,7 +23,7 @@ public class FirstName extends StringConverter {
         String retVal = null;
 
         if (value != null){
-            List<Name> names = NameParser.parse(value.toString(), lastNameFirst);
+            List<Name> names = NameParser.parse(value.toString(), lastNameFirst, recognizeCompanyNames, recognizeTrusts);
             retVal = "";
             if (!names.isEmpty()){
                 Name name = names.get(0);
@@ -44,30 +46,58 @@ public class FirstName extends StringConverter {
         this.lastNameFirst = lastNameFirst;
     }
 
+    public boolean isRecognizeCompanyNames(){
+        return recognizeCompanyNames;
+    }
+
+    public void setRecognizeCompanyNames(boolean recognizeCompanyNames){
+        this.recognizeCompanyNames = recognizeCompanyNames;
+    }
+
+    public boolean isRecognizeTrusts(){
+        return recognizeTrusts;
+    }
+
+    public void setRecognizeTrusts(boolean recognizeTrusts){
+        this.recognizeTrusts = recognizeTrusts;
+    }
+
     @Override
     public FirstName copyOf(){
         FirstName copy = new FirstName();
         copy.setLastNameFirst(lastNameFirst);
+        copy.setRecognizeCompanyNames(recognizeCompanyNames);
+        copy.setRecognizeTrusts(recognizeTrusts);
         return copy;
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        final FirstName other = (FirstName) obj;
-        if (this.lastNameFirst != other.lastNameFirst)
-            return false;
-        return true;
+    public int hashCode(){
+        int hash = 3;
+        hash = 13 * hash + (this.lastNameFirst ? 1 : 0);
+        hash = 13 * hash + (this.recognizeCompanyNames ? 1 : 0);
+        hash = 13 * hash + (this.recognizeTrusts ? 1 : 0);
+        return hash;
     }
 
     @Override
-    public int hashCode() {
-        int hash = 5;
-        hash = 89 * hash + (this.lastNameFirst ? 1 : 0);
-        hash = 67 * hash + (this.lastNameFirst ? 1 : 0);
-        return hash;
+    public boolean equals(Object obj){
+        if (obj == null){
+            return false;
+        }
+        if (getClass() != obj.getClass()){
+            return false;
+        }
+        final FirstName other = (FirstName) obj;
+        if (this.lastNameFirst != other.lastNameFirst){
+            return false;
+        }
+        if (this.recognizeCompanyNames != other.recognizeCompanyNames){
+            return false;
+        }
+        if (this.recognizeTrusts != other.recognizeTrusts){
+            return false;
+        }
+        return true;
     }
 }

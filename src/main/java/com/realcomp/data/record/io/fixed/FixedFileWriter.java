@@ -33,19 +33,19 @@ public class FixedFileWriter extends BaseRecordWriter{
     protected ValueSurgeon surgeon;
 
     public FixedFileWriter(){
-        super(); 
+        super();
         format.putDefault("header", "false");
         transformContext = new TransformContext();
         surgeon = new ValueSurgeon();
     }
-    
+
     @Override
     public void open(IOContext context) throws IOException, SchemaException{
-        
+
         super.open(context);
         if (context.getOut() == null)
             throw new IllegalArgumentException("Invalid IOContext. No OutputStream specified");
-        
+
         ensureFieldLengthsSpecified(context.getSchema());
         transformContext.setSchema(context.getSchema());
         transformContext.setValidationExceptionThreshold(context.getValidationExeptionThreshold());
@@ -53,20 +53,20 @@ public class FixedFileWriter extends BaseRecordWriter{
     }
 
 
-    
+
     @Override
-    public void close(){        
-        IOUtils.closeQuietly(writer);        
+    public void close(){
+        IOUtils.closeQuietly(writer);
         super.close();
     }
-    
-    
+
+
     @Override
     public void close(boolean closeIOContext){
-        IOUtils.closeQuietly(writer);       
-        super.close(closeIOContext); 
+        IOUtils.closeQuietly(writer);
+        super.close(closeIOContext);
     }
-    
+
 
     @Override
     public void write(Record record)
@@ -76,15 +76,15 @@ public class FixedFileWriter extends BaseRecordWriter{
         if (count == 0 && isHeader()){
             writeHeader();
         }
-        
+
         super.write(record);
         writer.newLine();
     }
-    
-    
+
+
     /**
      * Write a header record, constructed from a Record.
-     * 
+     *
      * @throws IOException
      * @throws ValidationException
      * @throws ConversionException
@@ -112,15 +112,15 @@ public class FixedFileWriter extends BaseRecordWriter{
             context = original;
         }
     }
-    
-    
+
+
     protected Record getHeader(){
         Record retVal = new Record();
         for(Field field: context.getSchema().getDefaultFieldList())
             retVal.put(field.getName(), field.getName());
         return retVal;
     }
-    
+
 
     @Override
     protected void write(Record record, Field field)
@@ -136,19 +136,19 @@ public class FixedFileWriter extends BaseRecordWriter{
         return StringUtils.rightPad(s, length).substring(0, length);
     }
 
-    
-    protected void ensureFieldLengthsSpecified(Schema schema) throws SchemaException{        
+
+    protected void ensureFieldLengthsSpecified(Schema schema) throws SchemaException{
         for (FieldList fields: schema.getFieldLists())
             ensureFieldLengthsSpecified(fields);
     }
-    
+
 
     protected void ensureFieldLengthsSpecified(FieldList fields) throws SchemaException{
         for (Field field: fields)
             if (field.getLength() <= 0)
                 throw new SchemaException("field length not specified for: " + field);
     }
-    
+
     protected int getExpectedLength(List<Field> fields){
         assert(fields != null);
         int retVal = 0;
@@ -157,14 +157,14 @@ public class FixedFileWriter extends BaseRecordWriter{
         return retVal;
     }
 
-    
+
     public boolean isHeader(){
         return Boolean.parseBoolean(format.get("header"));
     }
-    
+
     @Override
     protected void validateAttributes(){
-        
+
         super.validateAttributes();
         isHeader();
     }
