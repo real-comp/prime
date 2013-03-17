@@ -45,6 +45,7 @@ public class RecordFactory {
     protected ValueSurgeon surgeon;
     protected TransformContext context;
     
+    
     public RecordFactory(Schema schema) throws ParsePlanException{
 
         if (schema == null)
