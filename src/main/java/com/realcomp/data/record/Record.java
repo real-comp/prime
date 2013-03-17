@@ -143,6 +143,26 @@ public class Record implements Map<String,Object>, Serializable {
         String value = getString(key);
         return value == null ? defaultValue : value;
     }
+    
+    public Boolean getBoolean(String key){
+        Object value = get(key);
+        Boolean result = null;
+        if (value != null){
+            if (value instanceof Boolean){
+                result = (Boolean) value;
+            }
+            else{
+                result = Boolean.parseBoolean(value.toString());
+            }
+        }
+        return result;
+    }
+
+    public Boolean getBoolean(String key, Boolean defaultValue){
+        Boolean value = getBoolean(key);
+        return value == null ? defaultValue : value;
+    }
+    
 
     public Integer getInteger(String key){
         return (Integer) get(key);
