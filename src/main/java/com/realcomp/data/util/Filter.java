@@ -1,5 +1,6 @@
 package com.realcomp.data.util;
 
+
 import com.realcomp.data.conversion.ConversionException;
 import com.realcomp.data.record.Record;
 import com.realcomp.data.record.io.*;
@@ -83,6 +84,7 @@ public class Filter {
     }
 
 
+
     public static void main(String[] args){
 
         OptionParser parser = new OptionParser(){{
@@ -123,7 +125,6 @@ public class Filter {
                             new BufferedOutputStream(new FileOutputStream((String) options.valueOf("out"))) :
                             new BufferedOutputStream(System.out));
                 outputBuilder.validationExceptionThreshold(Severity.MEDIUM);
-
                 filterer.filter(inputBuilder.build(), outputBuilder.build());
                 result = 0;
             }
