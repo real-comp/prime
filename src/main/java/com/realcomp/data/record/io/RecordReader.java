@@ -18,7 +18,7 @@ import java.util.Map;
  * @author krenfro
  */
 public interface RecordReader {
-    
+
 
     /**
      * If a Validator logs a warning at or above this threshold, then the warning is thrown as
@@ -40,12 +40,13 @@ public interface RecordReader {
     */
     Record read() throws IOException, ValidationException, ConversionException, SchemaException;
 
+
     /**
-     * Close open resources including the resources of the IOContext. 
+     * Close open resources including the resources of the IOContext.
      * Should be invoked when you are done with the RecordReader.
      */
     void close();
-    
+
     /**
      * Close open resources, optionally closing the  resources of the IOContext.
      * @param closeIOContext if true, the ioContext.close() method will be invoked
@@ -62,21 +63,21 @@ public interface RecordReader {
      * @throws SchemaException
      */
     void open(IOContext context) throws IOException, SchemaException;
-    
+
     /**
      * @return the IOContext being operated on; or null if not yet open
      */
     IOContext getIOContext();
-    
+
     /**
      *
      * @return number of records read; not including skipped records.
      */
     long getCount();
-    
-    
+
+
     /**
-     * 
+     *
      * @return default format attributes
      */
     Map<String,String> getDefaults();

@@ -12,9 +12,9 @@ import java.util.Map;
  * @author krenfro
  */
 public class RecordReaderFactory {
-        
+
     private static final Map<String,String> types;
-    
+
     static{
         types = new HashMap<String,String>();
         types.put("CSV", DelimitedFileReader.class.getName());
@@ -22,26 +22,26 @@ public class RecordReaderFactory {
         types.put("FIXED", FixedFileReader.class.getName());
         types.put("JSON", "com.realcomp.data.record.io.json.JsonReader");
     }
-    
+
     public static void registerReader(String type, String readerClass){
         types.put(type, readerClass);
     }
-    
-    public static RecordReader build(Schema schema) throws FormatException, SchemaException{        
+
+    public static RecordReader build(Schema schema) throws FormatException, SchemaException{
         return build(schema.getFormat());
     }
-    
-    
-    public static RecordReader build(Map<String,String> format) throws FormatException{        
+
+
+    public static RecordReader build(Map<String,String> format) throws FormatException{
         return getReaderForType(format.get("type"));
     }
-    
+
     protected static RecordReader getReaderForType(String type) throws FormatException{
-        
+
         if (type == null)
             throw new IllegalArgumentException("type is null");
-        
-        RecordReader reader = null;        
+
+        RecordReader reader = null;
         String classname = types.get(type.toUpperCase());
         if (classname == null && type.length() == 1){
             classname = types.get("TAB"); //single character; default to delimited
@@ -49,7 +49,7 @@ public class RecordReaderFactory {
         else if (classname == null){
             classname = type;
         }
-        
+
         try {
             reader = (RecordReader) Class.forName(classname).newInstance();
         }
@@ -65,5 +65,5 @@ public class RecordReaderFactory {
 
         return reader;
     }
-    
+
 }

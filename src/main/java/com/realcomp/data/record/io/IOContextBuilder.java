@@ -12,7 +12,7 @@ import java.util.Map;
  * @author krenfro
  */
 public class IOContextBuilder {
-    
+
     protected Schema schema;
     protected InputStream in;
     protected OutputStream out;

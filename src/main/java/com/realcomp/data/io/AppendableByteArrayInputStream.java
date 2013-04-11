@@ -26,6 +26,10 @@ public class AppendableByteArrayInputStream extends ByteArrayInputStream{
 
     private Queue<byte[]> data;
 
+    public AppendableByteArrayInputStream(){
+        this(new byte[0]);
+    }
+
     public AppendableByteArrayInputStream(byte[] initial){
         super(initial);
         data = new LinkedList<byte[]>();
