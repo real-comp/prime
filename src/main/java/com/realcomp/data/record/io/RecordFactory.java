@@ -26,7 +26,7 @@ import java.util.logging.Logger;
 public class RecordFactory {
 
     private static final Logger logger = Logger.getLogger(RecordFactory.class.getName());
-    
+
     /**
      * Cache of the parse plan for each unique FieldList.
      * When classifiers are used, the FieldList for a record may
@@ -40,44 +40,44 @@ public class RecordFactory {
      * to limit the use of the parsePlanCache.
      */
     protected ParsePlan parsePlan;
-    
-    protected Schema schema;    
+
+    protected Schema schema;
     protected ValueSurgeon surgeon;
     protected TransformContext context;
-    
-    
+
+
     public RecordFactory(Schema schema) throws ParsePlanException{
 
         if (schema == null)
             throw new IllegalArgumentException("schema is null");
 
         this.schema = schema;
-        buildParsePlan();        
+        buildParsePlan();
         surgeon = new ValueSurgeon();
         context = new TransformContext();
         context.setSchema(schema);
     }
-    
+
     /**
      * Build a Record from the provided String[] using the schema's default FieldList
-     * 
+     *
      * @param data
      * @return
      * @throws ValidationException
-     * @throws ConversionException 
+     * @throws ConversionException
      */
     public Record build(String[] data) throws ValidationException, ConversionException{
         return build(schema.getDefaultFieldList(), data);
     }
-    
+
     /**
      * Builds a Record from the provided String[] and FieldList.
-     * 
+     *
      * @param fieldLists
      * @param data
      * @return
      * @throws ValidationException
-     * @throws ConversionException 
+     * @throws ConversionException
      */
     public Record build(FieldList fieldList, String[] data)
             throws ValidationException, ConversionException{
@@ -88,10 +88,10 @@ public class RecordFactory {
                     fieldList.size() + " != " + data.length,
                     Severity.HIGH);
 
-        Record record = new Record();        
+        Record record = new Record();
         context.setRecord(record);
         int index = 0;
-        
+
         for (Field field: getParsePlan(fieldList)){
             index = fieldList.indexOf(field);
             context.setKey(field.getName());
@@ -99,21 +99,21 @@ public class RecordFactory {
             Object value = surgeon.operate(getOperations(field), context);
             if (value != null){
                 try{
-                    record.put(field.getName(), field.getType().coerce(value)); //set final value            
+                    record.put(field.getName(), field.getType().coerce(value)); //set final value
                 }
                 catch(ConversionException ex){
                     throw new ConversionException(ex.getMessage() + " for field [" + field.getName() + "]", ex);
                 }
             }
         }
-        
+
         return record;
     }
-    
+
     protected final void buildParsePlan() throws ParsePlanException{
-        
+
         parsePlan = new ParsePlan(schema.getDefaultFieldList());
-        
+
         if (schema.getFieldLists().size() > 1){
             parsePlanCache = new HashMap<FieldList, ParsePlan>();
             for (FieldList fieldList: schema.getFieldLists()){
@@ -121,8 +121,8 @@ public class RecordFactory {
             }
         }
     }
-    
-    
+
+
     /**
      * Returns the pre-computed parse plan for the specified FieldList
      * @param schemaFieldList
@@ -133,19 +133,19 @@ public class RecordFactory {
         return parsePlanCache == null ? parsePlan : parsePlanCache.get(fieldList);
     }
 
-    
-    public Severity getValidationExceptionThreshold() {        
+
+    public Severity getValidationExceptionThreshold() {
         return context.getValidationExceptionThreshold();
     }
 
-    
+
     public void setValidationExceptionThreshold(Severity validationExceptionThreshold) {
-        context.setValidationExceptionThreshold(validationExceptionThreshold);        
+        context.setValidationExceptionThreshold(validationExceptionThreshold);
     }
-    
-    
+
+
     protected List<Operation> getOperations(Field field){
-        
+
         List<Operation> operations = new ArrayList<Operation>();
         if (schema.getBeforeOperations() != null)
             operations.addAll(schema.getBeforeOperations());
@@ -154,5 +154,5 @@ public class RecordFactory {
             operations.addAll(schema.getAfterOperations());
         return operations;
     }
-    
+
 }

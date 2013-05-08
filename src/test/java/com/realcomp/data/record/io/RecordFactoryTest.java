@@ -11,6 +11,7 @@ import com.realcomp.data.conversion.Resize;
 import com.realcomp.data.conversion.Trim;
 import com.realcomp.data.schema.Field;
 import com.realcomp.data.schema.Schema;
+import com.realcomp.data.validation.Severity;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -21,12 +22,12 @@ import static org.junit.Assert.*;
  * @author krenfro
  */
 public class RecordFactoryTest {
-    
+
     public RecordFactoryTest() {
     }
-    
+
     private Schema getSchema(){
-        
+
         Schema schema = new Schema();
         Field a = new Field("a", DataType.STRING);
         a.addOperation(new Trim());
@@ -34,7 +35,7 @@ public class RecordFactoryTest {
         b.addOperation(new Resize(10));
         Field c = new Field("c", DataType.INTEGER);
         c.addOperation(new Round());
-        
+
         schema.addField(a);
         schema.addField(b);
         schema.addField(c);
@@ -43,18 +44,18 @@ public class RecordFactoryTest {
 
     @Test
     public void factoryTest() throws Exception {
-        
+
         Schema schema = getSchema();
         RecordFactory factory = new RecordFactory(getSchema());
-        
+
         String[] data = new String[]{"asdf ", "stuff", "1.4"};
         Record record = factory.build(data);
-        
+
         assertEquals("asdf", record.get("a"));
         assertEquals("stuff     ", record.get("b"));
         assertEquals(1, record.get("c"));
-        
-        
+
+
     }
 
 }

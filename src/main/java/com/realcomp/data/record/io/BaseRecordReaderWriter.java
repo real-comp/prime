@@ -19,41 +19,41 @@ import java.util.logging.Logger;
 public abstract class BaseRecordReaderWriter{
 
     private static final Logger logger = Logger.getLogger(BaseRecordReaderWriter.class.getName());
-    
+
     protected RecordFactory recordFactory;
     protected Format format;
     protected long count;
-    protected boolean beforeFirstOperationsRun = false;    
+    protected boolean beforeFirstOperationsRun = false;
     protected IOContext context;
-    
-    
+
+
     public BaseRecordReaderWriter(){
          format = new Format();
          format.putDefault("charset", Charset.defaultCharset().name());
          format.putDefault("skipLeading", "0");
          format.putDefault("skipTrailing", "0");
     }
-    
+
     public BaseRecordReaderWriter(BaseRecordReaderWriter copy){
          this();
     }
-        
+
     public void open(IOContext context) throws IOException, SchemaException{
-        
+
         if (context == null)
             throw new IllegalArgumentException("context is null");
 
-        close();  
+        close();
         this.context = context;
         format.putAll(context.getAttributes());
         validateAttributes();
         beforeFirstOperationsRun = false;
-        count = 0;        
+        count = 0;
         if (context.getSchema() != null){
             recordFactory = new RecordFactory(context.getSchema());
             recordFactory.setValidationExceptionThreshold(context.getValidationExeptionThreshold());
         }
-    }    
+    }
 
     public void close(){
         close(true);
@@ -73,12 +73,12 @@ public abstract class BaseRecordReaderWriter{
 
         if (context != null && closeIOContext)
             context.close();
-        
+
         context = null;
         format.clear();
     }
-    
-    
+
+
     protected void executeAfterLastOperations() throws ValidationException, ConversionException{
         if (context != null && context.getSchema() != null) {
             List<Operation> operations = context.getSchema().getAfterLastOperations();
@@ -107,11 +107,11 @@ public abstract class BaseRecordReaderWriter{
         }
     }
 
-    
+
     public long getCount(){
         return count;
     }
-    
+
     public IOContext getIOContext(){
         return context;
     }
@@ -119,47 +119,47 @@ public abstract class BaseRecordReaderWriter{
     public Charset getCharset(){
         return Charset.forName(format.get("charset"));
     }
-    
+
     public int getSkipLeading(){
         return Integer.parseInt(format.get("skipLeading"));
     }
-    
+
     public int getSkipTrailing(){
         return Integer.parseInt(format.get("skipTrailing"));
     }
-    
-    
+
+
     /**
      * Validates that all attributes contain valid values.
-     * 
+     *
      * @throws IllegalArgumentException
      */
     protected void validateAttributes(){
-       
+
         for (String attribute: format.keySet()){
             if (!format.getDefaults().containsKey(attribute)){
                 logger.log(
-                        Level.WARNING, 
-                        "Unsupported attribute [{0}] = [{1}]", 
+                        Level.WARNING,
+                        "Unsupported attribute [{0}] = [{1}]",
                         new Object[]{attribute, format.get(attribute)});
             }
         }
-        
+
         getCharset();
-        
+
         int skipTrailing = getSkipTrailing();
         if (skipTrailing < 0){
             throw new IllegalArgumentException(
                     String.format("skipTrailing out of range: %s < 0", skipTrailing));
         }
-        
+
         int skipLeading = getSkipLeading();
         if (skipLeading < 0){
             throw new IllegalArgumentException(
                     String.format("skipLeading out of range: %s < 0", skipLeading));
         }
     }
-    
+
     public Map<String,String> getDefaults(){
         return format.getDefaults();
     }
