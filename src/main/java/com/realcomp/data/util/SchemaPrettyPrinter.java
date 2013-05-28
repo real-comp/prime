@@ -39,8 +39,9 @@ public class SchemaPrettyPrinter {
                 out.println("field\tlength\tstart\tstop");
             }
             else{
-                out.println("field\tlength\tstart\tstop");
+                out.println("field\tlength");
             }
+
             int start = 0;
             int stop = 0;
             for (Field field: fieldList){
