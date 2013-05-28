@@ -13,7 +13,7 @@ import java.util.Map;
 import java.util.regex.Pattern;
 
 /**
- * 
+ *
  * @author krenfro
  */
 @XStreamAlias("schema")
@@ -26,17 +26,17 @@ public class Schema {
 
     @XStreamAsAttribute
     private String version;
-        
+
     private Map<String,String> format;
 
     private List<Operation> beforeFirst;
     private List<Operation> before;
     private List<Operation> after;
     private List<Operation> afterLast;
-    
+
     @XStreamImplicit(itemFieldName="fields")
     private List<FieldList> fieldLists;
-    
+
     public Schema(){
         format = new HashMap<String,String>();
         fieldLists = new ArrayList<FieldList>();
@@ -47,10 +47,11 @@ public class Schema {
         format.putAll(copy.format);
         fieldLists = new ArrayList<FieldList>();
         if (copy.fieldLists != null){
-            for (FieldList fieldList: copy.fieldLists)
+            for (FieldList fieldList: copy.fieldLists){
                 fieldLists.add(new FieldList(fieldList));
+            }
         }
-        
+
         this.name = copy.name;
         this.version = copy.version;
         setBeforeFirstOperations(copy.getBeforeFirstOperations());
@@ -58,14 +59,14 @@ public class Schema {
         setAfterLastOperations(copy.getAfterLastOperations());
         setAfterOperations(copy.getAfterOperations());
     }
-    
-      
+
+
     /**
      * Classify a record and return the FieldList that matches.
      * If only one FieldList is defined, it is returned.
      * If multiple FieldLists support the specified Record, then the FieldList that
-     * is not the <i>default</i> is returned.  
-     * If multiple FieldLists support the specified Record, and neither are the <i>default</i> then the 
+     * is not the <i>default</i> is returned.
+     * If multiple FieldLists support the specified Record, and neither are the <i>default</i> then the
      * one defined first is returned.
      *
      * @param record not null
@@ -73,53 +74,55 @@ public class Schema {
      * @throws SchemaException if no defined layout supports the Record
      */
     public FieldList classify(Record record) throws SchemaException{
-        
+
         if (record == null)
             throw new IllegalArgumentException("record is null");
-        
-        
+
+
         FieldList match = getDefaultFieldList();
-        
+
         if (fieldLists.size() > 1){
-            for (FieldList fieldList: fieldLists){            
-                if (!fieldList.isDefaultClassifier() && fieldList.supports(record)){                
-                    match = fieldList;  
+            for (FieldList fieldList: fieldLists){
+                if (!fieldList.isDefaultClassifier() && fieldList.supports(record)){
+                    match = fieldList;
                 }
                 else if (fieldList.supports(record)){
                     match = fieldList;
                 }
             }
         }
-        
+
         if (match == null)
             throw new SchemaException("The schema [" + getName() + "] does not support the Record.");
-                
+
         return match;
     }
-       
-    
+
+
     /**
      * Returns the FieldList that has the default classifier (match anything),
      * or is defined first.
-     * 
-     * @return the default FieldList, or the FieldList that was defined first, null if not FieldLists have been 
+     *
+     * @return the default FieldList, or the FieldList that was defined first, null if not FieldLists have been
      *  specified.
      */
     public FieldList getDefaultFieldList(){
-        
-        FieldList retVal = null;        
+
+        FieldList retVal = null;
         for (FieldList fieldList: fieldLists){
-            if (retVal == null)
+            if (retVal == null){
                 retVal = fieldList;
-            if (fieldList.isDefaultClassifier())
+            }
+            if (fieldList.isDefaultClassifier()){
                 retVal = fieldList;
+            }
         }
-        
+
         return retVal;
     }
 
     /**
-     * 
+     *
      * @return the FieldLists supported by this Schema
      */
     public List<FieldList> getFieldLists() {
@@ -127,31 +130,32 @@ public class Schema {
     }
 
     /**
-     * 
+     *
      * @param fieldLists not null
      */
     public void setFieldLists(List<FieldList> fieldLists) {
         if (fieldLists == null)
             throw new IllegalArgumentException("fieldLists is null");
-        
+
         this.fieldLists.clear();
-        for (FieldList f: fieldLists)
+        for (FieldList f: fieldLists){
             this.fieldLists.add(new FieldList(f));
+        }
     }
-    
+
     /**
-     * 
+     *
      * @param fieldList to be added
      */
     public void addFieldList(FieldList fieldList){
         if (fieldList == null)
             throw new IllegalArgumentException("fieldList is null");
-          
+
         fieldLists.add(new FieldList(fieldList));
     }
-    
+
     /**
-     * 
+     *
      * @param fieldList to be removed
      * @return true if removed; else false
      */
@@ -160,8 +164,8 @@ public class Schema {
             throw new IllegalArgumentException("fieldList is null");
         return fieldLists.remove(fieldList);
     }
-    
-    
+
+
     public void addField(Field field){
         if (field == null)
             throw new IllegalArgumentException("field is null");
@@ -175,19 +179,20 @@ public class Schema {
             fieldList.add(field);
         }
     }
-    
+
     public boolean removeField(Field field){
-        if (field == null)
+        if (field == null){
             throw new IllegalArgumentException("field is null");
-        FieldList fieldList = getDefaultFieldList();        
+        }
+        FieldList fieldList = getDefaultFieldList();
         return fieldList == null ? false : fieldList.remove(field);
     }
-    
+
     public Field getField(String name){
-        FieldList fieldList = getDefaultFieldList();        
+        FieldList fieldList = getDefaultFieldList();
         return fieldList == null ? null : fieldList.get(name);
     }
-    
+
     /**
      *
      * @return optional name for this schema, or null
@@ -223,10 +228,12 @@ public class Schema {
             this.after = null;
         }
         else{
-            if (this.after != null)
+            if (this.after != null){
                 this.after.clear();
-            for (Operation op: after)
+            }
+            for (Operation op: after){
                 addAfterOperation(op);
+            }
         }
     }
 
@@ -236,10 +243,12 @@ public class Schema {
      * @param op not null
      */
     public void addAfterOperation(Operation op){
-        if (op == null)
+        if (op == null){
             throw new IllegalArgumentException("op is null");
-        if (after == null)
-            after = new ArrayList<Operation>();
+        }
+        if (after == null){
+            after = new ArrayList<>();
+        }
 
         this.after.add(op);
     }
@@ -265,10 +274,12 @@ public class Schema {
             this.afterLast = null;
         }
         else{
-            if (this.afterLast != null)
+            if (this.afterLast != null){
                 this.afterLast.clear();
-            for (Operation op: afterLast)
+            }
+            for (Operation op: afterLast){
                 addAfterOperation(op);
+            }
         }
     }
 
@@ -278,10 +289,12 @@ public class Schema {
      * @param op not null
      */
     public void addAfterLastOperation(Operation op){
-        if (op == null)
+        if (op == null){
             throw new IllegalArgumentException("op is null");
-        if (afterLast == null)
+        }
+        if (afterLast == null){
             afterLast = new ArrayList<Operation>();
+        }
 
         this.afterLast.add(op);
     }
@@ -307,10 +320,12 @@ public class Schema {
             this.before = null;
         }
         else{
-            if (this.before != null)
+            if (this.before != null){
                 this.before.clear();
-            for (Operation op: before)
+            }
+            for (Operation op: before){
                 addBeforeOperation(op);
+            }
         }
     }
 
@@ -320,14 +335,17 @@ public class Schema {
      * @param op not null, not a MultiFieldOperation
      */
     public void addBeforeOperation(Operation op){
-        if (op == null)
+        if (op == null){
             throw new IllegalArgumentException("op is null");
-        if (op instanceof MultiFieldOperation)
+        }
+        if (op instanceof MultiFieldOperation){
             throw new IllegalArgumentException(
                     "You cannot specify a MultiFieldOperation as a 'before' operation");
+        }
 
-        if (before == null)
+        if (before == null){
             before = new ArrayList<Operation>();
+        }
         this.before.add(op);
     }
 
@@ -351,10 +369,12 @@ public class Schema {
             this.beforeFirst = null;
         }
         else{
-            if (this.beforeFirst != null)
+            if (this.beforeFirst != null){
                 this.beforeFirst.clear();
-            for (Operation op: beforeFirst)
+            }
+            for (Operation op: beforeFirst){
                 addBeforeFirstOperation(op);
+            }
         }
     }
 
@@ -364,14 +384,17 @@ public class Schema {
      * @param op not null, not a MultiFieldOperation
      */
     public void addBeforeFirstOperation(Operation op){
-        if (op == null)
+        if (op == null){
             throw new IllegalArgumentException("op is null");
-        if (op instanceof MultiFieldOperation)
+        }
+        if (op instanceof MultiFieldOperation){
             throw new IllegalArgumentException(
                     "You cannot specify a MultiFieldOperation as a 'beforeFirst' operation");
+        }
 
-        if (beforeFirst == null)
+        if (beforeFirst == null){
             beforeFirst = new ArrayList<Operation>();
+        }
         this.beforeFirst.add(op);
     }
 
@@ -395,21 +418,23 @@ public class Schema {
     }
 
     public void setFormat(Map<String,String> format) {
-        if (format == null)
+        if (format == null){
             throw new IllegalArgumentException("format is null");
+        }
         this.format = format;
     }
 
-    
-    
+
+
     @Override
     public String toString(){
         StringBuilder s = new StringBuilder(name == null ? "" : name);
-        if (version != null && !version.isEmpty())
+        if (version != null && !version.isEmpty()){
             s.append(" (").append(version).append(")");
+        }
         return s.toString();
     }
-    
+
     public String toString(Record record){
         try{
             return classify(record).toString(record);
@@ -459,6 +484,6 @@ public class Schema {
         hash = 83 * hash + (this.fieldLists != null ? this.fieldLists.hashCode() : 0);
         return hash;
     }
-    
-    
+
+
 }
