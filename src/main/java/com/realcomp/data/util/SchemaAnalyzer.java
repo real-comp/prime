@@ -103,16 +103,18 @@ public class SchemaAnalyzer {
     private List<String> getRecords(File file, int numRecords)
             throws FileNotFoundException, IOException{
 
-        BufferedReader reader = new BufferedReader(new FileReader(file));
         List<String> records = new ArrayList<String>();
-        String nextLine;
 
-        for (int i = 0; i < numRecords; i++) {
-            nextLine = reader.readLine();
+        try(BufferedReader reader = new BufferedReader(new FileReader(file))){
+            String nextLine;
 
-            if (nextLine == null)
-                throw new IOException("Insufficient records: File must have at least " + numRecords + " to analyze");
-            records.add(nextLine);
+            for (int i = 0; i < numRecords; i++) {
+                nextLine = reader.readLine();
+
+                if (nextLine == null)
+                    throw new IOException("Insufficient records: File must have at least " + numRecords + " to analyze");
+                records.add(nextLine);
+            }
         }
 
         return records;
