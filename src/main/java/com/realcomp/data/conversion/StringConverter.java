@@ -5,10 +5,11 @@ import com.realcomp.data.Operation;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * A Converter for the STRING data DataType
- * 
+ *
  * @author krenfro
  */
 public class StringConverter implements Converter{
@@ -16,7 +17,7 @@ public class StringConverter implements Converter{
     protected List<DataType> supportedTypes;
 
     public StringConverter(){
-        supportedTypes = new ArrayList<DataType>();     
+        supportedTypes = new ArrayList<DataType>();
         supportedTypes.add(DataType.STRING);
     }
 
@@ -26,7 +27,7 @@ public class StringConverter implements Converter{
     }
 
     /**
-     * 
+     *
      * @return List of DataTypes supported by this converter. All Types except Map and List
      */
     @Override
@@ -40,19 +41,28 @@ public class StringConverter implements Converter{
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        final StringConverter other = (StringConverter) obj;
-        return true;
+    public int hashCode(){
+        int hash = 7;
+        hash = 67 * hash + Objects.hashCode(this.supportedTypes);
+        return hash;
     }
 
     @Override
-    public int hashCode() {
-        int hash = 5;
-        return hash;
+    public boolean equals(Object obj){
+        if (obj == null){
+            return false;
+        }
+        if (getClass() != obj.getClass()){
+            return false;
+        }
+        final StringConverter other = (StringConverter) obj;
+        if (!Objects.equals(this.supportedTypes, other.supportedTypes)){
+            return false;
+        }
+        return true;
     }
+
+    
+
 
 }
