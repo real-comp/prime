@@ -1,5 +1,7 @@
 package com.realcomp.data.conversion;
 
+import java.util.Objects;
+
 /**
  *
  * @author krenfro
@@ -8,20 +10,20 @@ package com.realcomp.data.conversion;
 public class Sequence extends SimpleConverter implements NullValueConverter{
 
     private Long start = null;
-    private Long sequence = null; 
-    
+    private Long sequence = null;
+
     @Override
     public Object convert(Object value) throws ConversionException {
-        
+
         if (sequence == null){
             sequence = start == null ? 1l : start;
         }
-        
-        Object result = sequence;        
+
+        Object result = sequence;
         sequence++;
         return result;
     }
-    
+
     @Override
     public Sequence copyOf(){
         Sequence copy = new Sequence();
@@ -47,24 +49,29 @@ public class Sequence extends SimpleConverter implements NullValueConverter{
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        final Sequence other = (Sequence) obj;
-        if (this.start != other.start && (this.start == null || !this.start.equals(other.start)))
-            return false;
-        if (this.sequence != other.sequence && (this.sequence == null || !this.sequence.equals(other.sequence)))
-            return false;
-        return true;
+    public int hashCode(){
+        int hash = 5;
+        hash = 83 * hash + Objects.hashCode(this.start);
+        hash = 83 * hash + Objects.hashCode(this.sequence);
+        return hash;
     }
 
     @Override
-    public int hashCode() {
-        int hash = 7;
-        hash = 41 * hash + (this.start != null ? this.start.hashCode() : 0);
-        hash = 41 * hash + (this.sequence != null ? this.sequence.hashCode() : 0);
-        return hash;
+    public boolean equals(Object obj){
+        if (obj == null){
+            return false;
+        }
+        if (getClass() != obj.getClass()){
+            return false;
+        }
+        final Sequence other = (Sequence) obj;
+        if (!Objects.equals(this.start, other.start)){
+            return false;
+        }
+        if (!Objects.equals(this.sequence, other.sequence)){
+            return false;
+        }
+        return true;
     }
+
 }
