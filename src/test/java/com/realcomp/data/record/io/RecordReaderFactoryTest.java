@@ -21,15 +21,15 @@ import org.junit.Test;
  *
  * @author krenfro
  */
-public class RecordReaderFactoryTest {
+public class RecordReaderFactoryTest{
 
-    public RecordReaderFactoryTest() {
+    public RecordReaderFactoryTest(){
     }
 
     @Test
     public void readerTest() throws FormatException, IOException, SchemaException{
 
-        Map<String,String> format = new HashMap<String,String>();
+        Map<String, String> format = new HashMap<String, String>();
         format.put("type", "TAB");
         format.put("header", "true");
         format.put("doesnotexist", "blabla");
@@ -37,15 +37,13 @@ public class RecordReaderFactoryTest {
         RecordReader reader = RecordReaderFactory.build(format);
 
         IOContext ctx = new IOContextBuilder()
-                    .attributes(format)
-                    .in(new ByteArrayInputStream(new byte[10]))
-                    .build();
+                .attributes(format)
+                .in(new ByteArrayInputStream(new byte[10]))
+                .build();
         reader.open(ctx);
 
         assertTrue(reader.getClass() == DelimitedFileReader.class);
         assertTrue('\t' == ((DelimitedFileReader) reader).getDelimiter());
         assertTrue(((DelimitedFileReader) reader).isHeader());
     }
-
-
 }

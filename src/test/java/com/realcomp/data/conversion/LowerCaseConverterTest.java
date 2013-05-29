@@ -9,37 +9,32 @@ import static org.junit.Assert.*;
  */
 public class LowerCaseConverterTest extends StringConverterTest{
 
-    public LowerCaseConverterTest() {
+    public LowerCaseConverterTest(){
         converter = new LowerCase();
     }
-
 
     /**
      * Test of convert method, of class CurrentDate.
      */
     @Test
-    public void testConvert() throws Exception {
+    public void testConvert() throws Exception{
 
-        LowerCase converter = new LowerCase();        
+        LowerCase converter = new LowerCase();
         assertEquals("asdf", converter.convert("ASDF"));
         assertEquals("2893", converter.convert("2893"));
     }
 
-
     @Test
-    public void testCopyOf() {
+    public void testCopyOf(){
         LowerCase a = new LowerCase();
         LowerCase b = a.copyOf();
         assertEquals(a, b);
     }
-    
+
     @Test
-    public void testHashCode() {
+    public void testHashCode(){
         LowerCase a = new LowerCase();
         LowerCase b = new LowerCase();
         assertEquals(a.hashCode(), b.hashCode());
     }
-    
-    
-    
 }

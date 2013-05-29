@@ -5,30 +5,30 @@ import com.realcomp.data.validation.field.Key;
 import java.util.Comparator;
 
 /**
- * Orders Fields by their <i>key</i>'s index.  
- * Non-indexed keys are equal, and are stably sorted after indexed key fields.
- * 
+ * Orders Fields by their <i>key</i>'s index. Non-indexed keys are equal, and are stably sorted after indexed key
+ * fields.
+ *
  * @author krenfro
  */
 public class FieldKeyComparator implements Comparator<Field>{
 
     @Override
-    public int compare(Field a, Field b) {
+    public int compare(Field a, Field b){
         return compare(getKey(a), getKey(b));
     }
-    
-    
+
     protected Key getKey(Field field){
         Key key = null;
-        for (Operation op: field.getOperations()){
-            if (op instanceof com.realcomp.data.validation.field.Key)
+        for (Operation op : field.getOperations()){
+            if (op instanceof com.realcomp.data.validation.field.Key){
                 key = (Key) op;
+            }
         }
         return key;
     }
-    
+
     protected int compare(Key a, Key b){
-        
+
         int result;
         if (a == null && b == null){
             result = 0;
@@ -55,8 +55,7 @@ public class FieldKeyComparator implements Comparator<Field>{
                 result = indexA.compareTo(indexB);
             }
         }
-        
+
         return result;
     }
-
 }

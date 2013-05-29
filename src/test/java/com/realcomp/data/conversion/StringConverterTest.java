@@ -8,17 +8,17 @@ import static org.junit.Assert.*;
  *
  * @author krenfro
  */
-public class StringConverterTest extends ConverterTest {
-    
-    public StringConverterTest() {
+public class StringConverterTest extends ConverterTest{
+
+    public StringConverterTest(){
         converter = new StringConverter();
     }
-    
+
     @Override
     @Test
     public void testSupportedTypes(){
-                
-        for (DataType type: DataType.values()){         
+
+        for (DataType type : DataType.values()){
             if (type == DataType.STRING){
                 assertTrue(converter.getSupportedTypes().contains(type));
             }
@@ -27,5 +27,4 @@ public class StringConverterTest extends ConverterTest {
             }
         }
     }
-           
 }

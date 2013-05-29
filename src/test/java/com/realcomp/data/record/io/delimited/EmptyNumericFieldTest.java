@@ -18,31 +18,30 @@ import static org.junit.Assert.*;
  *
  * @author krenfro
  */
-public class EmptyNumericFieldTest {
+public class EmptyNumericFieldTest{
 
-    public EmptyNumericFieldTest() {
+    public EmptyNumericFieldTest(){
     }
 
-
     @Test
-    public void testEmptyFields() throws Exception {
+    public void testEmptyFields() throws Exception{
 
         FieldList fields = getSchema().getDefaultFieldList();
         IOContext context = new IOContextBuilder()
                 .schema(getSchema())
                 .in(new ByteArrayInputStream(new byte[1]))
                 .build();
-        
-        String[] data = new String[]{"123","456","789"};
+
+        String[] data = new String[]{"123", "456", "789"};
         DelimitedFileReader instance = new DelimitedFileReader();
         instance.open(context);
-        
+
         Record record = instance.loadRecord(fields, data);
         assertEquals(123d, (Integer) record.get("int"), .001d);
         assertEquals(456d, (Float) record.get("float"), .001d);
         assertEquals(789d, (Double) record.get("double"), .001d);
 
-        data = new String[]{"","",""};
+        data = new String[]{"", "", ""};
         instance = new DelimitedFileReader();
         instance.open(context);
         record = instance.loadRecord(fields, data);
@@ -65,5 +64,4 @@ public class EmptyNumericFieldTest {
         schema.addFieldList(fields);
         return schema;
     }
-
 }

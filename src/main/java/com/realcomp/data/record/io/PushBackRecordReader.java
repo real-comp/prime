@@ -11,14 +11,14 @@ import java.util.Queue;
 
 /**
  * Wraps a RecordReader to provide a push-back feature to un-read Records.
- * 
+ *
  * @author krenfro
  */
 public class PushBackRecordReader implements RecordReader{
-    
+
     private RecordReader reader;
     private Queue<Record> queue;
-    
+
     public PushBackRecordReader(RecordReader reader){
         queue = new LinkedList<Record>();
         this.reader = reader;
@@ -26,40 +26,40 @@ public class PushBackRecordReader implements RecordReader{
 
     public void pushBack(Record record){
         queue.add(record);
-    }    
-    
+    }
+
     @Override
-    public long getCount() {
+    public long getCount(){
         return reader.getCount() - queue.size();
     }
-    
+
     @Override
-    public Record read() throws IOException, ValidationException, ConversionException, SchemaException {        
+    public Record read() throws IOException, ValidationException, ConversionException, SchemaException{
         return queue.isEmpty() ? reader.read() : queue.remove();
     }
 
     @Override
-    public void close() {
+    public void close(){
         reader.close();
     }
 
     @Override
-    public void open(IOContext context) throws IOException, SchemaException {
+    public void open(IOContext context) throws IOException, SchemaException{
         reader.open(context);
     }
-    
+
     @Override
-    public IOContext getIOContext() {
+    public IOContext getIOContext(){
         return reader.getIOContext();
     }
 
     @Override
-    public void close(boolean closeIOContext) {
+    public void close(boolean closeIOContext){
         reader.close(closeIOContext);
     }
-    
+
     @Override
-    public Map<String,String> getDefaults(){
+    public Map<String, String> getDefaults(){
         return reader.getDefaults();
     }
 }

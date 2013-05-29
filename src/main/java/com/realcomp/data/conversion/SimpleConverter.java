@@ -7,7 +7,7 @@ import java.util.List;
 
 /**
  * A Converter for the simple DataTypes (STRING, BOOLEAN, INTEGER, FLOAT, LONG, DOUBLE)
- * 
+ *
  * @author krenfro
  */
 public abstract class SimpleConverter implements Converter{
@@ -21,14 +21,14 @@ public abstract class SimpleConverter implements Converter{
         supportedTypes.add(DataType.INTEGER);
         supportedTypes.add(DataType.FLOAT);
         supportedTypes.add(DataType.DOUBLE);
-        supportedTypes.add(DataType.LONG);        
+        supportedTypes.add(DataType.LONG);
     }
 
     @Override
     public abstract Object convert(Object value) throws ConversionException;
-    
+
     /**
-     * 
+     *
      * @return List of DataTypes supported by this converter. All Types except Map and List
      */
     @Override

@@ -5,42 +5,43 @@ import com.realcomp.data.annotation.Validator;
 import com.realcomp.data.conversion.ConversionException;
 import com.realcomp.data.validation.ValidationException;
 
-
 /**
  *
  * @author krenfro
  */
 @Validator("validateLongRange")
-public class LongRangeValidator extends BaseFieldValidator {
+public class LongRangeValidator extends BaseFieldValidator{
 
     protected long min = Long.MIN_VALUE;
     protected long max = Long.MAX_VALUE;
 
     @Override
     public void validate(Object value) throws ValidationException{
-        
-        if (value == null)
+
+        if (value == null){
             throw new ValidationException("cannot validate null Object");
-        if (min > max)
+        }
+        if (min > max){
             throw new ValidationException(String.format("schema problem: min (%s) > max (%s)", min, max));
-        
+        }
+
         try{
             Long coerced = (Long) DataType.LONG.coerce(value);
-            
+
             if (coerced < min){
                 throw new ValidationException(
                         String.format("less than minimum value of %s", min), value, getSeverity());
             }
-            else if(coerced > max){
+            else if (coerced > max){
                 throw new ValidationException(
                         String.format("greater than maximum value of %s", max), value, getSeverity());
             }
         }
-        catch(ConversionException ex){
+        catch (ConversionException ex){
             throw new ValidationException(ex.getMessage(), value, getSeverity());
         }
     }
-    
+
     @Override
     public LongRangeValidator copyOf(){
         LongRangeValidator copy = new LongRangeValidator();
@@ -54,47 +55,51 @@ public class LongRangeValidator extends BaseFieldValidator {
 
         String s = value.trim();
         //remove leading zeros
-        while (s.length() > 1 & s.startsWith("0"))
+        while (s.length() > 1 & s.startsWith("0")){
             s = s.substring(1);
+        }
         return Long.parseLong(s);
     }
 
-    public long getMax() {
+    public long getMax(){
         return max;
     }
 
-    public void setMax(long max) {
+    public void setMax(long max){
         this.max = max;
     }
 
-    public long getMin() {
+    public long getMin(){
         return min;
     }
 
-    public void setMin(long min) {
+    public void setMin(long min){
         this.min = min;
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (obj == null)
+    public boolean equals(Object obj){
+        if (obj == null){
             return false;
-        if (getClass() != obj.getClass())
+        }
+        if (getClass() != obj.getClass()){
             return false;
+        }
         final LongRangeValidator other = (LongRangeValidator) obj;
-        if (this.min != other.min)
+        if (this.min != other.min){
             return false;
-        if (this.max != other.max)
+        }
+        if (this.max != other.max){
             return false;
+        }
         return true;
     }
 
     @Override
-    public int hashCode() {
+    public int hashCode(){
         int hash = 3;
         hash = 79 * hash + (int) (this.min ^ (this.min >>> 32));
         hash = 79 * hash + (int) (this.max ^ (this.max >>> 32));
         return hash;
     }
-
 }

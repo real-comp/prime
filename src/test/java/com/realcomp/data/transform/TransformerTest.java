@@ -21,35 +21,35 @@ import static org.junit.Assert.*;
  *
  * @author krenfro
  */
-public class TransformerTest {
-    
-    public TransformerTest() {
+public class TransformerTest{
+
+    public TransformerTest(){
     }
 
     @Test
     public void testA() throws ConversionException, ValidationException, RecordKeyException{
-        
+
         Transformer t = new Transformer();
         FieldList fields = new FieldList();
         Field field = new Field("a");
         field.addOperation(new Trim());
         fields.add(field);
         t.setFields(fields);
-        
+
         Record record = new Record();
         record.put("a", "asdf  ");
         record.put("b", "83838383");
-        
+
         TransformContext context = new TransformContext();
         context.setRecord(record);
-        
+
         assertEquals("asdf  ", record.get("a"));
         t.transform(context);
         assertEquals("asdf", record.get("a"));
-        
+
         field.addOperation(new RequiredValidator());
         fields.add(field);
         t.setFields(fields);
-        
+
     }
 }

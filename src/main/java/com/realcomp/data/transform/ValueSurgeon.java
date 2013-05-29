@@ -17,24 +17,24 @@ import java.util.List;
  *
  * @author krenfro
  */
-public class ValueSurgeon {
-
-
+public class ValueSurgeon{
 
     /**
      * @param context
      * @param operations the operations to perform
-     * @return the result of the operation.   
+     * @return the result of the operation.
      * @throws ConversionException
      * @throws ValidationException
      */
     public Object operate(List<Operation> operations, TransformContext context)
             throws ConversionException, ValidationException{
 
-        if (operations == null)
+        if (operations == null){
             throw new IllegalArgumentException("operations is null");
-        if (context == null)
+        }
+        if (context == null){
             throw new IllegalArgumentException("context is null");
+        }
 
         Record record = context.getRecord();
         String key = context.getKey();
@@ -44,12 +44,12 @@ public class ValueSurgeon {
 
         //the value may be null in the record, but there may still be output if there are
         // converters like concat or constant which can output values with null input.
-        for (Operation op: operations){
+        for (Operation op : operations){
             value = operate(op, value, context);
         }
 
         if (context.getSchema() != null && context.getSchema().getAfterOperations() != null){
-            for (Operation op: context.getSchema().getAfterOperations()){
+            for (Operation op : context.getSchema().getAfterOperations()){
                 value = operate(op, value, context);
             }
         }
@@ -57,21 +57,20 @@ public class ValueSurgeon {
         return value;
     }
 
-
     /**
      * Perform the requested operation on the data, optionally using the provided Record
      * for multi-field operations.
      *
      * @param operation to be performed
-     * @param data to be operated on
-     * @param context the context of the transformation
+     * @param data      to be operated on
+     * @param context   the context of the transformation
      * @return the result of the operation
      * @throws ConversionException
      * @throws ValidationException
      * @throws MissingFieldException
      */
     protected Object operate(Operation operation, Object data, TransformContext context)
-                throws ConversionException, ValidationException, MissingFieldException{
+            throws ConversionException, ValidationException, MissingFieldException{
 
         Object result = data;
 
@@ -84,7 +83,7 @@ public class ValueSurgeon {
                     ((Validator) operation).validate(data);
                 }
             }
-            catch(ValidationException ve){
+            catch (ValidationException ve){
                 context.handleValidationException((Validator) operation, ve);
             }
         }

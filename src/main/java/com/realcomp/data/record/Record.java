@@ -14,17 +14,16 @@ import javax.xml.bind.annotation.XmlTransient;
  * @author krenfro
  */
 @XmlRootElement
-public class Record implements Map<String,Object>, Serializable {
+public class Record implements Map<String, Object>, Serializable{
 
     public static final long serialVersionUID = 2L;
-
     private Map<String, Object> data;
 
-    public Record() {
+    public Record(){
         data = new HashMap<String, Object>();
     }
 
-    public Record(Record copy) {
+    public Record(Record copy){
         data = new HashMap<String, Object>();
         data.putAll(copy.data);
     }
@@ -32,39 +31,38 @@ public class Record implements Map<String,Object>, Serializable {
     /**
      * Wraps a map as a Record.
      *
-     * No checks are done to make sure that this map conforms to the realcomp-data
-     * data model.
+     * No checks are done to make sure that this map conforms to the realcomp-data data model.
+     *
      * @param map
      */
-    public Record(Map<String, Object> map) {
-        if (map == null)
+    public Record(Map<String, Object> map){
+        if (map == null){
             throw new IllegalArgumentException("data is null");
+        }
         data = new HashMap<String, Object>();
-        for (Entry<String,Object> entry: map.entrySet()){
+        for (Entry<String, Object> entry : map.entrySet()){
             put(entry.getKey(), entry.getValue());
         }
     }
 
     /**
-     * Return this map as a map that does not resolve composite keys.
-     * Changes made to the map will be reflected in this Record.
+     * Return this map as a map that does not resolve composite keys. Changes made to the map will be reflected in this
+     * Record.
      *
      */
-    public Map<String,Object> asSimpleMap(){
+    public Map<String, Object> asSimpleMap(){
         return data;
     }
 
-    public boolean containsKey(String key) {
+    public boolean containsKey(String key){
         return data.containsKey(key);
     }
 
-
     @XmlTransient
     @Override
-    public boolean isEmpty() {
+    public boolean isEmpty(){
         return data.isEmpty();
     }
-
 
     /**
      * @return all leaf node keys contained in this Record. The keys may be <i>composite</i> and <i>indexed</i>.
@@ -72,7 +70,7 @@ public class Record implements Map<String,Object>, Serializable {
     @Override
     public Set<String> keySet(){
         Set<String> keys = new HashSet<String>();
-        Iterator<Map.Entry<String,Object>> itr  = entrySet().iterator();
+        Iterator<Map.Entry<String, Object>> itr = entrySet().iterator();
         while (itr.hasNext()){
             keys.add(itr.next().getKey());
         }
@@ -84,9 +82,9 @@ public class Record implements Map<String,Object>, Serializable {
      * @return all leaf node values contained in this Record.
      */
     @Override
-    public Collection<Object> values() {
+    public Collection<Object> values(){
         List<Object> values = new ArrayList<Object>();
-        Iterator<Map.Entry<String,Object>> itr = entrySet().iterator();
+        Iterator<Map.Entry<String, Object>> itr = entrySet().iterator();
         while (itr.hasNext()){
             values.add(itr.next().getValue());
         }
@@ -98,16 +96,15 @@ public class Record implements Map<String,Object>, Serializable {
      * @return all leaf node values in this Record.
      */
     @Override
-    public Set<Entry<String, Object>> entrySet() {
+    public Set<Entry<String, Object>> entrySet(){
         return RecordEntries.getEntries(data);
     }
 
-
-
     @Override
-    public Object put(String key, Object value) {
-        if (key == null)
+    public Object put(String key, Object value){
+        if (key == null){
             throw new RecordKeyException("Record keys cannot be null.");
+        }
 
         return RecordValueAssembler.assemble(data, key, value);
     }
@@ -134,7 +131,6 @@ public class Record implements Map<String,Object>, Serializable {
         return value == null ? defaultValue : value;
     }
 
-
     public String getString(String key){
         return (String) get(key);
     }
@@ -143,7 +139,7 @@ public class Record implements Map<String,Object>, Serializable {
         String value = getString(key);
         return value == null ? defaultValue : value;
     }
-    
+
     public Boolean getBoolean(String key){
         Object value = get(key);
         Boolean result = null;
@@ -162,7 +158,6 @@ public class Record implements Map<String,Object>, Serializable {
         Boolean value = getBoolean(key);
         return value == null ? defaultValue : value;
     }
-    
 
     public Integer getInteger(String key){
         return (Integer) get(key);
@@ -200,12 +195,12 @@ public class Record implements Map<String,Object>, Serializable {
         return value == null ? defaultValue : value;
     }
 
-    public Map<String,Object> getMap(String key){
-        return (Map<String,Object>) get(key);
+    public Map<String, Object> getMap(String key){
+        return (Map<String, Object>) get(key);
     }
 
-    public Map<String,Object> getMap(String key, Map<String,Object> defaultValue){
-        Map<String,Object> value = getMap(key);
+    public Map<String, Object> getMap(String key, Map<String, Object> defaultValue){
+        Map<String, Object> value = getMap(key);
         return value == null ? defaultValue : value;
     }
 
@@ -220,6 +215,7 @@ public class Record implements Map<String,Object>, Serializable {
 
     /**
      * Resolve all values for the specified key
+     *
      * @param key
      * @return list of values, never null.
      */
@@ -230,22 +226,22 @@ public class Record implements Map<String,Object>, Serializable {
     }
 
     @Override
-    public int size() {
+    public int size(){
         return keySet().size();
     }
 
     @Override
-    public boolean containsKey(Object key) {
+    public boolean containsKey(Object key){
         return key == null ? false : keySet().contains(key.toString());
     }
 
     @Override
-    public boolean containsValue(Object value) {
+    public boolean containsValue(Object value){
         return values().contains(value);
     }
 
     @Override
-    public Object remove(Object key) {
+    public Object remove(Object key){
 
         Object previous = null;
         if (key != null){
@@ -255,11 +251,11 @@ public class Record implements Map<String,Object>, Serializable {
                 Object existing = RecordValueResolver.resolve(data, parent.toString());
                 if (DataType.getDataType(existing) == DataType.MAP){
                     if (child.isIndexed()){
-                        List<Object> list = (List<Object>) ((Map<String,Object>) existing).get(child.getName());
+                        List<Object> list = (List<Object>) ((Map<String, Object>) existing).get(child.getName());
                         previous = list.remove(child.getIndex());
                     }
                     else{
-                        previous = ((Map<String,Object>) existing).remove(child.getName());
+                        previous = ((Map<String, Object>) existing).remove(child.getName());
                     }
                 }
             }
@@ -272,26 +268,29 @@ public class Record implements Map<String,Object>, Serializable {
     }
 
     @Override
-    public void putAll(Map<? extends String, ? extends Object> m) {
-        for (Entry entry: m.entrySet()){
+    public void putAll(Map<? extends String, ? extends Object> m){
+        for (Entry entry : m.entrySet()){
             put((String) entry.getKey(), entry.getValue());
         }
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (obj == null)
+    public boolean equals(Object obj){
+        if (obj == null){
             return false;
-        if (getClass() != obj.getClass())
+        }
+        if (getClass() != obj.getClass()){
             return false;
+        }
         final Record other = (Record) obj;
-        if (this.data != other.data && (this.data == null || !this.data.equals(other.data)))
+        if (this.data != other.data && (this.data == null || !this.data.equals(other.data))){
             return false;
+        }
         return true;
     }
 
     @Override
-    public int hashCode() {
+    public int hashCode(){
         int hash = 3;
         hash = 23 * hash + (this.data != null ? this.data.hashCode() : 0);
         return hash;

@@ -11,16 +11,16 @@ import static org.junit.Assert.*;
  *
  * @author krenfro
  */
-public class ComplexConverterTest extends ConverterTest {
-    
+public class ComplexConverterTest extends ConverterTest{
+
     public ComplexConverterTest(){
         converter = new MockConverter();
     }
-    
+
     @Override
     @Test
     public void testSupportedTypes(){
-        
+
         super.testSupportedTypes();
         List<DataType> types = new ArrayList<DataType>();
         types.add(DataType.STRING);
@@ -31,8 +31,7 @@ public class ComplexConverterTest extends ConverterTest {
         types.add(DataType.BOOLEAN);
         types.add(DataType.MAP);
         types.add(DataType.LIST);
-        
+
         assertTrue(converter.getSupportedTypes().containsAll(types));
     }
-           
 }

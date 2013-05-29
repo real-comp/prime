@@ -17,37 +17,32 @@ import java.util.regex.Pattern;
  * @author krenfro
  */
 @XStreamAlias("schema")
-public class Schema {
+public class Schema{
 
-     protected static final Pattern DEFAULT_CLASSIFIER = Pattern.compile(".*");
-
+    protected static final Pattern DEFAULT_CLASSIFIER = Pattern.compile(".*");
     @XStreamAsAttribute
     private String name;
-
     @XStreamAsAttribute
     private String version;
-
-    private Map<String,String> format;
-
+    private Map<String, String> format;
     private List<Operation> beforeFirst;
     private List<Operation> before;
     private List<Operation> after;
     private List<Operation> afterLast;
-
-    @XStreamImplicit(itemFieldName="fields")
+    @XStreamImplicit(itemFieldName = "fields")
     private List<FieldList> fieldLists;
 
     public Schema(){
-        format = new HashMap<String,String>();
+        format = new HashMap<String, String>();
         fieldLists = new ArrayList<FieldList>();
     }
 
     public Schema(Schema copy){
-        format = new HashMap<String,String>();
+        format = new HashMap<String, String>();
         format.putAll(copy.format);
         fieldLists = new ArrayList<FieldList>();
         if (copy.fieldLists != null){
-            for (FieldList fieldList: copy.fieldLists){
+            for (FieldList fieldList : copy.fieldLists){
                 fieldLists.add(new FieldList(fieldList));
             }
         }
@@ -60,14 +55,11 @@ public class Schema {
         setAfterOperations(copy.getAfterOperations());
     }
 
-
     /**
-     * Classify a record and return the FieldList that matches.
-     * If only one FieldList is defined, it is returned.
-     * If multiple FieldLists support the specified Record, then the FieldList that
-     * is not the <i>default</i> is returned.
-     * If multiple FieldLists support the specified Record, and neither are the <i>default</i> then the
-     * one defined first is returned.
+     * Classify a record and return the FieldList that matches. If only one FieldList is defined, it is returned. If
+     * multiple FieldLists support the specified Record, then the FieldList that is not the <i>default</i> is returned.
+     * If multiple FieldLists support the specified Record, and neither are the <i>default</i> then the one defined
+     * first is returned.
      *
      * @param record not null
      * @return the FieldList that should be used for the Record. never null
@@ -75,14 +67,15 @@ public class Schema {
      */
     public FieldList classify(Record record) throws SchemaException{
 
-        if (record == null)
+        if (record == null){
             throw new IllegalArgumentException("record is null");
+        }
 
 
         FieldList match = getDefaultFieldList();
 
         if (fieldLists.size() > 1){
-            for (FieldList fieldList: fieldLists){
+            for (FieldList fieldList : fieldLists){
                 if (!fieldList.isDefaultClassifier() && fieldList.supports(record)){
                     match = fieldList;
                 }
@@ -92,24 +85,23 @@ public class Schema {
             }
         }
 
-        if (match == null)
+        if (match == null){
             throw new SchemaException("The schema [" + getName() + "] does not support the Record.");
+        }
 
         return match;
     }
 
-
     /**
-     * Returns the FieldList that has the default classifier (match anything),
-     * or is defined first.
+     * Returns the FieldList that has the default classifier (match anything), or is defined first.
      *
      * @return the default FieldList, or the FieldList that was defined first, null if not FieldLists have been
-     *  specified.
+     *         specified.
      */
     public FieldList getDefaultFieldList(){
 
         FieldList retVal = null;
-        for (FieldList fieldList: fieldLists){
+        for (FieldList fieldList : fieldLists){
             if (retVal == null){
                 retVal = fieldList;
             }
@@ -125,7 +117,7 @@ public class Schema {
      *
      * @return the FieldLists supported by this Schema
      */
-    public List<FieldList> getFieldLists() {
+    public List<FieldList> getFieldLists(){
         return fieldLists;
     }
 
@@ -133,12 +125,13 @@ public class Schema {
      *
      * @param fieldLists not null
      */
-    public void setFieldLists(List<FieldList> fieldLists) {
-        if (fieldLists == null)
+    public void setFieldLists(List<FieldList> fieldLists){
+        if (fieldLists == null){
             throw new IllegalArgumentException("fieldLists is null");
+        }
 
         this.fieldLists.clear();
-        for (FieldList f: fieldLists){
+        for (FieldList f : fieldLists){
             this.fieldLists.add(new FieldList(f));
         }
     }
@@ -148,8 +141,9 @@ public class Schema {
      * @param fieldList to be added
      */
     public void addFieldList(FieldList fieldList){
-        if (fieldList == null)
+        if (fieldList == null){
             throw new IllegalArgumentException("fieldList is null");
+        }
 
         fieldLists.add(new FieldList(fieldList));
     }
@@ -160,15 +154,16 @@ public class Schema {
      * @return true if removed; else false
      */
     public boolean removeFieldList(FieldList fieldList){
-        if (fieldList == null)
+        if (fieldList == null){
             throw new IllegalArgumentException("fieldList is null");
+        }
         return fieldLists.remove(fieldList);
     }
 
-
     public void addField(Field field){
-        if (field == null)
+        if (field == null){
             throw new IllegalArgumentException("field is null");
+        }
         FieldList fieldList = getDefaultFieldList();
         if (fieldList == null){
             fieldList = new FieldList();
@@ -197,7 +192,7 @@ public class Schema {
      *
      * @return optional name for this schema, or null
      */
-    public String getName() {
+    public String getName(){
         return name;
     }
 
@@ -205,24 +200,25 @@ public class Schema {
      *
      * @param name
      */
-    public void setName(String name) {
+    public void setName(String name){
         this.name = name;
     }
 
     /**
-     * @return all Operations to perform on all Fields after all Field specific operations are
-     * finished, or null if none specified.
+     * @return all Operations to perform on all Fields after all Field specific operations are finished, or null if none
+     *         specified.
      *
      */
-    public List<Operation> getAfterOperations() {
+    public List<Operation> getAfterOperations(){
         return after;
     }
 
     /**
      * Set all Operations to perform on all Fields after all Field specific operations are finished.
+     *
      * @param after null will clear existing list
      */
-    public void setAfterOperations(List<Operation> after) {
+    public void setAfterOperations(List<Operation> after){
 
         if (after == null){
             this.after = null;
@@ -231,15 +227,15 @@ public class Schema {
             if (this.after != null){
                 this.after.clear();
             }
-            for (Operation op: after){
+            for (Operation op : after){
                 addAfterOperation(op);
             }
         }
     }
 
     /**
-     * Add an Operation to the after operations group, to be run after all Field specific
-     * Operations are performed.
+     * Add an Operation to the after operations group, to be run after all Field specific Operations are performed.
+     *
      * @param op not null
      */
     public void addAfterOperation(Operation op){
@@ -253,22 +249,20 @@ public class Schema {
         this.after.add(op);
     }
 
-
-
     /**
-     * @return all Operations to perform after all Records have been processed, or null
-     * if none specified.
+     * @return all Operations to perform after all Records have been processed, or null if none specified.
      *
      */
-    public List<Operation> getAfterLastOperations() {
+    public List<Operation> getAfterLastOperations(){
         return afterLast;
     }
 
     /**
      * Set all Operations to perform after all Records have been processed.
+     *
      * @param afterLast null will clear existing list
      */
-    public void setAfterLastOperations(List<Operation> afterLast) {
+    public void setAfterLastOperations(List<Operation> afterLast){
 
         if (afterLast == null){
             this.afterLast = null;
@@ -277,15 +271,15 @@ public class Schema {
             if (this.afterLast != null){
                 this.afterLast.clear();
             }
-            for (Operation op: afterLast){
+            for (Operation op : afterLast){
                 addAfterOperation(op);
             }
         }
     }
 
     /**
-     * Add an Operation to the afterLast operations group, to be run after all Records
-     * have been processed.
+     * Add an Operation to the afterLast operations group, to be run after all Records have been processed.
+     *
      * @param op not null
      */
     public void addAfterLastOperation(Operation op){
@@ -299,23 +293,21 @@ public class Schema {
         this.afterLast.add(op);
     }
 
-
-
     /**
      *
-     * @return all Operations to perform on all Fields before any Field specific Operations are
-     * performed, or null if none specified.
+     * @return all Operations to perform on all Fields before any Field specific Operations are performed, or null if
+     *         none specified.
      */
-    public List<Operation> getBeforeOperations() {
+    public List<Operation> getBeforeOperations(){
         return before;
     }
 
     /**
-     * Set all Operations to perform on all Fields before any Field specific Operations are
-     * performed.
+     * Set all Operations to perform on all Fields before any Field specific Operations are performed.
+     *
      * @param before null will clear list
      */
-    public void setBeforeOperations(List<Operation> before) {
+    public void setBeforeOperations(List<Operation> before){
         if (before == null){
             this.before = null;
         }
@@ -323,15 +315,15 @@ public class Schema {
             if (this.before != null){
                 this.before.clear();
             }
-            for (Operation op: before){
+            for (Operation op : before){
                 addBeforeOperation(op);
             }
         }
     }
 
     /**
-     * Add an Operation to the before operations group, to be run before all Field specific
-     * Operations are performed.
+     * Add an Operation to the before operations group, to be run before all Field specific Operations are performed.
+     *
      * @param op not null, not a MultiFieldOperation
      */
     public void addBeforeOperation(Operation op){
@@ -349,22 +341,20 @@ public class Schema {
         this.before.add(op);
     }
 
-
-
     /**
      *
-     * @return all Operations to perform before any Records are processed, or null
-     * if none specified.
+     * @return all Operations to perform before any Records are processed, or null if none specified.
      */
-    public List<Operation> getBeforeFirstOperations() {
+    public List<Operation> getBeforeFirstOperations(){
         return beforeFirst;
     }
 
     /**
      * Set all Operations to perform before any Records are processed.
+     *
      * @param beforeFirst null will clear list
      */
-    public void setBeforeFirstOperations(List<Operation> beforeFirst) {
+    public void setBeforeFirstOperations(List<Operation> beforeFirst){
         if (beforeFirst == null){
             this.beforeFirst = null;
         }
@@ -372,15 +362,15 @@ public class Schema {
             if (this.beforeFirst != null){
                 this.beforeFirst.clear();
             }
-            for (Operation op: beforeFirst){
+            for (Operation op : beforeFirst){
                 addBeforeFirstOperation(op);
             }
         }
     }
 
     /**
-     * Add an Operation to the beforeFirst operations group, to be run before any Records
-     * are processed.
+     * Add an Operation to the beforeFirst operations group, to be run before any Records are processed.
+     *
      * @param op not null, not a MultiFieldOperation
      */
     public void addBeforeFirstOperation(Operation op){
@@ -398,33 +388,30 @@ public class Schema {
         this.beforeFirst.add(op);
     }
 
-
     /**
      * @return optional version for this Schema, or null.
      */
-    public String getVersion() {
+    public String getVersion(){
         return version;
     }
 
     /**
      * @param version
      */
-    public void setVersion(String version) {
+    public void setVersion(String version){
         this.version = version;
     }
 
-    public Map<String,String> getFormat() {
+    public Map<String, String> getFormat(){
         return format;
     }
 
-    public void setFormat(Map<String,String> format) {
+    public void setFormat(Map<String, String> format){
         if (format == null){
             throw new IllegalArgumentException("format is null");
         }
         this.format = format;
     }
-
-
 
     @Override
     public String toString(){
@@ -439,40 +426,49 @@ public class Schema {
         try{
             return classify(record).toString(record);
         }
-        catch(SchemaException ex){
+        catch (SchemaException ex){
             return getDefaultFieldList().toString(record);
         }
     }
 
-
     @Override
-    public boolean equals(Object obj) {
-        if (obj == null)
+    public boolean equals(Object obj){
+        if (obj == null){
             return false;
-        if (getClass() != obj.getClass())
+        }
+        if (getClass() != obj.getClass()){
             return false;
+        }
         final Schema other = (Schema) obj;
-        if ((this.name == null) ? (other.name != null) : !this.name.equals(other.name))
+        if ((this.name == null) ? (other.name != null) : !this.name.equals(other.name)){
             return false;
-        if ((this.version == null) ? (other.version != null) : !this.version.equals(other.version))
+        }
+        if ((this.version == null) ? (other.version != null) : !this.version.equals(other.version)){
             return false;
-        if (this.format != other.format && (this.format == null || !this.format.equals(other.format)))
+        }
+        if (this.format != other.format && (this.format == null || !this.format.equals(other.format))){
             return false;
-        if (this.beforeFirst != other.beforeFirst && (this.beforeFirst == null || !this.beforeFirst.equals(other.beforeFirst)))
+        }
+        if (this.beforeFirst != other.beforeFirst && (this.beforeFirst == null || !this.beforeFirst.equals(other.beforeFirst))){
             return false;
-        if (this.before != other.before && (this.before == null || !this.before.equals(other.before)))
+        }
+        if (this.before != other.before && (this.before == null || !this.before.equals(other.before))){
             return false;
-        if (this.after != other.after && (this.after == null || !this.after.equals(other.after)))
+        }
+        if (this.after != other.after && (this.after == null || !this.after.equals(other.after))){
             return false;
-        if (this.afterLast != other.afterLast && (this.afterLast == null || !this.afterLast.equals(other.afterLast)))
+        }
+        if (this.afterLast != other.afterLast && (this.afterLast == null || !this.afterLast.equals(other.afterLast))){
             return false;
-        if (this.fieldLists != other.fieldLists && (this.fieldLists == null || !this.fieldLists.equals(other.fieldLists)))
+        }
+        if (this.fieldLists != other.fieldLists && (this.fieldLists == null || !this.fieldLists.equals(other.fieldLists))){
             return false;
+        }
         return true;
     }
 
     @Override
-    public int hashCode() {
+    public int hashCode(){
         int hash = 5;
         hash = 83 * hash + (this.name != null ? this.name.hashCode() : 0);
         hash = 83 * hash + (this.version != null ? this.version.hashCode() : 0);
@@ -484,6 +480,4 @@ public class Schema {
         hash = 83 * hash + (this.fieldLists != null ? this.fieldLists.hashCode() : 0);
         return hash;
     }
-
-
 }

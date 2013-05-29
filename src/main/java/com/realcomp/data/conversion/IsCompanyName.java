@@ -1,18 +1,14 @@
 package com.realcomp.data.conversion;
 
 import com.realcomp.names.CompanyNameRecognizer;
-import com.realcomp.names.Name;
-import com.realcomp.names.NameParser;
-import java.util.List;
 
 /**
- * Parses a name, returning the 'first name' if the name is and instance of
- * IndividualName; else ""
+ * Parses a name, returning the 'first name' if the name is and instance of IndividualName; else ""
  *
  * @author krenfro
  */
 @com.realcomp.data.annotation.Converter("isCompanyName")
-public class IsCompanyName extends StringConverter {
+public class IsCompanyName extends StringConverter{
 
     private boolean lastNameFirst = true;
     private boolean recognizeTrusts = true;
@@ -29,11 +25,11 @@ public class IsCompanyName extends StringConverter {
         return isCompany;
     }
 
-    public boolean isLastNameFirst() {
+    public boolean isLastNameFirst(){
         return lastNameFirst;
     }
 
-    public void setLastNameFirst(boolean lastNameFirst) {
+    public void setLastNameFirst(boolean lastNameFirst){
         this.lastNameFirst = lastNameFirst;
     }
 

@@ -1,4 +1,3 @@
-
 package com.realcomp.data.validation.field;
 
 import com.realcomp.data.annotation.Validator;
@@ -20,7 +19,7 @@ import com.realcomp.data.validation.ValidationException;
  * @author krenfro
  */
 @Validator("key")
-public class Key extends BaseFieldValidator {
+public class Key extends BaseFieldValidator{
 
     protected Integer index;
 
@@ -30,23 +29,22 @@ public class Key extends BaseFieldValidator {
     }
 
     @Override
-    public Key copyOf() {
+    public Key copyOf(){
         Key copy = new Key();
         copy.setSeverity(severity);
         return copy;
     }
 
-    public Integer getIndex() {
+    public Integer getIndex(){
         return index;
     }
 
-    public void setIndex(Integer index) {
+    public void setIndex(Integer index){
         this.index = index;
     }
 
     @Override
-    public void validate(Object value) throws ValidationException {
-
+    public void validate(Object value) throws ValidationException{
     }
 
     @Override
@@ -70,6 +68,4 @@ public class Key extends BaseFieldValidator {
         }
         return true;
     }
-
-
 }

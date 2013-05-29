@@ -16,52 +16,51 @@ import java.util.regex.Pattern;
  * @author krenfro
  */
 public class FieldListConverter implements Converter{
-        
+
     @Override
     public boolean canConvert(Class type){
         return FieldList.class.isAssignableFrom(type);
     }
 
-
     @Override
-    public void marshal(Object o, HierarchicalStreamWriter writer, MarshallingContext mc) {
+    public void marshal(Object o, HierarchicalStreamWriter writer, MarshallingContext mc){
 
         FieldList fieldList = (FieldList) o;
-        if (!fieldList.isDefaultClassifier())
+        if (!fieldList.isDefaultClassifier()){
             writer.addAttribute("classifier", fieldList.getClassifier().toString());
-            
-       
-        for (Field field: fieldList){
+        }
+
+
+        for (Field field : fieldList){
             writer.startNode("field");
             mc.convertAnother(field);
             writer.endNode();
         }
     }
 
-
     @Override
-    public Object unmarshal(HierarchicalStreamReader reader, UnmarshallingContext uc) {
-        
-        FieldList fieldList = new FieldList();        
+    public Object unmarshal(HierarchicalStreamReader reader, UnmarshallingContext uc){
+
+        FieldList fieldList = new FieldList();
         String classifier = reader.getAttribute("classifier");
         if (classifier != null){
             fieldList.setClassifier(Pattern.compile(classifier));
         }
-        
+
         String name = reader.getAttribute("name");
         if (name != null){
-            fieldList.setName(name);  
+            fieldList.setName(name);
         }
-        
+
         while (reader.hasMoreChildren()){
             reader.moveDown();
             Field f = (Field) uc.convertAnother(fieldList, Field.class);
-            if (f.getType() == null)
+            if (f.getType() == null){
                 f.setType(DataType.STRING);
+            }
             fieldList.add(f);
             reader.moveUp();
         }
         return fieldList;
     }
-
 }

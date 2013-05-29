@@ -11,12 +11,12 @@ import java.util.Map;
  *
  * @author krenfro
  */
-public class RecordReaderFactory {
+public class RecordReaderFactory{
 
-    private static final Map<String,String> types;
+    private static final Map<String, String> types;
 
     static{
-        types = new HashMap<String,String>();
+        types = new HashMap<>();
         types.put("CSV", DelimitedFileReader.class.getName());
         types.put("TAB", DelimitedFileReader.class.getName());
         types.put("FIXED", FixedFileReader.class.getName());
@@ -31,15 +31,15 @@ public class RecordReaderFactory {
         return build(schema.getFormat());
     }
 
-
-    public static RecordReader build(Map<String,String> format) throws FormatException{
+    public static RecordReader build(Map<String, String> format) throws FormatException{
         return getReaderForType(format.get("type"));
     }
 
     protected static RecordReader getReaderForType(String type) throws FormatException{
 
-        if (type == null)
+        if (type == null){
             throw new IllegalArgumentException("type is null");
+        }
 
         RecordReader reader = null;
         String classname = types.get(type.toUpperCase());
@@ -50,20 +50,19 @@ public class RecordReaderFactory {
             classname = type;
         }
 
-        try {
+        try{
             reader = (RecordReader) Class.forName(classname).newInstance();
         }
-        catch (ClassNotFoundException ex) {
+        catch (ClassNotFoundException ex){
             throw new FormatException(ex);
         }
-        catch (InstantiationException ex) {
+        catch (InstantiationException ex){
             throw new FormatException(ex);
         }
-        catch (IllegalAccessException ex) {
+        catch (IllegalAccessException ex){
             throw new FormatException(ex);
         }
 
         return reader;
     }
-
 }

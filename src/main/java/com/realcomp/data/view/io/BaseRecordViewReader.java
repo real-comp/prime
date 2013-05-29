@@ -7,20 +7,21 @@ import java.io.IOException;
 
 /**
  * Wraps a RecordReader to read instances of an arbitrary class
- * 
+ *
  * @author krenfro
  */
 public abstract class BaseRecordViewReader<T> implements RecordViewReader<T>{
-    
+
     protected RecordReader reader;
-    
+
     public BaseRecordViewReader(RecordReader reader){
-        if (reader == null)
+        if (reader == null){
             throw new IllegalArgumentException("reader is null");
-        
+        }
+
         this.reader = reader;
     }
-       
+
     @Override
     public void close(){
         reader.close();
@@ -30,11 +31,9 @@ public abstract class BaseRecordViewReader<T> implements RecordViewReader<T>{
     public void open(IOContext context) throws IOException, SchemaException{
         reader.open(context);
     }
-    
 
     @Override
     public long getCount(){
         return reader.getCount();
     }
-    
 }

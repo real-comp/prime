@@ -1,4 +1,3 @@
-
 package com.realcomp.data.validation.field;
 
 import com.realcomp.data.DataType;
@@ -9,40 +8,43 @@ import java.util.Map;
 
 /**
  * Validates the provided value is non-empty.
- * 
+ *
  * @author krenfro
  */
 @Validator("required")
-public class RequiredValidator extends BaseFieldValidator {
+public class RequiredValidator extends BaseFieldValidator{
 
     @Override
     public void validate(Object value) throws ValidationException{
-        if (value == null)
+        if (value == null){
             throw new ValidationException("cannot validate null Object");
-        
+        }
+
         DataType type = DataType.getDataType(value);
-        switch(type){
+        switch (type){
             case STRING:
-                if ( ((String) value).isEmpty())
+                if (((String) value).isEmpty()){
                     throw new ValidationException("required", "", getSeverity());
+                }
                 break;
             case MAP:
-                if ( ((Map) value).isEmpty())
+                if (((Map) value).isEmpty()){
                     throw new ValidationException("required", "", getSeverity());
+                }
                 break;
             case LIST:
-                if ( ((List) value).isEmpty())
+                if (((List) value).isEmpty()){
                     throw new ValidationException("required", "", getSeverity());
+                }
                 break;
         }
-            
+
     }
-    
+
     @Override
     public RequiredValidator copyOf(){
         RequiredValidator copy = new RequiredValidator();
         copy.setSeverity(severity);
         return copy;
     }
-    
 }

@@ -3,7 +3,7 @@ package com.realcomp.data.validation;
 import com.realcomp.data.Operation;
 
 /**
- * 
+ *
  * @author krenfro
  */
 public interface Validator extends Operation{
@@ -12,6 +12,7 @@ public interface Validator extends Operation{
 
     /**
      * Set the severity of this Validator.
+     *
      * @param severity ignored if null.
      */
     void setSeverity(Severity severity);
@@ -24,6 +25,7 @@ public interface Validator extends Operation{
 
     /**
      * Validates the provided value; throwing a ValidationException if the value is not valid.
+     *
      * @param value to be validated. not null.
      * @throws ValidationException if the provided value is not valid.
      */

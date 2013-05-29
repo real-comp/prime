@@ -16,10 +16,9 @@ public interface MultiFieldConverter extends MultiFieldOperation{
      * @return the converted value, not null
      */
     Object convert(Object value, Record record) throws ConversionException;
-    
-    
+
     /**
-     * 
+     *
      * @return List of DataTypes supported by this converter.
      */
     List<DataType> getSupportedTypes();

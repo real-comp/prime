@@ -8,50 +8,56 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 
+ *
  * @author krenfro
  */
-public class Operations {
-    
+public class Operations{
+
     /**
-     * 
+     *
      * @param schema not null
      * @param field not null
      * @return All operations for a field, including any <i>before</i> and <i>after</i> operations. never null
      */
     public static List<Operation> getOperations(Schema schema, Field field){
 
-        if (schema == null)
+        if (schema == null){
             throw new IllegalArgumentException("schema is null");
-        if (field == null)
+        }
+        if (field == null){
             throw new IllegalArgumentException("field is null");
-        
+        }
+
         List<Operation> operations = new ArrayList<Operation>();
         List<Operation> fieldOps = field.getOperations();
-        
+
         if (field instanceof AfterLastField){
-            if (schema.getAfterLastOperations() != null)
+            if (schema.getAfterLastOperations() != null){
                 operations.addAll(schema.getAfterLastOperations());
-            if (fieldOps != null)
+            }
+            if (fieldOps != null){
                 operations.addAll(fieldOps);
+            }
         }
         else if (field instanceof BeforeFirstField){
-            if (schema.getBeforeFirstOperations() != null)
+            if (schema.getBeforeFirstOperations() != null){
                 operations.addAll(schema.getBeforeFirstOperations());
-            if (fieldOps != null)
+            }
+            if (fieldOps != null){
                 operations.addAll(fieldOps);
+            }
         }
         else{
-            if (schema.getBeforeOperations() != null)
+            if (schema.getBeforeOperations() != null){
                 operations.addAll(schema.getBeforeOperations());
-            if (fieldOps != null)
+            }
+            if (fieldOps != null){
                 operations.addAll(fieldOps);
-            if (schema.getAfterOperations() != null)
+            }
+            if (schema.getAfterOperations() != null){
                 operations.addAll(schema.getAfterOperations());
+            }
         }
         return operations;
     }
-
-
-    
 }

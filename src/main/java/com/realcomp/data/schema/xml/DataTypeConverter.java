@@ -4,8 +4,8 @@ import com.realcomp.data.DataType;
 import com.thoughtworks.xstream.converters.enums.EnumSingleValueConverter;
 
 /**
- * Converter for the xStream XML serialization framework.  Default DataType = STRING
- * 
+ * Converter for the xStream XML serialization framework. Default DataType = STRING
+ *
  * @author krenfro
  */
 public class DataTypeConverter extends EnumSingleValueConverter{
@@ -18,20 +18,19 @@ public class DataTypeConverter extends EnumSingleValueConverter{
     public boolean canConvert(Class type){
         return type.isAssignableFrom(DataType.class);
     }
-    
+
     @Override
     public String toString(Object object){
-        if (object == null || object.equals(DataType.STRING))
+        if (object == null || object.equals(DataType.STRING)){
             return null;
-        else
+        }
+        else{
             return ((DataType) object).getDescription();
+        }
     }
 
     @Override
     public DataType fromString(String s){
         return s == null ? DataType.STRING : DataType.parse(s);
     }
-
-
-
 }

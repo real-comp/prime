@@ -7,6 +7,7 @@ import java.util.List;
 
 /**
  * A Converter for all DataTypes
+ *
  * @author krenfro
  */
 public abstract class ComplexConverter implements Converter{
@@ -19,9 +20,9 @@ public abstract class ComplexConverter implements Converter{
 
     @Override
     public abstract Object convert(Object value) throws ConversionException;
-    
+
     /**
-     * 
+     *
      * @return List of all DataTypes.
      */
     @Override

@@ -12,14 +12,12 @@ import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-
 /**
  * Prints a schema for human consumption
  *
  * @author krenfro
  */
-public class SchemaPrettyPrinter {
-
+public class SchemaPrettyPrinter{
 
     public void prettyPrint(Schema schema, OutputStream outputStream) throws IOException{
 
@@ -28,11 +26,11 @@ public class SchemaPrettyPrinter {
 
         out.println(schema.getName());
         out.println("format:");
-        for (Entry<String,String> entry: schema.getFormat().entrySet()){
+        for (Entry<String, String> entry : schema.getFormat().entrySet()){
             out.println(entry.getKey() + " = " + entry.getValue());
         }
         out.println("field lists:");
-        for (FieldList fieldList: schema.getFieldLists()){
+        for (FieldList fieldList : schema.getFieldLists()){
             out.println("classifier: " + fieldList.getClassifier().toString());
 
             if (fixed){
@@ -44,7 +42,7 @@ public class SchemaPrettyPrinter {
 
             int start = 0;
             int stop = 0;
-            for (Field field: fieldList){
+            for (Field field : fieldList){
                 if (fixed){
                     stop += field.getLength();
                     out.println(field.getName() + "\t" + field.getLength() + "\t" + start + "\t" + stop);
@@ -57,10 +55,6 @@ public class SchemaPrettyPrinter {
         }
         out.flush();
     }
-
-
-
-
 
     public static void main(String[] args){
 

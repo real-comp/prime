@@ -36,7 +36,7 @@ public class StringConverter implements Converter{
     }
 
     @Override
-    public Operation copyOf() {
+    public Operation copyOf(){
         return new StringConverter();
     }
 
@@ -61,8 +61,4 @@ public class StringConverter implements Converter{
         }
         return true;
     }
-
-    
-
-
 }

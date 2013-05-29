@@ -9,16 +9,15 @@ import static org.junit.Assert.*;
  */
 public class ReplaceConverterTest extends SimpleConverterTest{
 
-    public ReplaceConverterTest() {
+    public ReplaceConverterTest(){
         converter = new Replace();
     }
-
 
     /**
      * Test of convert method, of class CurrentDate.
      */
     @Test
-    public void testConvert() throws Exception {
+    public void testConvert() throws Exception{
 
         Replace converter = new Replace();
 
@@ -55,9 +54,8 @@ public class ReplaceConverterTest extends SimpleConverterTest{
         assertEquals("a a ", converter.convert("a     a    "));
     }
 
-
     @Test
-    public void testLeadingZeros() throws Exception {
+    public void testLeadingZeros() throws Exception{
 
         Replace replace = new Replace();
         replace.setRegex("^0");
@@ -70,17 +68,15 @@ public class ReplaceConverterTest extends SimpleConverterTest{
         assertEquals("1", replace.convert("00001"));
     }
 
-
-
     @Test
-    public void testCopyOf() {
+    public void testCopyOf(){
         Replace a = new Replace();
         Replace b = a.copyOf();
         assertEquals(a, b);
     }
 
     @Test
-    public void testHashCode() {
+    public void testHashCode(){
         Replace a = new Replace();
         Replace b = new Replace();
         assertEquals(a.hashCode(), b.hashCode());
@@ -88,7 +84,7 @@ public class ReplaceConverterTest extends SimpleConverterTest{
 
     @Test
     @Override
-    public void testEquals() {
+    public void testEquals(){
 
         super.testEquals();
 
@@ -106,9 +102,8 @@ public class ReplaceConverterTest extends SimpleConverterTest{
 
     }
 
-
     @Test
-    public void testAsterisks() throws Exception {
+    public void testAsterisks() throws Exception{
 
         Replace converter = new Replace();
         converter.setRegex("[\\*].+");
@@ -118,7 +113,4 @@ public class ReplaceConverterTest extends SimpleConverterTest{
         assertEquals("123*", converter.convert("123*"));
         assertEquals("123*", converter.convert("123*a"));
     }
-
-
-
 }

@@ -1,6 +1,4 @@
-
 package com.realcomp.data.validation;
-
 
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -9,12 +7,12 @@ import static org.junit.Assert.*;
  *
  * @author krenfro
  */
-public class ValidationExceptionTest {
-
+public class ValidationExceptionTest{
 
     /**
      * Handy test method that asserts that the specified validation will throw
-     * a ValidationException.  If it doesn't, an AssertionError is thrown.
+     * a ValidationException. If it doesn't, an AssertionError is thrown.
+     *
      * @param validator
      * @param test
      */
@@ -23,7 +21,7 @@ public class ValidationExceptionTest {
             validator.validate(test);
             throw new AssertionError("ValidationException should have been thrown.");
         }
-        catch(ValidationException expected){
+        catch (ValidationException expected){
         }
     }
 

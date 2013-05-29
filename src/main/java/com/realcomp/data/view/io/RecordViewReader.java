@@ -8,15 +8,13 @@ import java.io.IOException;
 
 /**
  * Wraps a RecordReader to read instances of an arbitrary class.
- * 
+ *
  * @author krenfro
  */
-public interface RecordViewReader<T> {
-    
-    
+public interface RecordViewReader<T>{
+
     T read() throws IOException, ValidationException, ConversionException, SchemaException;
-    
-    
+
     /**
      * Close open resources. Should be invoked when you are done with the RecordReader.
      */
@@ -31,12 +29,10 @@ public interface RecordViewReader<T> {
      * @throws SchemaException
      */
     void open(IOContext context) throws IOException, SchemaException;
-   
 
     /**
      *
      * @return number of records read; not including skipped records.
      */
     long getCount();
-    
 }

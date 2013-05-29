@@ -10,12 +10,11 @@ import java.util.List;
  * @author krenfro
  */
 @com.realcomp.data.annotation.Converter("namePrefix")
-public class NamePrefix extends StringConverter {
+public class NamePrefix extends StringConverter{
 
     private boolean lastNameFirst = true;
     private boolean recognizeCompanyNames = true;
     private boolean recognizeTrusts = true;
-
 
     @Override
     public Object convert(Object value) throws ConversionException{
@@ -35,11 +34,11 @@ public class NamePrefix extends StringConverter {
         return retVal;
     }
 
-    public boolean isLastNameFirst() {
+    public boolean isLastNameFirst(){
         return lastNameFirst;
     }
 
-    public void setLastNameFirst(boolean lastNameFirst) {
+    public void setLastNameFirst(boolean lastNameFirst){
         this.lastNameFirst = lastNameFirst;
     }
 
@@ -97,6 +96,4 @@ public class NamePrefix extends StringConverter {
         }
         return true;
     }
-
-    
 }

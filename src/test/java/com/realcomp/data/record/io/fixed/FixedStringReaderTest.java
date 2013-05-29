@@ -14,17 +14,16 @@ import static org.junit.Assert.*;
  *
  * @author krenfro
  */
-public class FixedStringReaderTest {
+public class FixedStringReaderTest{
 
-    public FixedStringReaderTest() {
+    public FixedStringReaderTest(){
     }
-
 
     /**
      * Test of next method, of class DelimitedFileParser.
      */
     @Test
-    public void testNext() throws Exception {
+    public void testNext() throws Exception{
 
         String data = "abcdef\nghijkl";
         StringIOContext ctx = (StringIOContext) new StringIOContextBuilder().schema(get3FieldSchema()).build();
@@ -60,5 +59,4 @@ public class FixedStringReaderTest {
 
         return schema;
     }
-
 }

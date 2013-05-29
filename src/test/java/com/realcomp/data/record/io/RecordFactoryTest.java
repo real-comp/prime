@@ -21,9 +21,9 @@ import static org.junit.Assert.*;
  *
  * @author krenfro
  */
-public class RecordFactoryTest {
+public class RecordFactoryTest{
 
-    public RecordFactoryTest() {
+    public RecordFactoryTest(){
     }
 
     private Schema getSchema(){
@@ -43,7 +43,7 @@ public class RecordFactoryTest {
     }
 
     @Test
-    public void factoryTest() throws Exception {
+    public void factoryTest() throws Exception{
 
         Schema schema = getSchema();
         RecordFactory factory = new RecordFactory(getSchema());
@@ -57,5 +57,4 @@ public class RecordFactoryTest {
 
 
     }
-
 }

@@ -9,37 +9,32 @@ import static org.junit.Assert.*;
  */
 public class ProperNameConverterTest extends StringConverterTest{
 
-    public ProperNameConverterTest() {
+    public ProperNameConverterTest(){
         converter = new ProperName();
     }
-
 
     /**
      * Test of convert method, of class CurrentDate.
      */
     @Test
-    public void testConvert() throws Exception {
+    public void testConvert() throws Exception{
 
-        ProperName converter = new ProperName();        
-        assertEquals("RYAN KYLE RENFRO", converter.convert("RENFRO, RYAN KYLE"));        
+        ProperName converter = new ProperName();
+        assertEquals("RYAN KYLE RENFRO", converter.convert("RENFRO, RYAN KYLE"));
         assertEquals("REAL-COMP, INC.", converter.convert("REAL-COMP, INC."));
     }
 
-
     @Test
-    public void testCopyOf() {
+    public void testCopyOf(){
         ProperName a = new ProperName();
         ProperName b = a.copyOf();
         assertEquals(a, b);
     }
-    
+
     @Test
-    public void testHashCode() {
+    public void testHashCode(){
         ProperName a = new ProperName();
         ProperName b = new ProperName();
         assertEquals(a.hashCode(), b.hashCode());
     }
-    
-    
-    
 }

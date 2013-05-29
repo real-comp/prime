@@ -8,12 +8,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Guesses the delimiter for a '\n' delimited file.  Currently only supports only CSV and TAB delimited.
+ * Guesses the delimiter for a '\n' delimited file. Currently only supports only CSV and TAB delimited.
  *
  * @author krenfro
  */
-public class DelimiterGuesser {
-
+public class DelimiterGuesser{
 
     /**
      *
@@ -46,10 +45,10 @@ public class DelimiterGuesser {
      */
     protected static int count(List<String> records, String delimiter){
         int total = 0;
-        for (String record: records){
+        for (String record : records){
             total += record.split(delimiter).length;
         }
-        return Math.round( (float) total / records.size());
+        return Math.round((float) total / records.size());
     }
 
     /**
@@ -64,7 +63,7 @@ public class DelimiterGuesser {
 
         List<String> records = new ArrayList<>();
 
-        try(BufferedReader reader = new BufferedReader(new FileReader(file))) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(file))){
 
             String s = reader.readLine();
             while (records.size() < count && s != null){

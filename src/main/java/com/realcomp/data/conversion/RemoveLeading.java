@@ -1,9 +1,9 @@
 package com.realcomp.data.conversion;
 
 /**
- * Remove any leading characters that match a value.
- * Simply are Replace converter with "^" + value as the regex and "" as the replacement.
- * 
+ * Remove any leading characters that match a value. Simply are Replace converter with "^" + value as the regex and ""
+ * as the replacement.
+ *
  * @author krenfro
  */
 @com.realcomp.data.annotation.Converter("removeLeading")
@@ -11,7 +11,7 @@ public class RemoveLeading extends SimpleConverter{
 
     private String value;
     private Replace replaceConverter;
-    
+
     public RemoveLeading(){
         super();
     }
@@ -26,7 +26,7 @@ public class RemoveLeading extends SimpleConverter{
     public RemoveLeading copyOf(){
         return new RemoveLeading(value);
     }
-    
+
     @Override
     public Object convert(Object value) throws ConversionException{
 
@@ -40,30 +40,33 @@ public class RemoveLeading extends SimpleConverter{
         return retVal;
     }
 
-    public String getValue() {
+    public String getValue(){
         return value;
     }
 
-    public void setValue(String value) {
+    public void setValue(String value){
         this.value = value;
         replaceConverter = new Replace("^" + value, "");
-        
+
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (obj == null)
+    public boolean equals(Object obj){
+        if (obj == null){
             return false;
-        if (getClass() != obj.getClass())
+        }
+        if (getClass() != obj.getClass()){
             return false;
+        }
         final RemoveLeading other = (RemoveLeading) obj;
-        if ((this.value == null) ? (other.value != null) : !this.value.equals(other.value))
+        if ((this.value == null) ? (other.value != null) : !this.value.equals(other.value)){
             return false;
+        }
         return true;
     }
 
     @Override
-    public int hashCode() {
+    public int hashCode(){
         int hash = 7;
         hash = 17 * hash + (this.value != null ? this.value.hashCode() : 0);
         return hash;

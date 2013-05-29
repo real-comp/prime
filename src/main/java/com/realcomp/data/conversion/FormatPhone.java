@@ -4,19 +4,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 
+ *
  * @author krenfro
  */
 @com.realcomp.data.annotation.Converter("formatPhone")
-public class FormatPhone extends SimpleConverter {
+public class FormatPhone extends SimpleConverter{
 
-    
     @Override
     public Object convert(Object value) throws ConversionException{
-        
+
         StringBuilder phone = null;
-                
-        if (value != null){            
+
+        if (value != null){
             Character[] digits = getDigits(value.toString());
             phone = new StringBuilder();
             if (digits.length == 11){
@@ -37,39 +36,35 @@ public class FormatPhone extends SimpleConverter {
                 phone.append(value);
             }
         }
-        
+
         return phone == null ? null : phone.toString();
     }
-    
-    
+
     private Character[] getDigits(String phone){
         List<Character> digits = new ArrayList<Character>();
-        
-        for (char c: phone.toCharArray()){
-            if (c >= '0' && c <= '9')
+
+        for (char c : phone.toCharArray()){
+            if (c >= '0' && c <= '9'){
                 digits.add(c);
+            }
         }
-        
+
         return digits.toArray(new Character[digits.size()]);
     }
 
     @Override
-    public FormatPhone copyOf() {
+    public FormatPhone copyOf(){
         return new FormatPhone();
     }
-    
-    
+
     @Override
-    public boolean equals(Object other) {
+    public boolean equals(Object other){
         return (other instanceof FormatPhone);
     }
 
     @Override
-    public int hashCode() {
+    public int hashCode(){
         int hash = 7;
         return hash;
     }
-
-    
-    
 }

@@ -10,14 +10,12 @@ import java.io.IOException;
  *
  * @author krenfro
  */
-public interface RecordViewWriter<T> {
-    
-    
+public interface RecordViewWriter<T>{
+
     void write(T t)
             throws IOException, ValidationException, ConversionException, SchemaException;
 
-    
-     /**
+    /**
      * Close open resources. Should be invoked when you are done with the RecordReader.
      */
     void close();
@@ -32,11 +30,9 @@ public interface RecordViewWriter<T> {
      */
     void open(IOContext context) throws IOException, SchemaException;
 
-    
     /**
      *
      * @return number of records read; not including skipped records.
      */
     long getCount();
-    
 }

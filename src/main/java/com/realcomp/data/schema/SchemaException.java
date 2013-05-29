@@ -10,15 +10,15 @@ public class SchemaException extends Exception{
         super();
     }
 
-    public SchemaException(String message) {
+    public SchemaException(String message){
         super(message);
     }
 
-    public SchemaException(String message, Throwable cause) {
+    public SchemaException(String message, Throwable cause){
         super(message, cause);
     }
 
-    public SchemaException(Throwable cause) {
+    public SchemaException(Throwable cause){
         super(cause);
     }
 }

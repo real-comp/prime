@@ -25,7 +25,7 @@ import java.util.List;
  *
  * @author krenfro
  */
-public class DelimitedFileWriter extends BaseRecordWriter {
+public class DelimitedFileWriter extends BaseRecordWriter{
 
     protected CSVWriter writer;
     protected List<String> current;
@@ -43,7 +43,7 @@ public class DelimitedFileWriter extends BaseRecordWriter {
         current = new ArrayList<String>();
         transformContext = new TransformContext();
         surgeon = new ValueSurgeon();
-        
+
     }
 
     public DelimitedFileWriter(DelimitedFileWriter copy){
@@ -61,24 +61,26 @@ public class DelimitedFileWriter extends BaseRecordWriter {
 
     @Override
     protected void write(Record record, Field field)
-            throws ValidationException, ConversionException, IOException {
+            throws ValidationException, ConversionException, IOException{
 
         transformContext.setRecord(record);
         transformContext.setKey(field.getName());
         Object value = surgeon.operate(field.getOperations(), transformContext);
 
-        if (value == null)
+        if (value == null){
             current.add("");
-        else
+        }
+        else{
             current.add((String) DataType.STRING.coerce(value));
+        }
     }
 
     @Override
     public void write(Record record)
-            throws IOException, ValidationException, ConversionException, SchemaException {
+            throws IOException, ValidationException, ConversionException, SchemaException{
 
         //optionally write header record
-        if (count == 0 && isHeader()) {
+        if (count == 0 && isHeader()){
             current.clear();
             writeHeader();
         }
@@ -90,16 +92,17 @@ public class DelimitedFileWriter extends BaseRecordWriter {
     }
 
     @Override
-    public void open(IOContext context) throws IOException, SchemaException {
+    public void open(IOContext context) throws IOException, SchemaException{
 
         super.open(context);
         transformContext.setSchema(context.getSchema());
         transformContext.setValidationExceptionThreshold(context.getValidationExeptionThreshold());
-        if (context.getOut() == null)
+        if (context.getOut() == null){
             throw new IllegalArgumentException("Invalid IOContext. No OutputStream specified");
+        }
 
 
-        switch (getDelimiter()) {
+        switch (getDelimiter()){
             case '\t':
                 writer = new CSVWriter(new BufferedWriter(
                         new OutputStreamWriter(context.getOut(), getCharset())), '\t', '\u0000');
@@ -111,7 +114,6 @@ public class DelimitedFileWriter extends BaseRecordWriter {
         }
     }
 
-
     /**
      * Write a header record, constructed from a Record.
      *
@@ -119,15 +121,15 @@ public class DelimitedFileWriter extends BaseRecordWriter {
      * @throws ValidationException
      * @throws ConversionException
      */
-    protected void writeHeader() throws IOException, ValidationException, ConversionException {
+    protected void writeHeader() throws IOException, ValidationException, ConversionException{
 
         //No operations should be run on the Record, so a temporary schema
         // is created with no operations.
         IOContext original = context;
-        try {
+        try{
             Schema headerSchema = new Schema(context.getSchema());
-            for (FieldList fields : headerSchema.getFieldLists()) {
-                for (Field field : fields) {
+            for (FieldList fields : headerSchema.getFieldLists()){
+                for (Field field : fields){
                     field.clearOperations();
                 }
             }
@@ -137,7 +139,7 @@ public class DelimitedFileWriter extends BaseRecordWriter {
             writer.writeNext(current.toArray(new String[current.size()]));
             writer.flush();
         }
-        catch (SchemaException ex) {
+        catch (SchemaException ex){
             throw new IOException("Unable to create temporary header schema: " + ex.getMessage());
         }
         finally{
@@ -145,9 +147,9 @@ public class DelimitedFileWriter extends BaseRecordWriter {
         }
     }
 
-    protected Record getHeader() {
+    protected Record getHeader(){
         Record retVal = new Record();
-        for (Field field : context.getSchema().getDefaultFieldList()) {
+        for (Field field : context.getSchema().getDefaultFieldList()){
             retVal.put(field.getName(), field.getName());
         }
         return retVal;
@@ -163,8 +165,9 @@ public class DelimitedFileWriter extends BaseRecordWriter {
             delimiter = ',';
         }
         else{
-            if (type.length() != 1)
+            if (type.length() != 1){
                 throw new IllegalArgumentException("invalid type [" + type + "]");
+            }
             delimiter = type.charAt(0);
         }
 
@@ -173,8 +176,9 @@ public class DelimitedFileWriter extends BaseRecordWriter {
 
     protected char getAttributeAsChar(String name){
         String value = format.get(name);
-        if (value.length() != 1)
+        if (value.length() != 1){
             throw new IllegalArgumentException(String.format("invalid attribute [%s] = [%s]", name, value));
+        }
         return value.charAt(0);
     }
 
@@ -203,5 +207,4 @@ public class DelimitedFileWriter extends BaseRecordWriter {
         isStrictQuotes();
         isHeader();
     }
-
 }

@@ -44,8 +44,9 @@ public class DelimitedFileReader extends BaseRecordReader{
     @Override
     public void open(IOContext context) throws IOException, SchemaException{
         super.open(context);
-        if (context.getIn() == null)
+        if (context.getIn() == null){
             throw new IllegalArgumentException("Invalid IOContext. No InputStream specified");
+        }
 
         reader = new SkippingBufferedReader(new InputStreamReader(context.getIn(), getCharset()));
         reader.setSkipLeading(getSkipLeading());
@@ -55,7 +56,7 @@ public class DelimitedFileReader extends BaseRecordReader{
             reader.setSkipLeading(1);
         }
 
-        switch(getDelimiter()){
+        switch (getDelimiter()){
             case '\t':
                 parser = new CSVParser(getDelimiter(), '\u0000', getEscapeCharacter(), isStrictQuotes());
                 break;
@@ -64,12 +65,12 @@ public class DelimitedFileReader extends BaseRecordReader{
         }
     }
 
-
     @Override
     public Record read() throws IOException, ValidationException, ConversionException, SchemaException{
 
-        if (context.getSchema() == null)
+        if (context.getSchema() == null){
             throw new IllegalStateException("schema not specified");
+        }
 
         if (!beforeFirstOperationsRun){
             executeBeforeFirstOperations();
@@ -84,36 +85,37 @@ public class DelimitedFileReader extends BaseRecordReader{
             record = loadRecord(classify(context.getSchema(), tokens), tokens);
         }
 
-        if (record != null)
+        if (record != null){
             count++;
-        else
+        }
+        else{
             executeAfterLastOperations();
+        }
 
         return record;
     }
 
-
     /**
-     * Classify some delimited data and return the FieldList that should be used to parse the data.
-     * If only one FieldList is defined, then it is returned.
-     * If multiple FieldLists are defined, then the first FieldList has the same number of fields as the data
-     * is returned.
+     * Classify some delimited data and return the FieldList that should be used to parse the data. If only one
+     * FieldList is defined, then it is returned. If multiple FieldLists are defined, then the first FieldList has the
+     * same number of fields as the data is returned.
      *
      * @param schema
-     * @param data not null
+     * @param data   not null
      * @return the FieldList that should be used to parse the data. never null
      * @throws SchemaException if more than one FieldList is defined and there is ambiguity
      */
     protected FieldList classify(Schema schema, String[] data) throws SchemaException{
 
-        if (data == null)
+        if (data == null){
             throw new IllegalArgumentException("data is null");
+        }
 
         FieldList match = schema.getDefaultFieldList();
 
         if (schema.getFieldLists().size() > 1){
             int matchCount = 0;
-            for (FieldList fieldList: schema.getFieldLists()){
+            for (FieldList fieldList : schema.getFieldLists()){
                 if (fieldList.size() == data.length){
                     match = fieldList;
                     matchCount++;
@@ -127,28 +129,30 @@ public class DelimitedFileReader extends BaseRecordReader{
             }
         }
 
-        if (match == null)
+        if (match == null){
             throw new SchemaException("The schema [" + schema.getName() + "] does not support the specified data.");
+        }
 
         return match;
     }
 
-
-
     protected Record loadRecord(FieldList fields, String[] data)
             throws ValidationException, ConversionException{
 
-        if (fields == null)
+        if (fields == null){
             throw new IllegalArgumentException("fields is null");
-        if (data == null)
+        }
+        if (data == null){
             throw new IllegalArgumentException("data is null");
+        }
 
-        if (fields.size() != data.length)
+        if (fields.size() != data.length){
             throw new ValidationException(
                     String.format(
-                        "The number of fields in schema [%s] does not match number of fields in the data [%s].",
-                        new Object[]{fields.size(), data.length}),
+                    "The number of fields in schema [%s] does not match number of fields in the data [%s].",
+                    new Object[]{fields.size(), data.length}),
                     Severity.HIGH);
+        }
 
         return recordFactory.build(fields, data);
     }
@@ -163,8 +167,9 @@ public class DelimitedFileReader extends BaseRecordReader{
             delimiter = ',';
         }
         else{
-            if (type.length() != 1)
+            if (type.length() != 1){
                 throw new IllegalArgumentException("invalid type [" + type + "]");
+            }
             delimiter = type.charAt(0);
         }
 
@@ -173,8 +178,9 @@ public class DelimitedFileReader extends BaseRecordReader{
 
     protected char getAttributeAsChar(String name){
         String value = format.get(name);
-        if (value.length() != 1)
+        if (value.length() != 1){
             throw new IllegalArgumentException(String.format("invalid attribute [%s] = [%s]", name, value));
+        }
         return value.charAt(0);
     }
 
@@ -203,5 +209,4 @@ public class DelimitedFileReader extends BaseRecordReader{
         isStrictQuotes();
         isHeader();
     }
-
 }

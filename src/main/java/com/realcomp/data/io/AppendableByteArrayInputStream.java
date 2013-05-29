@@ -1,4 +1,3 @@
-
 package com.realcomp.data.io;
 
 import java.io.ByteArrayInputStream;
@@ -10,12 +9,12 @@ import java.util.Queue;
  * <p>Not fit for general use.</p>
  * <p>Similar to the PipedInput/OutputStream in the JDK, but safe for a single Thread.</p>
  *
- * The realcomp-data IOContext contains a single InputStream that is used to read Records.  In Hadoop, each Map operation
- * consists of a single Text entry being read from an InputSplit.  It is prohibitively expensive to construct a new
+ * The realcomp-data IOContext contains a single InputStream that is used to read Records. In Hadoop, each Map operation
+ * consists of a single Text entry being read from an InputSplit. It is prohibitively expensive to construct a new
  * realcomp-data IOContext and RecordReader for each record in the InputSplit.
  *
  * This special InputStream allows for Text objects (converted to byte[]) from the InputSplit to be 'appended' to the
- * InputStream.  The realcomp-data RecordReader can be instantiated once for multiple Hadoop map() operations.
+ * InputStream. The realcomp-data RecordReader can be instantiated once for multiple Hadoop map() operations.
  *
  * The append() should be followed by a single RecordReader.read() operation.
  *
@@ -54,22 +53,23 @@ public class AppendableByteArrayInputStream extends ByteArrayInputStream{
     @Override
     public synchronized int read(byte[] b, int off, int len){
 
-        if (b == null) {
+        if (b == null){
             throw new NullPointerException();
-        } else if (off < 0 || len < 0 || len > b.length - off) {
+        }
+        else if (off < 0 || len < 0 || len > b.length - off){
             throw new IndexOutOfBoundsException();
         }
-        if (pos >= count) {
+        if (pos >= count){
             reloadBuffer();
             if (pos >= count){
                 return -1;
             }
         }
 
-        if (pos + len > count) {
+        if (pos + len > count){
             len = count - pos;
         }
-        if (len <= 0) {
+        if (len <= 0){
             reloadBuffer();
             len = count - pos;
             if (len <= 0){
@@ -81,8 +81,6 @@ public class AppendableByteArrayInputStream extends ByteArrayInputStream{
         return len;
     }
 
-
-
     private void reloadBuffer(){
         if (!data.isEmpty()){
             this.buf = data.remove();
@@ -91,7 +89,6 @@ public class AppendableByteArrayInputStream extends ByteArrayInputStream{
             this.mark = 0;
         }
     }
-
 
     @Override
     public synchronized int available(){

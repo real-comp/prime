@@ -16,27 +16,30 @@ public class Concat extends BaseMultiFieldConverter implements NullValueConverte
     public Concat(){
         super();
     }
-    
+
     public Concat(List<String> fieldNames){
         super(fieldNames);
     }
-    
-    @Override
-    public Object convert(Object value, Record record) throws ConversionException {
 
-        if (record == null)
+    @Override
+    public Object convert(Object value, Record record) throws ConversionException{
+
+        if (record == null){
             throw new IllegalArgumentException("record is null");
-        
+        }
+
         //special converter that allows null input
-        if (value == null)
+        if (value == null){
             value = "";
-        
+        }
+
         String retVal = "".concat(value.toString());
         boolean needDelimiter = false;
-        for (String fieldName: fieldNames){
+        for (String fieldName : fieldNames){
 
-            if (needDelimiter)
+            if (needDelimiter){
                 retVal = retVal.concat(delimiter);
+            }
             needDelimiter = true;
 
             try{
@@ -45,13 +48,13 @@ public class Concat extends BaseMultiFieldConverter implements NullValueConverte
                     retVal = retVal.concat(temp.toString());
                 }
             }
-            catch(RecordKeyException ex){
+            catch (RecordKeyException ex){
                 throw new MissingFieldException(fieldName, ex);
             }
         }
         return retVal;
     }
-    
+
     @Override
     public Concat copyOf(){
         Concat copy = new Concat();
@@ -59,38 +62,35 @@ public class Concat extends BaseMultiFieldConverter implements NullValueConverte
         copy.setFields(fieldNames);
         return copy;
     }
-    
-    public String getDelimiter() {
+
+    public String getDelimiter(){
         return delimiter;
     }
 
-    public void setDelimiter(String delimiter) {
+    public void setDelimiter(String delimiter){
         this.delimiter = delimiter;
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (obj == null) {
+    public boolean equals(Object obj){
+        if (obj == null){
             return false;
         }
-        if (getClass() != obj.getClass()) {
+        if (getClass() != obj.getClass()){
             return false;
         }
         final Concat other = (Concat) obj;
-        if ((this.delimiter == null) ? (other.delimiter != null) : !this.delimiter.equals(other.delimiter)) {
+        if ((this.delimiter == null) ? (other.delimiter != null) : !this.delimiter.equals(other.delimiter)){
             return false;
         }
-        
+
         return super.equals(obj);
     }
 
     @Override
-    public int hashCode() {
+    public int hashCode(){
         int hash = super.hashCode();
         hash = 11 * hash + (this.delimiter != null ? this.delimiter.hashCode() : 0);
         return hash;
     }
-
-    
-
 }

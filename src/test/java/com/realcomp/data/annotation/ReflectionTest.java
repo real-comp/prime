@@ -14,14 +14,14 @@ import org.reflections.util.ConfigurationBuilder;
 /**
  *
  */
-public class ReflectionTest {
+public class ReflectionTest{
 
     @Test
     public void testValidatorAnnotations(){
 
         //Configuration conf = new ConfigurationBuilder()
-         //       .setUrls(ClasspathHelper.getUrlsForPackagePrefix("com.realcomp.data"));
-                //.setScanners(new TypeElementsScanner());
+        //       .setUrls(ClasspathHelper.getUrlsForPackagePrefix("com.realcomp.data"));
+        //.setScanners(new TypeElementsScanner());
 
         Reflections reflections = new Reflections("com.realcomp");
         Set<Class<?>> annotated = reflections.getTypesAnnotatedWith(Validator.class);
@@ -29,6 +29,4 @@ public class ReflectionTest {
         assertTrue(annotated.contains(LengthValidator.class));
 
     }
-
-
 }

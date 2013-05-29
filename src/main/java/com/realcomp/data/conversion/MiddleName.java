@@ -5,18 +5,16 @@ import com.realcomp.names.NameParser;
 import java.util.List;
 
 /**
- * Parses a name, returning the 'middle name' if the name is and instance of
- * IndividualName; else ""
+ * Parses a name, returning the 'middle name' if the name is and instance of IndividualName; else ""
  *
  * @author krenfro
  */
 @com.realcomp.data.annotation.Converter("middleName")
-public class MiddleName extends StringConverter {
+public class MiddleName extends StringConverter{
 
     private boolean lastNameFirst = true;
     private boolean recognizeCompanyNames = true;
     private boolean recognizeTrusts = true;
-
 
     @Override
     public Object convert(Object value) throws ConversionException{
@@ -36,11 +34,11 @@ public class MiddleName extends StringConverter {
         return retVal;
     }
 
-    public boolean isLastNameFirst() {
+    public boolean isLastNameFirst(){
         return lastNameFirst;
     }
 
-    public void setLastNameFirst(boolean lastNameFirst) {
+    public void setLastNameFirst(boolean lastNameFirst){
         this.lastNameFirst = lastNameFirst;
     }
 
@@ -98,6 +96,4 @@ public class MiddleName extends StringConverter {
         }
         return true;
     }
-
-    
 }

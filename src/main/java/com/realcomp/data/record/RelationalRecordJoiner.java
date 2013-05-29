@@ -20,11 +20,10 @@ import java.util.logging.Logger;
  */
 public class RelationalRecordJoiner{
 
-
     private static final Logger logger = Logger.getLogger(RelationalRecordJoiner.class.getName());
-
+    
     protected RelationalSchema relationalSchema;
-    protected LinkedHashMap<Record,Schema> remainingRecords;
+    protected LinkedHashMap<Record, Schema> remainingRecords;
     protected List<Record> skippedRecords;
 
     public RelationalRecordJoiner(){
@@ -39,7 +38,6 @@ public class RelationalRecordJoiner{
     public void addRecord(Record record, Schema schema){
         remainingRecords.put(record, schema);
     }
-
 
     /**
      * @param key
@@ -72,14 +70,14 @@ public class RelationalRecordJoiner{
                 //do a full relational join
                 Record record = new Record();
 
-                for (Table child: relationalSchema.getTables()){
+                for (Table child : relationalSchema.getTables()){
                     join(child, remainingRecords, record);
                 }
 
                 // The join process will remove entries from the remainingRecords collection that it was able to join.
                 if (!remainingRecords.isEmpty()){
 
-                    for (Map.Entry<Record,Schema> entry: remainingRecords.entrySet()){
+                    for (Map.Entry<Record, Schema> entry : remainingRecords.entrySet()){
                         Schema schema = entry.getValue();
                         if (schema != null){
                             logger.log(Level.WARNING,
@@ -105,28 +103,27 @@ public class RelationalRecordJoiner{
         return skippedRecords;
     }
 
-
     /**
-     * Adds an entry to current where the key is the table name, and the value is a List of
-     * children.  It then recurses for each child, until there are no more maps available.
+     * Adds an entry to current where the key is the table name, and the value is a List of children. It then recurses
+     * for each child, until there are no more maps available.
      *
      * @param table
      * @param remainingRecords
      * @param current
      */
-    protected void join(Table table, Map<Record,Schema> records, Record current) throws IOException{
+    protected void join(Table table, Map<Record, Schema> records, Record current) throws IOException{
 
         List<Record> children = getChildren(table, records, current);
         if (!children.isEmpty()){
 
-            for (Record child: children){
+            for (Record child : children){
                 records.remove(child);
             }
             current.put(table.getName(), children);
 
-            for (Record child: children){
+            for (Record child : children){
                 if (table.hasChildren()){
-                    for (Table childTable: table.getChildren()){
+                    for (Table childTable : table.getChildren()){
                         join(childTable, records, child); //i recurse
                     }
                 }
@@ -134,11 +131,9 @@ public class RelationalRecordJoiner{
         }
     }
 
-
     /**
-     * Uses the FileSchemas for both maps to determine if the child map is a valid child of
-     * the parent map.  If there are no foreign keys defined for the child, then
-     * the child is considered valid.
+     * Uses the FileSchemas for both maps to determine if the child map is a valid child of the parent map. If there are
+     * no foreign keys defined for the child, then the child is considered valid.
      *
      * @param parent
      * @param child
@@ -148,7 +143,7 @@ public class RelationalRecordJoiner{
 
         Schema childSchema = remainingRecords.get(child);
 
-        for (FieldList fields: childSchema.getFieldLists()){
+        for (FieldList fields : childSchema.getFieldLists()){
             if (isChild(fields.getForeignKeys(), parent, child)){
                 return true;
             }
@@ -161,7 +156,7 @@ public class RelationalRecordJoiner{
 
         boolean isChild = true;
 
-        for (Field field: foreignKeys){
+        for (Field field : foreignKeys){
             Object parentValue = parent.get(field.getName());
             Object childValue = child.get(getForeignKeyName(field));
 
@@ -175,11 +170,11 @@ public class RelationalRecordJoiner{
     }
 
     /**
-     * The foreign key name is the name of the field in the parent record that
-     * shares a value with the specified field in the child record.
+     * The foreign key name is the name of the field in the parent record that shares a value with the specified field
+     * in the child record.
      *
-     * By default, the parent field name and child field name will be the same,
-     * but this can be overridden in the ForeignKey validator in the Schema.
+     * By default, the parent field name and child field name will be the same, but this can be overridden in the
+     * ForeignKey validator in the Schema.
      *
      * @param field
      * @return
@@ -189,10 +184,10 @@ public class RelationalRecordJoiner{
         //by default, the fk name is the same as the field.
         String foreignKeyName = field.getName();
 
-        for (Operation op: field.getOperations()){
+        for (Operation op : field.getOperations()){
             if (op instanceof ForeignKey){
                 if (((ForeignKey) op).getName() != null){
-                   foreignKeyName = ((ForeignKey) op).getName();
+                    foreignKeyName = ((ForeignKey) op).getName();
                 }
             }
         }
@@ -200,18 +195,17 @@ public class RelationalRecordJoiner{
         return foreignKeyName;
     }
 
-
     /**
      * @param remainingRecords
      * @param table
      * @return filtered list of remainingRecords that belong to the specified table.
      */
-    protected List<Record> getChildren(Table table, Map<Record,Schema> records, Record current) throws IOException{
+    protected List<Record> getChildren(Table table, Map<Record, Schema> records, Record current) throws IOException{
 
         List<Record> children = new ArrayList<>();
         List<Record> candidates = filterByTable(table, records);  //probably dumb to do this.
 
-        for (Record candidate: candidates){
+        for (Record candidate : candidates){
             if (isChild(current, candidate)){
                 children.add(candidate);
             }
@@ -225,10 +219,10 @@ public class RelationalRecordJoiner{
      * @param table
      * @return filtered list of remainingRecords that belong to the specified table.
      */
-    protected List<Record> filterByTable(Table table, Map<Record,Schema> records){
+    protected List<Record> filterByTable(Table table, Map<Record, Schema> records){
 
         List<Record> retVal = new ArrayList<>();
-        for (Entry<Record,Schema> entry: records.entrySet()){
+        for (Entry<Record, Schema> entry : records.entrySet()){
             if (entry.getValue().getName().equals(table.getName())){
                 retVal.add(entry.getKey());
             }

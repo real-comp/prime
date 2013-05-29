@@ -10,7 +10,7 @@ import static org.junit.Assert.*;
  */
 public class RequiredValidatorTest{
 
-    public RequiredValidatorTest() {
+    public RequiredValidatorTest(){
     }
 
     /**
@@ -20,7 +20,7 @@ public class RequiredValidatorTest{
     public void testValidate() throws ValidationException{
         RequiredValidator validator = new RequiredValidator();
         validator.validate("a");
-        
+
         try{
             validator.validate("");
             fail("should have thrown exception");
@@ -29,11 +29,9 @@ public class RequiredValidatorTest{
         }
     }
 
-
-    @Test(expected=ValidationException.class)
+    @Test(expected = ValidationException.class)
     public void testNull() throws ValidationException{
         RequiredValidator validator = new RequiredValidator();
         validator.validate(null);
     }
-
 }

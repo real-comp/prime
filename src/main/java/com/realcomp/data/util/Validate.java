@@ -17,75 +17,72 @@ import joptsimple.OptionSet;
 
 /**
  * Validates a file against a schema
+ *
  * @author krenfro
  */
-public class Validate {
+public class Validate{
 
-    private static final Logger logger =  Logger.getLogger(Validate.class.getName());
+    private static final Logger logger = Logger.getLogger(Validate.class.getName());
 
-
-
-    public void validate(IOContext context) 
-            throws SchemaException, IOException, ValidationException, ConversionException {
+    public void validate(IOContext context)
+            throws SchemaException, IOException, ValidationException, ConversionException{
 
         RecordReader reader = RecordReaderFactory.build(context.getSchema());
         reader.open(context);
-        
+
         long lineNumber = 1;
-        try {
+        try{
             while (reader.read() != null){
                 lineNumber++;
             }
         }
-        catch (IOException ex) {
+        catch (IOException ex){
             throw new IOException(ex.getMessage() + " at record " + lineNumber, ex);
         }
-        catch (ValidationException ex) {
+        catch (ValidationException ex){
             throw new ValidationException(ex.getMessage() + " at record " + lineNumber, ex);
         }
-        catch (ConversionException ex) {
+        catch (ConversionException ex){
             throw new ConversionException(ex.getMessage() + " at record " + lineNumber, ex);
         }
     }
 
-
-    
-    
     private static void printHelp(OptionParser parser){
-        try {
+        try{
             parser.printHelpOn(System.err);
         }
-        catch (IOException ignored) {
+        catch (IOException ignored){
         }
     }
-    
 
     public static void main(String[] args){
 
-         OptionParser parser = new OptionParser(){{
-            accepts("is", "input schema" )
-                    .withRequiredArg().describedAs("schema").required();
-            
-            accepts("in", "input file (default: STDIN)").withRequiredArg().describedAs("file");
-            acceptsAll(Arrays.asList("h", "?", "help"), "help");
-        }};
-        
+        OptionParser parser = new OptionParser(){
+            {
+                accepts("is", "input schema")
+                        .withRequiredArg().describedAs("schema").required();
+
+                accepts("in", "input file (default: STDIN)").withRequiredArg().describedAs("file");
+                acceptsAll(Arrays.asList("h", "?", "help"), "help");
+            }
+        };
+
         int result = 1;
-        
+
         try{
             OptionSet options = parser.parse(args);
             if (options.has("?")){
                 printHelp(parser);
             }
             else{
-                Validate validator = new Validate();             
-                IOContextBuilder inputBuilder = new IOContextBuilder();                
+                Validate validator = new Validate();
+                IOContextBuilder inputBuilder = new IOContextBuilder();
                 inputBuilder.schema(
                         SchemaFactory.buildSchema(new FileInputStream((String) options.valueOf("is"))));
                 inputBuilder.in(
-                        options.has("in") ? 
-                            new BufferedInputStream(new FileInputStream((String) options.valueOf("in"))) : 
-                            new BufferedInputStream(System.in));
+                        options.has("in")
+                        ? new BufferedInputStream(new FileInputStream((String) options.valueOf("in")))
+                        : new BufferedInputStream(System.in));
                 validator.validate(inputBuilder.build());
                 result = 0;
             }
@@ -109,7 +106,7 @@ public class Validate {
             System.err.println(ex.getMessage());
             printHelp(parser);
         }
-        
+
         System.exit(result);
     }
 }

@@ -9,12 +9,11 @@ import java.util.logging.Logger;
 public abstract class BaseRecordReader extends BaseRecordReaderWriter implements RecordReader{
 
     private static final Logger logger = Logger.getLogger(BaseRecordReader.class.getName());
-    
-    
+
     public BaseRecordReader(){
         super();
     }
-    
+
     public BaseRecordReader(BaseRecordReader copy){
         super(copy);
     }

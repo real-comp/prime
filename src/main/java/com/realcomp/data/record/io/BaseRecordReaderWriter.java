@@ -26,22 +26,22 @@ public abstract class BaseRecordReaderWriter{
     protected boolean beforeFirstOperationsRun = false;
     protected IOContext context;
 
-
     public BaseRecordReaderWriter(){
-         format = new Format();
-         format.putDefault("charset", Charset.defaultCharset().name());
-         format.putDefault("skipLeading", "0");
-         format.putDefault("skipTrailing", "0");
+        format = new Format();
+        format.putDefault("charset", Charset.defaultCharset().name());
+        format.putDefault("skipLeading", "0");
+        format.putDefault("skipTrailing", "0");
     }
 
     public BaseRecordReaderWriter(BaseRecordReaderWriter copy){
-         this();
+        this();
     }
 
     public void open(IOContext context) throws IOException, SchemaException{
 
-        if (context == null)
+        if (context == null){
             throw new IllegalArgumentException("context is null");
+        }
 
         close();
         this.context = context;
@@ -61,28 +61,28 @@ public abstract class BaseRecordReaderWriter{
 
     public void close(boolean closeIOContext){
 
-        try {
+        try{
             executeAfterLastOperations();
         }
-        catch (ValidationException ex) {
+        catch (ValidationException ex){
             logger.log(Level.WARNING, null, ex);
         }
-        catch (ConversionException ex) {
+        catch (ConversionException ex){
             logger.log(Level.WARNING, null, ex);
         }
 
-        if (context != null && closeIOContext)
+        if (context != null && closeIOContext){
             context.close();
+        }
 
         context = null;
         format.clear();
     }
 
-
     protected void executeAfterLastOperations() throws ValidationException, ConversionException{
-        if (context != null && context.getSchema() != null) {
+        if (context != null && context.getSchema() != null){
             List<Operation> operations = context.getSchema().getAfterLastOperations();
-            if (operations != null && !operations.isEmpty()) {
+            if (operations != null && !operations.isEmpty()){
                 TransformContext ctx = new TransformContext();
                 ctx.setValidationExceptionThreshold(context.getValidationExeptionThreshold());
                 ctx.setRecordCount(count);
@@ -94,9 +94,9 @@ public abstract class BaseRecordReaderWriter{
     }
 
     protected void executeBeforeFirstOperations() throws ValidationException, ConversionException{
-        if (context != null && context.getSchema() != null) {
+        if (context != null && context.getSchema() != null){
             List<Operation> operations = context.getSchema().getBeforeFirstOperations();
-            if (operations != null && !operations.isEmpty()) {
+            if (operations != null && !operations.isEmpty()){
                 TransformContext ctx = new TransformContext();
                 ctx.setValidationExceptionThreshold(context.getValidationExeptionThreshold());
                 ctx.setRecordCount(count);
@@ -106,7 +106,6 @@ public abstract class BaseRecordReaderWriter{
             }
         }
     }
-
 
     public long getCount(){
         return count;
@@ -128,7 +127,6 @@ public abstract class BaseRecordReaderWriter{
         return Integer.parseInt(format.get("skipTrailing"));
     }
 
-
     /**
      * Validates that all attributes contain valid values.
      *
@@ -136,7 +134,7 @@ public abstract class BaseRecordReaderWriter{
      */
     protected void validateAttributes(){
 
-        for (String attribute: format.keySet()){
+        for (String attribute : format.keySet()){
             if (!format.getDefaults().containsKey(attribute)){
                 logger.log(
                         Level.WARNING,
@@ -160,7 +158,7 @@ public abstract class BaseRecordReaderWriter{
         }
     }
 
-    public Map<String,String> getDefaults(){
+    public Map<String, String> getDefaults(){
         return format.getDefaults();
     }
 }

@@ -10,9 +10,9 @@ import static org.junit.Assert.*;
  *
  * @author krenfro
  */
-public class ConcatConverterTest extends MultiFieldConverterTest {
+public class ConcatConverterTest extends MultiFieldConverterTest{
 
-    public ConcatConverterTest() {
+    public ConcatConverterTest(){
         converter = new Concat();
     }
 
@@ -26,14 +26,12 @@ public class ConcatConverterTest extends MultiFieldConverterTest {
             converter.convert("", null);
             fail("Expected IllegalArgumentException on null input");
         }
-        catch(IllegalArgumentException expected){
+        catch (IllegalArgumentException expected){
         }
     }
 
-
-
     @Test
-    public void testConvert() throws Exception {
+    public void testConvert() throws Exception{
 
         Concat concat = new Concat();
         List<String> fields = new ArrayList<String>();
@@ -55,10 +53,8 @@ public class ConcatConverterTest extends MultiFieldConverterTest {
 
     }
 
-
-
     @Test
-    public void testMissingField() throws Exception {
+    public void testMissingField() throws Exception{
 
         Concat concat = new Concat();
         List<String> fields = new ArrayList<String>();
@@ -78,7 +74,7 @@ public class ConcatConverterTest extends MultiFieldConverterTest {
     }
 
     @Test
-    public void testCopyOf() {
+    public void testCopyOf(){
         Concat a = new Concat();
         a.setDelimiter(",");
         Concat b = a.copyOf();
@@ -86,11 +82,9 @@ public class ConcatConverterTest extends MultiFieldConverterTest {
         assertEquals(",", b.getDelimiter());
     }
 
-
-
     @Test
     @Override
-    public void testEquals() {
+    public void testEquals(){
 
         super.testEquals();
 
@@ -120,7 +114,7 @@ public class ConcatConverterTest extends MultiFieldConverterTest {
     }
 
     @Test
-    public void testHashCode() {
+    public void testHashCode(){
         Concat a = new Concat();
         Concat b = new Concat();
         assertEquals(a.hashCode(), b.hashCode());

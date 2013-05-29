@@ -13,13 +13,12 @@ package com.realcomp.data.validation;
  *
  * @author krenfro
  */
-public class ValidationException extends Exception {
+public class ValidationException extends Exception{
 
     private static final long serialVersionUID = -6194444803112488818L;
-
     private Severity severity = Severity.MEDIUM;
 
-    public ValidationException() {
+    public ValidationException(){
         super();
     }
 
@@ -29,42 +28,44 @@ public class ValidationException extends Exception {
 
     public ValidationException(String message, Object value, Severity severity){
         this(message, value);
-        if (severity == null)
+        if (severity == null){
             throw new IllegalArgumentException("severity is null");
-        
+        }
+
         this.severity = severity;
     }
 
-    public ValidationException(String message) {
+    public ValidationException(String message){
         super(message);
     }
 
-    public ValidationException(String message, Throwable cause) {
+    public ValidationException(String message, Throwable cause){
         super(message, cause);
     }
 
-    public ValidationException(Throwable cause) {
+    public ValidationException(Throwable cause){
         super(cause);
     }
 
-    public Severity getSeverity() {
+    public Severity getSeverity(){
         return severity;
     }
 
-    public void setSeverity(Severity severity) {
+    public void setSeverity(Severity severity){
         this.severity = severity;
     }
 
     private static String buildMessage(String message, Object value){
-        if (value == null)
+        if (value == null){
             return message;
+        }
         else{
             String s = value.toString();
-            if (s.length() > 30)
+            if (s.length() > 30){
                 s = s.substring(0, 30);
-            
-            return String.format("%s [%s]", message, s);
-        }       
-    }
+            }
 
+            return String.format("%s [%s]", message, s);
+        }
+    }
 }

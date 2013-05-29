@@ -9,29 +9,31 @@ import java.io.InputStream;
  *
  * @author krenfro
  */
-public class SchemaFactory {
-
+public class SchemaFactory{
 
     public static Schema buildSchema(InputStream in){
-        
-        if (in == null)
+
+        if (in == null){
             throw new IllegalArgumentException("InputStream is null");
-        XStream xstream = XStreamFactory.build();    
+        }
+        XStream xstream = XStreamFactory.build();
         return (Schema) xstream.fromXML(in);
     }
-    
+
     public static Transformer buildTransformer(InputStream in){
-        if (in == null)
+        if (in == null){
             throw new IllegalArgumentException("inputStream is null");
+        }
         XStream xstream = XStreamFactory.build();
         return (Transformer) xstream.fromXML(in);
     }
 
     public static RelationalSchema buildRelationalSchema(InputStream in){
-        
-        if (in == null)
+
+        if (in == null){
             throw new IllegalArgumentException("InputStream is null");
-        XStream xstream = XStreamFactory.build();    
+        }
+        XStream xstream = XStreamFactory.build();
         return (RelationalSchema) xstream.fromXML(in);
     }
 }

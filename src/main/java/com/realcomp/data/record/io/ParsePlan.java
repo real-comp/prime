@@ -8,45 +8,42 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * The parse plan is the order that the Fields should to be parsed from
- * a record.  Some converters are MultiFieldConverters and require
- * other fields to be available in the Record before they can succeed.
+ * The parse plan is the order that the Fields should to be parsed from a record. Some converters are
+ * MultiFieldConverters and require other fields to be available in the Record before they can succeed.
  * MultiFieldConverters should be parsed after any non-MultiFieldConverters
- * 
+ *
  * @author krenfro
  */
 public class ParsePlan extends ArrayList<Field>{
 
-    
-    public ParsePlan(FieldList fields) throws ParsePlanException{        
+    public ParsePlan(FieldList fields) throws ParsePlanException{
         super();
         createParsePlan(fields);
     }
-    
+
     protected final void createParsePlan(FieldList fields) throws ParsePlanException{
 
-        /* first walk the list and add all non-MultiFieldOperations to the list of
-         * fields.  These Field do not depend on anything other than themselves,
-         * so they can be parsed first, in any order.
+        /* first walk the list and add all non-MultiFieldOperations to the list of fields. These Field do not depend on
+         * anything other than themselves, so they can be parsed first, in any order.
          */
         List<Field> skipped = new ArrayList<Field>();
-        for (Field field: fields){
-            if (hasMultiFieldOperation(field))
+        for (Field field : fields){
+            if (hasMultiFieldOperation(field)){
                 skipped.add(field);
-            else
+            }
+            else{
                 add(field);
+            }
         }
 
-        /* skipped now contains all the SchemaFields that contain at least one
-         * MultiFieldOperation.  Try an inelegant brute-force of ordering by
-         * making sure all the fields that the Field depends on have
-         * already been parsed.  If there are circular dependencies
-         * in the SchemaFields, this algorithm will fall down and should be revised.
+        /* skipped now contains all the SchemaFields that contain at least one MultiFieldOperation. Try an inelegant
+         * brute-force of ordering by making sure all the fields that the Field depends on have already been parsed. If
+         * there are circular dependencies in the SchemaFields, this algorithm will fall down and should be revised.
          */
         int attempt = 0;
         while (!skipped.isEmpty()){
 
-            for (Field field: skipped){
+            for (Field field : skipped){
                 if (getParsedFieldNames().containsAll(getDependentFieldNames(field))){
                     add(field);
                 }
@@ -59,9 +56,10 @@ public class ParsePlan extends ArrayList<Field>{
                 StringBuilder message = new StringBuilder();
                 message.append("Unable to determine parse plan for the following fields: [");
                 boolean needDelimiter = false;
-                for (Field field: skipped){
-                    if (needDelimiter)
+                for (Field field : skipped){
+                    if (needDelimiter){
                         message.append(",");
+                    }
                     needDelimiter = true;
                     message.append(field.getName());
                 }
@@ -70,27 +68,26 @@ public class ParsePlan extends ArrayList<Field>{
             }
         }
     }
-    
+
     /**
-     * 
+     *
      * @return list of all field names that have been successfully parsed
      */
     protected final List<String> getParsedFieldNames(){
         List<String> fieldNames = new ArrayList<String>();
-        for (Field f: this){
+        for (Field f : this){
             fieldNames.add(f.getName());
         }
         return fieldNames;
     }
 
     /**
-     * @return list of field names that the Field needs to be available in the Record for its 
-     *  operations to succeed.
+     * @return list of field names that the Field needs to be available in the Record for its operations to succeed.
      */
     protected final List<String> getDependentFieldNames(Field field){
 
         List<String> fieldNames = new ArrayList<String>();
-        for (Operation op: field.getOperations()){
+        for (Operation op : field.getOperations()){
             if (op instanceof MultiFieldOperation){
                 fieldNames.addAll(((MultiFieldOperation) op).getFields());
             }
@@ -101,15 +98,16 @@ public class ParsePlan extends ArrayList<Field>{
 
     /**
      * Determines if one of the Operations in a Field is a MultiFieldOperation.
-     * 
+     *
      * @param field
      * @return true if the Field contains a MultiFieldOperation.
      */
     protected final boolean hasMultiFieldOperation(Field field){
         if (field.getOperations() != null){
-            for (Operation op: field.getOperations()){
-                if (op instanceof MultiFieldOperation)
+            for (Operation op : field.getOperations()){
+                if (op instanceof MultiFieldOperation){
                     return true;
+                }
             }
         }
         return false;

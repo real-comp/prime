@@ -16,12 +16,11 @@ import java.util.List;
 /**
  * Uses xStream, JavaBeans and reflection to dynamically serialize/de-serialize a
  * RelationalSchemaConverter
- * 
+ *
  * @author krenfro
  */
 public class RelationalSchemaConverter implements Converter{
 
-    
     public RelationalSchemaConverter(){
     }
 
@@ -30,9 +29,8 @@ public class RelationalSchemaConverter implements Converter{
         return RelationalSchema.class.isAssignableFrom(type);
     }
 
-
     @Override
-    public void marshal(Object o, HierarchicalStreamWriter writer, MarshallingContext mc) {
+    public void marshal(Object o, HierarchicalStreamWriter writer, MarshallingContext mc){
         RelationalSchema schema = (RelationalSchema) o;
         writer.addAttribute("name", schema.getName());
         writer.addAttribute("version", schema.getVersion());
@@ -40,7 +38,7 @@ public class RelationalSchemaConverter implements Converter{
     }
 
     @Override
-    public Object unmarshal(HierarchicalStreamReader reader, UnmarshallingContext uc) {
+    public Object unmarshal(HierarchicalStreamReader reader, UnmarshallingContext uc){
 
         RelationalSchema schema = new RelationalSchema();
         schema.setName(reader.getAttribute("name"));
@@ -52,35 +50,36 @@ public class RelationalSchemaConverter implements Converter{
                 reader.moveDown();
 
                 Table table = readTable(reader);
-                if (table != null)
+                if (table != null){
                     tables.add(table);
+                }
                 reader.moveUp();
             }
 
             schema.setTables(tables);
         }
-        catch(SchemaException e){
+        catch (SchemaException e){
             throw new ConversionException(e.getMessage(), e);
         }
-        
+
         return schema;
     }
-
 
     protected Table readTable(HierarchicalStreamReader reader) throws SchemaException{
         return readTable(null, reader);
     }
-    
+
     protected Table readTable(Table parent, HierarchicalStreamReader reader) throws SchemaException{
 
         String tableName = reader.getAttribute("name");
-        if (tableName == null)
+        if (tableName == null){
             return null;
+        }
 
         Table table = new Table(tableName);
         table.setParent(parent);
-        
-        while(reader.hasMoreChildren()){
+
+        while (reader.hasMoreChildren()){
             reader.moveDown();
             if (reader.getNodeName().equals("table")){
                 table.add(readTable(table, reader));
@@ -91,11 +90,11 @@ public class RelationalSchemaConverter implements Converter{
         return table;
     }
 
-
     protected void writeTables(Collection<Table> tables, HierarchicalStreamWriter writer){
         if (tables != null){
-            for (Table table: tables)
+            for (Table table : tables){
                 writeTable(table, writer);
+            }
         }
     }
 
@@ -109,5 +108,4 @@ public class RelationalSchemaConverter implements Converter{
             writer.endNode();
         }
     }
-
 }

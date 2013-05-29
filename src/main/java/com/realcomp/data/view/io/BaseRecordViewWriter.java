@@ -7,20 +7,21 @@ import java.io.IOException;
 
 /**
  * Wraps a RecordWriter to read instances of an arbitrary class
- * 
+ *
  * @author krenfro
  */
 public abstract class BaseRecordViewWriter<T> implements RecordViewWriter<T>{
-    
+
     protected RecordWriter writer;
-    
+
     public BaseRecordViewWriter(RecordWriter writer){
-        if (writer == null)
+        if (writer == null){
             throw new IllegalArgumentException("writer is null");
-        
+        }
+
         this.writer = writer;
     }
-    
+
     @Override
     public void close(){
         writer.close();
@@ -30,7 +31,6 @@ public abstract class BaseRecordViewWriter<T> implements RecordViewWriter<T>{
     public void open(IOContext context) throws IOException, SchemaException{
         writer.open(context);
     }
-    
 
     @Override
     public long getCount(){

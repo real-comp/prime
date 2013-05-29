@@ -4,17 +4,15 @@ import java.util.Objects;
 import org.apache.commons.lang.StringUtils;
 
 /**
- * Converts a value to a String (toString), and right pads the value with some character(s) to
- * a specified length.
+ * Converts a value to a String (toString), and right pads the value with some character(s) to a specified length.
  * Default pad character is a single space.
  *
  * @author krenfro
  */
 @com.realcomp.data.annotation.Converter("rightPad")
-public class RightPad extends SimpleConverter {
+public class RightPad extends SimpleConverter{
 
     private static final int USE_ORIGINAL_LENGTH = -1;
-
     private int length = USE_ORIGINAL_LENGTH;
     private String with = " ";
 
@@ -24,8 +22,9 @@ public class RightPad extends SimpleConverter {
 
     public RightPad(int length){
         super();
-        if (length < 0)
+        if (length < 0){
             throw new IllegalArgumentException("length < 0");
+        }
         this.length = length;
     }
 
@@ -48,13 +47,14 @@ public class RightPad extends SimpleConverter {
         return copy;
     }
 
-    public int getLength() {
+    public int getLength(){
         return length;
     }
 
-    public void setLength(int length) {
-        if (length < 0)
+    public void setLength(int length){
+        if (length < 0){
             throw new IllegalArgumentException("length < 0");
+        }
         this.length = length;
     }
 

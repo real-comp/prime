@@ -2,15 +2,13 @@ package com.realcomp.data.conversion;
 
 import java.util.Objects;
 
-
 /**
- * behaves like String.substring(begin, end)
- * Bad index will return empty-string.
+ * behaves like String.substring(begin, end) Bad index will return empty-string.
  *
  * @author krenfro
  */
 @com.realcomp.data.annotation.Converter("substring")
-public class Substring extends SimpleConverter {
+public class Substring extends SimpleConverter{
 
     protected Integer begin = 0;
     protected Integer end;
@@ -33,21 +31,25 @@ public class Substring extends SimpleConverter {
     @Override
     public Object convert(Object value) throws ConversionException{
 
-        if (value == null)
+        if (value == null){
             throw new IllegalArgumentException("value is null");
+        }
 
         Object retVal = "";
 
         try{
-            if (begin == null)
+            if (begin == null){
                 begin = 0;
+            }
 
-            if (end == null || end <= begin)
+            if (end == null || end <= begin){
                 retVal = value.toString().substring(begin);
-            else
+            }
+            else{
                 retVal = value.toString().substring(begin, end);
+            }
         }
-        catch(IndexOutOfBoundsException e){
+        catch (IndexOutOfBoundsException e){
         }
 
         return retVal;
@@ -58,19 +60,19 @@ public class Substring extends SimpleConverter {
         return new Substring(begin, end);
     }
 
-    public Integer getBegin() {
+    public Integer getBegin(){
         return begin;
     }
 
-    public void setBegin(Integer begin) {
+    public void setBegin(Integer begin){
         this.begin = begin;
     }
 
-    public Integer getEnd() {
+    public Integer getEnd(){
         return end;
     }
 
-    public void setEnd(Integer end) {
+    public void setEnd(Integer end){
         this.end = end;
     }
 
@@ -99,6 +101,4 @@ public class Substring extends SimpleConverter {
         }
         return true;
     }
-
-    
 }

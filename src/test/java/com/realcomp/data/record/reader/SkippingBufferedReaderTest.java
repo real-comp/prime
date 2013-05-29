@@ -1,6 +1,5 @@
 /*
  */
-
 package com.realcomp.data.record.reader;
 
 import com.realcomp.data.record.io.SkippingBufferedReader;
@@ -14,17 +13,17 @@ import static org.junit.Assert.*;
  *
  * @author krenfro
  */
-public class SkippingBufferedReaderTest {
+public class SkippingBufferedReaderTest{
 
-    public SkippingBufferedReaderTest() {
+    public SkippingBufferedReaderTest(){
     }
 
     @BeforeClass
-    public static void setUpClass() throws Exception {
+    public static void setUpClass() throws Exception{
     }
 
     @AfterClass
-    public static void tearDownClass() throws Exception {
+    public static void tearDownClass() throws Exception{
     }
 
     protected String getData(int numLines){
@@ -33,12 +32,13 @@ public class SkippingBufferedReaderTest {
         boolean needDelimiter = false;
 
         for (int x = 0; x < numLines; x++){
-            if (needDelimiter)
+            if (needDelimiter){
                 s.append("\n");
+            }
             needDelimiter = true;
             s.append(x + 1);
         }
-        
+
         return s.toString();
     }
 
@@ -46,7 +46,7 @@ public class SkippingBufferedReaderTest {
      * Test of setLeading method, of class SkippingBufferedReader.
      */
     @Test
-    public void testSetLeading() {
+    public void testSetLeading(){
         SkippingBufferedReader instance = new SkippingBufferedReader(new StringReader(getData(0)));
         assertEquals(0, instance.getSkipLeading());
         instance.setSkipLeading(0);
@@ -57,15 +57,16 @@ public class SkippingBufferedReaderTest {
             instance.setSkipLeading(-1);
             fail("should have thrown IllegalArgumentException");
         }
-        catch(IllegalArgumentException expected){}
-        
+        catch (IllegalArgumentException expected){
+        }
+
     }
 
     /**
      * Test of setTrailing method, of class SkippingBufferedReader.
      */
     @Test
-    public void testSetTrailing() {
+    public void testSetTrailing(){
         SkippingBufferedReader instance = new SkippingBufferedReader(new StringReader(getData(0)));
         assertEquals(0, instance.getSkipTrailing());
         instance.setSkipTrailing(0);
@@ -76,15 +77,15 @@ public class SkippingBufferedReaderTest {
             instance.setSkipTrailing(-1);
             fail("should have thrown IllegalArgumentException");
         }
-        catch(IllegalArgumentException expected){}
+        catch (IllegalArgumentException expected){
+        }
     }
 
-    
     /**
      * Test of readLine method, of class SkippingBufferedReader.
      */
     @Test
-    public void testReadLine() throws Exception {
+    public void testReadLine() throws Exception{
 
         SkippingBufferedReader instance = new SkippingBufferedReader(new StringReader(getData(0)));
         assertEquals(0, instance.getSkipLeading());
@@ -145,5 +146,4 @@ public class SkippingBufferedReaderTest {
         assertEquals("6", instance.readLine());
         assertNull(instance.readLine());
     }
-
 }

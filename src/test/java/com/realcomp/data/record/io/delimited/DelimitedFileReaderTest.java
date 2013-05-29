@@ -20,55 +20,55 @@ import org.junit.Test;
  *
  * @author krenfro
  */
-public class DelimitedFileReaderTest {
+public class DelimitedFileReaderTest{
 
-    public DelimitedFileReaderTest() {
+    public DelimitedFileReaderTest(){
     }
-
 
     /**
      * Test of open method, of class DelimitedFileParser.
+     *
      * @throws IOException
      * @throws SchemaException
      */
     @Test
-    public void testOpenClose() throws IOException, SchemaException {
+    public void testOpenClose() throws IOException, SchemaException{
 
         DelimitedFileReader reader = new DelimitedFileReader();
-        
+
         try{
             reader.open(null);
             fail("should have thrown IllegalArgumentException");
         }
-        catch(IllegalArgumentException expected){}
+        catch (IllegalArgumentException expected){
+        }
 
         reader.close();
         reader.close();
 
         String data = "a\tb\tc";
-        
+
         IOContext ctx = new IOContextBuilder()
-                    .schema(get3FieldSchema())
-                    .in(new ByteArrayInputStream(data.getBytes()))
-                    .build();
-        
+                .schema(get3FieldSchema())
+                .in(new ByteArrayInputStream(data.getBytes()))
+                .build();
+
         reader.open(ctx);
         reader.close();
         reader.close();
     }
 
-
     /**
      * Test of getType method, of class DelimitedFileParser.
      */
     @Test
-    public void testGetType() throws IOException, SchemaException {
+    public void testGetType() throws IOException, SchemaException{
 
         DelimitedFileReader reader = new DelimitedFileReader();
         assertEquals("TAB", reader.getDefaults().get("type"));
         assertTrue('\t' == reader.getDelimiter());
-        
-        
+
+
         IOContext ctx = new IOContextBuilder()
                 .attribute("type", "CSV")
                 .in(new ByteArrayInputStream(new byte[1]))
@@ -79,26 +79,25 @@ public class DelimitedFileReaderTest {
         ctx = new IOContextBuilder(ctx).attribute("type", "TAB").build();
         reader.open(ctx);
         assertTrue('\t' == reader.getDelimiter());
-        
+
         ctx = new IOContextBuilder(ctx).attribute("type", "-").build();
         reader.open(ctx);
         assertTrue('-' == reader.getDelimiter());
     }
-    
-  
+
     /**
      * Test of next method, of class DelimitedFileParser.
      */
     @Test
-    public void testNext() throws Exception {
+    public void testNext() throws Exception{
 
-        
+
         String data = "a\tb\tc\nd\te\tf";
         IOContext ctx = new IOContextBuilder()
                 .schema(get3FieldSchema())
                 .in(new ByteArrayInputStream(data.getBytes()))
                 .build();
-        
+
         DelimitedFileReader reader = new DelimitedFileReader();
         reader.open(ctx);
 
@@ -108,27 +107,26 @@ public class DelimitedFileReaderTest {
         assertNotNull(record);
         record = reader.read();
         assertNull(record);
-        
+
         reader.close();
     }
 
-
     @Test
-    public void testCSV() throws Exception {
+    public void testCSV() throws Exception{
 
         String data = "\"a123\",\"b123\",\"c123\"";
-        
-        Map<String,String> attributes = new HashMap<String,String>();
+
+        Map<String, String> attributes = new HashMap<String, String>();
         attributes.put("type", "CSV");
         IOContext ctx = new IOContextBuilder()
                 .schema(get3FieldSchema())
                 .in(new ByteArrayInputStream(data.getBytes()))
                 .attributes(attributes)
                 .build();
-        
+
         DelimitedFileReader reader = new DelimitedFileReader();
         reader.open(ctx);
-        
+
 
         Record record = reader.read();
         assertNotNull(record);
@@ -160,7 +158,7 @@ public class DelimitedFileReaderTest {
                 .in(new ByteArrayInputStream(data.getBytes()))
                 .build();
         reader.open(ctx);
-        
+
 
         record = reader.read();
         assertNotNull(record);
@@ -170,12 +168,12 @@ public class DelimitedFileReaderTest {
         assertNull(reader.read());
         reader.close();
 
-         //embedded quote
+        //embedded quote
         data = "\"a123\",\"b1\"\"23\",\"c123\"";
         ctx = new IOContextBuilder(ctx)
                 .in(new ByteArrayInputStream(data.getBytes()))
                 .build();
-        reader.open(ctx);        
+        reader.open(ctx);
 
         record = reader.read();
         assertNotNull(record);
@@ -191,7 +189,7 @@ public class DelimitedFileReaderTest {
                 .in(new ByteArrayInputStream(data.getBytes()))
                 .build();
         reader.open(ctx);
-        
+
         record = reader.read();
         assertNotNull(record);
         assertEquals("a123", record.get("a"));
@@ -202,53 +200,54 @@ public class DelimitedFileReaderTest {
 
     }
 
-
-
-     /**
+    /**
      * Test of loadRecord method, of class DelimitedFileParser.
      */
     @Test
-    public void testLoadRecordMissingFields() throws Exception {
+    public void testLoadRecordMissingFields() throws Exception{
 
-        String[] data = new String[]{"a123","b123"};
+        String[] data = new String[]{"a123", "b123"};
         FieldList fields = get3FieldSchema().getDefaultFieldList();
-        
+
         IOContext ctx = new IOContextBuilder()
                 .schema(get3FieldSchema())
                 .in(new ByteArrayInputStream(new byte[10]))
                 .build();
-        
+
         DelimitedFileReader reader = new DelimitedFileReader();
         reader.open(ctx);
         try{
             reader.loadRecord(fields, data);
             fail("should have thrown ValidationException");
         }
-        catch(ValidationException expected){}
+        catch (ValidationException expected){
+        }
 
 
         try{
-            data = new String[]{"a123","b123","c123","d123"};
+            data = new String[]{"a123", "b123", "c123", "d123"};
             reader.loadRecord(fields, data);
             fail("should have thrown ValidationException");
         }
-        catch(ValidationException expected){}
+        catch (ValidationException expected){
+        }
 
         try{
             data = new String[]{};
             reader.loadRecord(fields, data);
             fail("should have thrown ValidationException");
         }
-        catch(ValidationException expected){}
+        catch (ValidationException expected){
+        }
 
     }
 
     protected Schema get3FieldSchema() throws SchemaException{
-        
+
         Schema schema = new Schema();
         schema.setName("test");
         schema.setVersion("0");
-        
+
         FieldList fields = new FieldList();
         fields.add(new Field("a", DataType.STRING));
         fields.add(new Field("b", DataType.STRING));
@@ -256,5 +255,4 @@ public class DelimitedFileReaderTest {
         schema.addFieldList(fields);
         return schema;
     }
-
 }

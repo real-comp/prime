@@ -1,4 +1,3 @@
-
 package com.realcomp.data.validation.field;
 
 import com.realcomp.data.annotation.Validator;
@@ -10,7 +9,7 @@ import com.realcomp.data.validation.Severity;
  * @author krenfro
  */
 @Validator("foreignKey")
-public class ForeignKey extends Key {
+public class ForeignKey extends Key{
 
     protected String name;
 
@@ -23,36 +22,38 @@ public class ForeignKey extends Key {
         this.name = name;
     }
 
-    public String getName() {
+    public String getName(){
         return name;
     }
 
-    public void setName(String name) {
+    public void setName(String name){
         this.name = name;
     }
 
     @Override
-    public ForeignKey copyOf() {
+    public ForeignKey copyOf(){
         ForeignKey copy = new ForeignKey(name);
         copy.setSeverity(severity);
         return copy;
     }
 
-
     @Override
-    public boolean equals(Object obj) {
-        if (obj == null)
+    public boolean equals(Object obj){
+        if (obj == null){
             return false;
-        if (getClass() != obj.getClass())
+        }
+        if (getClass() != obj.getClass()){
             return false;
+        }
         final ForeignKey other = (ForeignKey) obj;
-        if ((this.name == null) ? (other.name != null) : !this.name.equals(other.name))
+        if ((this.name == null) ? (other.name != null) : !this.name.equals(other.name)){
             return false;
+        }
         return true;
     }
 
     @Override
-    public int hashCode() {
+    public int hashCode(){
         int hash = 5;
         hash = 89 * hash + (this.name != null ? this.name.hashCode() : 0);
         return hash;

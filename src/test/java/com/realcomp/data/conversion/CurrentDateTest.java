@@ -12,24 +12,22 @@ import static org.junit.Assert.*;
  */
 public class CurrentDateTest extends ComplexConverterTest{
 
-    public CurrentDateTest() {
+    public CurrentDateTest(){
         converter = new CurrentDate();
     }
-    
-    
+
     @Test
     @Override
     public void testNullInput() throws ConversionException{
-        
+
         assertNotNull(converter.convert(null));
     }
-    
 
     /**
      * Test of convert method, of class CurrentDate.
      */
     @Test
-    public void testConvert() throws Exception {
+    public void testConvert() throws Exception{
 
         CurrentDate converter = new CurrentDate();
         Calendar now = Calendar.getInstance();
@@ -73,12 +71,11 @@ public class CurrentDateTest extends ComplexConverterTest{
 
     }
 
- 
     /**
      * Test of setFormat method, of class CurrentDate.
      */
     @Test
-    public void testSetFormat() {
+    public void testSetFormat(){
         CurrentDate instance = new CurrentDate();
         instance.setFormat("");
         instance.setFormat("yyyyMMdd");
@@ -88,46 +85,45 @@ public class CurrentDateTest extends ComplexConverterTest{
         instance.setFormat("long");
         instance.setFormat("full");
     }
-    
+
     @Test
     public void testParameterizedConstructor(){
         CurrentDate a = new CurrentDate();
         a.setFormat("yyyyMMdd");
-        
+
         CurrentDate b = new CurrentDate("yyyyMMdd");
         assertEquals(a, b);
     }
 
     @Test
-    public void testCopyOf() {
+    public void testCopyOf(){
         CurrentDate a = new CurrentDate();
         CurrentDate b = a.copyOf();
         assertEquals(a, b);
-        
+
         a.setFormat("short");
         assertFalse(a.equals(b));
-        
+
         b.setFormat("short");
         assertEquals(a, b);
-        
+
     }
-    
+
     @Test
     public void testGetFormat(){
         CurrentDate a = new CurrentDate();
         assertEquals("yyyyMMdd", a.getFormat());
-        
+
         a.setFormat("short");
         assertEquals("short", a.getFormat());
     }
-    
-    
+
     @Test
     @Override
-    public void testEquals() {
-        
+    public void testEquals(){
+
         super.testEquals();
-        
+
         CurrentDate a = new CurrentDate();
         CurrentDate b = new CurrentDate();
         assertEquals(a, b);
@@ -139,11 +135,9 @@ public class CurrentDateTest extends ComplexConverterTest{
     }
 
     @Test
-    public void testHashCode() {
+    public void testHashCode(){
         CurrentDate a = new CurrentDate();
         CurrentDate b = new CurrentDate();
         assertEquals(a.hashCode(), b.hashCode());
     }
-    
-    
 }

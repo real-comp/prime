@@ -9,37 +9,32 @@ import static org.junit.Assert.*;
  */
 public class FirstNameConverterTest extends StringConverterTest{
 
-    public FirstNameConverterTest() {
+    public FirstNameConverterTest(){
         converter = new FirstName();
     }
-
 
     /**
      * Test of convert method, of class CurrentDate.
      */
     @Test
-    public void testConvert() throws Exception {
+    public void testConvert() throws Exception{
 
-        FirstName converter = new FirstName();        
-        assertEquals("RYAN", converter.convert("RENFRO, RYAN KYLE"));        
+        FirstName converter = new FirstName();
+        assertEquals("RYAN", converter.convert("RENFRO, RYAN KYLE"));
         assertEquals("", converter.convert("REAL-COMP"));
     }
 
-
     @Test
-    public void testCopyOf() {
+    public void testCopyOf(){
         FirstName a = new FirstName();
         FirstName b = a.copyOf();
         assertEquals(a, b);
     }
-    
-    
-    
+
     @Test
-    public void testHashCode() {
+    public void testHashCode(){
         FirstName a = new FirstName();
         FirstName b = new FirstName();
         assertEquals(a.hashCode(), b.hashCode());
     }
-    
 }

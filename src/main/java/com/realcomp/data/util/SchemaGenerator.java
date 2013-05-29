@@ -20,14 +20,13 @@ import joptsimple.OptionException;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 
-
 /**
  * Schema generator for delimited files.
  * Uses the first record in a delimited file to generate a schema.
  *
  * @author krenfro
  */
-public class SchemaGenerator {
+public class SchemaGenerator{
 
     private String delimiter = "TAB";
 
@@ -40,7 +39,7 @@ public class SchemaGenerator {
 
     public Schema generate(File file) throws IOException{
         String header = null;
-        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(file))){
             header = reader.readLine();
         }
         String[] fieldNames = getFieldNames(header);
@@ -79,7 +78,7 @@ public class SchemaGenerator {
 
     protected Schema buildSchema(String[] fieldNames){
         Schema schema = new Schema();
-        Map<String,String> format = new HashMap<String,String>();
+        Map<String, String> format = new HashMap<String, String>();
         format.put("header", "true");
 
         if (delimiter.equals("\t") || delimiter.equalsIgnoreCase("TAB")){
@@ -96,7 +95,7 @@ public class SchemaGenerator {
 
 
         int count = 1;
-        for (String fieldName: fieldNames){
+        for (String fieldName : fieldNames){
             schema.addField(new Field(fieldName.isEmpty() ? "FIELD" + count : fieldName));
             count++;
         }
@@ -109,10 +108,11 @@ public class SchemaGenerator {
         header = header.concat("<rc:schema\n");
         header = header.concat("   xmlns:rc=\"http://www.real-comp.com/realcomp-data/schema/file-schema/1.2\"\n");
         header = header.concat("   xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n");
-        header = header.concat("   xsi:schemaLocation=\"http://www.real-comp.com/realcomp-data/schema/file-schema/1.2 http://www.real-comp.com/realcomp-data/schema/file-schema/1.2/file-schema.xsd\">\n");
+        header =
+                header.concat("   xsi:schemaLocation=\"http://www.real-comp.com/realcomp-data/schema/file-schema/1.2 http://www.real-comp.com/realcomp-data/schema/file-schema/1.2/file-schema.xsd\">\n");
 
         String clean = header.concat(dirty.replace("<schema>", ""));
-        clean = clean.replace("</schema>","</rc:schema>");
+        clean = clean.replace("</schema>", "</rc:schema>");
         clean = clean.replaceAll(" length=\"0\"", "");
         clean = clean.replaceAll(" classifier=\".*\"", "");
         clean = clean.concat("\n");
@@ -128,19 +128,21 @@ public class SchemaGenerator {
     }
 
     private static void printHelp(OptionParser parser){
-        try {
+        try{
             parser.printHelpOn(System.err);
         }
-        catch (IOException ignored) {
+        catch (IOException ignored){
         }
     }
 
     public static void main(String[] args){
 
-        OptionParser parser = new OptionParser(){{
-            acceptsAll(Arrays.asList("d","delimiter"), "delimiter" ).withRequiredArg().describedAs("delimiter");
-            acceptsAll(Arrays.asList("h", "?", "help"), "help");
-        }};
+        OptionParser parser = new OptionParser(){
+            {
+                acceptsAll(Arrays.asList("d", "delimiter"), "delimiter").withRequiredArg().describedAs("delimiter");
+                acceptsAll(Arrays.asList("h", "?", "help"), "help");
+            }
+        };
 
         int result = 0;
 

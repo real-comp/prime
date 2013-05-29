@@ -6,17 +6,16 @@ import java.util.Map;
 import java.util.Stack;
 
 /**
- * Finds a specified value in a Record.  A composite RecordKey can reference a value
- * arbitrarily deep within a Record.
+ * Finds a specified value in a Record. A composite RecordKey can reference a value arbitrarily deep within a Record.
  *
  * @see RecordValueAssembler
  * @author krenfro
  */
-public class RecordValueResolver {
+public class RecordValueResolver{
 
-    private static Map<String,Stack<RecordKey>> keyCache = new HashMap<String,Stack<RecordKey>>();
+    private static Map<String, Stack<RecordKey>> keyCache = new HashMap<>();
 
-    public static Object resolve(Map<String,Object> map, String key){
+    public static Object resolve(Map<String, Object> map, String key){
 
         Stack<RecordKey> recordKeySequence = keyCache.get(key);
         if (recordKeySequence == null){
@@ -28,7 +27,7 @@ public class RecordValueResolver {
     }
 
     @SuppressWarnings("unchecked")
-    private static Object resolve(Map<String,Object> map, Stack<RecordKey> sequence){
+    private static Object resolve(Map<String, Object> map, Stack<RecordKey> sequence){
 
         Object result = null;
 
@@ -37,13 +36,13 @@ public class RecordValueResolver {
             Object value = map.get(key.getName());
             if (value != null){
                 if (List.class.isAssignableFrom(value.getClass())){
-                    List<Map<String,Object>> list = (List<Map<String,Object>>) value;
+                    List<Map<String, Object>> list = (List<Map<String, Object>>) value;
                     if (key.isIndexed() || list.size() == 1){
                         try{
                             //allow single entry lists to be resolved without an index.
                             result = resolve(list.get(key.isIndexed() ? key.getIndex() : 0), sequence);
                         }
-                        catch(IndexOutOfBoundsException ex){
+                        catch (IndexOutOfBoundsException ex){
                             result = null;
                         }
                     }
@@ -55,7 +54,7 @@ public class RecordValueResolver {
                     }
                     else{
                         throw new RecordKeyException(
-                            String.format("Ambiguous key [%s] references a list of size [%s]", key, list.size()));
+                                String.format("Ambiguous key [%s] references a list of size [%s]", key, list.size()));
                     }
                 }
                 else if (Map.class.isAssignableFrom(value.getClass())){
@@ -63,7 +62,7 @@ public class RecordValueResolver {
                         throw new RecordKeyException(
                                 String.format("RecordKey [%s] is indexed, but does not reference a List", key));
                     }
-                    result = resolve((Map<String,Object>) value, sequence);
+                    result = resolve((Map<String, Object>) value, sequence);
                 }
                 else{
                     if (key.isIndexed()){
@@ -80,5 +79,4 @@ public class RecordValueResolver {
 
         return result;
     }
-
 }

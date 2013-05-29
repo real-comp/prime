@@ -1,6 +1,5 @@
 package com.realcomp.data.schema;
 
-
 import com.realcomp.data.record.io.Format;
 import java.util.logging.Logger;
 import com.realcomp.data.conversion.Concat;
@@ -17,18 +16,17 @@ import org.junit.Test;
  *
  * @author krenfro
  */
-public class MultiFieldOperationSchemaTest {
+public class MultiFieldOperationSchemaTest{
 
-    private static final Logger logger =  Logger.getLogger(MultiFieldOperationSchemaTest.class.getName());
+    private static final Logger logger = Logger.getLogger(MultiFieldOperationSchemaTest.class.getName());
     private XStream xstream;
 
     @Before
     public void init(){
 
         xstream = XStreamFactory.build();
-        
-    }
 
+    }
 
     protected Schema getSchema() throws SchemaException{
 
@@ -45,7 +43,7 @@ public class MultiFieldOperationSchemaTest {
         fieldNames.add("b");
         concat.setFields(fieldNames);
         owner.addOperation(concat);
-        
+
         schema.addField(owner);
         schema.addField(new Field("zip", DataType.INTEGER, 5));
         schema.addField(new Field("value", DataType.FLOAT, 7));
@@ -53,10 +51,10 @@ public class MultiFieldOperationSchemaTest {
         schema.getFormat().put("type", "TAB");
         return schema;
     }
-    
+
     @Test
     public void testSerialization() throws SchemaException{
-    
+
         String xml = xstream.toXML(getSchema());
         System.out.println(xml);
 
@@ -70,9 +68,7 @@ public class MultiFieldOperationSchemaTest {
 
         Schema schema = SchemaFactory.buildSchema(new ByteArrayInputStream(xml.getBytes()));
 
-        
+
 
     }
-
-    
 }

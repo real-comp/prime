@@ -1,6 +1,5 @@
 package com.realcomp.data.schema;
 
-
 import com.realcomp.data.Operation;
 import com.realcomp.data.conversion.ReplaceFirst;
 import java.util.logging.Logger;
@@ -22,9 +21,9 @@ import static org.junit.Assert.*;
  *
  * @author krenfro
  */
-public class DoubleQuote {
+public class DoubleQuote{
 
-    private static final Logger logger =  Logger.getLogger(DoubleQuote.class.getName());
+    private static final Logger logger = Logger.getLogger(DoubleQuote.class.getName());
     private XStream xstream;
 
     @Before
@@ -33,7 +32,6 @@ public class DoubleQuote {
         xstream = XStreamFactory.build();
 
     }
-
 
     protected Schema getSchema() throws SchemaException{
 
@@ -58,7 +56,7 @@ public class DoubleQuote {
         schema.addField(owner);
         schema.addField(new Field("zip", DataType.INTEGER, 5));
         schema.addField(new Field("value", DataType.FLOAT, 7));
-        
+
         schema.getFormat().put("type", "TAB");
         return schema;
     }
@@ -81,19 +79,18 @@ public class DoubleQuote {
 
         Field field = schema.getField("owner");
         boolean foundIt = false;
-        for (Operation op: field.getOperations()){
+        for (Operation op : field.getOperations()){
 
             if (op instanceof ReplaceFirst){
-                assertEquals("\"", ((ReplaceFirst) op).getRegex() );
+                assertEquals("\"", ((ReplaceFirst) op).getRegex());
                 foundIt = true;
             }
         }
 
-        if (!foundIt)
+        if (!foundIt){
             fail("did not contain ReplaceFirst operation");
+        }
 
 
     }
-
-
 }

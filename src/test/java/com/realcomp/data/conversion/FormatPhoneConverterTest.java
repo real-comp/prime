@@ -9,18 +9,17 @@ import static org.junit.Assert.*;
  */
 public class FormatPhoneConverterTest extends SimpleConverterTest{
 
-    public FormatPhoneConverterTest() {
+    public FormatPhoneConverterTest(){
         converter = new FormatPhone();
     }
-
 
     /**
      * Test of convert method, of class CurrentDate.
      */
     @Test
-    public void testConvert() throws Exception {
+    public void testConvert() throws Exception{
 
-        FormatPhone converter = new FormatPhone();        
+        FormatPhone converter = new FormatPhone();
         assertEquals("(512) 289-3035", converter.convert("5122893035"));
         assertEquals("(512) 289-3035", converter.convert("5122893035"));
         assertEquals("(512) 289-3035", converter.convert("15122893035"));
@@ -31,21 +30,17 @@ public class FormatPhoneConverterTest extends SimpleConverterTest{
         assertEquals("2893", converter.convert("2893"));
     }
 
-
     @Test
-    public void testCopyOf() {
+    public void testCopyOf(){
         FormatPhone a = new FormatPhone();
         FormatPhone b = a.copyOf();
         assertEquals(a, b);
     }
-    
+
     @Test
-    public void testHashCode() {
+    public void testHashCode(){
         FormatPhone a = new FormatPhone();
         FormatPhone b = new FormatPhone();
         assertEquals(a.hashCode(), b.hashCode());
     }
-    
-    
-    
 }

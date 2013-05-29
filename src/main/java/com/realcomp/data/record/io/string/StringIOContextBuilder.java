@@ -11,19 +11,18 @@ import java.io.OutputStream;
  */
 public class StringIOContextBuilder extends IOContextBuilder{
 
-
-    public StringIOContextBuilder() {
+    public StringIOContextBuilder(){
         super();
         in = new AppendableByteArrayInputStream();
     }
 
-    public StringIOContextBuilder(IOContext context) {
+    public StringIOContextBuilder(IOContext context){
         super(context);
         in = new AppendableByteArrayInputStream();
     }
 
     @Override
-    public IOContextBuilder in(InputStream in) {
+    public IOContextBuilder in(InputStream in){
         if (in instanceof AppendableByteArrayInputStream){
             return super.in(in);
         }
@@ -33,13 +32,12 @@ public class StringIOContextBuilder extends IOContextBuilder{
     }
 
     @Override
-    public IOContextBuilder out(OutputStream out) {
+    public IOContextBuilder out(OutputStream out){
         throw new UnsupportedOperationException("output not supported.");
     }
 
     @Override
-    public StringIOContext build() {
+    public StringIOContext build(){
         return new StringIOContext(this);
     }
-
 }

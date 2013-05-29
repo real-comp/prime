@@ -12,13 +12,12 @@ import java.util.Collection;
 public class MockConverter extends ComplexConverter{
 
     @Override
-    public Object convert(Object value) throws ConversionException {
+    public Object convert(Object value) throws ConversionException{
         return value;
     }
 
     @Override
-    public Operation copyOf() {
+    public Operation copyOf(){
         return new MockConverter();
     }
-
 }

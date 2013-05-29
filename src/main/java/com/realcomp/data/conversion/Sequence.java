@@ -13,7 +13,7 @@ public class Sequence extends SimpleConverter implements NullValueConverter{
     private Long sequence = null;
 
     @Override
-    public Object convert(Object value) throws ConversionException {
+    public Object convert(Object value) throws ConversionException{
 
         if (sequence == null){
             sequence = start == null ? 1l : start;
@@ -32,19 +32,19 @@ public class Sequence extends SimpleConverter implements NullValueConverter{
         return copy;
     }
 
-    public Long getSequence() {
+    public Long getSequence(){
         return sequence;
     }
 
-    public void setSequence(Long sequence) {
+    public void setSequence(Long sequence){
         this.sequence = sequence;
     }
 
-    public Long getStart() {
+    public Long getStart(){
         return start;
     }
 
-    public void setStart(Long start) {
+    public void setStart(Long start){
         this.start = start;
     }
 
@@ -73,5 +73,4 @@ public class Sequence extends SimpleConverter implements NullValueConverter{
         }
         return true;
     }
-
 }

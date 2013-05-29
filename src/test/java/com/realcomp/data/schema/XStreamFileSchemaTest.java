@@ -1,6 +1,5 @@
 package com.realcomp.data.schema;
 
-
 import com.realcomp.data.record.io.Format;
 import com.realcomp.data.conversion.FirstName;
 import java.util.regex.Pattern;
@@ -21,7 +20,7 @@ import static org.junit.Assert.*;
  *
  * @author krenfro
  */
-public class XStreamFileSchemaTest {
+public class XStreamFileSchemaTest{
 
     private XStream xstream;
 
@@ -32,13 +31,10 @@ public class XStreamFileSchemaTest {
 
     }
 
-
     @Test
     public void testConstructor(){
         new XStreamFactory();
     }
-
-
 
     protected Schema getSchema() throws SchemaException{
         Schema schema = new Schema();
@@ -71,7 +67,7 @@ public class XStreamFileSchemaTest {
 
         schema.addFieldList(typeB);
 
-        schema.getFormat().put("type","TAB");
+        schema.getFormat().put("type", "TAB");
 
         return schema;
     }
@@ -91,7 +87,6 @@ public class XStreamFileSchemaTest {
 
         assertTrue(getSchema().equals(deserialized));
     }
-
 
     @Test
     public void testAnotherDeserialization() throws SchemaException{
@@ -134,7 +129,6 @@ public class XStreamFileSchemaTest {
 
     }
 
-
     @Test
     public void testSampleSchema() throws SchemaException{
 
@@ -144,6 +138,4 @@ public class XStreamFileSchemaTest {
 
         //assertTrue(field.getOperations().contains(new Trim()));
     }
-
-
 }

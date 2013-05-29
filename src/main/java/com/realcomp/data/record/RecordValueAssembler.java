@@ -9,15 +9,17 @@ import java.util.*;
  * @see RecordValueResolver
  * @author krenfro
  */
-public class RecordValueAssembler {
+public class RecordValueAssembler{
 
-    private static Map<String,Stack<RecordKey>> keyCache = new HashMap<String,Stack<RecordKey>>();
+    private static Map<String, Stack<RecordKey>> keyCache = new HashMap<>();
 
-    public static Object assemble(Map<String,Object> map, String key, Object value){
-        if (map == null)
+    public static Object assemble(Map<String, Object> map, String key, Object value){
+        if (map == null){
             throw new IllegalArgumentException("map is null");
-        if (key == null)
+        }
+        if (key == null){
             throw new IllegalArgumentException("key is null");
+        }
 
         Stack<RecordKey> recordKeySequence = keyCache.get(key);
         if (recordKeySequence == null){
@@ -28,7 +30,6 @@ public class RecordValueAssembler {
         return assemble(map, (Stack<RecordKey>) recordKeySequence.clone(), value);
     }
 
-
     /**
      * Create new List that contains a new Map at key.index and add it to the map at key.name
      *
@@ -36,18 +37,17 @@ public class RecordValueAssembler {
      * @param key
      * @return
      */
-    static Map<String,Object> createMissingEntry(Map<String,Object> map, RecordKey key){
+    static Map<String, Object> createMissingEntry(Map<String, Object> map, RecordKey key){
         List list = new ArrayList();
         ensureCapacity(list, key.isIndexed() ? key.getIndex() + 1 : 1);
-        Map<String,Object> entry = new HashMap<String,Object>();
+        Map<String, Object> entry = new HashMap<>();
         list.set(key.isIndexed() ? key.getIndex() : 0, entry);
         map.put(key.getName(), list);
         return entry;
     }
 
-
     @SuppressWarnings({"unchecked", "unchecked"})
-    static Object assemble(Map<String,Object> map, Stack<RecordKey> keys, Object value){
+    static Object assemble(Map<String, Object> map, Stack<RecordKey> keys, Object value){
 
         Object previous = null;
         if (!keys.isEmpty()){
@@ -82,7 +82,7 @@ public class RecordValueAssembler {
                 //there is no value for the key. There is at least one more key in the sequence.
                 //assume the default Map->List record structure is desired, create missing entries, and recurse
                 current = createMissingEntry(map, key);
-                previous = assemble((Map<String,Object>) current, keys, value); //recurse
+                previous = assemble((Map<String, Object>) current, keys, value); //recurse
             }
             else{
                 //current has a value. I can handle this if current is a list or a map.
@@ -91,12 +91,12 @@ public class RecordValueAssembler {
                     List list = (List) current;
                     if (list.size() <= 1 || key.isIndexed()){
                         ensureCapacity(list, key.isIndexed() ? key.getIndex() + 1 : 1);
-                        current = (Map<String,Object>) list.get(key.isIndexed() ? key.getIndex() : 0);
+                        current = (Map<String, Object>) list.get(key.isIndexed() ? key.getIndex() : 0);
                         if (current == null){
-                            current = new HashMap<String,Object>();
+                            current = new HashMap<String, Object>();
                             list.set(key.isIndexed() ? key.getIndex() : 0, current);
                         }
-                        previous = assemble((Map<String,Object>) current, keys, value); //recurse
+                        previous = assemble((Map<String, Object>) current, keys, value); //recurse
                     }
                     else{
                         throw new RecordValueException(
@@ -105,12 +105,12 @@ public class RecordValueAssembler {
                     }
                 }
                 else if (type == DataType.MAP){
-                    previous = assemble((Map<String,Object>) current, keys, value); //recurse
+                    previous = assemble((Map<String, Object>) current, keys, value); //recurse
                 }
                 else{
                     throw new RecordValueException(
                             String.format("The value at key [%s] is a [%s] not a List as expected.",
-                                        new Object[]{key, type}));
+                                          new Object[]{key, type}));
                 }
             }
         }
@@ -118,23 +118,20 @@ public class RecordValueAssembler {
         return previous;
     }
 
-
-
     /**
-     * Optionally expand the list to the specified capacity.
-     * If the list is already at the capacity, this is a no-op.
+     * Optionally expand the list to the specified capacity. If the list is already at the capacity, this is a no-op.
      *
      * @param list
      * @param capacity
      */
     @SuppressWarnings("unchecked")
     static void ensureCapacity(List list, int capacity){
-        if (list == null)
+        if (list == null){
             list = new ArrayList();
+        }
         int diff = capacity - list.size();
         for (int x = 0; x < diff; x++){
             list.add(null);
         }
     }
-
 }

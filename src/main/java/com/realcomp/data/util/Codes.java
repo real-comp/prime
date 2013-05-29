@@ -43,15 +43,15 @@ public class Codes{
         codes.load(in);
     }
 
-    public String getDescription() {
+    public String getDescription(){
         return description;
     }
 
-    public void setDescription(String description) {
+    public void setDescription(String description){
         this.description = description;
     }
 
-    public Level getLogLevel() {
+    public Level getLogLevel(){
         return logLevel;
     }
 
@@ -62,19 +62,21 @@ public class Codes{
      *
      * @param logLevel The level at which to log code translations misses.
      */
-    public void setLogLevel(Level logLevel) {
-        if (logLevel == null)
+    public void setLogLevel(Level logLevel){
+        if (logLevel == null){
             throw new IllegalArgumentException("logLevel is null");
+        }
         this.logLevel = logLevel;
     }
 
-    public Properties getCodes() {
+    public Properties getCodes(){
         return codes;
     }
 
-    public void setCodes(Properties codes) {
-        if (codes == null)
+    public void setCodes(Properties codes){
+        if (codes == null){
             throw new IllegalArgumentException("codes is null");
+        }
         this.codes.clear();
         this.codes.putAll(codes);
     }
@@ -98,17 +100,18 @@ public class Codes{
 
     /**
      *
-     * @param codes list of codes to be translated, delimited by <i>delimiter</i>. may be null
+     * @param codes     list of codes to be translated, delimited by <i>delimiter</i>. may be null
      * @param delimiter regex
      * @return All successfully translated codes. never null.
      */
     public List<String> translateList(String codes, String delimiter){
         List<String> retVal = new ArrayList<String>();
         if (codes != null){
-            for (String code: codes.split(delimiter)){
+            for (String code : codes.split(delimiter)){
                 String trans = translate(code);
-                if (trans != null)
+                if (trans != null){
                     retVal.add(trans);
+                }
             }
         }
         return retVal;
@@ -116,45 +119,50 @@ public class Codes{
 
     /**
      *
-     * @param codes list of codes to be translated, delimited by <i>delimiter</i>. may be null
-     * @param delimiter regex
+     * @param codes        list of codes to be translated, delimited by <i>delimiter</i>. may be null
+     * @param delimiter    regex
      * @param defaultValue
      * @return
      */
     public List<String> translateList(String codes, String delimiter, String defaultValue){
         List<String> retVal = new ArrayList<String>();
         if (codes != null){
-            for (String code: codes.split(delimiter))
+            for (String code : codes.split(delimiter)){
                 retVal.add(translate(code, defaultValue));
+            }
         }
         return retVal;
     }
 
     @Override
-    public String toString() {
+    public String toString(){
         return "Codes{" + "description=" + description + '}';
     }
 
-
     @Override
-    public boolean equals(Object obj) {
-        if (obj == null)
+    public boolean equals(Object obj){
+        if (obj == null){
             return false;
-        if (getClass() != obj.getClass())
+        }
+        if (getClass() != obj.getClass()){
             return false;
+        }
         final Codes other = (Codes) obj;
-        if (this.codes != other.codes && (this.codes == null || !this.codes.equals(other.codes)))
+        if (this.codes != other.codes && (this.codes == null || !this.codes.equals(other.codes))){
             return false;
+        }
         if ((this.description == null) ? (other.description != null)
-                : !this.description.equals(other.description))
+                : !this.description.equals(other.description)){
             return false;
-        if (this.logLevel != other.logLevel && (this.logLevel == null || !this.logLevel.equals(other.logLevel)))
+        }
+        if (this.logLevel != other.logLevel && (this.logLevel == null || !this.logLevel.equals(other.logLevel))){
             return false;
+        }
         return true;
     }
 
     @Override
-    public int hashCode() {
+    public int hashCode(){
         int hash = 3;
         hash = 83 * hash + (this.codes != null ? this.codes.hashCode() : 0);
         hash = 83 * hash + (this.description != null ? this.description.hashCode() : 0);
