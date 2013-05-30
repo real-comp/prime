@@ -11,6 +11,7 @@ import com.realcomp.data.validation.ValidationException;
 import java.io.*;
 import java.util.*;
 import java.util.Map.Entry;
+import java.util.logging.Logger;
 import joptsimple.OptionException;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
@@ -22,12 +23,14 @@ import joptsimple.OptionSet;
  */
 public class Reformat{
 
+    private static final Logger logger = Logger.getLogger(Reformat.class.getName());
+
     private List<Transformer> transformers;
     private Map<String, String> constants;
 
     public Reformat(){
-        transformers = new ArrayList<Transformer>();
-        constants = new HashMap<String, String>();
+        transformers = new ArrayList<>();
+        constants = new HashMap<>();
     }
 
     public void reformat(IOContext in, IOContext out)
@@ -136,23 +139,11 @@ public class Reformat{
                 result = 0;
             }
         }
-        catch (SchemaException ex){
-            System.err.println(ex.getMessage());
-        }
-        catch (ConversionException ex){
-            System.err.println(ex.getMessage());
-        }
-        catch (ValidationException ex){
-            System.err.println(ex.getMessage());
-        }
-        catch (FileNotFoundException ex){
-            System.err.println(ex.getMessage());
-        }
-        catch (IOException ex){
-            System.err.println(ex.getMessage());
+        catch (SchemaException | ConversionException | ValidationException | IOException ex){
+            logger.severe(ex.getMessage());
         }
         catch (OptionException ex){
-            System.err.println(ex.getMessage());
+            logger.severe(ex.getMessage());
             printHelp(parser);
         }
 

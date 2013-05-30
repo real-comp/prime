@@ -4,11 +4,11 @@ import com.realcomp.data.trait.Trait;
 
 public interface AddressTrait extends Trait{
 
-    public String getAddress();
+    String getAddress();
 
-    public String getCity();
+    String getCity();
 
-    public String getState();
+    String getState();
 
-    public String getZip();
+    String getZip();
 }

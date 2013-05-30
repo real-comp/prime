@@ -15,10 +15,10 @@ public class RegexValidator extends BaseFieldValidator{
     protected String regex = null;
     protected transient Pattern pattern = Pattern.compile(".*"); //default match anything
 
-    public void RegexValidator(){
+    public RegexValidator(){
     }
 
-    public void RegexValidator(String regex){
+    public RegexValidator(String regex){
         if (regex == null){
             throw new IllegalArgumentException("regex is null");
         }

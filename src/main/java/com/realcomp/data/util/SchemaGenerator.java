@@ -16,6 +16,7 @@ import java.io.StringWriter;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Logger;
 import joptsimple.OptionException;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
@@ -28,6 +29,8 @@ import joptsimple.OptionSet;
  */
 public class SchemaGenerator{
 
+    private static final Logger logger = Logger.getLogger(SchemaGenerator.class.getName());
+    
     private String delimiter = "TAB";
 
     public void generate(InputStream in, OutputStream out) throws IOException{
@@ -162,10 +165,10 @@ public class SchemaGenerator{
             }
         }
         catch (IOException ex){
-            System.err.println(ex.getMessage());
+            logger.severe(ex.getMessage());
         }
         catch (OptionException ex){
-            System.err.println(ex.getMessage());
+            logger.severe(ex.getMessage());
             printHelp(parser);
         }
 

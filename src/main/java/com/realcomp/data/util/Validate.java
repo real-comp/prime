@@ -87,23 +87,11 @@ public class Validate{
                 result = 0;
             }
         }
-        catch (SchemaException ex){
-            System.err.println(ex.getMessage());
-        }
-        catch (ConversionException ex){
-            System.err.println(ex.getMessage());
-        }
-        catch (ValidationException ex){
-            System.err.println(ex.getMessage());
-        }
-        catch (FileNotFoundException ex){
-            System.err.println(ex.getMessage());
-        }
-        catch (IOException ex){
-            System.err.println(ex.getMessage());
+        catch (SchemaException | ConversionException | ValidationException | IOException ex){
+            logger.severe(ex.getMessage());
         }
         catch (OptionException ex){
-            System.err.println(ex.getMessage());
+            logger.severe(ex.getMessage());
             printHelp(parser);
         }
 
