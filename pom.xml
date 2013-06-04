@@ -124,7 +124,7 @@
     <scm>
         <connection>scm:svn:svn+ssh://dev.real-comp.com/opt/usr/share/rcsvn/realcomp-data/trunk</connection>
         <developerConnection>scm:svn:svn+ssh://dev.real-comp.com/opt/usr/share/rcsvn/realcomp-data/trunk</developerConnection>
-        <url>http://fisheye.real-comp.com/browse/rcsvn/realcomp-data/trunk</url>
+        <url>http://fisheye.real-comp.com/browse/svn/realcomp-data/trunk</url>
     </scm>
     <reporting>
         <plugins>
