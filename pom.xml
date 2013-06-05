@@ -84,8 +84,7 @@
             <version>4.0.0</version>
             <optional>true</optional>
             <type>jar</type>
-        </dependency>       
-         
+        </dependency>
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
