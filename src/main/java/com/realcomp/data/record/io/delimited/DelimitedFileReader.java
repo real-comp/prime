@@ -22,6 +22,7 @@ public class DelimitedFileReader extends BaseRecordReader{
 
     protected SkippingBufferedReader reader;
     protected CSVParser parser;
+    private UnterminatedQuoteStringMechanic unterminatedMechanic;
 
     public DelimitedFileReader(){
         super();
@@ -30,6 +31,7 @@ public class DelimitedFileReader extends BaseRecordReader{
         format.putDefault("quoteCharacter", Character.toString(CSVParser.DEFAULT_QUOTE_CHARACTER));
         format.putDefault("escapeCharacter", Character.toString(CSVParser.DEFAULT_ESCAPE_CHARACTER));
         format.putDefault("strictQuotes", Boolean.toString(CSVParser.DEFAULT_STRICT_QUOTES));
+        unterminatedMechanic = new UnterminatedQuoteStringMechanic();
     }
 
     public DelimitedFileReader(DelimitedFileReader copy){
@@ -39,6 +41,7 @@ public class DelimitedFileReader extends BaseRecordReader{
         format.putDefault("quoteCharacter", Character.toString(CSVParser.DEFAULT_QUOTE_CHARACTER));
         format.putDefault("escapeCharacter", Character.toString(CSVParser.DEFAULT_ESCAPE_CHARACTER));
         format.putDefault("strictQuotes", Boolean.toString(CSVParser.DEFAULT_STRICT_QUOTES));
+        unterminatedMechanic = new UnterminatedQuoteStringMechanic();
     }
 
     @Override
@@ -81,7 +84,7 @@ public class DelimitedFileReader extends BaseRecordReader{
         String data = reader.readLine();
         String[] tokens;
         if (data != null){
-            tokens = parser.parseLine(data);
+            tokens = parse(data);
             record = loadRecord(classify(context.getSchema(), tokens), tokens);
         }
 
@@ -93,6 +96,22 @@ public class DelimitedFileReader extends BaseRecordReader{
         }
 
         return record;
+    }
+
+    protected String[] parse(String data) throws IOException{
+        String[] tokens = null;
+        try{
+            tokens = parser.parseLine(data);
+        }
+        catch(IOException ex){
+            if (ex.getMessage().contains("Un-terminated quoted field")){
+                tokens = parser.parseLine(unterminatedMechanic.repair(data));
+            }
+            else{
+                throw ex;
+            }
+        }
+        return tokens;
     }
 
     /**

@@ -1,6 +1,7 @@
 package com.realcomp.data.record.io.delimited;
 
 import com.realcomp.data.DataType;
+import com.realcomp.data.conversion.ConversionException;
 import com.realcomp.data.record.Record;
 import com.realcomp.data.record.io.IOContext;
 import com.realcomp.data.record.io.IOContextBuilder;
@@ -13,6 +14,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Pattern;
 import static org.junit.Assert.*;
 import org.junit.Test;
 
@@ -116,7 +118,7 @@ public class DelimitedFileReaderTest{
 
         String data = "\"a123\",\"b123\",\"c123\"";
 
-        Map<String, String> attributes = new HashMap<String, String>();
+        Map<String, String> attributes = new HashMap<>();
         attributes.put("type", "CSV");
         IOContext ctx = new IOContextBuilder()
                 .schema(get3FieldSchema())
@@ -254,5 +256,39 @@ public class DelimitedFileReaderTest{
         fields.add(new Field("c", DataType.STRING));
         schema.addFieldList(fields);
         return schema;
+    }
+
+    @Test
+    public void testUnTerminatedQuotedField() throws IOException, SchemaException, ValidationException, ConversionException{
+
+        Schema schema = get3FieldSchema();
+        schema.getFormat().put("header", "false");
+        schema.getFormat().put("type", "CSV");
+        schema.getFormat().put("strictQuotes", "true");
+        IOContext ctx = new IOContextBuilder()
+                .schema(schema)
+                .in(this.getClass().getResourceAsStream("unTerminatedQuotedField.csv"))
+                .build();
+
+        DelimitedFileReader reader = new DelimitedFileReader();
+        reader.open(ctx);
+        Record record = reader.read();
+        assertNotNull(record);
+        assertEquals("CRYER, DUANE PETE\"", record.getString("b"));
+    }
+
+    @Test
+    public void testUnterminatedQuotedPatterns(){
+
+
+        Pattern problem = Pattern.compile("(.+)(\"\",\")");
+
+
+        String data = "\"KYLE\"\",\"RENFRO\"";
+        String repaired = problem.matcher(data).replaceAll("$1\\\\\"\",\"");
+        assertEquals("\"KYLE\\\"\",\"RENFRO\"", repaired);
+
+
+
     }
 }
