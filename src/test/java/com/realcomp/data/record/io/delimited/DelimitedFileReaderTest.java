@@ -276,20 +276,43 @@ public class DelimitedFileReaderTest{
         assertNotNull(record);
         assertEquals("CRYER, DUANE PETE\"", record.getString("b"));
         assertEquals("PANA", record.getString("c"));
+        reader.close();
+
+        schema = new Schema();
+        schema.addField(new Field("a"));
+        schema.addField(new Field("b"));
+        schema.addField(new Field("c"));
+        schema.addField(new Field("d"));
+        schema.addField(new Field("e"));
+        schema.addField(new Field("f"));
+        schema.addField(new Field("g"));
+        schema.addField(new Field("h"));
+        schema.getFormat().put("header", "false");
+        schema.getFormat().put("type", "CSV");
+        schema.getFormat().put("strictQuotes", "true");
+        ctx = new IOContextBuilder()
+                .schema(schema)
+                .in(this.getClass().getResourceAsStream("unTerminatedQuotedField2.csv"))
+                .build();
+
+        reader.open(ctx);
+        record = reader.read();
+        for (int x = 0; x < 5; x++){
+            assertNotNull(record);
+            assertEquals(8, record.size());
+            record = reader.read();
+        }
+        reader.close();
     }
+
+
 
     @Test
     public void testUnterminatedQuotedPatterns(){
-
-
         Pattern problem = Pattern.compile("(.+)(\"\",\")");
-
 
         String data = "\"KYLE\"\",\"RENFRO\"";
         String repaired = problem.matcher(data).replaceAll("$1\\\\\"\",\"");
         assertEquals("\"KYLE\\\"\",\"RENFRO\"", repaired);
-
-
-
     }
 }

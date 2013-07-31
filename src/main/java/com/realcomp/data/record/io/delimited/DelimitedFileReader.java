@@ -22,7 +22,7 @@ public class DelimitedFileReader extends BaseRecordReader{
 
     protected SkippingBufferedReader reader;
     protected CSVParser parser;
-    private UnterminatedQuoteStringMechanic unterminatedMechanic;
+    private UnterminatedQuotedStringMechanic unterminatedMechanic;
 
     public DelimitedFileReader(){
         super();
@@ -31,7 +31,7 @@ public class DelimitedFileReader extends BaseRecordReader{
         format.putDefault("quoteCharacter", Character.toString(CSVParser.DEFAULT_QUOTE_CHARACTER));
         format.putDefault("escapeCharacter", Character.toString(CSVParser.DEFAULT_ESCAPE_CHARACTER));
         format.putDefault("strictQuotes", Boolean.toString(CSVParser.DEFAULT_STRICT_QUOTES));
-        unterminatedMechanic = new UnterminatedQuoteStringMechanic();
+        unterminatedMechanic = new UnterminatedQuotedStringMechanic();
     }
 
     public DelimitedFileReader(DelimitedFileReader copy){
@@ -41,7 +41,7 @@ public class DelimitedFileReader extends BaseRecordReader{
         format.putDefault("quoteCharacter", Character.toString(CSVParser.DEFAULT_QUOTE_CHARACTER));
         format.putDefault("escapeCharacter", Character.toString(CSVParser.DEFAULT_ESCAPE_CHARACTER));
         format.putDefault("strictQuotes", Boolean.toString(CSVParser.DEFAULT_STRICT_QUOTES));
-        unterminatedMechanic = new UnterminatedQuoteStringMechanic();
+        unterminatedMechanic = new UnterminatedQuotedStringMechanic();
     }
 
     @Override

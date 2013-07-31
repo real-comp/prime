@@ -10,14 +10,14 @@ import java.util.regex.Pattern;
  *
  * @author krenfro
  */
-public class UnterminatedQuoteStringMechanic {
+public class UnterminatedQuotedStringMechanic {
 
 
     private List<Fix> fixes;
 
-    public UnterminatedQuoteStringMechanic(){
+    public UnterminatedQuotedStringMechanic(){
         fixes = new ArrayList<>();
-        fixes.add(new Fix(Pattern.compile("(.+)(\"\",\")"), "$1\\\\\"\",\""));
+        fixes.add(new Fix(Pattern.compile("([^,])(\"\",\")"), "$1\\\\\"\",\""));
     }
 
     public String repair(String hasProblem){
