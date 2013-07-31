@@ -275,6 +275,7 @@ public class DelimitedFileReaderTest{
         Record record = reader.read();
         assertNotNull(record);
         assertEquals("CRYER, DUANE PETE\"", record.getString("b"));
+        assertEquals("PANA", record.getString("c"));
     }
 
     @Test
