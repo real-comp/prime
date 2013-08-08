@@ -1,6 +1,7 @@
 package com.realcomp.data.util;
 
 import au.com.bytecode.opencsv.CSVParser;
+import com.realcomp.data.record.Record;
 import com.realcomp.data.schema.Field;
 import com.realcomp.data.schema.Schema;
 import com.realcomp.data.schema.xml.XStreamFactory;
@@ -30,7 +31,7 @@ import joptsimple.OptionSet;
 public class SchemaGenerator{
 
     private static final Logger logger = Logger.getLogger(SchemaGenerator.class.getName());
-    
+
     private String delimiter = "TAB";
 
     public void generate(InputStream in, OutputStream out) throws IOException{
@@ -48,6 +49,12 @@ public class SchemaGenerator{
         String[] fieldNames = getFieldNames(header);
         return buildSchema(fieldNames);
     }
+
+    public Schema generate(Record record) throws IOException{
+        String[] fieldNames = record.keySet().toArray(new String[record.keySet().size()]);
+        return buildSchema(fieldNames);
+    }
+
 
     protected String toXml(Schema schema){
         XStream xstream = XStreamFactory.build(true);
@@ -81,7 +88,7 @@ public class SchemaGenerator{
 
     protected Schema buildSchema(String[] fieldNames){
         Schema schema = new Schema();
-        Map<String, String> format = new HashMap<String, String>();
+        Map<String, String> format = new HashMap<>();
         format.put("header", "true");
 
         if (delimiter.equals("\t") || delimiter.equalsIgnoreCase("TAB")){
