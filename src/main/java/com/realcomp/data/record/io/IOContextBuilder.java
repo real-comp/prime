@@ -20,11 +20,11 @@ public class IOContextBuilder{
     protected Severity validationExceptionThreshold = Severity.HIGH;
 
     public IOContextBuilder(){
-        attributes = new HashMap<String, String>();
+        attributes = new HashMap<>();
     }
 
     public IOContextBuilder(IOContext context){
-        attributes = new HashMap<String, String>();
+        attributes = new HashMap<>();
         attributes.putAll(context.attributes);
         if (context.schema != null){
             schema = new Schema(context.schema);
