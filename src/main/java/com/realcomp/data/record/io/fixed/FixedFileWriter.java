@@ -28,7 +28,7 @@ import org.apache.commons.lang.StringUtils;
 public class FixedFileWriter extends BaseRecordWriter{
 
     protected static final Logger logger = Logger.getLogger(BaseRecordWriter.class.getName());
-    
+
     protected BufferedWriter writer;
     protected TransformContext transformContext;
     protected ValueSurgeon surgeon;
@@ -36,6 +36,8 @@ public class FixedFileWriter extends BaseRecordWriter{
     public FixedFileWriter(){
         super();
         format.putDefault("header", "false");
+        format.putDefault("type", "fixed");
+        format.putDefault("length", "");
         transformContext = new TransformContext();
         surgeon = new ValueSurgeon();
     }

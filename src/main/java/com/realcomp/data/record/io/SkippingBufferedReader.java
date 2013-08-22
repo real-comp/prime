@@ -65,7 +65,7 @@ public class SkippingBufferedReader extends Reader{
     private void fillQueue() throws IOException{
 
         if (queue == null){
-            queue = new LinkedList<String>();
+            queue = new LinkedList<>();
 
             //skip leading records
             for (int x = 0; x < skipLeading; x++){
