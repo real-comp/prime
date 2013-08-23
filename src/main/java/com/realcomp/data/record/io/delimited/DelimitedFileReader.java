@@ -197,7 +197,10 @@ public class DelimitedFileReader extends BaseRecordReader{
 
     protected char getAttributeAsChar(String name){
         String value = format.get(name);
-        if (value.length() != 1){
+        if (value.isEmpty()){
+            return '\u0000';
+        }
+        else if (value.length() != 1){
             throw new IllegalArgumentException(String.format("invalid attribute [%s] = [%s]", name, value));
         }
         return value.charAt(0);

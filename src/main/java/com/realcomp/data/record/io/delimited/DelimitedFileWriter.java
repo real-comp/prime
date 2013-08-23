@@ -40,7 +40,7 @@ public class DelimitedFileWriter extends BaseRecordWriter{
         format.putDefault("escapeCharacter", Character.toString(CSVParser.DEFAULT_ESCAPE_CHARACTER));
         format.putDefault("strictQuotes", Boolean.toString(CSVParser.DEFAULT_STRICT_QUOTES));
 
-        current = new ArrayList<String>();
+        current = new ArrayList<>();
         transformContext = new TransformContext();
         surgeon = new ValueSurgeon();
 
@@ -54,7 +54,7 @@ public class DelimitedFileWriter extends BaseRecordWriter{
         format.putDefault("escapeCharacter", Character.toString(CSVParser.DEFAULT_ESCAPE_CHARACTER));
         format.putDefault("strictQuotes", Boolean.toString(CSVParser.DEFAULT_STRICT_QUOTES));
 
-        current = new ArrayList<String>();
+        current = new ArrayList<>();
         transformContext = new TransformContext(copy.transformContext);
         surgeon = new ValueSurgeon();
     }
@@ -174,9 +174,13 @@ public class DelimitedFileWriter extends BaseRecordWriter{
         return delimiter;
     }
 
+
     protected char getAttributeAsChar(String name){
         String value = format.get(name);
-        if (value.length() != 1){
+        if (value.isEmpty()){
+            return '\u0000';
+        }
+        else if (value.length() != 1){
             throw new IllegalArgumentException(String.format("invalid attribute [%s] = [%s]", name, value));
         }
         return value.charAt(0);

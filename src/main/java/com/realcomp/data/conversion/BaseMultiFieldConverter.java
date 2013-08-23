@@ -15,8 +15,8 @@ public abstract class BaseMultiFieldConverter implements MultiFieldConverter{
     protected List<String> fieldNames;
 
     public BaseMultiFieldConverter(){
-        fieldNames = new ArrayList<String>();
-        supportedTypes = new ArrayList<DataType>();
+        fieldNames = new ArrayList<>();
+        supportedTypes = new ArrayList<>();
         supportedTypes.add(DataType.STRING);
         supportedTypes.add(DataType.BOOLEAN);
         supportedTypes.add(DataType.INTEGER);
