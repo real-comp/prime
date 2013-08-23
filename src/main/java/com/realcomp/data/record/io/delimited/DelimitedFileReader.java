@@ -61,7 +61,7 @@ public class DelimitedFileReader extends BaseRecordReader{
 
         switch (getDelimiter()){
             case '\t':
-                parser = new CSVParser(getDelimiter(), '\u0000', getEscapeCharacter(), isStrictQuotes());
+                parser = new CSVParser(getDelimiter(), '\u0000', getEscapeCharacter(), false);
                 break;
             default:
                 parser = new CSVParser(getDelimiter(), getQuoteCharacter(), getEscapeCharacter(), isStrictQuotes());
