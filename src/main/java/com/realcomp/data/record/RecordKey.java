@@ -1,7 +1,5 @@
 package com.realcomp.data.record;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Stack;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -96,7 +94,7 @@ public final class RecordKey{
      */
     public Stack<RecordKey> buildKeySequence(){
 
-        Stack<RecordKey> sequence = new Stack<RecordKey>();
+        Stack<RecordKey> sequence = new Stack<>();
         RecordKey current = this;
         sequence.push(current);
         while (current.hasParent()){
