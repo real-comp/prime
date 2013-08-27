@@ -20,7 +20,7 @@ import java.util.regex.Pattern;
  *
  * @author krenfro
  */
-class RecordKey{
+public final class RecordKey{
 
     protected static final String namePattern = "[A-Za-z0-9\\_ :-]+";
     protected static final String optionalIndexPattern = "(\\[[0-9]+\\])?";
