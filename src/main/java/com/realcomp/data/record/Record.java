@@ -20,11 +20,11 @@ public class Record implements Map<String, Object>, Serializable{
     private Map<String, Object> data;
 
     public Record(){
-        data = new HashMap<String, Object>();
+        data = new HashMap<>();
     }
 
     public Record(Record copy){
-        data = new HashMap<String, Object>();
+        data = new HashMap<>();
         data.putAll(copy.data);
     }
 
@@ -39,7 +39,7 @@ public class Record implements Map<String, Object>, Serializable{
         if (map == null){
             throw new IllegalArgumentException("data is null");
         }
-        data = new HashMap<String, Object>();
+        data = new HashMap<>();
         for (Entry<String, Object> entry : map.entrySet()){
             put(entry.getKey(), entry.getValue());
         }
@@ -69,7 +69,7 @@ public class Record implements Map<String, Object>, Serializable{
      */
     @Override
     public Set<String> keySet(){
-        Set<String> keys = new HashSet<String>();
+        Set<String> keys = new HashSet<>();
         Iterator<Map.Entry<String, Object>> itr = entrySet().iterator();
         while (itr.hasNext()){
             keys.add(itr.next().getKey());
@@ -83,7 +83,7 @@ public class Record implements Map<String, Object>, Serializable{
      */
     @Override
     public Collection<Object> values(){
-        List<Object> values = new ArrayList<Object>();
+        List<Object> values = new ArrayList<>();
         Iterator<Map.Entry<String, Object>> itr = entrySet().iterator();
         while (itr.hasNext()){
             values.add(itr.next().getValue());
@@ -221,7 +221,7 @@ public class Record implements Map<String, Object>, Serializable{
      */
     public List<Object> getAll(String key){
         return key == null
-                ? new ArrayList<Object>()
+                ? new ArrayList<>()
                 : RecordMultiValueResolver.resolve(data, new RecordKey(key.toString()));
     }
 
@@ -245,7 +245,7 @@ public class Record implements Map<String, Object>, Serializable{
 
         Object previous = null;
         if (key != null){
-            RecordKey child = new RecordKey(key.toString());
+            RecordKey child = key instanceof RecordKey ? (RecordKey) key : new RecordKey(key.toString());
             if (child.hasParent()){
                 RecordKey parent = child.getParent();
                 Object existing = RecordValueResolver.resolve(data, parent.toString());

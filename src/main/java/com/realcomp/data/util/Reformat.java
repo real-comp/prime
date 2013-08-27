@@ -11,13 +11,14 @@ import com.realcomp.data.validation.ValidationException;
 import java.io.*;
 import java.util.*;
 import java.util.Map.Entry;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import joptsimple.OptionException;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 
 /**
- * Reformat a file using an input and output schema
+ * Reformat, optionally filtering,  a file using an input and output schema
  *
  * @author krenfro
  */
@@ -27,6 +28,7 @@ public class Reformat{
 
     private List<Transformer> transformers;
     private Map<String, String> constants;
+    private boolean filter = false;
 
     public Reformat(){
         transformers = new ArrayList<>();
@@ -42,7 +44,7 @@ public class Reformat{
         RecordWriter writer = RecordWriterFactory.build(out.getSchema());
         writer.open(out);
 
-        Record record = reader.read();
+        Record record = getNextRecord(reader);
         TransformContext ctx = new TransformContext();
         ctx.setValidationExceptionThreshold(in.getValidationExeptionThreshold());
         while (record != null){
@@ -56,13 +58,66 @@ public class Reformat{
                 t.transform(ctx);
             }
 
-            writer.write(ctx.getRecord());
-            record = reader.read();
+            try{
+                writer.write(ctx.getRecord());
+            }
+            catch (ValidationException ex){
+                if (filter){
+                    logger.log(Level.INFO,
+                           "filtered output: {0} : {1}",
+                           new Object[]{out.getSchema().classify(record).toString(record), ex.getMessage()});
+                }
+                else{
+                    throw ex;
+                }
+            }
+
+            record = getNextRecord(reader);
         }
 
         writer.close();
         reader.close();
     }
+
+
+    /**
+     * Reads the next Record from the RecordReader.
+     * Records that have Validation problems are optionally ignored, and logged.
+     *
+     * @param reader
+     * @return
+     * @throws IOException
+     * @throws SchemaException
+     * @throws ConversionException
+     * @throws ValidationException
+     */
+    protected Record getNextRecord(RecordReader reader)
+            throws IOException, SchemaException, ConversionException, ValidationException{
+
+        Record record = null;
+        boolean done = false;
+        while (!done && record == null){
+            try{
+                record = reader.read();
+                if (record == null){
+                    done = true;
+                }
+            }
+            catch (ValidationException ex){
+                if (filter){
+                    logger.log(Level.INFO,
+                               "filtered input: {0}",
+                               new Object[]{ex.getMessage()});
+                    record = null;
+                }
+                else{
+                    throw ex;
+                }
+            }
+        }
+        return record;
+    }
+
 
     public void addTransformer(String file) throws FileNotFoundException{
         Transformer t = SchemaFactory.buildTransformer(new FileInputStream(file));
@@ -81,6 +136,15 @@ public class Reformat{
         }
     }
 
+    public boolean isFilter(){
+        return filter;
+    }
+
+    public void setFilter(boolean filter){
+        this.filter = filter;
+    }
+
+
     public static void main(String[] args){
 
         OptionParser parser = new OptionParser(){
@@ -94,6 +158,7 @@ public class Reformat{
                 accepts("in", "input file (default: STDIN)").withRequiredArg().describedAs("file");
                 accepts("out", "output file (default: STDOUT)").withRequiredArg().describedAs("file");
                 acceptsAll(Arrays.asList("t", "transform"), "transform schema(s)").withRequiredArg().describedAs("transform");
+                acceptsAll(Arrays.asList("f", "filter"), "filter invalid records");
                 accepts("c").withOptionalArg().describedAs("constant(s) set in every Record (i.e., orderId:4844)");
                 acceptsAll(Arrays.asList("h", "?", "help"), "help");
             }
@@ -127,6 +192,8 @@ public class Reformat{
                 for (Object t : options.valuesOf("t")){
                     reformatter.addTransformer(t.toString());
                 }
+
+                reformatter.setFilter(options.has("f"));
 
                 for (String constant : (List<String>) options.valuesOf("c")){
                     int pos = constant.indexOf(":");

@@ -83,6 +83,9 @@ public class Filter{
 
     public static void main(String[] args){
 
+        logger.severe("This class is Deprecated.  Use the Reformat tool with the --filter option");
+
+
         OptionParser parser = new OptionParser(){
             {
                 acceptsAll(Arrays.asList("is", "input-schema"), "input schema")
