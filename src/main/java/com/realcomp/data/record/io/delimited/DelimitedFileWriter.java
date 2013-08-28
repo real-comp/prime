@@ -95,7 +95,7 @@ public class DelimitedFileWriter extends BaseRecordWriter{
     public void open(IOContext context) throws IOException, SchemaException{
 
         super.open(context);
-        transformContext.setSchema(context.getSchema());
+        transformContext.setSchema(schema);
         transformContext.setValidationExceptionThreshold(context.getValidationExeptionThreshold());
         if (context.getOut() == null){
             throw new IllegalArgumentException("Invalid IOContext. No OutputStream specified");
@@ -127,7 +127,7 @@ public class DelimitedFileWriter extends BaseRecordWriter{
         // is created with no operations.
         IOContext original = context;
         try{
-            Schema headerSchema = new Schema(context.getSchema());
+            Schema headerSchema = new Schema(schema);
             for (FieldList fields : headerSchema.getFieldLists()){
                 for (Field field : fields){
                     field.clearOperations();
@@ -149,7 +149,7 @@ public class DelimitedFileWriter extends BaseRecordWriter{
 
     protected Record getHeader(){
         Record retVal = new Record();
-        for (Field field : context.getSchema().getDefaultFieldList()){
+        for (Field field : schema.getDefaultFieldList()){
             retVal.put(field.getName(), field.getName());
         }
         return retVal;

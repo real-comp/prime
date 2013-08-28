@@ -2,6 +2,7 @@ package com.realcomp.data.record.io;
 
 import com.realcomp.data.Operation;
 import com.realcomp.data.conversion.ConversionException;
+import com.realcomp.data.schema.Schema;
 import com.realcomp.data.schema.SchemaException;
 import com.realcomp.data.transform.TransformContext;
 import com.realcomp.data.transform.ValueSurgeon;
@@ -25,6 +26,7 @@ public abstract class BaseRecordReaderWriter{
     protected long count;
     protected boolean beforeFirstOperationsRun = false;
     protected IOContext context;
+    protected Schema schema;
 
     public BaseRecordReaderWriter(){
         format = new Format();
@@ -45,12 +47,13 @@ public abstract class BaseRecordReaderWriter{
 
         close();
         this.context = context;
+        this.schema = context.getSchema();
         format.putAll(context.getAttributes());
         validateAttributes();
         beforeFirstOperationsRun = false;
         count = 0;
-        if (context.getSchema() != null){
-            recordFactory = new RecordFactory(context.getSchema());
+        if (schema != null){
+            recordFactory = new RecordFactory(schema);
             recordFactory.setValidationExceptionThreshold(context.getValidationExeptionThreshold());
         }
     }
@@ -80,13 +83,13 @@ public abstract class BaseRecordReaderWriter{
     }
 
     protected void executeAfterLastOperations() throws ValidationException, ConversionException{
-        if (context != null && context.getSchema() != null){
-            List<Operation> operations = context.getSchema().getAfterLastOperations();
+        if (context != null && schema != null){
+            List<Operation> operations = schema.getAfterLastOperations();
             if (operations != null && !operations.isEmpty()){
                 TransformContext ctx = new TransformContext();
                 ctx.setValidationExceptionThreshold(context.getValidationExeptionThreshold());
                 ctx.setRecordCount(count);
-                ctx.setSchema(context.getSchema());
+                ctx.setSchema(schema);
                 ValueSurgeon surgeon = new ValueSurgeon();
                 surgeon.operate(operations, ctx);
             }
@@ -94,13 +97,13 @@ public abstract class BaseRecordReaderWriter{
     }
 
     protected void executeBeforeFirstOperations() throws ValidationException, ConversionException{
-        if (context != null && context.getSchema() != null){
-            List<Operation> operations = context.getSchema().getBeforeFirstOperations();
+        if (context != null && schema != null){
+            List<Operation> operations = schema.getBeforeFirstOperations();
             if (operations != null && !operations.isEmpty()){
                 TransformContext ctx = new TransformContext();
                 ctx.setValidationExceptionThreshold(context.getValidationExeptionThreshold());
                 ctx.setRecordCount(count);
-                ctx.setSchema(context.getSchema());
+                ctx.setSchema(schema);
                 ValueSurgeon surgeon = new ValueSurgeon();
                 surgeon.operate(operations, ctx);
             }

@@ -48,7 +48,7 @@ public class IOContext implements Serializable{
      * @return copy of all attributes, including any attributes of the schema
      */
     public Map<String, String> getAttributes(){
-        Map<String, String> copy = new HashMap<String, String>();
+        Map<String, String> copy = new HashMap<>();
         if (schema != null){
             copy.putAll(schema.getFormat());
         }

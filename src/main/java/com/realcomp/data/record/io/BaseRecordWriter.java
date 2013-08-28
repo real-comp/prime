@@ -27,7 +27,7 @@ public abstract class BaseRecordWriter extends BaseRecordReaderWriter implements
     public void write(Record record)
             throws IOException, ValidationException, ConversionException, SchemaException{
 
-        if (context.getSchema() == null){
+        if (schema == null){
             throw new IllegalStateException("schema not specified");
         }
         if (record == null){
@@ -39,7 +39,7 @@ public abstract class BaseRecordWriter extends BaseRecordReaderWriter implements
             beforeFirstOperationsRun = true;
         }
 
-        write(record, context.getSchema().classify(record));
+        write(record, schema.classify(record));
         count++;
     }
 
@@ -64,7 +64,7 @@ public abstract class BaseRecordWriter extends BaseRecordReaderWriter implements
             return "";
         }
         String id = "";
-        List<Field> fields = context.getSchema().classify(record);
+        List<Field> fields = schema.classify(record);
         if (fields.size() > 0){
             id = id.concat(record.get(fields.get(0).getName()).toString());
         }

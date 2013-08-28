@@ -50,8 +50,8 @@ public class FixedFileWriter extends BaseRecordWriter{
             throw new IllegalArgumentException("Invalid IOContext. No OutputStream specified");
         }
 
-        ensureFieldLengthsSpecified(context.getSchema());
-        transformContext.setSchema(context.getSchema());
+        ensureFieldLengthsSpecified(schema);
+        transformContext.setSchema(schema);
         transformContext.setValidationExceptionThreshold(context.getValidationExeptionThreshold());
         writer = new BufferedWriter(new OutputStreamWriter(context.getOut(), getCharset()));
     }
@@ -94,7 +94,7 @@ public class FixedFileWriter extends BaseRecordWriter{
         // is created with no operations.
         IOContext original = context;
         try{
-            Schema headerSchema = new Schema(context.getSchema());
+            Schema headerSchema = new Schema(schema);
             for (FieldList fields : headerSchema.getFieldLists()){
                 for (Field field : fields){
                     field.clearOperations();
@@ -115,7 +115,7 @@ public class FixedFileWriter extends BaseRecordWriter{
 
     protected Record getHeader(){
         Record retVal = new Record();
-        for (Field field : context.getSchema().getDefaultFieldList()){
+        for (Field field : schema.getDefaultFieldList()){
             retVal.put(field.getName(), field.getName());
         }
         return retVal;

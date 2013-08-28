@@ -25,8 +25,9 @@ import org.apache.commons.io.IOUtils;
 public class FixedFileReader extends BaseRecordReader{
 
     private static final Logger logger = Logger.getLogger(FixedFileReader.class.getName());
-    
+
     protected SkippingBufferedReader reader;
+    private int defaultExpectedLength;
 
     public FixedFileReader(){
         super();
@@ -46,10 +47,14 @@ public class FixedFileReader extends BaseRecordReader{
     public void open(IOContext context) throws IOException, SchemaException{
         super.open(context);
         if (context.getIn() == null){
-            throw new IllegalArgumentException("Invalid IOContext. No InputStream specified");
+            throw new IllegalArgumentException("Invalid IOContext. No InputStream specified.");
+        }
+        if (schema == null){
+            throw new SchemaException("Invalid IOContext. No Schema specified.");
         }
 
-        ensureFieldLengthsSpecified(context.getSchema());
+
+        ensureFieldLengthsSpecified(schema);
         reader = new SkippingBufferedReader(new InputStreamReader(context.getIn(), getCharset()));
         reader.setSkipLeading(getSkipLeading());
         reader.setSkipTrailing(getSkipTrailing());
@@ -61,6 +66,12 @@ public class FixedFileReader extends BaseRecordReader{
         if (getLength() > 0){
             reader.setLength(getLength());
         }
+
+        if (fieldListCount == 1){
+            /* Optimization to cache the expected length for (typical) schemas that have only one field list */
+            defaultExpectedLength = getExpectedLength(defaultFieldList);
+        }
+
     }
 
     @Override
@@ -79,7 +90,7 @@ public class FixedFileReader extends BaseRecordReader{
     public Record read()
             throws IOException, ValidationException, ConversionException, SchemaException{
 
-        if (context.getSchema() == null){
+        if (schema == null){
             throw new IllegalStateException("schema not specified");
         }
 
@@ -91,7 +102,7 @@ public class FixedFileReader extends BaseRecordReader{
         Record record = null;
         String data = reader.readLine();
         if (data != null){
-            FieldList fields = classify(context.getSchema(), data);
+            FieldList fields = fieldListCount == 1 ? defaultFieldList : classify(data);
             String[] parsed = parse(data, fields);
             record = loadRecord(fields, parsed);
         }
@@ -115,25 +126,23 @@ public class FixedFileReader extends BaseRecordReader{
      * @return the FieldList that should be used to parse the data. never null
      * @throws SchemaException if no defined layout supports the data.
      */
-    protected FieldList classify(Schema schema, String data) throws SchemaException{
+    protected FieldList classify(String data) throws SchemaException{
 
-        if (data == null){
-            throw new IllegalArgumentException("data is null");
-        }
+        assert(data != null);
+        FieldList match = defaultFieldList;
 
-        FieldList match = schema.getDefaultFieldList();
-
-        if (schema.getFieldLists().size() > 1){
+        if (fieldListCount > 1){
             for (FieldList fieldList : schema.getFieldLists()){
                 if (fieldList.supports(data)){
                     match = fieldList;
                 }
             }
+
+            if (match == null){
+                throw new SchemaException("The schema [" + schema.getName() + "] does not support the specified data.");
+            }
         }
 
-        if (match == null){
-            throw new SchemaException("The schema [" + schema.getName() + "] does not support the specified data.");
-        }
 
         return match;
     }
@@ -168,7 +177,7 @@ public class FixedFileReader extends BaseRecordReader{
             throw new IllegalArgumentException("fields is empty");
         }
 
-        int expectedLength = getExpectedLength(fields);
+        int expectedLength = fieldListCount == 1 ? defaultExpectedLength : getExpectedLength(fields);
         int actualLength = record.length();
 
         if (expectedLength != actualLength){

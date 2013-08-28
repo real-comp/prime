@@ -71,7 +71,7 @@ public class DelimitedFileReader extends BaseRecordReader{
     @Override
     public Record read() throws IOException, ValidationException, ConversionException, SchemaException{
 
-        if (context.getSchema() == null){
+        if (schema == null){
             throw new IllegalStateException("schema not specified");
         }
 
@@ -85,7 +85,7 @@ public class DelimitedFileReader extends BaseRecordReader{
         String[] tokens;
         if (data != null){
             tokens = parse(data);
-            record = loadRecord(classify(context.getSchema(), tokens), tokens);
+            record = loadRecord(classify(tokens), tokens);
         }
 
         if (record != null){
@@ -124,15 +124,15 @@ public class DelimitedFileReader extends BaseRecordReader{
      * @return the FieldList that should be used to parse the data. never null
      * @throws SchemaException if more than one FieldList is defined and there is ambiguity
      */
-    protected FieldList classify(Schema schema, String[] data) throws SchemaException{
+    protected FieldList classify(String[] data) throws SchemaException{
 
         if (data == null){
             throw new IllegalArgumentException("data is null");
         }
 
-        FieldList match = schema.getDefaultFieldList();
+        FieldList match = defaultFieldList;
 
-        if (schema.getFieldLists().size() > 1){
+        if (fieldListCount > 1){
             int matchCount = 0;
             for (FieldList fieldList : schema.getFieldLists()){
                 if (fieldList.size() == data.length){

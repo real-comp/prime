@@ -7,6 +7,7 @@ import com.realcomp.data.conversion.MissingFieldException;
 import com.realcomp.data.conversion.MultiFieldConverter;
 import com.realcomp.data.record.Record;
 import com.realcomp.data.record.RecordValueResolver;
+import com.realcomp.data.schema.Schema;
 import com.realcomp.data.validation.ValidationException;
 import com.realcomp.data.validation.Validator;
 import com.realcomp.data.validation.file.RecordCountValidator;
@@ -48,8 +49,9 @@ public class ValueSurgeon{
             value = operate(op, value, context);
         }
 
-        if (context.getSchema() != null && context.getSchema().getAfterOperations() != null){
-            for (Operation op : context.getSchema().getAfterOperations()){
+        Schema schema = context.getSchema();
+        if (schema != null && schema.getAfterOperations() != null){
+            for (Operation op : schema.getAfterOperations()){
                 value = operate(op, value, context);
             }
         }
