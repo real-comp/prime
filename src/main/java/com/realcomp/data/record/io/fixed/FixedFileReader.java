@@ -68,7 +68,7 @@ public class FixedFileReader extends BaseRecordReader{
         }
 
         if (fieldListCount == 1){
-            /* Optimization to cache the expected length for (typical) schemas that have only one field list */
+            /* Optimization to cache the expected length for (typical) schemas that have only one FieldList */
             defaultExpectedLength = getExpectedLength(defaultFieldList);
         }
 
@@ -150,12 +150,9 @@ public class FixedFileReader extends BaseRecordReader{
     protected Record loadRecord(FieldList fields, String[] data)
             throws ValidationException, ConversionException{
 
-        if (fields == null){
-            throw new IllegalArgumentException("fields is null");
-        }
-        if (data == null){
-            throw new IllegalArgumentException("data is null");
-        }
+
+        assert(fields != null);
+        assert(data != null);
 
         if (fields.size() != data.length){
             throw new ValidationException(
@@ -170,12 +167,8 @@ public class FixedFileReader extends BaseRecordReader{
     protected String[] parse(String record, FieldList fields)
             throws ValidationException, SchemaException{
 
-        if (fields == null){
-            throw new IllegalArgumentException("fields is null");
-        }
-        if (fields.isEmpty()){
-            throw new IllegalArgumentException("fields is empty");
-        }
+        assert(fields != null);
+        assert(!fields.isEmpty());
 
         int expectedLength = fieldListCount == 1 ? defaultExpectedLength : getExpectedLength(fields);
         int actualLength = record.length();

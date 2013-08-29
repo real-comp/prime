@@ -159,7 +159,7 @@ public class RecordTest{
         Record record = new Record();
         record.put("id", 12345);
 
-        Map<String, Object> owner = new HashMap<String, Object>();
+        Map<String, Object> owner = new HashMap<>();
         owner.put("first", "kyle");
         owner.put("last", "renfro");
         record.put("owners[0]", owner);

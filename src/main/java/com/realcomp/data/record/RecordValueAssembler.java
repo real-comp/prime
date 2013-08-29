@@ -21,13 +21,29 @@ public class RecordValueAssembler{
             throw new IllegalArgumentException("key is null");
         }
 
+        Object previous;
         Stack<RecordKey> recordKeySequence = keyCache.get(key);
         if (recordKeySequence == null){
             recordKeySequence = new RecordKey(key).buildKeySequence();
             keyCache.put(key, recordKeySequence);
         }
 
-        return assemble(map, (Stack<RecordKey>) recordKeySequence.clone(), value);
+        if (recordKeySequence.size() == 1){
+            //optimization - most processing will be non-indexed/non-composite
+            RecordKey recordKey = recordKeySequence.peek();
+            if (recordKey.isIndexed()){
+                previous = assemble(map, (Stack<RecordKey>) recordKeySequence.clone(), value);
+            }
+            else{
+                previous = map.put(recordKey.getName(), value);
+            }
+        }
+        else{
+            previous = assemble(map, (Stack<RecordKey>) recordKeySequence.clone(), value);
+        }
+
+        return previous;
+
     }
 
     /**
@@ -93,7 +109,7 @@ public class RecordValueAssembler{
                         ensureCapacity(list, key.isIndexed() ? key.getIndex() + 1 : 1);
                         current = (Map<String, Object>) list.get(key.isIndexed() ? key.getIndex() : 0);
                         if (current == null){
-                            current = new HashMap<String, Object>();
+                            current = new HashMap<>();
                             list.set(key.isIndexed() ? key.getIndex() : 0, current);
                         }
                         previous = assemble((Map<String, Object>) current, keys, value); //recurse

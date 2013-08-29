@@ -38,12 +38,12 @@ public class Field{
 
     @XStreamImplicit
     private List<Operation> operations;
-    
+
     @XStreamAsAttribute
     private int length;
 
     public Field(){
-        operations = new ArrayList<Operation>();
+        operations = new ArrayList<>();
     }
 
     public Field(String name){
@@ -203,7 +203,7 @@ public class Field{
      */
     private Object readResolve(){
         if (operations == null){
-            operations = new ArrayList<Operation>();
+            operations = new ArrayList<>();
         }
         return this;
     }

@@ -6,7 +6,8 @@ import java.util.Map;
 import java.util.Stack;
 
 /**
- * Finds a specified value in a Record. A composite RecordKey can reference a value arbitrarily deep within a Record.
+ * Finds a specified value in a Record.
+ * A composite RecordKey can reference a value arbitrarily deep within a Record.
  *
  * @see RecordValueAssembler
  * @author krenfro

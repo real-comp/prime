@@ -1,6 +1,8 @@
 package com.realcomp.data.record.io.fixed;
 
 import com.realcomp.data.DataType;
+import com.realcomp.data.Operation;
+import com.realcomp.data.Operations;
 import com.realcomp.data.conversion.ConversionException;
 import com.realcomp.data.record.Record;
 import com.realcomp.data.record.io.BaseRecordWriter;
@@ -16,6 +18,7 @@ import com.realcomp.data.validation.ValidationException;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 import org.apache.commons.io.IOUtils;
@@ -127,9 +130,11 @@ public class FixedFileWriter extends BaseRecordWriter{
 
         transformContext.setRecord(record);
         transformContext.setKey(field.getName());
-        Object value = surgeon.operate(field.getOperations(), transformContext);
+        Object value = surgeon.operate(Operations.getOperations(schema, field), transformContext);
         writer.write(resize((String) DataType.STRING.coerce(value == null ? "" : value), field.getLength()));
     }
+
+
 
     protected String resize(String s, int length){
         return StringUtils.rightPad(s, length).substring(0, length);

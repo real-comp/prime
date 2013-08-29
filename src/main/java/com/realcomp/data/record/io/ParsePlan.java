@@ -74,7 +74,7 @@ public class ParsePlan extends ArrayList<Field>{
      * @return list of all field names that have been successfully parsed
      */
     protected final List<String> getParsedFieldNames(){
-        List<String> fieldNames = new ArrayList<String>();
+        List<String> fieldNames = new ArrayList<>();
         for (Field f : this){
             fieldNames.add(f.getName());
         }
@@ -86,7 +86,7 @@ public class ParsePlan extends ArrayList<Field>{
      */
     protected final List<String> getDependentFieldNames(Field field){
 
-        List<String> fieldNames = new ArrayList<String>();
+        List<String> fieldNames = new ArrayList<>();
         for (Operation op : field.getOperations()){
             if (op instanceof MultiFieldOperation){
                 fieldNames.addAll(((MultiFieldOperation) op).getFields());

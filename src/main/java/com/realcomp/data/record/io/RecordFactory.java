@@ -1,6 +1,6 @@
 package com.realcomp.data.record.io;
 
-import com.realcomp.data.Operation;
+import com.realcomp.data.Operations;
 import com.realcomp.data.conversion.ConversionException;
 import com.realcomp.data.record.Record;
 import com.realcomp.data.schema.Field;
@@ -10,9 +10,7 @@ import com.realcomp.data.transform.TransformContext;
 import com.realcomp.data.transform.ValueSurgeon;
 import com.realcomp.data.validation.Severity;
 import com.realcomp.data.validation.ValidationException;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
@@ -92,7 +90,7 @@ public class RecordFactory{
             index = fieldList.indexOf(field);
             context.setKey(field.getName());
             record.put(field.getName(), data[index]); //seed record with initial value
-            Object value = surgeon.operate(getOperations(field), context);
+            Object value = surgeon.operate(Operations.getOperations(schema, field), context);
             if (value != null){
                 try{
                     record.put(field.getName(), field.getType().coerce(value)); //set final value
@@ -111,7 +109,7 @@ public class RecordFactory{
         parsePlan = new ParsePlan(schema.getDefaultFieldList());
 
         if (schema.getFieldLists().size() > 1){
-            parsePlanCache = new HashMap<FieldList, ParsePlan>();
+            parsePlanCache = new HashMap<>();
             for (FieldList fieldList : schema.getFieldLists()){
                 parsePlanCache.put(fieldList, new ParsePlan(fieldList));
             }
@@ -137,16 +135,4 @@ public class RecordFactory{
         context.setValidationExceptionThreshold(validationExceptionThreshold);
     }
 
-    protected List<Operation> getOperations(Field field){
-
-        List<Operation> operations = new ArrayList<Operation>();
-        if (schema.getBeforeOperations() != null){
-            operations.addAll(schema.getBeforeOperations());
-        }
-        operations.addAll(field.getOperations());
-        if (schema.getAfterOperations() != null){
-            operations.addAll(schema.getAfterOperations());
-        }
-        return operations;
-    }
 }

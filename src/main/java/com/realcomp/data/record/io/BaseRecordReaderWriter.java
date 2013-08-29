@@ -2,6 +2,7 @@ package com.realcomp.data.record.io;
 
 import com.realcomp.data.Operation;
 import com.realcomp.data.conversion.ConversionException;
+import com.realcomp.data.schema.Field;
 import com.realcomp.data.schema.Schema;
 import com.realcomp.data.schema.SchemaException;
 import com.realcomp.data.transform.TransformContext;
@@ -9,6 +10,7 @@ import com.realcomp.data.transform.ValueSurgeon;
 import com.realcomp.data.validation.ValidationException;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -164,4 +166,6 @@ public abstract class BaseRecordReaderWriter{
     public Map<String, String> getDefaults(){
         return format.getDefaults();
     }
+
+
 }

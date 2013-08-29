@@ -28,7 +28,7 @@ public class Operations{
             throw new IllegalArgumentException("field is null");
         }
 
-        List<Operation> operations = new ArrayList<Operation>();
+        List<Operation> operations = new ArrayList<>();
         List<Operation> fieldOps = field.getOperations();
 
         if (field instanceof AfterLastField){

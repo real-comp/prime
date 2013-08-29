@@ -3,6 +3,7 @@ package com.realcomp.data.record.io.delimited;
 import au.com.bytecode.opencsv.CSVParser;
 import au.com.bytecode.opencsv.CSVWriter;
 import com.realcomp.data.DataType;
+import com.realcomp.data.Operations;
 import com.realcomp.data.conversion.ConversionException;
 import com.realcomp.data.record.Record;
 import com.realcomp.data.record.io.BaseRecordWriter;
@@ -65,7 +66,7 @@ public class DelimitedFileWriter extends BaseRecordWriter{
 
         transformContext.setRecord(record);
         transformContext.setKey(field.getName());
-        Object value = surgeon.operate(field.getOperations(), transformContext);
+        Object value = surgeon.operate(Operations.getOperations(schema, field), transformContext);
 
         if (value == null){
             current.add("");
