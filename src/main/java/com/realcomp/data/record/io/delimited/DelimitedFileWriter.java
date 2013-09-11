@@ -80,9 +80,9 @@ public class DelimitedFileWriter extends BaseRecordWriter{
     public void write(Record record)
             throws IOException, ValidationException, ConversionException, SchemaException{
 
+
         //optionally write header record
         if (count == 0 && isHeader()){
-            current.clear();
             writeHeader();
         }
 
@@ -116,7 +116,7 @@ public class DelimitedFileWriter extends BaseRecordWriter{
     }
 
     /**
-     * Write a header record, constructed from a Record.
+     * Write a header record, constructed from the schema.
      *
      * @throws IOException
      * @throws ValidationException
@@ -124,36 +124,18 @@ public class DelimitedFileWriter extends BaseRecordWriter{
      */
     protected void writeHeader() throws IOException, ValidationException, ConversionException{
 
-        //No operations should be run on the Record, so a temporary schema
-        // is created with no operations.
-        IOContext original = context;
-        try{
-            Schema headerSchema = new Schema(schema);
-            for (FieldList fields : headerSchema.getFieldLists()){
-                for (Field field : fields){
-                    field.clearOperations();
-                }
-            }
-
-            context = new IOContextBuilder(context).schema(headerSchema).build();
-            super.write(getHeader());
-            writer.writeNext(current.toArray(new String[current.size()]));
-            writer.flush();
-        }
-        catch (SchemaException ex){
-            throw new IOException("Unable to create temporary header schema: " + ex.getMessage());
-        }
-        finally{
-            context = original;
-        }
+        List<String> header = getHeader();
+        writer.writeNext(header.toArray(new String[header.size()]));
+        writer.flush();
     }
 
-    protected Record getHeader(){
-        Record retVal = new Record();
+
+    protected List<String> getHeader(){
+        List<String> header = new ArrayList<>();
         for (Field field : schema.getDefaultFieldList()){
-            retVal.put(field.getName(), field.getName());
+            header.add(field.getName());
         }
-        return retVal;
+        return header;
     }
 
     public char getDelimiter(){

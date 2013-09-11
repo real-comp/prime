@@ -93,35 +93,12 @@ public class FixedFileWriter extends BaseRecordWriter{
      */
     protected void writeHeader() throws IOException, ValidationException, ConversionException{
 
-        //No operations should be run on the Record, so a temporary schema
-        // is created with no operations.
-        IOContext original = context;
-        try{
-            Schema headerSchema = new Schema(schema);
-            for (FieldList fields : headerSchema.getFieldLists()){
-                for (Field field : fields){
-                    field.clearOperations();
-                }
-            }
-            context = new IOContextBuilder(context).schema(headerSchema).build();
-            super.write(getHeader());
-            writer.newLine();
-            writer.flush();
-        }
-        catch (SchemaException ex){
-            throw new IOException("Unable to create temporary header schema: " + ex.getMessage());
-        }
-        finally{
-            context = original;
-        }
-    }
-
-    protected Record getHeader(){
-        Record retVal = new Record();
         for (Field field : schema.getDefaultFieldList()){
-            retVal.put(field.getName(), field.getName());
+            writer.write(resize(field.getName(), field.getLength()));
         }
-        return retVal;
+
+        writer.newLine();
+        writer.flush();
     }
 
     @Override

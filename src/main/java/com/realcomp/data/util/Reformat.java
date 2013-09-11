@@ -7,6 +7,7 @@ import com.realcomp.data.schema.SchemaException;
 import com.realcomp.data.schema.SchemaFactory;
 import com.realcomp.data.transform.TransformContext;
 import com.realcomp.data.transform.Transformer;
+import com.realcomp.data.validation.Severity;
 import com.realcomp.data.validation.ValidationException;
 import java.io.*;
 import java.util.*;
@@ -193,7 +194,11 @@ public class Reformat{
                     reformatter.addTransformer(t.toString());
                 }
 
-                reformatter.setFilter(options.has("f"));
+                if (options.has("f")){
+                    reformatter.setFilter(options.has("f"));
+                    inputBuilder.validationExceptionThreshold(Severity.MEDIUM);
+                    outputBuilder.validationExceptionThreshold(Severity.MEDIUM);
+                }
 
                 for (String constant : (List<String>) options.valuesOf("c")){
                     int pos = constant.indexOf(":");

@@ -46,6 +46,12 @@
                     <descriptorRefs>
                         <descriptorRef>jar-with-dependencies</descriptorRef>
                     </descriptorRefs>
+                    <archive>
+                        <manifest>
+                            <mainClass>com.realcomp.data.util.Reformat</mainClass>
+                            <packageName>com.realcomp.data.util</packageName>
+                        </manifest>
+                    </archive>
                 </configuration>
                 <executions>
                     <execution>
@@ -82,7 +88,7 @@
             <version>4.0.0</version>
             <optional>true</optional>
             <type>jar</type>
-        </dependency>     
+        </dependency>
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>

@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<rc:schema
+
+    xmlns:rc="http://www.real-comp.com/realcomp-data/schema/file-schema/1.2"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.real-comp.com/realcomp-data/schema/file-schema/1.2 http://www.real-comp.com/realcomp-data/schema/file-schema/1.2/file-schema.xsd">
+
+    <format type="TAB" header="true"/>
+
+    <fields>
+        <field name="agentNumber">
+           <required/>
+        </field>
+        <field name="first">
+           <required/>
+        </field>
+        <field name="last">
+           <required/>
+        </field>
+        <field name="address1">
+           <required/>
+        </field>
+        <field name="city">
+           <required/>
+        </field>
+        <field name="state">
+            <validateRegex regex="TX"/>
+        </field>
+        <field name="zip">
+            <validateZipcode/>
+        </field>
+        <field name="zip5">
+            <validateRegex regex="[0-9]{5}"/>
+        </field>
+        <field name="phone"/>
+        <field name="dpv"/>
+        <field name="leadSource"/>
+        <field name="sourceId">
+           <required/>
+        </field>
+        <field name="originalName">
+           <required/>
+        </field>
+        <field name="name">
+           <required/>
+        </field>
+        <field name="fips"/>
+        <field name="sqft"/>
+        <field name="yearBuilt">
+        </field>
+        <field name="totalValue">
+          <validateLongRange min="80000" max="1000000"/>
+        </field>
+        <field name="quotePremium">
+          <validateLongRange min="150" max="4000"/>
+        </field>
+        <field name="zone"/>
+        <field name="townclass"/>
+        <field name="exteriorWall"/>
+        <field name="costClass"/>
+        <field name="otherStructures">
+            <required/>
+        </field>
+        <field name="personalProperty">
+            <required/>
+        </field>
+        <field name="personalPropertyOffPremises">
+            <required/>
+        </field>
+        <field name="xDate"/>
+        <field name="soldDateMonth">
+          <validateRegex regex="0?(1|2|3|10|11|12)"/>
+        </field>
+        <field name="soldDateDay"/>
+        <field name="soldDateYear"/>
+        <field name="extraDeductible">
+          <validateRegex regex="---|2%|3%"/>
+        </field>
+        <field name="allPerilDeductible">
+          <validateRegex regex="2%"/>
+        </field>
+        <field name="windHailDeductible">
+          <validateRegex regex=""/>
+        </field>
+        <field name="tropicalCycloneDeductible">
+          <validateRegex regex=""/>
+        </field>
+        <field name="disclaimer1">
+          <validateRegex regex="|[*]This.+"/> <!-- blank or disclaimer -->
+        </field>
+        <field name="roofType"/>
+
+        <field name="distance">
+            <required/>
+        </field>
+        <field name="agentFirst"/>
+        <field name="agentLast">
+            <required/>
+        </field>
+        <field name="agentAddress">
+            <required/>
+        </field>
+        <field name="agentAddress2"/>
+        <field name="agentCity">
+            <required/>
+        </field>
+        <field name="agentState">
+            <validateRegex regex="TX"/>
+        </field>
+        <field name="agentZip">
+            <validateZipcode/>
+        </field>
+        <field name="agentPhone">
+            <required/>
+        </field>
+        <field name="agentFax"/>
+        <field name="agentPhoneDoNotUse"/>
+        <field name="agentEmail"/>
+        <field name="agentWebsiteDoNotUse"/>
+    </fields>
+</rc:schema>
