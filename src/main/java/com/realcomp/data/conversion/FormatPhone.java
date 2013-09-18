@@ -41,7 +41,7 @@ public class FormatPhone extends SimpleConverter{
     }
 
     private Character[] getDigits(String phone){
-        List<Character> digits = new ArrayList<Character>();
+        List<Character> digits = new ArrayList<>();
 
         for (char c : phone.toCharArray()){
             if (c >= '0' && c <= '9'){

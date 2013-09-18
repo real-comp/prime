@@ -61,8 +61,8 @@ public class Validate{
             {
                 accepts("is", "input schema")
                         .withRequiredArg().describedAs("schema").required();
-
                 accepts("in", "input file (default: STDIN)").withRequiredArg().describedAs("file");
+                
                 acceptsAll(Arrays.asList("h", "?", "help"), "help");
             }
         };
