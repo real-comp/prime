@@ -1,13 +1,11 @@
 package com.realcomp.data.record.io.fixed;
 
 import com.realcomp.data.DataType;
-import com.realcomp.data.Operation;
 import com.realcomp.data.Operations;
 import com.realcomp.data.conversion.ConversionException;
 import com.realcomp.data.record.Record;
 import com.realcomp.data.record.io.BaseRecordWriter;
 import com.realcomp.data.record.io.IOContext;
-import com.realcomp.data.record.io.IOContextBuilder;
 import com.realcomp.data.schema.Field;
 import com.realcomp.data.schema.FieldList;
 import com.realcomp.data.schema.Schema;
@@ -18,7 +16,6 @@ import com.realcomp.data.validation.ValidationException;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 import org.apache.commons.io.IOUtils;
@@ -35,6 +32,7 @@ public class FixedFileWriter extends BaseRecordWriter{
     protected BufferedWriter writer;
     protected TransformContext transformContext;
     protected ValueSurgeon surgeon;
+    protected StringBuilder currentRecord;
 
     public FixedFileWriter(){
         super();
@@ -75,13 +73,19 @@ public class FixedFileWriter extends BaseRecordWriter{
     public void write(Record record)
             throws IOException, ValidationException, ConversionException, SchemaException{
 
+        currentRecord = new StringBuilder();
+
         //optionally write header record
         if (count == 0 && isHeader()){
             writeHeader();
+            currentRecord = new StringBuilder();
         }
 
+
         super.write(record);
+        writer.write(currentRecord.toString());
         writer.newLine();
+
     }
 
     /**
@@ -97,6 +101,7 @@ public class FixedFileWriter extends BaseRecordWriter{
             writer.write(resize(field.getName(), field.getLength()));
         }
 
+        writer.write(currentRecord.toString());
         writer.newLine();
         writer.flush();
     }
@@ -108,7 +113,7 @@ public class FixedFileWriter extends BaseRecordWriter{
         transformContext.setRecord(record);
         transformContext.setKey(field.getName());
         Object value = surgeon.operate(Operations.getOperations(schema, field), transformContext);
-        writer.write(resize((String) DataType.STRING.coerce(value == null ? "" : value), field.getLength()));
+        currentRecord.append(resize((String) DataType.STRING.coerce(value == null ? "" : value), field.getLength()));
     }
 
 

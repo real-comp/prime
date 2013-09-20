@@ -7,7 +7,6 @@ import java.io.InputStreamReader;
 import java.util.logging.Logger;
 
 /**
- *
  * @author krenfro
  */
 public abstract class BaseRecordReader extends BaseRecordReaderWriter implements RecordReader{

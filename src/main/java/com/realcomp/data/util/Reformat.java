@@ -20,6 +20,9 @@ import joptsimple.OptionSet;
 
 /**
  * Reformat, optionally filtering,  a file using an input and output schema
+ * Filtering can happen because of validation problems against the input schema AND the output schema.
+ * You can optionally write filtered records to a file.  The optional filter file will conform to the input schema,
+ * and contain both records that failed on input, and those that failed on output.
  *
  * @author krenfro
  */
@@ -31,23 +34,51 @@ public class Reformat{
     private Map<String, String> constants;
     private boolean filter = false;
 
+    private RecordReader in;
+    private RecordWriter out;
+    private RecordWriter error;
+
     public Reformat(){
         transformers = new ArrayList<>();
         constants = new HashMap<>();
     }
 
-    public void reformat(IOContext in, IOContext out)
+    public void setIn(IOContext inputCtx) throws FormatException, SchemaException, IOException{
+        if (inputCtx == null){
+            throw new IllegalArgumentException("inputCtx is null");
+        }
+
+        in = RecordReaderFactory.build(inputCtx.getSchema());
+        in.open(inputCtx);
+    }
+
+    public void setOut(IOContext outputCtx) throws FormatException, SchemaException, IOException{
+        if (outputCtx == null){
+            throw new IllegalArgumentException("outputCtx is null");
+        }
+
+        out = RecordWriterFactory.build(outputCtx.getSchema());
+        out.open(outputCtx);
+    }
+
+    public void setErr(IOContext errorCtx) throws FormatException, SchemaException, IOException{
+        if (errorCtx == null){
+            throw new IllegalArgumentException("errorCtx is null");
+        }
+
+        error = RecordWriterFactory.build(errorCtx.getSchema());
+        error.open(errorCtx);
+    }
+
+
+    public void reformat()
             throws SchemaException, IOException, ValidationException, ConversionException{
 
-        RecordReader reader = RecordReaderFactory.build(in.getSchema());
-        reader.open(in);
-
-        RecordWriter writer = RecordWriterFactory.build(out.getSchema());
-        writer.open(out);
-
-        Record record = getNextRecord(reader);
         TransformContext ctx = new TransformContext();
-        ctx.setValidationExceptionThreshold(in.getValidationExeptionThreshold());
+        ctx.setValidationExceptionThreshold(in.getIOContext().getValidationExeptionThreshold());
+
+        Record record = getNextRecord(in);
+
         while (record != null){
             ctx.setRecord(record);
 
@@ -55,29 +86,35 @@ public class Reformat{
                 record.put(constant.getKey(), constant.getValue());
             }
 
-            for (Transformer t : transformers){
-                t.transform(ctx);
-            }
-
             try{
-                writer.write(ctx.getRecord());
+                for (Transformer t : transformers){
+                    t.transform(ctx);
+                }
+
+                out.write(ctx.getRecord());
             }
             catch (ValidationException ex){
                 if (filter){
                     logger.log(Level.INFO,
                            "filtered output: {0} : {1}",
-                           new Object[]{out.getSchema().classify(record).toString(record), ex.getMessage()});
+                           new Object[]{out.getIOContext().getSchema().classify(record).toString(record), ex.getMessage()});
+                    if (error != null){
+                        error.write(record);
+                    }
                 }
                 else{
                     throw ex;
                 }
             }
 
-            record = getNextRecord(reader);
+            record = getNextRecord(in);
         }
 
-        writer.close();
-        reader.close();
+        in.close();
+        out.close();
+        if (error != null){
+            error.close();
+        }
     }
 
 
@@ -106,9 +143,10 @@ public class Reformat{
             }
             catch (ValidationException ex){
                 if (filter){
-                    logger.log(Level.INFO,
-                               "filtered input: {0}",
-                               new Object[]{ex.getMessage()});
+                    logger.log(Level.INFO, "filtered input: {0}", new Object[]{ex.getMessage()});
+                    if (error != null){
+                        error.write(record);
+                    }
                     record = null;
                 }
                 else{
@@ -159,7 +197,7 @@ public class Reformat{
                 accepts("in", "input file (default: STDIN)").withRequiredArg().describedAs("file");
                 accepts("out", "output file (default: STDOUT)").withRequiredArg().describedAs("file");
                 acceptsAll(Arrays.asList("t", "transform"), "transform schema(s)").withRequiredArg().describedAs("transform");
-                acceptsAll(Arrays.asList("f", "filter"), "filter invalid records");
+                acceptsAll(Arrays.asList("f", "filter"), "filter invalid records").withOptionalArg().describedAs("file");
                 accepts("c").withOptionalArg().describedAs("constant(s) set in every Record (i.e., orderId:4844)");
                 acceptsAll(Arrays.asList("h", "?", "help"), "help");
             }
@@ -182,6 +220,7 @@ public class Reformat{
                         ? new BufferedInputStream(new FileInputStream((String) options.valueOf("in")))
                         : new BufferedInputStream(System.in));
 
+
                 IOContextBuilder outputBuilder = new IOContextBuilder();
                 outputBuilder.schema(
                         SchemaFactory.buildSchema(new FileInputStream((String) options.valueOf("os"))));
@@ -190,14 +229,23 @@ public class Reformat{
                         ? new BufferedOutputStream(new FileOutputStream((String) options.valueOf("out")))
                         : new BufferedOutputStream(System.out));
 
-                for (Object t : options.valuesOf("t")){
-                    reformatter.addTransformer(t.toString());
-                }
+
 
                 if (options.has("f")){
-                    reformatter.setFilter(options.has("f"));
+
+                    reformatter.setFilter(true);
                     inputBuilder.validationExceptionThreshold(Severity.MEDIUM);
                     outputBuilder.validationExceptionThreshold(Severity.MEDIUM);
+
+                    String errorFile = (String) options.valueOf("f");
+                    if (errorFile != null && !errorFile.isEmpty()){
+                        IOContextBuilder errorBuilder = new IOContextBuilder();
+                        errorBuilder.schema(
+                           SchemaFactory.buildSchema(new FileInputStream((String) options.valueOf("is"))));
+                        errorBuilder.out(new FileOutputStream(errorFile));
+                        errorBuilder.validationExceptionThreshold(Severity.LOW);
+                        reformatter.setErr(errorBuilder.build());
+                    }
                 }
 
                 for (String constant : (List<String>) options.valuesOf("c")){
@@ -207,7 +255,14 @@ public class Reformat{
                     }
                 }
 
-                reformatter.reformat(inputBuilder.build(), outputBuilder.build());
+
+                for (Object t : options.valuesOf("t")){
+                    reformatter.addTransformer(t.toString());
+                }
+
+                reformatter.setIn(inputBuilder.build());
+                reformatter.setOut(outputBuilder.build());
+                reformatter.reformat();
                 result = 0;
             }
         }

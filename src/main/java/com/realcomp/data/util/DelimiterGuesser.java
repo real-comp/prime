@@ -24,8 +24,8 @@ public class DelimiterGuesser{
 
         List<String> records = readLines(file, 10);
 
-        int csvCount = count(records, ",");
-        int tabCount = count(records, "\t");
+        int csvCount = count(records, ',');
+        int tabCount = count(records, '\t');
 
         if (csvCount > 0 && csvCount > tabCount){
             return ",";
@@ -43,10 +43,15 @@ public class DelimiterGuesser{
      * @param delimiter
      * @return average number of delimiters per record.
      */
-    protected static int count(List<String> records, String delimiter){
+    protected static int count(List<String> records, char delimiter){
         int total = 0;
         for (String record : records){
-            total += record.split(delimiter).length;
+            char[] chars = record.toCharArray();
+            for (int x = 0; x < chars.length; x++){
+                if (chars[x] == delimiter){
+                    total++;
+                }
+            }
         }
         return Math.round((float) total / records.size());
     }

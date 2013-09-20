@@ -52,11 +52,10 @@ public class ReformatTest {
         inputBuilder.validationExceptionThreshold(Severity.MEDIUM);
         outputBuilder.validationExceptionThreshold(Severity.MEDIUM);
 
-        IOContext in = inputBuilder.build();
-        IOContext out = outputBuilder.build();
-        reformat.reformat(in, out);
-        in.close();
-        out.close();
+        reformat.setIn(inputBuilder.build());
+        reformat.setOut(outputBuilder.build());
+        reformat.reformat();
+        
 
         BufferedReader reader = new BufferedReader(new FileReader(temp));
         String s = reader.readLine();
