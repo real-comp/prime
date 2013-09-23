@@ -73,7 +73,7 @@ public class FixedFileWriter extends BaseRecordWriter{
     public void write(Record record)
             throws IOException, ValidationException, ConversionException, SchemaException{
 
-        
+
         //optionally write header record
         if (count == 0 && isHeader()){
             writeHeader();
@@ -99,7 +99,6 @@ public class FixedFileWriter extends BaseRecordWriter{
             writer.write(resize(field.getName(), field.getLength()));
         }
 
-        writer.write(currentRecord.toString());
         writer.newLine();
         writer.flush();
     }

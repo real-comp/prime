@@ -1,8 +1,8 @@
 package com.realcomp.data.conversion;
 
 /**
- * Remove any leading characters that match a value. Simply are Replace converter with "^" + value as the regex and ""
- * as the replacement.
+ * Remove any leading characters that match a value.
+ * Simply a Replace converter with "^(" + value + ")+"as the regex and "" as the replacement.
  *
  * @author krenfro
  */
@@ -19,7 +19,7 @@ public class RemoveLeading extends SimpleConverter{
     public RemoveLeading(String value){
         super();
         this.value = value;
-        replaceConverter = new Replace("^" + value, "");
+        replaceConverter = new Replace("^(" + value + ")+", "");
     }
 
     @Override
@@ -30,11 +30,8 @@ public class RemoveLeading extends SimpleConverter{
     @Override
     public Object convert(Object value) throws ConversionException{
 
-        Object retVal = null;
-        if (value != null){
-            if (replaceConverter == null){
-                replaceConverter = new Replace("^" + this.value, "");
-            }
+        Object retVal = value;
+        if (value != null && replaceConverter != null){
             retVal = replaceConverter.convert(value);
         }
         return retVal;
@@ -46,7 +43,7 @@ public class RemoveLeading extends SimpleConverter{
 
     public void setValue(String value){
         this.value = value;
-        replaceConverter = new Replace("^" + value, "");
+        replaceConverter = new Replace("^(" + value + ")+", "");
 
     }
 
