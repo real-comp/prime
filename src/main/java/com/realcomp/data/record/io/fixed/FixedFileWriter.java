@@ -73,15 +73,13 @@ public class FixedFileWriter extends BaseRecordWriter{
     public void write(Record record)
             throws IOException, ValidationException, ConversionException, SchemaException{
 
-        currentRecord = new StringBuilder();
-
+        
         //optionally write header record
         if (count == 0 && isHeader()){
             writeHeader();
-            currentRecord = new StringBuilder();
         }
 
-
+        currentRecord = new StringBuilder();
         super.write(record);
         writer.write(currentRecord.toString());
         writer.newLine();

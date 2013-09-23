@@ -14,6 +14,7 @@ public class Replace extends SimpleConverter{
     private String regex = "";
     private String replacement = "";
     private Pattern pattern = null;
+    private boolean emptyPattern = true;
 
     public Replace(){
         super();
@@ -24,6 +25,7 @@ public class Replace extends SimpleConverter{
         this.regex = regex;
         this.replacement = replacement;
         pattern = Pattern.compile(regex);
+        emptyPattern = regex.equals("");
     }
 
     @Override
@@ -39,8 +41,15 @@ public class Replace extends SimpleConverter{
 
         if (value != null){
             String s = value.toString();
-            while (pattern.matcher(s).find()){
-                s = s.replaceAll(regex, replacement);
+            if (emptyPattern){
+                if (pattern.matcher(s).matches()){
+                    s = replacement;
+                }
+            }
+            else{
+                if (pattern.matcher(s).find()){
+                    s = s.replaceAll(regex, replacement);
+                }
             }
             retVal = s;
         }
@@ -55,6 +64,7 @@ public class Replace extends SimpleConverter{
     public void setRegex(String regex){
         this.regex = regex;
         pattern = Pattern.compile(regex);
+        emptyPattern = regex.equals("");
     }
 
     public String getReplacement(){

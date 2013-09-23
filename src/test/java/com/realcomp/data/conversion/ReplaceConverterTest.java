@@ -37,7 +37,7 @@ public class ReplaceConverterTest extends SimpleConverterTest{
     public void testRemoveMultiSpaces() throws Exception{
 
         Replace converter = new Replace();
-        converter.setRegex("  ");
+        converter.setRegex("[ ]+");
         converter.setReplacement(" ");
 
         assertEquals(" ", converter.convert("  "));
@@ -58,7 +58,7 @@ public class ReplaceConverterTest extends SimpleConverterTest{
     public void testLeadingZeros() throws Exception{
 
         Replace replace = new Replace();
-        replace.setRegex("^0");
+        replace.setRegex("^0+");
         replace.setReplacement("");
 
         assertEquals("1", replace.convert("1"));
@@ -67,6 +67,21 @@ public class ReplaceConverterTest extends SimpleConverterTest{
         assertEquals("1", replace.convert("0001"));
         assertEquals("1", replace.convert("00001"));
     }
+
+
+    @Test
+    public void testReplacementContainsRegex() throws Exception{
+
+        Replace replace = new Replace();
+        replace.setRegex("I");
+        replace.setReplacement("ID");
+
+        assertEquals("ID", replace.convert("I"));
+        assertEquals("ID ", replace.convert("I "));
+        assertEquals(" ID", replace.convert(" I"));
+        assertEquals(" ID ", replace.convert(" I "));
+    }
+
 
     @Test
     public void testCopyOf(){
