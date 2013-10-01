@@ -1,6 +1,5 @@
 package com.realcomp.data.record;
 
-import com.realcomp.data.view.RecordViewException;
 import java.util.Map.Entry;
 import java.util.HashMap;
 import java.util.ArrayList;
@@ -21,9 +20,9 @@ public class RecordTest{
     @Test
     public void testResolve(){
         Record record = new Record();
-        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+        List<Map<String, Object>> list = new ArrayList<>();
 
-        Map<String, Object> owner = new HashMap<String, Object>();
+        Map<String, Object> owner = new HashMap<>();
         owner.put("stuff", "1");
         owner.put("more", "2");
         list.add(owner);
@@ -41,7 +40,7 @@ public class RecordTest{
         assertEquals("asdf", record.getAll("name").get(0));
 
 
-        Map<String, Object> owner2 = new HashMap<String, Object>();
+        Map<String, Object> owner2 = new HashMap<>();
         owner2.put("stuff", "a");
         owner2.put("more", "b");
         list.add(owner2);
@@ -60,14 +59,14 @@ public class RecordTest{
     @Test
     public void testIndexedResolve(){
         Record record = new Record();
-        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+        List<Map<String, Object>> list = new ArrayList<>();
 
-        Map<String, Object> owner = new HashMap<String, Object>();
+        Map<String, Object> owner = new HashMap<>();
         owner.put("stuff", "1");
         owner.put("more", "2");
         list.add(owner);
 
-        Map<String, Object> owner2 = new HashMap<String, Object>();
+        Map<String, Object> owner2 = new HashMap<>();
         owner2.put("stuff", "a");
         owner2.put("more", "b");
         list.add(owner2);
@@ -97,7 +96,7 @@ public class RecordTest{
 
         Record record = new Record();
 
-        Map<String, Object> child = new HashMap<String, Object>();
+        Map<String, Object> child = new HashMap<>();
         child.put("first", "Kyle");
         child.put("last", "Renfro");
         record.put("name", child);
@@ -116,14 +115,14 @@ public class RecordTest{
     public void testComplexRecord() throws RecordKeyException{
 
         Record record = new Record();
-        Map<String, Object> owner = new HashMap<String, Object>();
+        Map<String, Object> owner = new HashMap<>();
         owner.put("first", "kyle");
         owner.put("last", "renfro");
         record.put("id", 12345);
-        List<Map> owners = new ArrayList<Map>();
+        List<Map> owners = new ArrayList<>();
         owners.add(owner);
 
-        owner = new HashMap<String, Object>();
+        owner = new HashMap<>();
         owner.put("first", "brandon");
         owner.put("last", "goering");
         owners.add(owner);
@@ -143,7 +142,7 @@ public class RecordTest{
         assertTrue(found);
 
         for (Entry<String, Object> entry : record.entrySet()){
-            owner = new HashMap<String, Object>();
+            owner = new HashMap<>();
             owner.put("first", "kyle");
             owner.put("last", "renfro");
             record.put("id", 12345);
@@ -164,11 +163,12 @@ public class RecordTest{
         owner.put("last", "renfro");
         record.put("owners[0]", owner);
 
-        assertEquals(owner, record.get("owners"));
+        
+        assertTrue(record.get("owners") instanceof List);
         assertEquals(owner, record.get("owners[0]"));
         assertNull(record.get("owners[1]"));
 
-        owner = new HashMap<String, Object>();
+        owner = new HashMap<>();
         owner.put("first", "brandon");
         owner.put("last", "goering");
         record.put("owners[1]", owner);
@@ -179,17 +179,35 @@ public class RecordTest{
 
     }
 
+
+    @Test
+    public void testSingleEntryList() throws RecordKeyException{
+
+        Record record = new Record();
+        record.put("id", 12345);
+        List<Record> list = new ArrayList<>();
+        Record entry = new Record();
+        entry.put("first", "kyle");
+        list.add(entry);
+        record.put("list", list);
+
+        assertTrue(record.get("list") instanceof List);
+        assertEquals(1, ((List) record.get("list")).size());
+    }
+
+
+
     @Test
     public void testSimpleMap(){
 
         Record record = new Record();
         List owners = new ArrayList();
-        Map<String, Object> owner = new HashMap<String, Object>();
+        Map<String, Object> owner = new HashMap<>();
         owner.put("last", "RENFRO");
         owners.add(owner);
         record.put("owners", owners);
 
-        owner = new HashMap<String, Object>();
+        owner = new HashMap<>();
         owner.put("last", "VRBA");
         owners.add(owner);
 
@@ -198,7 +216,7 @@ public class RecordTest{
         assertEquals("VRBA", record.get("owners[1].last"));
 
         //Flatten the record into a dumb map. Composite key resolution should still work.
-        Map<String, Object> map = new HashMap<String, Object>();
+        Map<String, Object> map = new HashMap<>();
         for (Map.Entry<String, Object> entry : record.entrySet()){
             String key = entry.getKey();
             Object value = entry.getValue();

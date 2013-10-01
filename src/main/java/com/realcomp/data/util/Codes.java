@@ -105,7 +105,7 @@ public class Codes{
      * @return All successfully translated codes. never null.
      */
     public List<String> translateList(String codes, String delimiter){
-        List<String> retVal = new ArrayList<String>();
+        List<String> retVal = new ArrayList<>();
         if (codes != null){
             for (String code : codes.split(delimiter)){
                 String trans = translate(code);

@@ -38,9 +38,10 @@ public class RecordValueResolver{
             if (value != null){
                 if (List.class.isAssignableFrom(value.getClass())){
                     List<Map<String, Object>> list = (List<Map<String, Object>>) value;
-                    if (key.isIndexed() || list.size() == 1){
+                    if (key.isIndexed() || (!sequence.isEmpty() && list.size() <= 1)){
+
+                        //allow single entry lists to be resolved without an index.
                         try{
-                            //allow single entry lists to be resolved without an index.
                             result = resolve(list.get(key.isIndexed() ? key.getIndex() : 0), sequence);
                         }
                         catch (IndexOutOfBoundsException ex){

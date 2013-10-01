@@ -19,7 +19,7 @@ public class RecordValueAssemblerTest{
     @Test
     public void testAssembly() throws RecordValueException{
 
-        Map<String, Object> data = new HashMap<String, Object>();
+        Map<String, Object> data = new HashMap<>();
 
         RecordValueAssembler.assemble(data, "name", "real-comp");
         assertEquals("real-comp", data.get("name"));
