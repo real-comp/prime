@@ -21,7 +21,7 @@ import java.util.logging.Logger;
 public class RelationalRecordJoiner{
 
     private static final Logger logger = Logger.getLogger(RelationalRecordJoiner.class.getName());
-    
+
     protected RelationalSchema relationalSchema;
     protected LinkedHashMap<Record, Schema> remainingRecords;
     protected List<Record> skippedRecords;
@@ -223,7 +223,21 @@ public class RelationalRecordJoiner{
 
         List<Record> retVal = new ArrayList<>();
         for (Entry<Record, Schema> entry : records.entrySet()){
-            if (entry.getValue().getName().equals(table.getName())){
+            Schema schema = entry.getValue();
+            if (schema.getName() == null){
+                StringBuilder fields = new StringBuilder();
+                for (Field f: schema.getDefaultFieldList()){
+                    if (fields.length() > 0){
+                        fields.append(", ");
+                    }
+                    fields.append(f.getName());
+                }
+                throw new IllegalStateException(
+                        "Encountered a Schema with no name!  "
+                        + "All Schemas must be named for relational joining. "
+                        + "The problematic Schema has the following Fields: [" + fields.toString() + "]");
+            }
+            else if (schema.getName().equals(table.getName())){
                 retVal.add(entry.getKey());
             }
         }

@@ -86,10 +86,13 @@ public class Codes{
     }
 
     public String translate(String code){
-        String translation = codes.getProperty(code);
-        if (translation == null && (code != null && !code.isEmpty())){
-            logger.log(logLevel, "Missing transation for [{0}] in [{1}]", new Object[]{code, description});
-            translation = code;
+        String translation = null;
+        if (code != null){
+            translation = codes.getProperty(code);
+            if (translation == null && !code.isEmpty()){
+                logger.log(logLevel, "Missing transation for [{0}] in [{1}]", new Object[]{code, description});
+                translation = code;
+            }
         }
         return translation;
     }
@@ -125,7 +128,7 @@ public class Codes{
      * @return
      */
     public List<String> translateList(String codes, String delimiter, String defaultValue){
-        List<String> retVal = new ArrayList<String>();
+        List<String> retVal = new ArrayList<>();
         if (codes != null){
             for (String code : codes.split(delimiter)){
                 retVal.add(translate(code, defaultValue));

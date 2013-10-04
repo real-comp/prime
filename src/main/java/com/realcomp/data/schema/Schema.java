@@ -20,8 +20,10 @@ import java.util.regex.Pattern;
 public class Schema{
 
     protected static final Pattern DEFAULT_CLASSIFIER = Pattern.compile(".*");
+
     @XStreamAsAttribute
     private String name;
+
     @XStreamAsAttribute
     private String version;
     private Map<String, String> format;
@@ -29,18 +31,19 @@ public class Schema{
     private List<Operation> before;
     private List<Operation> after;
     private List<Operation> afterLast;
+
     @XStreamImplicit(itemFieldName = "fields")
     private List<FieldList> fieldLists;
 
     public Schema(){
-        format = new HashMap<String, String>();
-        fieldLists = new ArrayList<FieldList>();
+        format = new HashMap<>();
+        fieldLists = new ArrayList<>();
     }
 
     public Schema(Schema copy){
-        format = new HashMap<String, String>();
+        format = new HashMap<>();
         format.putAll(copy.format);
-        fieldLists = new ArrayList<FieldList>();
+        fieldLists = new ArrayList<>();
         if (copy.fieldLists != null){
             for (FieldList fieldList : copy.fieldLists){
                 fieldLists.add(new FieldList(fieldList));
@@ -197,7 +200,9 @@ public class Schema{
     }
 
     /**
-     *
+     * A name for the schema.
+     * Names are optional, but if you are joining records using relational schemas, a name must be provided.
+     * 
      * @param name
      */
     public void setName(String name){
