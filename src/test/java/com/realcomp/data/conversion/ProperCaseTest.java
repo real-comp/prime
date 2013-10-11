@@ -39,6 +39,7 @@ public class ProperCaseTest extends ConverterTest{
         assertEquals("Mcc", converter.convert("MCC"));
         assertEquals("Name McCall", converter.convert("Name MCCall"));
         assertEquals("Name McCall ", converter.convert("Name MCCall "));
+        assertEquals("McAlister", converter.convert("Mcalister"));
 
 
         assertEquals("Name-McCall ", converter.convert("Name-MCCall "));

@@ -99,7 +99,7 @@ public class ProperCase extends LeadCase{
             }
 
             //fix McCall
-            loc = retVal.indexOf("Mcc");
+            loc = retVal.indexOf("Mc");
             if (loc >= 0 && loc + 3 < input.length()){
                 retVal = retVal.substring(0, loc + 2)
                         + retVal.substring(loc + 2, loc + 3).toUpperCase()
