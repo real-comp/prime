@@ -6,8 +6,12 @@ import com.realcomp.data.schema.Field;
 import com.realcomp.data.schema.Schema;
 import com.realcomp.data.schema.xml.XStreamFactory;
 import com.thoughtworks.xstream.XStream;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -150,6 +154,8 @@ public class SchemaGenerator{
         OptionParser parser = new OptionParser(){
             {
                 acceptsAll(Arrays.asList("d", "delimiter"), "delimiter").withRequiredArg().describedAs("delimiter");
+                accepts("in", "input file (default: STDIN)").withRequiredArg().describedAs("file");
+                accepts("out", "output file (default: STDOUT)").withRequiredArg().describedAs("file");
                 acceptsAll(Arrays.asList("h", "?", "help"), "help");
             }
         };
@@ -167,8 +173,17 @@ public class SchemaGenerator{
                     generator.setDelimiter((String) options.valueOf("d"));
                 }
 
-                generator.generate(System.in, System.out);
+                InputStream in =  options.has("in")
+                        ? new BufferedInputStream(new FileInputStream((String) options.valueOf("in")))
+                        : new BufferedInputStream(System.in);
+                OutputStream out = options.has("out")
+                        ? new BufferedOutputStream(new FileOutputStream((String) options.valueOf("out")))
+                        : new BufferedOutputStream(System.out);
+
+                generator.generate(in, out);
                 result = 0;
+                in.close();
+                out.close();
             }
         }
         catch (IOException ex){

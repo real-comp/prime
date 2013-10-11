@@ -100,8 +100,10 @@ public class ProperCase extends LeadCase{
 
             //fix McCall
             loc = retVal.indexOf("Mcc");
-            if (loc >= 0 && loc + 3 <= input.length()){
-                retVal = retVal.substring(0, loc) + "McC" + retVal.substring(loc + 3);
+            if (loc >= 0 && loc + 3 < input.length()){
+                retVal = retVal.substring(0, loc + 2)
+                        + retVal.substring(loc + 2, loc + 3).toUpperCase()
+                        + retVal.substring(loc + 3);
             }
 
             //check for special names
