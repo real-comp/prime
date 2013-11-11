@@ -2,6 +2,8 @@ package com.realcomp.data.validation.field;
 
 import com.realcomp.data.annotation.Validator;
 import com.realcomp.data.validation.ValidationException;
+import java.util.Objects;
+import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
 /**
@@ -12,8 +14,11 @@ import java.util.regex.Pattern;
 @Validator("validateRegex")
 public class RegexValidator extends BaseFieldValidator{
 
+    private static final Logger logger = Logger.getLogger(RegexValidator.class.getName());
+
     protected String regex = null;
     protected transient Pattern pattern = Pattern.compile(".*"); //default match anything
+    protected Boolean inverse = null;
 
     public RegexValidator(){
     }
@@ -32,7 +37,11 @@ public class RegexValidator extends BaseFieldValidator{
             throw new ValidationException("cannot validate null Object");
         }
 
-        if (!pattern.matcher(value.toString()).matches()){
+        boolean matches = pattern.matcher(value.toString()).matches();
+        if (inverse != null && inverse){
+            matches = !matches;
+        }
+        if (!matches){
             throw new ValidationException(
                     String.format("pattern [%s] did not match", pattern.pattern()),
                     value,
@@ -45,6 +54,7 @@ public class RegexValidator extends BaseFieldValidator{
         RegexValidator copy = new RegexValidator();
         copy.setSeverity(severity);
         copy.setRegex(regex);
+        copy.setInverse(inverse);
         return copy;
     }
 
@@ -60,6 +70,22 @@ public class RegexValidator extends BaseFieldValidator{
         this.pattern = Pattern.compile(regex);
     }
 
+    public Boolean getInverse(){
+        return inverse;
+    }
+
+    public void setInverse(Boolean inverse){
+        this.inverse = inverse;
+    }
+
+    @Override
+    public int hashCode(){
+        int hash = 3;
+        hash = 23 * hash + Objects.hashCode(this.regex);
+        hash = 23 * hash + Objects.hashCode(this.inverse);
+        return hash;
+    }
+
     @Override
     public boolean equals(Object obj){
         if (obj == null){
@@ -69,16 +95,12 @@ public class RegexValidator extends BaseFieldValidator{
             return false;
         }
         final RegexValidator other = (RegexValidator) obj;
-        if (this.regex != other.regex && (this.regex == null || !this.regex.equals(other.regex))){
+        if (!Objects.equals(this.regex, other.regex)){
+            return false;
+        }
+        if (!Objects.equals(this.inverse, other.inverse)){
             return false;
         }
         return true;
-    }
-
-    @Override
-    public int hashCode(){
-        int hash = 5;
-        hash = 67 * hash + (this.regex != null ? this.regex.hashCode() : 0);
-        return hash;
     }
 }
