@@ -15,7 +15,7 @@ import java.util.logging.Logger;
 public class RecordWriterFactory{
 
     private static final Logger logger = Logger.getLogger(RecordWriterFactory.class.getName());
-    
+
     private static final Map<String, String> types;
 
     static{
@@ -24,6 +24,8 @@ public class RecordWriterFactory{
         types.put("TAB", DelimitedFileWriter.class.getName());
         types.put("FIXED", FixedFileWriter.class.getName());
         types.put("JSON", "com.realcomp.data.record.io.json.JsonWriter");
+        types.put("DBF",   "com.realcomp.data.xbase.XBaseWriter");
+        types.put("XBASE", "com.realcomp.data.xbase.XBaseWriter");
     }
 
     public static void registerWriter(String type, String writerClass){

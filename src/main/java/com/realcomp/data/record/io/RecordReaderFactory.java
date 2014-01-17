@@ -21,6 +21,8 @@ public class RecordReaderFactory{
         types.put("TAB", DelimitedFileReader.class.getName());
         types.put("FIXED", FixedFileReader.class.getName());
         types.put("JSON", "com.realcomp.data.record.io.json.JsonReader");
+        types.put("DBF",   "com.realcomp.data.xbase.XBaseReader");
+        types.put("XBASE", "com.realcomp.data.xbase.XBaseReader");
     }
 
     public static void registerReader(String type, String readerClass){
