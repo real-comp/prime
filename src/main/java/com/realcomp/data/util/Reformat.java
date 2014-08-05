@@ -144,7 +144,7 @@ public class Reformat{
             catch (ValidationException ex){
                 if (filter){
                     logger.log(Level.INFO, "filtered input: {0}", new Object[]{ex.getMessage()});
-                    if (error != null){
+                    if (error != null && record != null){
                         error.write(record);
                     }
                     record = null;
