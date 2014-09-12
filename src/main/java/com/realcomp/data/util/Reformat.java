@@ -68,6 +68,7 @@ public class Reformat{
 
         error = RecordWriterFactory.build(errorCtx.getSchema());
         error.open(errorCtx);
+        filter = true;
     }
 
 
@@ -99,7 +100,11 @@ public class Reformat{
                            "filtered output: {0} : {1}",
                            new Object[]{out.getIOContext().getSchema().classify(record).toString(record), ex.getMessage()});
                     if (error != null){
+                        logger.info("recording filtered record");
                         error.write(record);
+                    }
+                    else{
+                        logger.info("error is null");
                     }
                 }
                 else{

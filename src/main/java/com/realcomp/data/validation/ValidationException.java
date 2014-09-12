@@ -17,7 +17,7 @@ public class ValidationException extends Exception{
 
     private static final long serialVersionUID = -6194444803112488818L;
     private Severity severity = Severity.MEDIUM;
-
+    
     public ValidationException(){
         super();
     }
@@ -67,5 +67,6 @@ public class ValidationException extends Exception{
 
             return String.format("%s [%s]", message, s);
         }
-    }
+    }   
+    
 }
