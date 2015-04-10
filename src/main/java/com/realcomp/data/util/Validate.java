@@ -23,6 +23,7 @@ import joptsimple.OptionSet;
 public class Validate{
 
     private static final Logger logger = Logger.getLogger(Validate.class.getName());
+    private boolean progress = false;
 
     public void validate(IOContext context)
             throws SchemaException, IOException, ValidationException, ConversionException{
@@ -34,6 +35,10 @@ public class Validate{
         try{
             while (reader.read() != null){
                 lineNumber++;
+                
+                if (progress && lineNumber % 10000 == 0){
+                    System.out.println("" + lineNumber);
+                }
             }
         }
         catch (IOException ex){
@@ -46,6 +51,16 @@ public class Validate{
             throw new ConversionException(ex.getMessage() + " at record " + lineNumber, ex);
         }
     }
+
+    public boolean isProgress(){
+        return progress;
+    }
+
+    public void setProgress(boolean progress){
+        this.progress = progress;
+    }
+    
+    
 
     private static void printHelp(OptionParser parser){
         try{
@@ -62,7 +77,7 @@ public class Validate{
                 accepts("is", "input schema")
                         .withRequiredArg().describedAs("schema").required();
                 accepts("in", "input file (default: STDIN)").withRequiredArg().describedAs("file");
-                
+                acceptsAll(Arrays.asList("p", "progress"), "show progress");                
                 acceptsAll(Arrays.asList("h", "?", "help"), "help");
             }
         };
@@ -76,6 +91,7 @@ public class Validate{
             }
             else{
                 Validate validator = new Validate();
+                validator.setProgress(options.has("p"));
                 IOContextBuilder inputBuilder = new IOContextBuilder();
                 inputBuilder.schema(
                         SchemaFactory.buildSchema(new FileInputStream((String) options.valueOf("is"))));

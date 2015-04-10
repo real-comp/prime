@@ -62,9 +62,7 @@ public class MultiplyConverterTest extends SimpleConverterTest{
     @Override
     @Test
     public void testSupportedTypes(){
-
-
-        List<DataType> types = new ArrayList<DataType>();
+        List<DataType> types = new ArrayList<>();
         types.add(DataType.STRING);
         types.add(DataType.INTEGER);
         types.add(DataType.LONG);

@@ -21,7 +21,7 @@ public class Divide implements Converter{
     protected RemoveLeading removeLeadingZeros;
 
     public Divide(){
-        supportedTypes = new ArrayList<DataType>();
+        supportedTypes = new ArrayList<>();
         supportedTypes.add(DataType.STRING);
         supportedTypes.add(DataType.INTEGER);
         supportedTypes.add(DataType.FLOAT);

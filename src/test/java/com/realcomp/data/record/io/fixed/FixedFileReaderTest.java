@@ -5,6 +5,7 @@ import com.realcomp.data.schema.SchemaException;
 import com.realcomp.data.validation.ValidationException;
 import com.realcomp.data.conversion.Trim;
 import com.realcomp.data.DataType;
+import com.realcomp.data.conversion.UpperCase;
 import com.realcomp.data.schema.Schema;
 import java.io.ByteArrayInputStream;
 import com.realcomp.data.record.Record;
@@ -166,10 +167,10 @@ public class FixedFileReaderTest{
 
         Record record = reader.read();
         assertNotNull(record);
-        assertEquals(1, record.get("int"));
-        assertEquals(2f, record.get("float"));
-        assertEquals(3l, record.get("long"));
-        assertEquals(4d, record.get("double"));
+        assertEquals(1, (long) record.getInteger("int"));
+        assertEquals(2f, record.getFloat("float"), .001f);
+        assertEquals(3l, (long) record.getLong("long"));
+        assertEquals(4d, record.getDouble("double"), .001f);
         assertEquals("a", record.get("string"));
 
         data = "  001  2.000003 04.4a";
@@ -186,6 +187,38 @@ public class FixedFileReaderTest{
         reader.close();
     }
 
+    
+    
+    @Test
+    public void testNumericFieldWithOperation() throws Exception{
+
+        Schema schema = new Schema();
+        schema.setName("test");
+        schema.setVersion("0");
+        Field field = new Field("long", DataType.LONG, 5);
+        field.addOperation(new Trim());
+        field.addOperation(new UpperCase());
+        schema.addField(field);
+        
+        String data = "    1";
+        IOContext ctx = new IOContextBuilder()
+                .schema(schema)
+                .in(new ByteArrayInputStream(data.getBytes()))
+                .build();
+
+        FixedFileReader reader = new FixedFileReader();
+        reader.open(ctx);
+
+        Record record = reader.read();
+        assertNotNull(record);
+        Object value = record.getLong("long");
+        assertTrue(value instanceof Long);
+        assertEquals(1l, (long) value);
+        
+        reader.close();
+    }
+    
+    
     protected Schema get3FieldSchema() throws SchemaException{
         Schema schema = new Schema();
         schema.setName("test");
@@ -199,7 +232,7 @@ public class FixedFileReaderTest{
 
     protected Schema getLengthSpecifiedSchema() throws SchemaException{
         Schema schema = new Schema();
-        HashMap<String, String> format = new HashMap<String, String>();
+        HashMap<String, String> format = new HashMap<>();
         format.put("length", "5");
         schema.setFormat(format);
         schema.setName("test");

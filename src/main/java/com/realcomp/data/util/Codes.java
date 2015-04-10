@@ -15,9 +15,7 @@ import java.util.logging.Logger;
  * @author krenfro
  */
 public class Codes{
-
     private static final Logger logger = Logger.getLogger(Codes.class.getName());
-
     protected Properties codes;
     protected String description;
     protected Level logLevel = Level.INFO;
@@ -69,17 +67,6 @@ public class Codes{
         this.logLevel = logLevel;
     }
 
-    public Properties getCodes(){
-        return codes;
-    }
-
-    public void setCodes(Properties codes){
-        if (codes == null){
-            throw new IllegalArgumentException("codes is null");
-        }
-        this.codes.clear();
-        this.codes.putAll(codes);
-    }
 
     public String setTranslation(String code, String translation){
         return (String) codes.setProperty(code, translation);
@@ -90,7 +77,7 @@ public class Codes{
         if (code != null){
             translation = codes.getProperty(code);
             if (translation == null && !code.isEmpty()){
-                logger.log(logLevel, "Missing transation for [{0}] in [{1}]", new Object[]{code, description});
+                logger.log(logLevel, "Missing translation for [{0}] in [{1}]", new Object[]{code, description});
                 translation = code;
             }
         }
@@ -140,36 +127,5 @@ public class Codes{
     @Override
     public String toString(){
         return "Codes{" + "description=" + description + '}';
-    }
-
-    @Override
-    public boolean equals(Object obj){
-        if (obj == null){
-            return false;
-        }
-        if (getClass() != obj.getClass()){
-            return false;
-        }
-        final Codes other = (Codes) obj;
-        if (this.codes != other.codes && (this.codes == null || !this.codes.equals(other.codes))){
-            return false;
-        }
-        if ((this.description == null) ? (other.description != null)
-                : !this.description.equals(other.description)){
-            return false;
-        }
-        if (this.logLevel != other.logLevel && (this.logLevel == null || !this.logLevel.equals(other.logLevel))){
-            return false;
-        }
-        return true;
-    }
-
-    @Override
-    public int hashCode(){
-        int hash = 3;
-        hash = 83 * hash + (this.codes != null ? this.codes.hashCode() : 0);
-        hash = 83 * hash + (this.description != null ? this.description.hashCode() : 0);
-        hash = 83 * hash + (this.logLevel != null ? this.logLevel.hashCode() : 0);
-        return hash;
     }
 }

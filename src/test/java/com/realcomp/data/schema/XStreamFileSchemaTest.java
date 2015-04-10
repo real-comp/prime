@@ -93,6 +93,15 @@ public class XStreamFileSchemaTest{
 
         Schema schema = SchemaFactory.buildSchema(
                 XStreamFileSchemaTest.class.getResourceAsStream("facl.schema"));
+        
+        Field storiesNumber = schema.getField("storiesNumber");
+        assertEquals(DataType.FLOAT, storiesNumber.getType());
+        
+        
+        Field totalValue = schema.getField("totalValue");
+        assertEquals(DataType.LONG, totalValue.getType());
+        
+        
     }
 
     @Test

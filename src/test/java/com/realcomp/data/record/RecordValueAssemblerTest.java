@@ -37,7 +37,7 @@ public class RecordValueAssemblerTest{
     @Test
     public void testIndexedAssembly() throws RecordValueException{
 
-        Map<String, Object> data = new HashMap<String, Object>();
+        Map<String, Object> data = new HashMap<>();
 
         RecordValueAssembler.assemble(data, "name", "real-comp");
         assertEquals("real-comp", data.get("name"));
@@ -51,7 +51,7 @@ public class RecordValueAssemblerTest{
     @Test
     public void testWriteListIntoMissingKey() throws RecordValueException{
 
-        Map<String, Object> data = new HashMap<String, Object>();
+        Map<String, Object> data = new HashMap<>();
         List<Object> list = new ArrayList();
         list.add(1000);
         list.add(2000);
@@ -73,7 +73,7 @@ public class RecordValueAssemblerTest{
     @Test
     public void testAssemblyOverwrite() throws RecordValueException{
 
-        Map<String, Object> data = new HashMap<String, Object>();
+        Map<String, Object> data = new HashMap<>();
         List<Object> list = new ArrayList();
         list.add(1000);
         list.add(2000);
@@ -92,7 +92,7 @@ public class RecordValueAssemblerTest{
 
     @Test
     public void testAssemblyFailureValueExists() throws RecordValueException{
-        Map<String, Object> data = new HashMap<String, Object>();
+        Map<String, Object> data = new HashMap<>();
         List<Object> list = new ArrayList();
         list.add(1000);
         list.add(2000);
@@ -114,7 +114,7 @@ public class RecordValueAssemblerTest{
     @Test
     public void testAssemblyFailureForNonStandardRecord() throws RecordValueException{
 
-        Map<String, Object> data = new HashMap<String, Object>();
+        Map<String, Object> data = new HashMap<>();
         List<Object> list = new ArrayList();
         list.add(1000);
         list.add(2000);
@@ -146,7 +146,7 @@ public class RecordValueAssemblerTest{
     @Test
     public void testAssemblyFailureForNonStandardRecord2() throws RecordValueException{
 
-        Map<String, Object> data = new HashMap<String, Object>();
+        Map<String, Object> data = new HashMap<>();
         RecordValueAssembler.assemble(data, "prop.land[0].sqft", 1000);
         RecordValueAssembler.assemble(data, "prop.land[1].sqft", 1000);
         RecordValueAssembler.assemble(data, "prop.land[2].sqft", 1000);
@@ -163,7 +163,7 @@ public class RecordValueAssemblerTest{
     @Test
     public void testNullParameters() throws RecordValueException{
 
-        Map<String, Object> data = new HashMap<String, Object>();
+        Map<String, Object> data = new HashMap<>();
 
         try{
             RecordValueAssembler.assemble(data, (String) null, "real-comp");
