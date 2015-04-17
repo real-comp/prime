@@ -16,97 +16,60 @@ public class PrefixCodes extends Codes{
 
     private static final Logger logger = Logger.getLogger(PrefixCodes.class.getName());
 
-    private int prefixLength;
+    private int maxLength;
 
     public PrefixCodes(){
         super();
     }
 
     public PrefixCodes(Properties properties){
-        Objects.requireNonNull(properties);
-        codes = new Properties();
-        prefixLength = getMinKeyLength(properties);        
-        for (String key: properties.stringPropertyNames()){
-            codes.put(getPrefix(key), properties.getProperty(key));
-        }
+        super(properties);
+        maxLength = getMaxKeyLength(properties);        
     }
     
-    private String getPrefix(String key){
-        return key.length() <= prefixLength ? key : key.substring(0, prefixLength);
-    }
-    
-    private int getMinKeyLength(Properties properties){
-        int min = Integer.MAX_VALUE;
+    private int getMaxKeyLength(Properties properties){
+        int max = Integer.MIN_VALUE;
         for (String key: properties.stringPropertyNames()){
-            min = Math.min(key.length(), min);
+            max = Math.max(key.length(), max);
         }
-        return min;
+        return max;
     }
 
     public PrefixCodes(PrefixCodes copy){
         this.codes = new Properties();
         this.codes.putAll(copy.codes);
         this.description = copy.description;
-        this.logLevel = copy.logLevel;
+        this.maxLength = copy.maxLength;
     }
 
     public PrefixCodes(InputStream in) throws IOException{
-        Properties temp = new Properties();
-        temp.load(in);
-        codes = new Properties();
-        prefixLength = getMinKeyLength(temp);        
-        for (String key: temp.stringPropertyNames()){
-            codes.put(getPrefix(key), temp.getProperty(key));
-        }
+        super(in);
+        maxLength = getMaxKeyLength(codes);
     }
 
     @Override
-    public String translate(String code){
-        String translation = null;
-        if (code != null){
-            String prefix = getPrefix(code);
-            translation = codes.getProperty(prefix);
-            if (translation == null && !code.isEmpty()){
-                logger.log(
-                        logLevel, 
-                        "Missing translation for code prefix [{0}] in [{1}]", 
-                        new Object[]{prefix, description});
-                translation = code;
+    public String translate(String code){        
+        String translation = super.translate(code);        
+        if (translation == null && code != null){
+            if (code.length() > maxLength){
+                code = code.substring(0, maxLength);
+                translation = super.translate(code); 
+            }
+            while (translation == null && !code.isEmpty()){
+                code = code.substring(0, code.length() - 1);
+                translation = super.translate(code);
             }
         }
+        
         return translation;
     }
 
     @Override
     public String translate(String code, String defaultValue){
-        return codes.getProperty(getPrefix(code), defaultValue);
+        String translation = translate(code);        
+        return translation == null ? defaultValue: translation;
     }
 
-    @Override
-    public List<String> translateList(String codes, String delimiter){
-        List<String> retVal = new ArrayList<>();
-        if (codes != null){
-            for (String code : codes.split(delimiter)){
-                String trans = translate(getPrefix(code));
-                if (trans != null){
-                    retVal.add(trans);
-                }
-            }
-        }
-        return retVal;
-    }
-
-
-    @Override
-    public List<String> translateList(String codes, String delimiter, String defaultValue){
-        List<String> retVal = new ArrayList<>();
-        if (codes != null){
-            for (String code : codes.split(delimiter)){
-                retVal.add(translate(getPrefix(code), defaultValue));
-            }
-        }
-        return retVal;
-    }
 
     @Override
     public String toString(){

@@ -14,11 +14,10 @@ import java.util.logging.Logger;
  *
  * @author krenfro
  */
-public class Codes{
-    private static final Logger logger = Logger.getLogger(Codes.class.getName());
+public class Codes{    
+    public static final String COMMENT_PREFIX = "#";
     protected Properties codes;
     protected String description;
-    protected Level logLevel = Level.INFO;
 
     public Codes(){
         codes = new Properties();
@@ -26,6 +25,11 @@ public class Codes{
 
     public Codes(Properties properties){
         codes = new Properties();
+        for (String key: properties.stringPropertyNames()){
+            if (!key.startsWith(COMMENT_PREFIX)){
+                codes.setProperty(key, properties.getProperty(key));
+            }
+        }
         this.codes.putAll(properties);
     }
 
@@ -33,12 +37,17 @@ public class Codes{
         this.codes = new Properties();
         this.codes.putAll(copy.codes);
         this.description = copy.description;
-        this.logLevel = copy.logLevel;
     }
 
     public Codes(InputStream in) throws IOException{
         codes = new Properties();
-        codes.load(in);
+        Properties properties  = new Properties();
+        properties.load(in);
+        for (String key: properties.stringPropertyNames()){
+            if (!key.startsWith(COMMENT_PREFIX)){
+                codes.setProperty(key, properties.getProperty(key));
+            }
+        }
     }
 
     public String getDescription(){
@@ -49,43 +58,18 @@ public class Codes{
         this.description = description;
     }
 
-    public Level getLogLevel(){
-        return logLevel;
-    }
-
-    /**
-     * By default, code translations misses are logged at Level.INFO
-     * JDK logging can be figured to override this level for all Codes instances, but it may be
-     * the case that you desire a different logging level for an individual Codes instance.
-     *
-     * @param logLevel The level at which to log code translations misses.
-     */
-    public void setLogLevel(Level logLevel){
-        if (logLevel == null){
-            throw new IllegalArgumentException("logLevel is null");
-        }
-        this.logLevel = logLevel;
-    }
-
 
     public String setTranslation(String code, String translation){
         return (String) codes.setProperty(code, translation);
     }
 
     public String translate(String code){
-        String translation = null;
-        if (code != null){
-            translation = codes.getProperty(code);
-            if (translation == null && !code.isEmpty()){
-                logger.log(logLevel, "Missing translation for [{0}] in [{1}]", new Object[]{code, description});
-                translation = code;
-            }
-        }
-        return translation;
+        return code == null ? null : codes.getProperty(code);
     }
 
     public String translate(String code, String defaultValue){
-        return codes.getProperty(code, defaultValue);
+        String translation = translate(code);
+        return translation == null ? defaultValue : translation;
     }
 
     /**
