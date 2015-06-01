@@ -12,6 +12,7 @@ import java.util.List;
 @com.realcomp.data.annotation.Converter("firstName")
 public class FirstName extends StringConverter{
 
+    
     private boolean lastNameFirst = true;
     private boolean recognizeCompanyNames = true;
     private boolean recognizeTrusts = true;
