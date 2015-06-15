@@ -108,11 +108,11 @@ public class Codes{
             translation = codes.getProperty(code);
             if (logMisses){
                 if (cacheMisses && !missCache.contains(code)){
-                    logger.log(Level.INFO, "No translation for code [{0}]", code);
+                    logger.log(Level.INFO, "No [{0}] translation for code [{1}]", new Object[]{description, code});
                     missCache.add(code);
                 }
                 else{
-                    logger.log(Level.INFO, "No translation for code [{0}]", code);
+                    logger.log(Level.INFO, "No [{0}] translation for code [{1}]", new Object[]{description, code});
                 }
             }
         }
