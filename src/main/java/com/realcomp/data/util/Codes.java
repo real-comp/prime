@@ -3,8 +3,10 @@ package com.realcomp.data.util;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -15,12 +17,19 @@ import java.util.logging.Logger;
  * @author krenfro
  */
 public class Codes{    
+    
+    private static final Logger logger = Logger.getLogger(Codes.class.getName());
+    
     public static final String COMMENT_PREFIX = "#";
     protected Properties codes;
     protected String description;
+    protected boolean logMisses = true;
+    protected boolean cacheMisses = true;
+    protected Set<String> missCache;
 
     public Codes(){
         codes = new Properties();
+        missCache = new HashSet();
     }
 
     public Codes(Properties properties){
@@ -31,12 +40,15 @@ public class Codes{
             }
         }
         this.codes.putAll(properties);
+        missCache = new HashSet();
     }
 
     public Codes(Codes copy){
         this.codes = new Properties();
         this.codes.putAll(copy.codes);
         this.description = copy.description;
+        missCache = new HashSet();
+        missCache.addAll(copy.missCache);
     }
 
     public Codes(InputStream in) throws IOException{
@@ -48,8 +60,35 @@ public class Codes{
                 codes.setProperty(key, properties.getProperty(key));
             }
         }
+        missCache = new HashSet();
     }
 
+    public boolean isLogMisses(){
+        return logMisses;
+    }
+
+    public void setLogMisses(boolean logMisses){
+        this.logMisses = logMisses;
+    }
+
+    public boolean isCacheMisses(){
+        return cacheMisses;
+    }
+
+    public void setCacheMisses(boolean cacheMisses){
+        this.cacheMisses = cacheMisses;
+    }
+    
+    
+
+    public Properties getCodes(){
+        return codes;
+    }
+
+    public void setCodes(Properties codes){
+        this.codes = codes;
+    }   
+    
     public String getDescription(){
         return description;
     }
@@ -64,7 +103,20 @@ public class Codes{
     }
 
     public String translate(String code){
-        return code == null ? null : codes.getProperty(code);
+        String translation = null;
+        if (code != null){
+            translation = codes.getProperty(code);
+            if (logMisses){
+                if (cacheMisses && !missCache.contains(code)){
+                    logger.log(Level.INFO, "No translation for code [{0}]", code);
+                    missCache.add(code);
+                }
+                else{
+                    logger.log(Level.INFO, "No translation for code [{0}]", code);
+                }
+            }
+        }
+        return translation;
     }
 
     public String translate(String code, String defaultValue){
