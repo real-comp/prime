@@ -106,7 +106,7 @@ public class Codes{
         String translation = null;
         if (code != null){
             translation = codes.getProperty(code);
-            if (logMisses){
+            if (logMisses && translation == null){
                 if (cacheMisses && !missCache.contains(code)){
                     logger.log(Level.INFO, "No [{0}] translation for code [{1}]", new Object[]{description, code});
                     missCache.add(code);
