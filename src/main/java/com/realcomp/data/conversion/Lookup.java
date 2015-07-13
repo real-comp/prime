@@ -24,7 +24,6 @@ public class Lookup extends StringConverter{
     
     private void initializeTable() throws IOException{     
         table = new HashMap<>();
-        logger.info("source = " + source);
         try( BufferedReader reader = new BufferedReader(new FileReader(source))){
             String s = reader.readLine();
             while (s != null){
