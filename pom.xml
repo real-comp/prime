@@ -126,9 +126,9 @@
         </snapshotRepository>
     </distributionManagement>
     <scm>
-        <connection>scm:svn:svn+ssh://dev.real-comp.com/opt/usr/share/rcsvn/realcomp-data/trunk</connection>
-        <developerConnection>scm:svn:svn+ssh://dev.real-comp.com/opt/usr/share/rcsvn/realcomp-data/trunk</developerConnection>
-        <url>http://fisheye.real-comp.com/browse/svn/realcomp-data/trunk</url>
+        <connection>scm:git:ssh://git@bitbucket.org/real-comp/realcomp-data.git</connection>
+        <developerConnection>scm:git:ssh://git@bitbucket.org/real-comp/realcomp-data.git</developerConnection>
+        <url>https://bitbucket.org/real-comp/realcomp-data</url>
     </scm>
     <reporting>
         <plugins>
@@ -140,3 +140,4 @@
         </plugins>
     </reporting>
 </project>
+
