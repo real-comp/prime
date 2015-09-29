@@ -89,7 +89,7 @@ public class Validate{
             if (options.has("?")){
                 printHelp(parser);
             }
-            else{
+            else{                        
                 Validate validator = new Validate();
                 validator.setProgress(options.has("p"));
                 IOContextBuilder inputBuilder = new IOContextBuilder();
