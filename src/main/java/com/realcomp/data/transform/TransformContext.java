@@ -1,6 +1,5 @@
 package com.realcomp.data.transform;
 
-import com.realcomp.data.Operation;
 import com.realcomp.data.record.Record;
 import com.realcomp.data.schema.Field;
 import com.realcomp.data.schema.FieldList;
@@ -13,10 +12,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-/**
- *
- * @author krenfro
- */
+
 public class TransformContext{
 
     private static final Logger logger = Logger.getLogger(TransformContext.class.getName());
@@ -36,15 +32,13 @@ public class TransformContext{
         this();
 
         schema = new Schema(copy.schema);
-
         if (copy.fields != null){
-            fields = new ArrayList<Field>();
+            fields = new ArrayList<>();
             for (Field field : copy.fields){
                 fields.add(new Field(field));
             }
         }
         key = copy.key;
-
         validationExceptionThreshold = copy.validationExceptionThreshold;
         record = new Record(copy.record);
         recordCount = copy.recordCount;
@@ -171,8 +165,7 @@ public class TransformContext{
         hash = 79 * hash + (this.schema != null ? this.schema.hashCode() : 0);
         hash = 79 * hash + (this.fields != null ? this.fields.hashCode() : 0);
         hash = 79 * hash + (this.key != null ? this.key.hashCode() : 0);
-        hash =
-                79 * hash + (this.validationExceptionThreshold != null ? this.validationExceptionThreshold.hashCode() : 0);
+        hash = 79 * hash + (this.validationExceptionThreshold != null ? this.validationExceptionThreshold.hashCode() : 0);
         return hash;
     }
 }

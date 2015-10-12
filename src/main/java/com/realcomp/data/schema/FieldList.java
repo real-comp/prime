@@ -26,7 +26,7 @@ public class FieldList implements List<Field>{
     private transient List<Field> foreignKeys;
 
     public FieldList(){
-        fields = new ArrayList<Field>();
+        fields = new ArrayList<>();
         classifier = DEFAULT_CLASSIFIER;
     }
 
@@ -48,6 +48,7 @@ public class FieldList implements List<Field>{
         }
         resetCachedValues();
         this.classifier = Pattern.compile(copy.classifier.toString());
+        this.name = copy.name;
     }
 
     public FieldList(List<Field> copy){
@@ -112,7 +113,7 @@ public class FieldList implements List<Field>{
     }
 
     private List<String> getFieldNames(){
-        List<String> retVal = new ArrayList<String>();
+        List<String> retVal = new ArrayList<>();
         for (Field f : this){
             retVal.add(f.getName());
         }
@@ -126,7 +127,7 @@ public class FieldList implements List<Field>{
     public List<Field> getKeys(){
 
         if (keys == null){
-            keys = new ArrayList<Field>();
+            keys = new ArrayList<>();
             for (Field f : this){
                 if (f.isKey()){
                     keys.add(f);
@@ -145,7 +146,7 @@ public class FieldList implements List<Field>{
     public List<Field> getForeignKeys(){
 
         if (foreignKeys == null){
-            foreignKeys = new ArrayList<Field>();
+            foreignKeys = new ArrayList<>();
             for (Field f : this){
                 if (f.isForeignKey()){
                     foreignKeys.add(f);
@@ -164,7 +165,7 @@ public class FieldList implements List<Field>{
      * @return list of Key fieldLists from the specified record.
      */
     public List<Object> resolveKeys(Record record){
-        List<Object> result = new ArrayList<Object>();
+        List<Object> result = new ArrayList<>();
         for (Field f : getKeys()){
             result.add(record.get(f.getName()));
         }
@@ -190,8 +191,7 @@ public class FieldList implements List<Field>{
     }
 
     @Override
-    public boolean addAll(int index,
-                          Collection<? extends Field> c){
+    public boolean addAll(int index, Collection<? extends Field> c){
         resetCachedValues();
         return fields.addAll(index, c);
     }
@@ -396,4 +396,5 @@ public class FieldList implements List<Field>{
         hash = 43 * hash + (this.classifier != null ? this.classifier.toString().hashCode() : 0);
         return hash;
     }
+
 }

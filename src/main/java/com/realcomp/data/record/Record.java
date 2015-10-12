@@ -49,7 +49,6 @@ public class Record implements Map<String, Object>, Serializable{
      * Return this map as a map that does not resolve composite keys. Changes made to the map will be reflected in this
      * Record.
      *
-     * @return 
      */
     public Map<String, Object> asSimpleMap(){
         return data;
@@ -223,7 +222,7 @@ public class Record implements Map<String, Object>, Serializable{
     public List<Object> getAll(String key){
         return key == null
                 ? new ArrayList<>()
-                : RecordMultiValueResolver.resolve(data, new RecordKey(key));
+                : RecordMultiValueResolver.resolve(data, new RecordKey(key.toString()));
     }
 
     @Override
