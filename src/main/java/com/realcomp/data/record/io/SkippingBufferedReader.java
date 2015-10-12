@@ -1,9 +1,12 @@
 package com.realcomp.data.record.io;
 
+import com.realcomp.data.record.Record;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Reader;
+import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Queue;
 
 /**
@@ -18,9 +21,11 @@ public class SkippingBufferedReader extends Reader{
     protected int skipTrailing = 0;
     protected int length = 0;
     protected Queue<String> queue = null;
+    protected List<String> skipped;
 
     public SkippingBufferedReader(Reader in){
         reader = new BufferedReader(in);
+        skipped = new ArrayList<>();
     }
 
     public int getSkipLeading(){
@@ -69,7 +74,7 @@ public class SkippingBufferedReader extends Reader{
 
             //skip leading records
             for (int x = 0; x < skipLeading; x++){
-                readLine();
+                skipped.add(readLine());
             }
         }
 
@@ -122,5 +127,11 @@ public class SkippingBufferedReader extends Reader{
     @Override
     public int read(char[] cbuf, int off, int len) throws IOException{
         return reader.read(cbuf, off, len);
+    }
+    
+    public List<String> getSkipped(){
+        List<String> copy = new ArrayList<>();
+        copy.addAll(skipped);
+        return copy;
     }
 }
