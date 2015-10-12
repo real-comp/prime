@@ -12,6 +12,7 @@ import com.realcomp.data.validation.Severity;
 import com.realcomp.data.validation.ValidationException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.logging.Logger;
 
 /**
@@ -66,27 +67,42 @@ public class RecordFactory{
     /**
      * Builds a Record from the provided String[] and FieldList.
      *
-     * @param fieldLists
+     * @param fieldList
      * @param data
      * @return
      * @throws ValidationException
      * @throws ConversionException
      */
-    public Record build(FieldList fieldList, String[] data)
-            throws ValidationException, ConversionException{
+    public Record build(FieldList fieldList, String[] data) throws ValidationException, ConversionException{
 
+        return build(getParsePlan(fieldList), fieldList, data);
+    }
+    
+     /**
+     * Builds a Record from the provided String[] and ParsePlan.
+     *
+     * @param parsePlan
+     * @param fieldList
+     * @param data
+     * @return
+     * @throws ValidationException
+     * @throws ConversionException
+     */
+    public Record build(ParsePlan parsePlan, FieldList fieldList, String[] data) throws ValidationException, ConversionException{
+        Objects.requireNonNull(parsePlan);
+        
         if (fieldList.size() != data.length){
             throw new ValidationException(
                     "The number of fields in schema does not match data.",
                     fieldList.size() + " != " + data.length,
                     Severity.HIGH);
         }
-
+        
         Record record = new Record();
         context.setRecord(record);
-        int index = 0;
+        int index;
 
-        for (Field field : getParsePlan(fieldList)){
+        for (Field field : parsePlan){
             index = fieldList.indexOf(field);
             context.setKey(field.getName());
             record.put(field.getName(), data[index]); //seed record with initial value
@@ -103,6 +119,8 @@ public class RecordFactory{
 
         return record;
     }
+    
+    
 
     protected final void buildParsePlan() throws ParsePlanException{
 
@@ -119,11 +137,10 @@ public class RecordFactory{
     /**
      * Returns the pre-computed parse plan for the specified FieldList
      *
-     * @param schemaFieldList
+     * @param fieldList
      * @return fieldList ParsePlan for the specified FieldList
      */
     protected ParsePlan getParsePlan(FieldList fieldList){
-
         return parsePlanCache == null ? parsePlan : parsePlanCache.get(fieldList);
     }
 

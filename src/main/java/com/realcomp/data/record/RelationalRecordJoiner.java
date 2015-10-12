@@ -40,11 +40,8 @@ public class RelationalRecordJoiner{
     }
 
     /**
-     * @param key
-     * @param values
-     * @param context
+     * @return 
      * @throws IOException
-     * @throws InterruptedException
      */
     public List<Record> join() throws IOException{
 
@@ -108,8 +105,9 @@ public class RelationalRecordJoiner{
      * for each child, until there are no more maps available.
      *
      * @param table
-     * @param remainingRecords
+     * @param records
      * @param current
+     * @throws java.io.IOException
      */
     protected void join(Table table, Map<Record, Schema> records, Record current) throws IOException{
 
@@ -138,6 +136,7 @@ public class RelationalRecordJoiner{
      * @param parent
      * @param child
      * @return true if foreign keys defined in child match the keys in parent; else false.
+     * @throws java.io.IOException
      */
     protected boolean isChild(Record parent, Record child) throws IOException{
 

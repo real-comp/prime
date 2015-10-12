@@ -14,7 +14,7 @@ import java.util.Stack;
  */
 public class RecordValueResolver{
 
-    private static Map<String, Stack<RecordKey>> keyCache = new HashMap<>();
+    private static final Map<String, Stack<RecordKey>> keyCache = new HashMap<>();
 
     public static Object resolve(Map<String, Object> map, String key){
 

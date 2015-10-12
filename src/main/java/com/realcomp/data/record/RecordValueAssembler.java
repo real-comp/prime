@@ -11,7 +11,7 @@ import java.util.*;
  */
 public class RecordValueAssembler{
 
-    private static Map<String, Stack<RecordKey>> keyCache = new HashMap<>();
+    private static final Map<String, Stack<RecordKey>> keyCache = new HashMap<>();
 
     public static Object assemble(Map<String, Object> map, String key, Object value){
         if (map == null){

@@ -26,7 +26,7 @@ public class ParsePlan extends ArrayList<Field>{
         /* first walk the list and add all non-MultiFieldOperations to the list of fields. These Field do not depend on
          * anything other than themselves, so they can be parsed first, in any order.
          */
-        List<Field> skipped = new ArrayList<Field>();
+        List<Field> skipped = new ArrayList<>();
         for (Field field : fields){
             if (hasMultiFieldOperation(field)){
                 skipped.add(field);
@@ -82,7 +82,8 @@ public class ParsePlan extends ArrayList<Field>{
     }
 
     /**
-     * @return list of field names that the Field needs to be available in the Record for its operations to succeed.
+     * @return
+     * @param field list of field names that the Field needs to be available in the Record for its operations to succeed.
      */
     protected final List<String> getDependentFieldNames(Field field){
 
