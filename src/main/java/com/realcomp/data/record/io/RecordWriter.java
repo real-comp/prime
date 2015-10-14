@@ -5,6 +5,7 @@ import com.realcomp.data.record.Record;
 import com.realcomp.data.schema.SchemaException;
 import com.realcomp.data.validation.Severity;
 import com.realcomp.data.validation.ValidationException;
+import java.io.Closeable;
 import java.io.IOException;
 
 /**
@@ -14,7 +15,7 @@ import java.io.IOException;
  *
  * @author krenfro
  */
-public interface RecordWriter{
+public interface RecordWriter extends Closeable{
 
     /**
      * If a Validator logs a warning at or above this threshold, then the warning is thrown as a ValidationException. By
@@ -40,6 +41,7 @@ public interface RecordWriter{
      * Close open resources including the resources of the IOContext. Should be invoked when you are done with the
      * RecordReader.
      */
+    @Override
     void close();
 
     /**
