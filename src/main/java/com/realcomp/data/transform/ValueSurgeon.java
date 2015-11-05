@@ -5,9 +5,9 @@ import com.realcomp.data.conversion.ConversionException;
 import com.realcomp.data.conversion.Converter;
 import com.realcomp.data.conversion.MissingFieldException;
 import com.realcomp.data.conversion.MultiFieldConverter;
+import com.realcomp.data.conversion.RecordConverter;
 import com.realcomp.data.record.Record;
 import com.realcomp.data.record.RecordValueResolver;
-import com.realcomp.data.schema.Schema;
 import com.realcomp.data.validation.ValidationException;
 import com.realcomp.data.validation.Validator;
 import com.realcomp.data.validation.file.RecordCountValidator;
@@ -84,6 +84,9 @@ public class ValueSurgeon{
         }
         else if (operation instanceof MultiFieldConverter){
             result = ((MultiFieldConverter) operation).convert(data, context.getRecord());
+        }
+        else if (operation instanceof RecordConverter){
+            ((RecordConverter) operation).convert(context.getRecord());            
         }
         else if (operation instanceof Converter){
             result = ((Converter) operation).convert(data);
