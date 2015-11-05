@@ -56,6 +56,8 @@ public class FieldList implements List<Field>{
             this.classifier = Pattern.compile(copy.classifier.toString());
         }
         this.name = copy.name;
+        this.defaultList = copy.defaultList;
+        
         resetCachedValues();
     }
 

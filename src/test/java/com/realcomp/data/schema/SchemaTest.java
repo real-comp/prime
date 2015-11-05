@@ -122,4 +122,14 @@ public class SchemaTest{
         assertTrue(b.getDefaultFieldList().get(0).getOperations().isEmpty());
 
     }
+    
+    @Test
+    public void testDefaultFieldList(){
+        
+        Schema schema = SchemaFactory.buildSchema(SchemaTest.class.getResourceAsStream("default.schema"));
+        FieldList fieldList = schema.getDefaultFieldList();
+        assertTrue(fieldList.isDefault());
+                
+    }
 }
+

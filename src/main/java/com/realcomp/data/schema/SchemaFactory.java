@@ -18,7 +18,7 @@ public class SchemaFactory{
             throw new IllegalArgumentException("xml is null");
         }
         XStream xstream = XStreamFactory.build();
-        return (Schema) xstream.fromXML(xml);
+        return new Schema((Schema) xstream.fromXML(xml));
     }
 
     public static Schema buildSchema(InputStream in){
@@ -27,7 +27,7 @@ public class SchemaFactory{
             throw new IllegalArgumentException("InputStream is null");
         }
         XStream xstream = XStreamFactory.build();
-        return (Schema) xstream.fromXML(in);
+        return new Schema((Schema) xstream.fromXML(in));
     }
 
 
