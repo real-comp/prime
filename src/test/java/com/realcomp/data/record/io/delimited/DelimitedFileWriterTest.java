@@ -5,6 +5,7 @@ import com.realcomp.data.record.Record;
 import com.realcomp.data.record.io.IOContext;
 import com.realcomp.data.record.io.IOContextBuilder;
 import com.realcomp.data.schema.Field;
+import com.realcomp.data.schema.FieldList;
 import com.realcomp.data.schema.Schema;
 import com.realcomp.data.schema.SchemaException;
 import java.io.ByteArrayInputStream;
@@ -140,9 +141,11 @@ public class DelimitedFileWriterTest{
         Schema schema = new Schema();
         schema.setName("test");
         schema.setVersion("0");
-        schema.addField(new Field("a", DataType.STRING));
-        schema.addField(new Field("b", DataType.STRING));
-        schema.addField(new Field("c", DataType.STRING));
+        FieldList fields = new FieldList();
+        fields.add(new Field("a", DataType.STRING));
+        fields.add(new Field("b", DataType.STRING));
+        fields.add(new Field("c", DataType.STRING));
+        schema.addFieldList(fields);
         return schema;
     }
 }

@@ -26,10 +26,14 @@ public class FieldListConverter implements Converter{
     public void marshal(Object o, HierarchicalStreamWriter writer, MarshallingContext mc){
 
         FieldList fieldList = (FieldList) o;
-        if (!fieldList.isDefaultClassifier()){
-            writer.addAttribute("classifier", fieldList.getClassifier().toString());
+        if (fieldList.isDefault()){
+            writer.addAttribute("default", "true");
         }
-
+        
+        Pattern classifier = fieldList.getClassifier();
+        if (classifier != null && !classifier.equals(FieldList.DEFAULT_CLASSIFIER)){
+            writer.addAttribute("classifier", classifier.toString());            
+        }
 
         for (Field field : fieldList){
             writer.startNode("field");
@@ -45,6 +49,10 @@ public class FieldListConverter implements Converter{
         String classifier = reader.getAttribute("classifier");
         if (classifier != null){
             fieldList.setClassifier(Pattern.compile(classifier));
+        }
+        String defaultFieldList = reader.getAttribute("default");
+        if (defaultFieldList != null){
+            fieldList.setDefault(Boolean.parseBoolean(defaultFieldList));
         }
 
         String name = reader.getAttribute("name");

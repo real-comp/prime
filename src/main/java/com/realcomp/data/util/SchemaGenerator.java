@@ -3,6 +3,7 @@ package com.realcomp.data.util;
 import au.com.bytecode.opencsv.CSVParser;
 import com.realcomp.data.record.Record;
 import com.realcomp.data.schema.Field;
+import com.realcomp.data.schema.FieldList;
 import com.realcomp.data.schema.Schema;
 import com.realcomp.data.schema.xml.XStreamFactory;
 import com.thoughtworks.xstream.XStream;
@@ -109,8 +110,9 @@ public class SchemaGenerator{
 
 
         int count = 1;
+        FieldList fieldList = schema.getDefaultFieldList();
         for (String fieldName : fieldNames){
-            schema.addField(new Field(fieldName.isEmpty() ? "FIELD" + count : fieldName));
+            fieldList.add(new Field(fieldName.isEmpty() ? "FIELD" + count : fieldName));
             count++;
         }
 

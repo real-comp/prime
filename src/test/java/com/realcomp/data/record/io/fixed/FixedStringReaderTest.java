@@ -7,6 +7,7 @@ import com.realcomp.data.record.Record;
 import com.realcomp.data.record.io.string.StringIOContext;
 import com.realcomp.data.record.io.string.StringIOContextBuilder;
 import com.realcomp.data.schema.Field;
+import com.realcomp.data.schema.FieldList;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -53,10 +54,11 @@ public class FixedStringReaderTest{
         Schema schema = new Schema();
         schema.setName("test");
         schema.setVersion("0");
-        schema.addField(new Field("a", DataType.STRING, 1));
-        schema.addField(new Field("b", DataType.STRING, 2));
-        schema.addField(new Field("c", DataType.STRING, 3));
-
+        FieldList fields = new FieldList();
+        fields.add(new Field("a", DataType.STRING, 1));
+        fields.add(new Field("b", DataType.STRING, 2));
+        fields.add(new Field("c", DataType.STRING, 3));
+        schema.addFieldList(fields);
         return schema;
     }
 }

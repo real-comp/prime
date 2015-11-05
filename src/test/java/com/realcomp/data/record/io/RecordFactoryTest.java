@@ -1,26 +1,20 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.realcomp.data.record.io;
 
 import com.realcomp.data.record.Record;
 import com.realcomp.data.conversion.Round;
 import com.realcomp.data.DataType;
-import com.realcomp.data.conversion.Resize;
+import com.realcomp.data.conversion.LeftPad;
+import com.realcomp.data.conversion.RightPad;
 import com.realcomp.data.conversion.Trim;
 import com.realcomp.data.schema.Field;
+import com.realcomp.data.schema.FieldList;
 import com.realcomp.data.schema.Schema;
-import com.realcomp.data.validation.Severity;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
+import com.realcomp.data.schema.SchemaException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
-/**
- *
- * @author krenfro
- */
 public class RecordFactoryTest{
 
     public RecordFactoryTest(){
@@ -32,13 +26,16 @@ public class RecordFactoryTest{
         Field a = new Field("a", DataType.STRING);
         a.addOperation(new Trim());
         Field b = new Field("b", DataType.STRING);
-        b.addOperation(new Resize(10));
+        b.addOperation(new RightPad(10));
         Field c = new Field("c", DataType.INTEGER);
         c.addOperation(new Round());
 
-        schema.addField(a);
-        schema.addField(b);
-        schema.addField(c);
+        FieldList fieldList = new FieldList();
+        fieldList.add(a);
+        fieldList.add(b);
+        fieldList.add(c);
+            schema.addFieldList(fieldList);
+        
         return schema;
     }
 

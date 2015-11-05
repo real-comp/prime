@@ -18,23 +18,29 @@ public class FieldList implements List<Field>{
     public static final Pattern DEFAULT_CLASSIFIER = Pattern.compile(".*");
 
     private List<Field> fields;
-    private Pattern classifier = DEFAULT_CLASSIFIER;
+    private Pattern classifier;
     private String name;
+    private boolean defaultList = false;
+    
+    
     /* Several caches of information that are cleared when any change occurs to the List of Fields */
-    private transient List<String> names;
-    private transient List<Field> keys;
-    private transient List<Field> foreignKeys;
+    private List<String> names;
+    private List<Field> keys;
+    private List<Field> foreignKeys;
+    private boolean isFixedLength;
+    private int recordLength;
+    
 
     public FieldList(){
         fields = new ArrayList<>();
-        classifier = DEFAULT_CLASSIFIER;
+        names = new ArrayList<>();
+        keys = new ArrayList<>();
+        foreignKeys = new ArrayList<>();
     }
 
     public FieldList(Pattern classifier){
         this();
-        if (classifier == null){
-            throw new IllegalArgumentException("classifier is null");
-        }
+        Objects.requireNonNull(classifier);
         this.classifier = Pattern.compile(classifier.toString());
     }
 
@@ -45,10 +51,12 @@ public class FieldList implements List<Field>{
         }
         for (Field field : copy){
             fields.add(new Field(field));
+        }        
+        if (copy.classifier != null){
+            this.classifier = Pattern.compile(copy.classifier.toString());
         }
-        resetCachedValues();
-        this.classifier = Pattern.compile(copy.classifier.toString());
         this.name = copy.name;
+        resetCachedValues();
     }
 
     public FieldList(List<Field> copy){
@@ -59,24 +67,51 @@ public class FieldList implements List<Field>{
         resetCachedValues();
     }
 
+    /**
+     * @return true if the field list was identified as the default in a Schema.
+     */
+    public boolean isDefault(){
+        return defaultList;
+    }
+
+    public void setDefault(boolean defaultList){
+        this.defaultList = defaultList;
+    }
+
     private void resetCachedValues(){
-        names = null;
-        keys = null;
-        foreignKeys = null;
+        names = calculateFieldNames();
+        keys = calculateKeys();
+        foreignKeys = calculateForeignKeys();
+        Integer temp = calculateRecordLength();
+        if (temp != null){
+            isFixedLength = true;
+            recordLength = temp;
+        }
+        else{
+            isFixedLength = false;
+            recordLength = 0;
+        }
     }
-
-    public boolean isDefaultClassifier(){
-        return classifier.equals(DEFAULT_CLASSIFIER);
+    
+    private Integer calculateRecordLength(){
+        int length = 0;
+        for (Field field: this){
+            if (field.getLength() > 0){
+                length += field.getLength();
+            }
+            else{
+                return null;
+            }
+        }
+        return length;
     }
-
+            
+    
     public Pattern getClassifier(){
         return classifier;
     }
 
     public void setClassifier(Pattern classifier){
-        if (classifier == null){
-            throw new IllegalArgumentException("classifier is null");
-        }
         this.classifier = classifier;
     }
 
@@ -85,8 +120,16 @@ public class FieldList implements List<Field>{
      * @return true if the classifier matches the specified data; else false
      */
     public boolean supports(String data){
-        return classifier.matcher(data).matches();
+        boolean supports = true;
+        if (classifier != null){
+            supports = classifier.matcher(data).matches();
+        }
+        else if (isFixedLength){
+            supports = data.length() == recordLength;
+        }
+        return supports;
     }
+    
 
     /**
      *
@@ -94,11 +137,6 @@ public class FieldList implements List<Field>{
      * @return true if this FieldList has a Field defined for each entry in the Record; else false.
      */
     public boolean supports(Record record){
-
-        if (names == null){
-            names = getFieldNames();
-        }
-
         return names.containsAll(record.keySet());
     }
 
@@ -111,8 +149,30 @@ public class FieldList implements List<Field>{
 
         return null;
     }
+    
+    private List<Field> calculateKeys(){
+        List<Field> result = new ArrayList<>();
+        for (Field f : this){
+            if (f.isKey()){
+                result.add(f);
+            }
+        }
+        Collections.sort(result, new FieldKeyComparator());
+        return result;
+    }
+    
+    private List<Field> calculateForeignKeys(){
+        List<Field> result = new ArrayList<>();
+        for (Field f : this){
+            if (f.isForeignKey()){
+                result.add(f);
+            }
+        }
+        Collections.sort(result, new FieldKeyComparator());
+        return result;
+    }
 
-    private List<String> getFieldNames(){
+    private List<String> calculateFieldNames(){
         List<String> retVal = new ArrayList<>();
         for (Field f : this){
             retVal.add(f.getName());
@@ -125,17 +185,6 @@ public class FieldList implements List<Field>{
      * @return all 'key' SchemaFields, in the order defined by this FileSchema
      */
     public List<Field> getKeys(){
-
-        if (keys == null){
-            keys = new ArrayList<>();
-            for (Field f : this){
-                if (f.isKey()){
-                    keys.add(f);
-                }
-            }
-            Collections.sort(keys, new FieldKeyComparator());
-        }
-
         return keys;
     }
 
@@ -144,17 +193,6 @@ public class FieldList implements List<Field>{
      * @return all 'foreign key' Fields, in the order defined by this FileSchema
      */
     public List<Field> getForeignKeys(){
-
-        if (foreignKeys == null){
-            foreignKeys = new ArrayList<>();
-            for (Field f : this){
-                if (f.isForeignKey()){
-                    foreignKeys.add(f);
-                }
-            }
-            Collections.sort(foreignKeys, new FieldKeyComparator());
-        }
-
         return foreignKeys;
     }
 
@@ -173,63 +211,72 @@ public class FieldList implements List<Field>{
     }
 
     @Override
-    public boolean add(Field e){
+    public boolean add(Field field){       
+        Objects.requireNonNull(field);
+        boolean result = fields.add(field);
         resetCachedValues();
-        return fields.add(e);
+        return result;
     }
 
     @Override
-    public void add(int index, Field element){
-        resetCachedValues();
+    public void add(int index, Field element){        
         fields.add(index, element);
+        resetCachedValues();
     }
 
     @Override
     public boolean addAll(Collection<? extends Field> c){
+        boolean result = fields.addAll(c);
         resetCachedValues();
-        return fields.addAll(c);
+        return result;
     }
 
     @Override
-    public boolean addAll(int index, Collection<? extends Field> c){
+    public boolean addAll(int index, Collection<? extends Field> c){        
+        boolean result = fields.addAll(index, c);
         resetCachedValues();
-        return fields.addAll(index, c);
+        return result;
     }
 
     @Override
     public void clear(){
-        resetCachedValues();
         fields.clear();
+        resetCachedValues();        
     }
 
     @Override
     public Field remove(int index){
+        Field result = fields.remove(index);
         resetCachedValues();
-        return fields.remove(index);
+        return result;
     }
 
     @Override
     public boolean remove(Object o){
+        boolean result = fields.remove(o);
         resetCachedValues();
-        return fields.remove(o);
+        return result;
     }
 
     @Override
-    public boolean removeAll(Collection<?> c){
+    public boolean removeAll(Collection<?> c){        
+        boolean result = fields.removeAll(c);
         resetCachedValues();
-        return fields.removeAll(c);
+        return result;
     }
 
     @Override
-    public boolean retainAll(Collection<?> c){
+    public boolean retainAll(Collection<?> c){        
+        boolean result = fields.retainAll(c);
         resetCachedValues();
-        return fields.retainAll(c);
+        return result;
     }
 
     @Override
-    public Field set(int index, Field element){
+    public Field set(int index, Field element){        
+        Field previous = fields.set(index, element);
         resetCachedValues();
-        return fields.set(index, element);
+        return previous;
     }
 
     /**
@@ -242,7 +289,7 @@ public class FieldList implements List<Field>{
      * character.
      * </p>
      *
-     * </p>
+     * <p>
      * No check is performed to make sure the Record is supported by this FieldList.
      * </p>
      *
@@ -352,6 +399,7 @@ public class FieldList implements List<Field>{
 
     /**
      * An optional name for this field list.
+     * @return 
      */
     public String getName(){
         return name;
@@ -359,9 +407,20 @@ public class FieldList implements List<Field>{
 
     /**
      * An optional name for this field list.
+     * @param name
      */
     public void setName(String name){
         this.name = name;
+    }
+
+    @Override
+    public int hashCode(){
+        int hash = 5;
+        hash = 47 * hash + Objects.hashCode(this.fields);
+        hash = 47 * hash + Objects.hashCode(this.classifier == null ? "" : this.classifier.toString());
+        hash = 47 * hash + Objects.hashCode(this.name);
+        hash = 47 * hash + (this.defaultList ? 1 : 0);
+        return hash;
     }
 
     @Override
@@ -373,28 +432,24 @@ public class FieldList implements List<Field>{
             return false;
         }
         final FieldList other = (FieldList) obj;
-        if (this.fields != other.fields && (this.fields == null || !this.fields.equals(other.fields))){
+        if (!Objects.equals(this.fields, other.fields)){
             return false;
         }
-        if ((this.name == null) ? (other.name != null) : !this.name.equals(other.name)){
+        if (!Objects.equals(this.classifier == null ? "" : this.classifier.toString(), 
+                            other.classifier == null ? "" : other.classifier.toString())){
             return false;
         }
-
-        //Pattern does not implement .equals()
-        String a = this.classifier == null ? null : this.classifier.toString();
-        String b = other.classifier == null ? null : other.classifier.toString();
-        if (a != b && (a == null || !a.equals(b))){
+        if (!Objects.equals(this.name, other.name)){
+            return false;
+        }
+        if (this.defaultList != other.defaultList){
             return false;
         }
         return true;
     }
+    
+    
+    
 
-    @Override
-    public int hashCode(){
-        int hash = 7;
-        hash = 43 * hash + (this.fields != null ? this.fields.hashCode() : 0);
-        hash = 43 * hash + (this.classifier != null ? this.classifier.toString().hashCode() : 0);
-        return hash;
-    }
-
+    
 }

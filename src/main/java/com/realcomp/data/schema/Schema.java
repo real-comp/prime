@@ -6,10 +6,12 @@ import com.realcomp.data.record.Record;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
+import com.thoughtworks.xstream.annotations.XStreamOmitField;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.regex.Pattern;
 
 /**
@@ -33,11 +35,15 @@ public class Schema{
     private List<Operation> afterLast;
 
     @XStreamImplicit(itemFieldName = "fields")
-    private List<FieldList> fieldLists;
+    private final List<FieldList> fieldLists;
+    
+    @XStreamOmitField
+    private FieldList defaultFieldList;
 
     public Schema(){
         format = new HashMap<>();
         fieldLists = new ArrayList<>();
+        defaultFieldList = null;
     }
 
     public Schema(Schema copy){
@@ -46,7 +52,7 @@ public class Schema{
         fieldLists = new ArrayList<>();
         if (copy.fieldLists != null){
             for (FieldList fieldList : copy.fieldLists){
-                fieldLists.add(new FieldList(fieldList));
+                addFieldList(fieldList);
             }
         }
 
@@ -60,7 +66,7 @@ public class Schema{
 
     /**
      * Classify a record and return the FieldList that matches. If only one FieldList is defined, it is returned. If
-     * multiple FieldLists support the specified Record, then the FieldList that is not the <i>default</i> is returned.
+     * multiple FieldLists support the specified Record, then the supported FieldList that is not the <i>default</i> is returned.
      * If multiple FieldLists support the specified Record, and neither are the <i>default</i> then the one defined
      * first is returned.
      *
@@ -73,47 +79,74 @@ public class Schema{
         if (record == null){
             throw new IllegalArgumentException("record is null");
         }
+        FieldList match = null;
 
-
-        FieldList match = getDefaultFieldList();
-
-        if (fieldLists.size() > 1){
-            for (FieldList fieldList : fieldLists){
-                if (!fieldList.isDefaultClassifier() && fieldList.supports(record)){
-                    match = fieldList;
+        if (fieldLists.size() == 1){
+            match = fieldLists.get(0);
+        }
+        else{
+            match = getBestSupportingFieldList(record);
+        }
+        
+        if (match == null){
+            if (defaultFieldList != null){
+                match = defaultFieldList;
+            }
+            else{
+                throw new SchemaException("The schema [" + getName() + "] does not support the Record.");
+            }
+        }
+        return match;        
+    }
+    
+    /**
+     * For all supported FieldLists, return the FieldList with the same number of fields as the record,
+     * or the default list, or the first encountered FieldList.
+     * 
+     * @param record
+     * @return 
+     */
+    private FieldList getBestSupportingFieldList(Record record){
+        FieldList best = null;
+        List<FieldList> supported = getSupportingFieldLists(record);
+        if (!supported.isEmpty()){
+            int recordSize = record.size();
+            for (FieldList candidate: supported){
+                if (best == null){
+                    best = candidate;
                 }
-                else if (fieldList.supports(record)){
-                    match = fieldList;
+                else if (candidate.size() == recordSize && best.size() != recordSize){
+                    best = candidate;
+                }
+                else if (candidate.isDefault()){
+                    best = candidate;
                 }
             }
         }
-
-        if (match == null){
-            throw new SchemaException("The schema [" + getName() + "] does not support the Record.");
+        return best;
+    }
+    
+    /**
+     * 
+     * @param record
+     * @return all FieldLists that support the specified record 
+     */
+    private List<FieldList> getSupportingFieldLists(Record record){
+        List<FieldList> candidates = new ArrayList<>();
+        for (FieldList fieldList: fieldLists){
+            if (fieldList.supports(record)){
+                candidates.add(fieldList);
+            }
         }
-
-        return match;
+        return candidates;
     }
 
-    /**
-     * Returns the FieldList that has the default classifier (match anything), or is defined first.
-     *
-     * @return the default FieldList, or the FieldList that was defined first, null if not FieldLists have been
-     *         specified.
-     */
     public FieldList getDefaultFieldList(){
-
-        FieldList retVal = null;
-        for (FieldList fieldList : fieldLists){
-            if (retVal == null){
-                retVal = fieldList;
-            }
-            if (fieldList.isDefaultClassifier()){
-                retVal = fieldList;
-            }
+        FieldList best = defaultFieldList;
+        if (best == null && !fieldLists.isEmpty()){
+            best = fieldLists.get(0);
         }
-
-        return retVal;
+        return best;
     }
 
     /**
@@ -128,14 +161,15 @@ public class Schema{
      *
      * @param fieldLists not null
      */
-    public void setFieldLists(List<FieldList> fieldLists){
+    public void setFieldLists(List<FieldList> fieldLists) throws SchemaException{
         if (fieldLists == null){
             throw new IllegalArgumentException("fieldLists is null");
         }
 
         this.fieldLists.clear();
+        defaultFieldList = null;
         for (FieldList f : fieldLists){
-            this.fieldLists.add(new FieldList(f));
+            addFieldList(f);
         }
     }
 
@@ -144,11 +178,15 @@ public class Schema{
      * @param fieldList to be added
      */
     public void addFieldList(FieldList fieldList){
-        if (fieldList == null){
-            throw new IllegalArgumentException("fieldList is null");
+        Objects.requireNonNull(fieldList);
+        FieldList copy = new FieldList(fieldList);
+        fieldLists.add(copy);
+        if (copy.isDefault()){
+            if (defaultFieldList != null){
+                throw new IllegalArgumentException("Only one default FieldList is supported");
+            }
+            defaultFieldList = copy;
         }
-
-        fieldLists.add(new FieldList(fieldList));
     }
 
     /**
@@ -160,36 +198,22 @@ public class Schema{
         if (fieldList == null){
             throw new IllegalArgumentException("fieldList is null");
         }
-        return fieldLists.remove(fieldList);
+        
+        boolean result = fieldLists.contains(fieldList);
+        if (result){
+            List<FieldList> copy = new ArrayList<>();
+            copy.addAll(fieldLists);
+            copy.remove(fieldList);
+            try{
+                setFieldLists(copy);
+            }
+            catch(SchemaException ex){
+                throw new IllegalStateException(ex);
+            }
+        }
+        return result;
     }
 
-    public void addField(Field field){
-        if (field == null){
-            throw new IllegalArgumentException("field is null");
-        }
-        FieldList fieldList = getDefaultFieldList();
-        if (fieldList == null){
-            fieldList = new FieldList();
-            fieldList.add(field);
-            addFieldList(fieldList);
-        }
-        else{
-            fieldList.add(field);
-        }
-    }
-
-    public boolean removeField(Field field){
-        if (field == null){
-            throw new IllegalArgumentException("field is null");
-        }
-        FieldList fieldList = getDefaultFieldList();
-        return fieldList == null ? false : fieldList.remove(field);
-    }
-
-    public Field getField(String name){
-        FieldList fieldList = getDefaultFieldList();
-        return fieldList == null ? null : fieldList.get(name);
-    }
 
     /**
      *
@@ -292,7 +316,7 @@ public class Schema{
             throw new IllegalArgumentException("op is null");
         }
         if (afterLast == null){
-            afterLast = new ArrayList<Operation>();
+            afterLast = new ArrayList<>();
         }
 
         this.afterLast.add(op);
@@ -341,7 +365,7 @@ public class Schema{
         }
 
         if (before == null){
-            before = new ArrayList<Operation>();
+            before = new ArrayList<>();
         }
         this.before.add(op);
     }
@@ -388,7 +412,7 @@ public class Schema{
         }
 
         if (beforeFirst == null){
-            beforeFirst = new ArrayList<Operation>();
+            beforeFirst = new ArrayList<>();
         }
         this.beforeFirst.add(op);
     }

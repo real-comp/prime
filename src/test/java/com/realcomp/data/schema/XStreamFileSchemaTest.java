@@ -1,6 +1,5 @@
 package com.realcomp.data.schema;
 
-import com.realcomp.data.record.io.Format;
 import com.realcomp.data.conversion.FirstName;
 import java.util.regex.Pattern;
 import com.realcomp.data.schema.xml.XStreamFactory;
@@ -11,8 +10,6 @@ import com.realcomp.data.conversion.Trim;
 import org.junit.Before;
 import com.realcomp.data.DataType;
 import com.thoughtworks.xstream.XStream;
-import com.thoughtworks.xstream.io.xml.PrettyPrintWriter;
-import java.io.StringWriter;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -26,9 +23,7 @@ public class XStreamFileSchemaTest{
 
     @Before
     public void init(){
-
         xstream = XStreamFactory.build();
-
     }
 
     @Test
@@ -40,22 +35,24 @@ public class XStreamFileSchemaTest{
         Schema schema = new Schema();
         schema.setName("test");
         schema.setVersion("1.0");
-        schema.addField(new Field("pid", DataType.LONG, 10));
+        FieldList fields = new FieldList();
+        fields.add(new Field("pid", DataType.LONG, 10));
 
         Field owner = new Field("owner", DataType.STRING, 20);
         Replace replace = new Replace(":", "-");
         owner.addOperation(replace);
 
-        schema.addField(owner);
-        schema.addField(new Field("zip", DataType.INTEGER, 5));
-        schema.addField(new Field("value", DataType.FLOAT, 7));
+        fields.add(owner);
+        fields.add(new Field("zip", DataType.INTEGER, 5));
+        fields.add(new Field("value", DataType.FLOAT, 7));
 
         Field area = new Field("area", DataType.DOUBLE);
         DoubleRangeValidator validator = new DoubleRangeValidator();
         validator.setMin(1000);
         validator.setMax(2000);
         area.addOperation(validator);
-        schema.addField(area);
+        fields.add(area);
+        schema.addFieldList(fields);
 
         schema.addBeforeOperation(new UpperCase());
         schema.addAfterOperation(new Trim());
@@ -84,6 +81,8 @@ public class XStreamFileSchemaTest{
         assertEquals(5, deserialized.getDefaultFieldList().size());
         assertEquals(DataType.LONG, deserialized.getDefaultFieldList().get(0).getType());
         assertEquals(DataType.STRING, deserialized.getDefaultFieldList().get(1).getType());
+        assertNull(deserialized.getFieldLists().get(0).getClassifier());
+        assertEquals(".{19}", deserialized.getFieldLists().get(1).getClassifier().toString());
 
         assertTrue(getSchema().equals(deserialized));
     }
@@ -94,11 +93,11 @@ public class XStreamFileSchemaTest{
         Schema schema = SchemaFactory.buildSchema(
                 XStreamFileSchemaTest.class.getResourceAsStream("facl.schema"));
         
-        Field storiesNumber = schema.getField("storiesNumber");
+        Field storiesNumber = schema.getDefaultFieldList().get("storiesNumber");
         assertEquals(DataType.FLOAT, storiesNumber.getType());
         
         
-        Field totalValue = schema.getField("totalValue");
+        Field totalValue = schema.getDefaultFieldList().get("totalValue");
         assertEquals(DataType.LONG, totalValue.getType());
         
         
@@ -131,7 +130,7 @@ public class XStreamFileSchemaTest{
         assertEquals("true", schema.getFormat().get("header"));
 
 
-        Field f = schema.getField("name");
+        Field f = schema.getDefaultFieldList().get("name");
         assertEquals(1, f.getOperations().size());
         FirstName firstName = (FirstName) f.getOperations().get(0);
         assertFalse(firstName.isLastNameFirst());
@@ -143,7 +142,7 @@ public class XStreamFileSchemaTest{
 
         Schema schema = SchemaFactory.buildSchema(
                 XStreamFileSchemaTest.class.getResourceAsStream("test_1.schema"));
-        Field field = schema.getField("data");
+        Field field = schema.getDefaultFieldList().get("data");
 
         //assertTrue(field.getOperations().contains(new Trim()));
     }

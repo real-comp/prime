@@ -17,18 +17,19 @@ public class SchemaTest{
     @Test
     public void addNull(){
         Schema schema = new Schema();
+        FieldList fields = new FieldList();
         try{
-            schema.addField(null);
+            fields.add(null);
             fail("should have thrown IAE");
         }
-        catch (IllegalArgumentException expected){
+        catch (NullPointerException expected){
         }
 
         try{
             schema.addFieldList(null);
             fail("should have thrown IAE");
         }
-        catch (IllegalArgumentException expected){
+        catch (NullPointerException expected){
         }
 
     }
@@ -100,7 +101,9 @@ public class SchemaTest{
         Schema a = new Schema();
         Field original = new Field("original");
         original.addOperation(new Trim());
-        a.addField(original);
+        FieldList fields = new FieldList();
+        fields.add(original);
+        a.addFieldList(fields);
 
         Schema b = new Schema(a);
 

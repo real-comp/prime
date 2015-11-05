@@ -73,9 +73,11 @@ public class FixedFileReaderTest{
         Schema schema = new Schema();
         schema.setName("test");
         schema.setVersion("0");
-        schema.addField(new Field("a", DataType.STRING, 1));
-        schema.addField(new Field("b", DataType.STRING, 2));
-        schema.addField(new Field("c", DataType.STRING)); //<-- missing length
+        FieldList fields = new FieldList();
+        fields.add(new Field("a", DataType.STRING, 1));
+        fields.add(new Field("b", DataType.STRING, 2));
+        fields.add(new Field("c", DataType.STRING)); //<-- missing length
+        schema.addFieldList(fields);
 
         try{
             IOContext ctx = new IOContextBuilder().schema(schema).in(new ByteArrayInputStream(data.getBytes())).build();
@@ -198,8 +200,9 @@ public class FixedFileReaderTest{
         Field field = new Field("long", DataType.LONG, 5);
         field.addOperation(new Trim());
         field.addOperation(new UpperCase());
-        schema.addField(field);
-        
+        FieldList fields = new FieldList();
+        fields.add(field);
+        schema.addFieldList(fields);
         String data = "    1";
         IOContext ctx = new IOContextBuilder()
                 .schema(schema)
@@ -223,10 +226,11 @@ public class FixedFileReaderTest{
         Schema schema = new Schema();
         schema.setName("test");
         schema.setVersion("0");
-        schema.addField(new Field("a", DataType.STRING, 1));
-        schema.addField(new Field("b", DataType.STRING, 2));
-        schema.addField(new Field("c", DataType.STRING, 3));
-
+        FieldList fields = new FieldList();
+        fields.add(new Field("a", DataType.STRING, 1));
+        fields.add(new Field("b", DataType.STRING, 2));
+        fields.add(new Field("c", DataType.STRING, 3));
+        schema.addFieldList(fields);
         return schema;
     }
 
@@ -237,7 +241,9 @@ public class FixedFileReaderTest{
         schema.setFormat(format);
         schema.setName("test");
         schema.setVersion("0");
-        schema.addField(new Field("a", DataType.STRING, 5));
+        FieldList fields = new FieldList();
+        fields.add(new Field("a", DataType.STRING, 5));
+        schema.addFieldList(fields);
         return schema;
     }
 
@@ -245,12 +251,14 @@ public class FixedFileReaderTest{
         Schema schema = new Schema();
         schema.setName("test");
         schema.setVersion("0");
-        schema.addField(new Field("int", DataType.INTEGER, 5));
-        schema.addField(new Field("float", DataType.FLOAT, 5));
-        schema.addField(new Field("long", DataType.LONG, 5));
-        schema.addField(new Field("double", DataType.DOUBLE, 5));
-        schema.addField(new Field("string", DataType.STRING, 1));
-
+        FieldList fields = new FieldList();
+        fields.add(new Field("int", DataType.INTEGER, 5));
+        fields.add(new Field("float", DataType.FLOAT, 5));
+        fields.add(new Field("long", DataType.LONG, 5));
+        fields.add(new Field("double", DataType.DOUBLE, 5));
+        fields.add(new Field("string", DataType.STRING, 1));
+        schema.addFieldList(fields);
+        
         schema.addAfterOperation(new Trim());
         return schema;
     }
@@ -302,12 +310,14 @@ public class FixedFileReaderTest{
         schema.setName("test");
         schema.setVersion("0");
 
+        
         //zero length ok
-        schema.addField(new Field("a", DataType.STRING, 0));
+        FieldList fields = new FieldList();
+        fields.add(new Field("a", DataType.STRING, 0));
 
 
         try{
-            schema.addField(new Field("a", DataType.STRING, -1));
+            fields.add(new Field("a", DataType.STRING, -1));
             fail("should have thrown IllegalArgumentException");
         }
         catch (IllegalArgumentException expected){

@@ -279,14 +279,16 @@ public class DelimitedFileReaderTest{
         reader.close();
 
         schema = new Schema();
-        schema.addField(new Field("a"));
-        schema.addField(new Field("b"));
-        schema.addField(new Field("c"));
-        schema.addField(new Field("d"));
-        schema.addField(new Field("e"));
-        schema.addField(new Field("f"));
-        schema.addField(new Field("g"));
-        schema.addField(new Field("h"));
+        FieldList fieldList = new FieldList();
+        fieldList.add(new Field("a"));
+        fieldList.add(new Field("b"));
+        fieldList.add(new Field("c"));
+        fieldList.add(new Field("d"));
+        fieldList.add(new Field("e"));
+        fieldList.add(new Field("f"));
+        fieldList.add(new Field("g"));
+        fieldList.add(new Field("h"));
+        schema.addFieldList(fieldList);
         schema.getFormat().put("header", "false");
         schema.getFormat().put("type", "CSV");
         schema.getFormat().put("strictQuotes", "true");

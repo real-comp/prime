@@ -111,10 +111,13 @@ public class SimpleGranularity{
         }
     }
 
-    private static Schema buildOutputSchema(Schema inputSchema, String field){
+    private static Schema buildOutputSchema(Schema inputSchema, String field) throws SchemaException{
         
         Schema outputSchema = new Schema(inputSchema);
         FieldList fieldList = outputSchema.getDefaultFieldList();
+        if (fieldList == null){
+            fieldList = outputSchema.getFieldLists().get(0);
+        }
         
         for (FieldList fields: inputSchema.getFieldLists()){
             outputSchema.removeFieldList(fields);
