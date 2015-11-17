@@ -110,11 +110,12 @@ public class SchemaGenerator{
 
 
         int count = 1;
-        FieldList fieldList = schema.getDefaultFieldList();
+        FieldList fieldList = new FieldList();
         for (String fieldName : fieldNames){
             fieldList.add(new Field(fieldName.isEmpty() ? "FIELD" + count : fieldName));
             count++;
         }
+        schema.addFieldList(fieldList);
 
         return schema;
     }
