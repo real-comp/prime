@@ -2,6 +2,7 @@ package com.realcomp.data.record.io;
 
 import com.realcomp.data.schema.Schema;
 import com.realcomp.data.validation.Severity;
+import java.io.Closeable;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
@@ -15,7 +16,7 @@ import org.apache.commons.io.IOUtils;
  *
  * @author krenfro
  */
-public class IOContext implements Serializable{
+public class IOContext implements Serializable, Closeable{
 
     private static final long serialVersionUID = 1L;
 
@@ -36,6 +37,7 @@ public class IOContext implements Serializable{
     /**
      * Quietly close the input and output streams
      */
+    @Override
     public void close(){
         IOUtils.closeQuietly(in);
         IOUtils.closeQuietly(out);
