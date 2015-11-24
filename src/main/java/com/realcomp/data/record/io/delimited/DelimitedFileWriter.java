@@ -37,6 +37,7 @@ public class DelimitedFileWriter extends BaseRecordWriter{
         format.putDefault("quoteCharacter", Character.toString(CSVParser.DEFAULT_QUOTE_CHARACTER));
         format.putDefault("escapeCharacter", Character.toString(CSVParser.DEFAULT_ESCAPE_CHARACTER));
         format.putDefault("strictQuotes", Boolean.toString(CSVParser.DEFAULT_STRICT_QUOTES));
+        format.putDefault("recordDelimiter", CSVWriter.DEFAULT_LINE_END);
 
         current = new ArrayList<>();
         transformContext = new TransformContext();
@@ -51,6 +52,7 @@ public class DelimitedFileWriter extends BaseRecordWriter{
         format.putDefault("quoteCharacter", Character.toString(CSVParser.DEFAULT_QUOTE_CHARACTER));
         format.putDefault("escapeCharacter", Character.toString(CSVParser.DEFAULT_ESCAPE_CHARACTER));
         format.putDefault("strictQuotes", Boolean.toString(CSVParser.DEFAULT_STRICT_QUOTES));
+        format.putDefault("recordDelimiter", CSVWriter.DEFAULT_LINE_END);
 
         current = new ArrayList<>();
         transformContext = new TransformContext(copy.transformContext);
@@ -103,12 +105,12 @@ public class DelimitedFileWriter extends BaseRecordWriter{
         switch (getDelimiter()){
             case '\t':
                 writer = new CSVWriter(new BufferedWriter(
-                        new OutputStreamWriter(context.getOut(), getCharset())), '\t', '\u0000');
+                        new OutputStreamWriter(context.getOut(), getCharset())), '\t', '\u0000', "\n");
                 break;
             default:
                 writer = new CSVWriter(new BufferedWriter(
                         new OutputStreamWriter(
-                        context.getOut(), getCharset())), getDelimiter(), getQuoteCharacter(), getEscapeCharacter());
+                        context.getOut(), getCharset())), getDelimiter(), getQuoteCharacter(), getEscapeCharacter(), getRecordDelimiter());
         }
     }
 
@@ -180,6 +182,10 @@ public class DelimitedFileWriter extends BaseRecordWriter{
 
     public boolean isHeader(){
         return Boolean.parseBoolean(format.get("header"));
+    }
+    
+    public String getRecordDelimiter(){
+        return format.get("recordDelimiter");
     }
 
     @Override
