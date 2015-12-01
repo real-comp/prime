@@ -29,6 +29,7 @@ public class DelimitedFileWriter extends BaseRecordWriter{
     protected List<String> current;
     protected TransformContext transformContext;
     protected ValueSurgeon surgeon;
+    protected boolean headerWritten = false;
 
     public DelimitedFileWriter(){
         super();
@@ -42,6 +43,7 @@ public class DelimitedFileWriter extends BaseRecordWriter{
         current = new ArrayList<>();
         transformContext = new TransformContext();
         surgeon = new ValueSurgeon();
+        headerWritten = false;
 
     }
 
@@ -57,6 +59,7 @@ public class DelimitedFileWriter extends BaseRecordWriter{
         current = new ArrayList<>();
         transformContext = new TransformContext(copy.transformContext);
         surgeon = new ValueSurgeon();
+        headerWritten = false;
     }
 
     @Override
@@ -81,7 +84,7 @@ public class DelimitedFileWriter extends BaseRecordWriter{
 
 
         //optionally write header record
-        if (count == 0 && isHeader()){
+        if (!headerWritten && isHeader()){
             writeHeader();
         }
 
@@ -112,6 +115,7 @@ public class DelimitedFileWriter extends BaseRecordWriter{
                         new OutputStreamWriter(
                         context.getOut(), getCharset())), getDelimiter(), getQuoteCharacter(), getEscapeCharacter(), getRecordDelimiter());
         }
+        headerWritten = false;
     }
 
     /**
@@ -126,6 +130,7 @@ public class DelimitedFileWriter extends BaseRecordWriter{
         List<String> header = getHeader();
         writer.writeNext(header.toArray(new String[header.size()]));
         writer.flush();
+        headerWritten = true;
     }
 
 

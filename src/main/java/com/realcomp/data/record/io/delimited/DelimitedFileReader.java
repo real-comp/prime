@@ -1,17 +1,15 @@
 package com.realcomp.data.record.io.delimited;
 
 import au.com.bytecode.opencsv.CSVParser;
+import au.com.bytecode.opencsv.CSVWriter;
 import com.realcomp.data.DataType;
 import com.realcomp.data.conversion.ConversionException;
 import com.realcomp.data.record.Record;
 import com.realcomp.data.record.io.BaseRecordReader;
 import com.realcomp.data.record.io.IOContext;
-import com.realcomp.data.record.io.ParsePlan;
-import com.realcomp.data.record.io.ParsePlanException;
 import com.realcomp.data.record.io.SkippingBufferedReader;
 import com.realcomp.data.schema.Field;
 import com.realcomp.data.schema.FieldList;
-import com.realcomp.data.schema.Schema;
 import com.realcomp.data.schema.SchemaException;
 import com.realcomp.data.validation.Severity;
 import com.realcomp.data.validation.ValidationException;
@@ -22,7 +20,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class DelimitedFileReader extends BaseRecordReader{
@@ -47,6 +44,7 @@ public class DelimitedFileReader extends BaseRecordReader{
         format.putDefault("quoteCharacter", Character.toString(CSVParser.DEFAULT_QUOTE_CHARACTER));
         format.putDefault("escapeCharacter", Character.toString(CSVParser.DEFAULT_ESCAPE_CHARACTER));
         format.putDefault("strictQuotes", Boolean.toString(CSVParser.DEFAULT_STRICT_QUOTES));
+        format.putDefault("recordDelimiter", CSVWriter.DEFAULT_LINE_END);
         unterminatedMechanic = new UnterminatedQuotedStringMechanic();
     }
 
@@ -57,6 +55,7 @@ public class DelimitedFileReader extends BaseRecordReader{
         format.putDefault("quoteCharacter", Character.toString(CSVParser.DEFAULT_QUOTE_CHARACTER));
         format.putDefault("escapeCharacter", Character.toString(CSVParser.DEFAULT_ESCAPE_CHARACTER));
         format.putDefault("strictQuotes", Boolean.toString(CSVParser.DEFAULT_STRICT_QUOTES));
+        format.putDefault("recordDelimiter", CSVWriter.DEFAULT_LINE_END);
         unterminatedMechanic = new UnterminatedQuotedStringMechanic();
     }
 

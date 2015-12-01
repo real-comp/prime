@@ -33,6 +33,7 @@ public class FixedFileWriter extends BaseRecordWriter{
     protected TransformContext transformContext;
     protected ValueSurgeon surgeon;
     protected StringBuilder currentRecord;
+    protected boolean headerWritten = false;
 
     public FixedFileWriter(){
         super();
@@ -41,6 +42,7 @@ public class FixedFileWriter extends BaseRecordWriter{
         format.putDefault("length", "");
         transformContext = new TransformContext();
         surgeon = new ValueSurgeon();
+        headerWritten = false;
     }
 
     @Override
@@ -55,6 +57,7 @@ public class FixedFileWriter extends BaseRecordWriter{
         transformContext.setSchema(schema);
         transformContext.setValidationExceptionThreshold(context.getValidationExeptionThreshold());
         writer = new BufferedWriter(new OutputStreamWriter(context.getOut(), getCharset()));
+        headerWritten = false;
     }
 
     @Override
@@ -75,7 +78,7 @@ public class FixedFileWriter extends BaseRecordWriter{
 
 
         //optionally write header record
-        if (count == 0 && isHeader()){
+        if (!headerWritten && isHeader()){
             writeHeader();
         }
 
@@ -101,6 +104,7 @@ public class FixedFileWriter extends BaseRecordWriter{
 
         writer.newLine();
         writer.flush();
+        headerWritten = true;
     }
 
     @Override

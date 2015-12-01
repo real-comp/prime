@@ -33,7 +33,6 @@ public class AttributesConverter extends MapConverter{
 
     @Override
     public void marshal(Object source, HierarchicalStreamWriter writer, MarshallingContext mc){
-
         Map<String, String> map = (Map) source;
         for (Entry<String, String> entry : map.entrySet()){
             writer.addAttribute(entry.getKey(), entry.getValue());
@@ -43,14 +42,12 @@ public class AttributesConverter extends MapConverter{
     @Override
     public Object unmarshal(HierarchicalStreamReader reader, UnmarshallingContext uc){
 
-        Map<String, String> map = new HashMap<String, String>();
-
+        Map<String, String> map = new HashMap<>();
         Iterator<String> itr = reader.getAttributeNames();
         while (itr.hasNext()){
             String name = itr.next();
             map.put(name, reader.getAttribute(name));
         }
-
         return map;
     }
 }
