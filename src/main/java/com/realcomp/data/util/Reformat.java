@@ -167,6 +167,11 @@ public class Reformat{
         Transformer t = SchemaFactory.buildTransformer(new FileInputStream(file));
         transformers.add(t);
     }
+    
+    public void addTransformer(Transformer transformer){
+        Objects.requireNonNull(transformer);
+        transformers.add(transformer);
+    }
 
     public void addConstantValue(String name, String value){
         constants.put(name, value);

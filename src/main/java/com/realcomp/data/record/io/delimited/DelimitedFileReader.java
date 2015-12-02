@@ -28,7 +28,7 @@ public class DelimitedFileReader extends BaseRecordReader{
     
     protected SkippingBufferedReader reader;
     protected CSVParser parser;
-    private UnterminatedQuotedStringMechanic unterminatedMechanic;
+    private final UnterminatedQuotedStringMechanic unterminatedMechanic;
     
     /**
      * When the schema describes a header, the skipped header record
