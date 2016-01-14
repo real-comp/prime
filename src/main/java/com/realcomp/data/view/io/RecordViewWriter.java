@@ -10,7 +10,7 @@ import java.io.IOException;
  *
  * @author krenfro
  */
-public interface RecordViewWriter<T>{
+public interface RecordViewWriter<T> extends AutoCloseable{
 
     void write(T t)
             throws IOException, ValidationException, ConversionException, SchemaException;
@@ -18,7 +18,7 @@ public interface RecordViewWriter<T>{
     /**
      * Close open resources. Should be invoked when you are done with the RecordReader.
      */
-    void close();
+    void close() throws IOException;
 
     /**
      * Open an OutputStream for writing. May be invoked multiple times with new output as needed.

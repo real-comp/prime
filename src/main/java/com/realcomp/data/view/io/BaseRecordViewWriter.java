@@ -23,7 +23,7 @@ public abstract class BaseRecordViewWriter<T> implements RecordViewWriter<T>{
     }
 
     @Override
-    public void close(){
+    public void close() throws IOException{
         writer.close();
     }
 

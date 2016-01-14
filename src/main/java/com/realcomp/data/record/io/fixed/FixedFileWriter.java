@@ -13,13 +13,14 @@ import com.realcomp.data.schema.SchemaException;
 import com.realcomp.data.transform.TransformContext;
 import com.realcomp.data.transform.ValueSurgeon;
 import com.realcomp.data.validation.ValidationException;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
+
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.util.List;
 import java.util.logging.Logger;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringUtils;
 
 /**
  *
@@ -61,13 +62,13 @@ public class FixedFileWriter extends BaseRecordWriter{
     }
 
     @Override
-    public void close(){
+    public void close() throws IOException{
         IOUtils.closeQuietly(writer);
         super.close();
     }
 
     @Override
-    public void close(boolean closeIOContext){
+    public void close(boolean closeIOContext) throws IOException{
         IOUtils.closeQuietly(writer);
         super.close(closeIOContext);
     }

@@ -11,11 +11,12 @@ import com.realcomp.data.schema.Schema;
 import com.realcomp.data.schema.SchemaException;
 import com.realcomp.data.validation.Severity;
 import com.realcomp.data.validation.ValidationException;
+import org.apache.commons.io.IOUtils;
+
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.List;
 import java.util.logging.Logger;
-import org.apache.commons.io.IOUtils;
 
 /**
  * There is an implicit Resize converter on all fields that runs after all 'after' operations.
@@ -75,13 +76,13 @@ public class FixedFileReader extends BaseRecordReader{
     }
 
     @Override
-    public void close(){
+    public void close() throws IOException{
         IOUtils.closeQuietly(reader);
         super.close();
     }
 
     @Override
-    public void close(boolean closeIOContext){
+    public void close(boolean closeIOContext) throws IOException{
         IOUtils.closeQuietly(reader);
         super.close(closeIOContext);
     }

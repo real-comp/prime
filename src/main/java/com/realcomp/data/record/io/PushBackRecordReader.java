@@ -39,7 +39,7 @@ public class PushBackRecordReader implements RecordReader{
     }
 
     @Override
-    public void close(){
+    public void close() throws IOException{
         reader.close();
     }
 
@@ -54,7 +54,7 @@ public class PushBackRecordReader implements RecordReader{
     }
 
     @Override
-    public void close(boolean closeIOContext){
+    public void close(boolean closeIOContext) throws IOException{
         reader.close(closeIOContext);
     }
 

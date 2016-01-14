@@ -5,7 +5,7 @@ import com.realcomp.data.record.Record;
 import com.realcomp.data.schema.SchemaException;
 import com.realcomp.data.validation.Severity;
 import com.realcomp.data.validation.ValidationException;
-import java.io.Closeable;
+
 import java.io.IOException;
 import java.util.Map;
 
@@ -16,7 +16,7 @@ import java.util.Map;
  *
  * @author krenfro
  */
-public interface RecordReader extends Closeable{
+public interface RecordReader extends AutoCloseable{
 
     /**
      * If a Validator logs a warning at or above this threshold, then the warning is thrown as a ValidationException. By
@@ -42,14 +42,14 @@ public interface RecordReader extends Closeable{
      * RecordReader.
      */
     @Override
-    void close();
+    void close() throws IOException;
 
     /**
      * Close open resources, optionally closing the resources of the IOContext.
      *
      * @param closeIOContext if true, the ioContext.close() method will be invoked
      */
-    void close(boolean closeIOContext);
+    void close(boolean closeIOContext) throws IOException;
 
     /**
      * Open an IOContext for reading. May be invoked multiple times with new input as needed. close() is automatically

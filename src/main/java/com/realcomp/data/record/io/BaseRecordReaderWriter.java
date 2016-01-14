@@ -17,7 +17,7 @@ import java.util.logging.Logger;
 /**
  * @author krenfro
  */
-public abstract class BaseRecordReaderWriter{
+public abstract class BaseRecordReaderWriter implements AutoCloseable{
 
     private static final Logger logger = Logger.getLogger(BaseRecordReaderWriter.class.getName());
 
@@ -58,11 +58,11 @@ public abstract class BaseRecordReaderWriter{
         }
     }
 
-    public void close(){
+    public void close() throws IOException{
         close(true);
     }
 
-    public void close(boolean closeIOContext){
+    public void close(boolean closeIOContext) throws IOException{
 
         try{
             executeAfterLastOperations();

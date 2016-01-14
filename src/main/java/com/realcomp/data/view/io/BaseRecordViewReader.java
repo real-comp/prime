@@ -23,7 +23,7 @@ public abstract class BaseRecordViewReader<T> implements RecordViewReader<T>{
     }
 
     @Override
-    public void close(){
+    public void close() throws IOException{
         reader.close();
     }
 

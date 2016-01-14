@@ -11,14 +11,14 @@ import java.io.IOException;
  *
  * @author krenfro
  */
-public interface RecordViewReader<T>{
+public interface RecordViewReader<T> extends AutoCloseable{
 
     T read() throws IOException, ValidationException, ConversionException, SchemaException;
 
     /**
      * Close open resources. Should be invoked when you are done with the RecordReader.
      */
-    void close();
+    void close() throws IOException;
 
     /**
      * Open an InputStream for reading. May be invoked multiple times with new input as needed.

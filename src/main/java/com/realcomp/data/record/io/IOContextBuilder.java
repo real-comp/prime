@@ -2,6 +2,8 @@ package com.realcomp.data.record.io;
 
 import com.realcomp.data.schema.Schema;
 import com.realcomp.data.validation.Severity;
+
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.HashMap;
@@ -71,7 +73,7 @@ public class IOContextBuilder{
         return this;
     }
 
-    public IOContext build(){
+    public IOContext build() throws IOException {
         return new IOContext(this);
     }
 }
