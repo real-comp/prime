@@ -1,10 +1,13 @@
 package com.realcomp.data.record.io;
 
-import java.io.Closeable;
 import java.io.IOException;
 
+/**
+ * A common pattern to perform work on multiple Records.
+ *
+ */
+public interface RecordProcessor extends AutoCloseable{
 
-public interface RecordProcessor extends Closeable{
     
     /**
      * @param reader
@@ -15,5 +18,5 @@ public interface RecordProcessor extends Closeable{
     long process(RecordReader reader, RecordWriter writer) throws IOException;
     
     @Override
-    void close();
+    void close() throws IOException;
 }
