@@ -190,7 +190,14 @@ public class DelimitedFileWriter extends BaseRecordWriter{
     }
     
     public String getRecordDelimiter(){
-        return format.get("recordDelimiter");
+        String recordDelimiter = format.get("recordDelimiter");
+        if (recordDelimiter.equals("\\r\\n")){
+            recordDelimiter = "\r\n";
+        }
+        else if (recordDelimiter.equals("\\n")){
+            recordDelimiter = "\n";
+        }
+        return recordDelimiter;
     }
 
     @Override

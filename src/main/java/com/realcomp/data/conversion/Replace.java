@@ -18,6 +18,8 @@ public class Replace extends SimpleConverter{
 
     public Replace(){
         super();
+        pattern = Pattern.compile(regex);
+        emptyPattern = regex.equals("");
     }
 
     public Replace(String regex, String replacement){

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rc:schema
+   xmlns:rc="http://www.real-comp.com/realcomp-data/schema/file-schema/1.2"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://www.real-comp.com/realcomp-data/schema/file-schema/1.2 http://www.real-comp.com/realcomp-data/schema/file-schema/1.2/file-schema.xsd"
+   name="gateway-scrub-input">
+
+    <format type="CSV" header="false" charset="CP1252" recordDelimiter="\r\n"/>
+
+    <fields>
+        <field name="address1"/>
+        <field name="zip"/>
+    </fields>
+
+</rc:schema>

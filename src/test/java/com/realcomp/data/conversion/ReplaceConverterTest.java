@@ -33,6 +33,7 @@ public class ReplaceConverterTest extends SimpleConverterTest{
         assertEquals("bb", converter.convert("bab"));
     }
 
+
     @Test
     public void testRemoveMultiSpaces() throws Exception{
 
