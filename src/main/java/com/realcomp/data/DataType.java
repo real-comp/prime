@@ -143,7 +143,7 @@ public enum DataType{
         try{
             switch (DataType.getDataType(value)){
                 case STRING:
-                    String s = (String) removeLeadingZeros.convert(value.toString());
+                    String s = (String) removeLeadingZeros.convert(value.toString().trim());
                     result = ((Double) Double.parseDouble(s.isEmpty() ? "0" : s)).intValue();
                     break;
                 case INTEGER:
@@ -279,7 +279,7 @@ public enum DataType{
         try{
             switch (DataType.getDataType(value)){
                 case STRING:
-                    String s = (String) removeLeadingZeros.convert(value.toString());
+                    String s = (String) removeLeadingZeros.convert(value.toString().trim());
                     result = ((Float) Float.parseFloat(s.isEmpty() ? "0" : s));
                     break;
                 case INTEGER:
@@ -334,7 +334,7 @@ public enum DataType{
         try{
             switch (DataType.getDataType(value)){
                 case STRING:
-                    String s = (String) removeLeadingZeros.convert(value.toString());
+                    String s = (String) removeLeadingZeros.convert(value.toString().trim());
                     result = Double.parseDouble(s.isEmpty() ? "0" : s);
                     break;
                 case INTEGER:
@@ -386,7 +386,7 @@ public enum DataType{
         switch (DataType.getDataType(value)){
             case STRING:
                 return (Boolean) booleanConverter.convert(
-                        value.toString().isEmpty() ? "FALSE" : value.toString());
+                        value.toString().isEmpty() ? "FALSE" : value.toString().trim());
             case INTEGER:
                 return (Integer) value == 1 ? Boolean.TRUE : Boolean.FALSE;
             case FLOAT:

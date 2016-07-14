@@ -130,14 +130,5 @@
         <developerConnection>scm:git:ssh://git@bitbucket.org/real-comp/realcomp-data.git</developerConnection>
         <url>https://bitbucket.org/real-comp/realcomp-data</url>
     </scm>
-    <reporting>
-        <plugins>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>cobertura-maven-plugin</artifactId>
-                <version>2.5.1</version>
-            </plugin>
-        </plugins>
-    </reporting>
 </project>
 
