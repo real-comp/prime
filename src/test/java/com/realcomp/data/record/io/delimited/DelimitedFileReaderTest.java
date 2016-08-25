@@ -10,13 +10,15 @@ import com.realcomp.data.schema.FieldList;
 import com.realcomp.data.schema.Schema;
 import com.realcomp.data.schema.SchemaException;
 import com.realcomp.data.validation.ValidationException;
+import org.junit.Test;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
+
 import static org.junit.Assert.*;
-import org.junit.Test;
 
 /**
  *
@@ -170,7 +172,7 @@ public class DelimitedFileReaderTest{
         assertNull(reader.read());
         reader.close();
 
-        //embedded quote
+        //embedded double-quote
         data = "\"a123\",\"b1\"\"23\",\"c123\"";
         ctx = new IOContextBuilder(ctx)
                 .in(new ByteArrayInputStream(data.getBytes()))
@@ -184,6 +186,8 @@ public class DelimitedFileReaderTest{
         assertEquals("c123", record.get("c"));
         assertNull(reader.read());
         reader.close();
+
+
 
         //embedded quote at end
         data = "\"a123\",\"b123\"\"\",\"c123\"";
@@ -199,6 +203,23 @@ public class DelimitedFileReaderTest{
         assertEquals("c123", record.get("c"));
         assertNull(reader.read());
         reader.close();
+
+
+        //only double-quotes
+        data = "\"a123\",\"\"\"\"\"\",\"c123\"";
+        ctx = new IOContextBuilder(ctx)
+                .in(new ByteArrayInputStream(data.getBytes()))
+                .build();
+        reader.open(ctx);
+
+        record = reader.read();
+        assertNotNull(record);
+        assertEquals("a123", record.get("a"));
+        assertEquals("\"\"", record.get("b"));
+        assertEquals("c123", record.get("c"));
+        assertNull(reader.read());
+        reader.close();
+
 
     }
 

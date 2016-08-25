@@ -13,6 +13,7 @@ import com.realcomp.data.schema.SchemaException;
 import com.realcomp.data.transform.TransformContext;
 import com.realcomp.data.transform.ValueSurgeon;
 import com.realcomp.data.validation.ValidationException;
+
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
@@ -20,7 +21,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- *
  * @author krenfro
  */
 public class DelimitedFileWriter extends BaseRecordWriter{
@@ -78,6 +78,7 @@ public class DelimitedFileWriter extends BaseRecordWriter{
         }
     }
 
+
     @Override
     public void write(Record record)
             throws IOException, ValidationException, ConversionException, SchemaException{
@@ -113,7 +114,7 @@ public class DelimitedFileWriter extends BaseRecordWriter{
             default:
                 writer = new CSVWriter(new BufferedWriter(
                         new OutputStreamWriter(
-                        context.getOut(), getCharset())), getDelimiter(), getQuoteCharacter(), getEscapeCharacter(), getRecordDelimiter());
+                                context.getOut(), getCharset())), getDelimiter(), getQuoteCharacter(), getEscapeCharacter(), getRecordDelimiter());
         }
         headerWritten = false;
     }
@@ -188,7 +189,7 @@ public class DelimitedFileWriter extends BaseRecordWriter{
     public boolean isHeader(){
         return Boolean.parseBoolean(format.get("header"));
     }
-    
+
     public String getRecordDelimiter(){
         String recordDelimiter = format.get("recordDelimiter");
         if (recordDelimiter.equals("\\r\\n")){

@@ -8,12 +8,13 @@ import com.realcomp.data.schema.Field;
 import com.realcomp.data.schema.FieldList;
 import com.realcomp.data.schema.Schema;
 import com.realcomp.data.schema.SchemaException;
+import org.junit.Test;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.Map;
+
 import static org.junit.Assert.*;
-import org.junit.Test;
 
 /**
  *
@@ -116,6 +117,62 @@ public class DelimitedFileWriterTest{
         assertNull(reader.read());
         reader.close();
     }
+
+
+    @Test
+    public void testDoubleQuoteInCSV() throws Exception{
+
+                     //"a123","b1""23",""""
+        String data = "\"a123\",\"b1\"\"23\",\"\"\"\"\"\"";
+
+        IOContext ctx = new IOContextBuilder()
+                .schema(get3FieldSchema())
+                .attribute("type", "CSV")
+                .out(new ByteArrayOutputStream())
+                .in(new ByteArrayInputStream(data.getBytes()))
+                .build();
+
+
+        DelimitedFileReader reader = new DelimitedFileReader();
+        reader.open(ctx);
+
+        Record a = reader.read();
+        assertNotNull(a);
+        assertEquals("a123", a.get("a"));
+        assertEquals("b1\"23", a.get("b"));
+
+
+        DelimitedFileWriter writer = new DelimitedFileWriter();
+        IOContext outputCtx = new IOContextBuilder(ctx)
+                .attribute("escapeCharacter", "\"")
+                .build();
+
+        writer.open(outputCtx);
+
+        writer.write(a);
+        writer.write(a);
+        writer.write(a);
+
+        writer.close();
+        reader.close();
+
+        //copy output to new input
+        byte[] bytes = ((ByteArrayOutputStream) ctx.getOut()).toByteArray();
+
+        String sample = new String(bytes);
+        System.out.println(sample);
+
+        ctx = new IOContextBuilder(ctx).in(new ByteArrayInputStream(bytes)).build();
+        reader.open(ctx);
+        Record b = reader.read();
+        assertEquals(a, b);
+        assertEquals(a, reader.read());
+        assertEquals(a, reader.read());
+        assertNull(reader.read());
+        reader.close();
+    }
+
+
 
     @Test
     public void testClassification() throws SchemaException{

@@ -1,13 +1,15 @@
 package com.realcomp.data.record.io;
 
 import com.realcomp.data.conversion.Concat;
-import java.util.List;
-import java.util.ArrayList;
-import com.realcomp.data.schema.Field;
-import com.realcomp.data.schema.FieldList;
-import java.util.Arrays;
+import com.realcomp.data.schema.*;
 import org.junit.Test;
-import static org.junit.Assert.*;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 /**
  *
@@ -77,4 +79,29 @@ public class ParsePlanTest{
         catch (ParsePlanException expected){
         }
     }
+
+
+
+    @Test
+    public void testAnotherPlan() throws ParsePlanException{
+
+        Schema inputSchema = SchemaFactory.buildSchema(
+                SchemaTest.class.getResourceAsStream("parse-plan-input.schema"));
+        Schema outputSchema = SchemaFactory.buildSchema(
+                SchemaTest.class.getResourceAsStream("parse-plan-output.schema"));
+
+        FieldList inputFieldList = inputSchema.getDefaultFieldList();
+
+        FieldList simple = new FieldList();
+        simple.add(new Field("a"));
+        simple.add(new Field("b"));
+        simple.add(new Field("c"));
+
+        List<Field> expected = new ArrayList<Field>();
+        expected.addAll(simple);
+
+        assertEquals(expected, new ParsePlan(simple));
+    }
+
+
 }

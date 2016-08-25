@@ -9,14 +9,15 @@ import com.realcomp.data.transform.TransformContext;
 import com.realcomp.data.transform.Transformer;
 import com.realcomp.data.validation.Severity;
 import com.realcomp.data.validation.ValidationException;
+import joptsimple.OptionException;
+import joptsimple.OptionParser;
+import joptsimple.OptionSet;
+
 import java.io.*;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import joptsimple.OptionException;
-import joptsimple.OptionParser;
-import joptsimple.OptionSet;
 
 /**
  * Reformat, optionally filtering,  a file using an input and output schema
@@ -242,7 +243,6 @@ public class Reformat{
 
 
                 if (options.has("f")){
-
                     reformatter.setFilter(true);
                     inputBuilder.validationExceptionThreshold(Severity.MEDIUM);
                     outputBuilder.validationExceptionThreshold(Severity.MEDIUM);
