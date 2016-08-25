@@ -159,9 +159,6 @@ public class DelimitedFileWriterTest{
         //copy output to new input
         byte[] bytes = ((ByteArrayOutputStream) ctx.getOut()).toByteArray();
 
-        String sample = new String(bytes);
-        System.out.println(sample);
-
         ctx = new IOContextBuilder(ctx).in(new ByteArrayInputStream(bytes)).build();
         reader.open(ctx);
         Record b = reader.read();
@@ -198,6 +195,8 @@ public class DelimitedFileWriterTest{
         Schema schema = new Schema();
         schema.setName("test");
         schema.setVersion("0");
+
+
         FieldList fields = new FieldList();
         fields.add(new Field("a", DataType.STRING));
         fields.add(new Field("b", DataType.STRING));

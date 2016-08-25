@@ -1,17 +1,25 @@
 package com.realcomp.data.schema;
 
-import com.realcomp.data.Operation;
-import com.realcomp.data.conversion.ReplaceFirst;
-import java.util.logging.Logger;
-import com.realcomp.data.conversion.Concat;
-import java.io.ByteArrayInputStream;
-import java.util.List;
-import java.util.ArrayList;
-import com.realcomp.data.schema.xml.XStreamFactory;
-import org.junit.Before;
 import com.realcomp.data.DataType;
+import com.realcomp.data.Operation;
+import com.realcomp.data.conversion.Concat;
+import com.realcomp.data.conversion.ConversionException;
+import com.realcomp.data.conversion.ReplaceFirst;
+import com.realcomp.data.record.Record;
+import com.realcomp.data.record.io.*;
+import com.realcomp.data.schema.xml.XStreamFactory;
+import com.realcomp.data.validation.ValidationException;
 import com.thoughtworks.xstream.XStream;
+import org.junit.Before;
 import org.junit.Test;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Logger;
+
 import static org.junit.Assert.*;
 
 /**
@@ -21,9 +29,9 @@ import static org.junit.Assert.*;
  *
  * @author krenfro
  */
-public class DoubleQuote{
+public class DoubleQuoteTest{
 
-    private static final Logger logger = Logger.getLogger(DoubleQuote.class.getName());
+    private static final Logger logger = Logger.getLogger(DoubleQuoteTest.class.getName());
     private XStream xstream;
 
     @Before
@@ -96,4 +104,46 @@ public class DoubleQuote{
 
 
     }
+
+
+    @Test
+    public void testQuoteEscapeCharacterDefinedInSchema() throws IOException, SchemaException, ValidationException, ConversionException{
+
+        ByteArrayOutputStream output = new ByteArrayOutputStream();
+        Schema schema = SchemaFactory.buildSchema(
+                DoubleQuoteTest.class.getResourceAsStream("csvEscapeCharacter.schema"));
+
+        assertEquals("\"", schema.getFormat().get("escapeCharacter"));
+        IOContext ctx = new IOContextBuilder().schema(schema).out(output).build();
+        RecordWriter writer = RecordWriterFactory.build(schema);
+        writer.open(ctx);
+        Record r = new Record();
+        r.put("a", "asdf");
+        r.put("b", "as\"df");
+        r.put("c", "\"\"");
+
+        writer.write(r);
+        writer.write(r);
+        writer.write(r);
+        writer.close();
+
+        byte[] bytes = output.toByteArray();
+        System.out.println(new String(bytes));
+
+
+        ctx = new IOContextBuilder().schema(schema).in(new ByteArrayInputStream(bytes)).build();
+        schema.getFormat().put("escapeCharacter", "\\");
+        RecordReader reader = new RecordReaderFactory().build(schema);
+        reader.open(ctx);
+        r = reader.read();
+        assertEquals("asdf", r.get("a"));
+        assertEquals("as\"df", r.get("b"));
+        assertEquals("\"\"", r.get("c"));
+        assertNotNull(reader.read());
+        assertNotNull(reader.read());
+        assertNull(reader.read());
+
+
+    }
+
 }

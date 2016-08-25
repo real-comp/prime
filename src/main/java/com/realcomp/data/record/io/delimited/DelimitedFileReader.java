@@ -304,7 +304,13 @@ public class DelimitedFileReader extends BaseRecordReader{
     }
 
     public char getEscapeCharacter(){
-        return getAttributeAsChar("escapeCharacter");
+
+        char escape = getAttributeAsChar("escapeCharacter");
+        if (escape == '"'){
+            //the CSVParser will handle escaped double-quotes properly without specifying this as the escape character.
+            escape = CSVParser.DEFAULT_ESCAPE_CHARACTER;
+        }
+        return escape;
     }
 
     public char getQuoteCharacter(){
