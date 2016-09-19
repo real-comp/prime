@@ -82,26 +82,4 @@ public class ParsePlanTest{
 
 
 
-    @Test
-    public void testAnotherPlan() throws ParsePlanException{
-
-        Schema inputSchema = SchemaFactory.buildSchema(
-                SchemaTest.class.getResourceAsStream("parse-plan-input.schema"));
-        Schema outputSchema = SchemaFactory.buildSchema(
-                SchemaTest.class.getResourceAsStream("parse-plan-output.schema"));
-
-        FieldList inputFieldList = inputSchema.getDefaultFieldList();
-
-        FieldList simple = new FieldList();
-        simple.add(new Field("a"));
-        simple.add(new Field("b"));
-        simple.add(new Field("c"));
-
-        List<Field> expected = new ArrayList<Field>();
-        expected.addAll(simple);
-
-        assertEquals(expected, new ParsePlan(simple));
-    }
-
-
 }
