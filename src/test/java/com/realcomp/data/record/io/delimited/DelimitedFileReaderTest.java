@@ -5,6 +5,8 @@ import com.realcomp.data.conversion.ConversionException;
 import com.realcomp.data.record.Record;
 import com.realcomp.data.record.io.IOContext;
 import com.realcomp.data.record.io.IOContextBuilder;
+import com.realcomp.data.record.io.RecordReader;
+import com.realcomp.data.record.io.RecordReaderFactory;
 import com.realcomp.data.schema.Field;
 import com.realcomp.data.schema.FieldList;
 import com.realcomp.data.schema.Schema;
@@ -326,6 +328,34 @@ public class DelimitedFileReaderTest{
             record = reader.read();
         }
         reader.close();
+    }
+
+    @Test
+    public void testSingleEscapedQuote() throws IOException, SchemaException, ValidationException, ConversionException{
+        String data = "R000034990,9934859,3/12/2003 12:00:00 AM,7/2/1997 12:00:00 AM,42,1722,LINDSEY ALICE E TRUST ESTATE \",";
+        Schema schema = new Schema();
+        FieldList fieldList = new FieldList();
+        fieldList.add(new Field("a"));
+        fieldList.add(new Field("b"));
+        fieldList.add(new Field("c"));
+        fieldList.add(new Field("d"));
+        fieldList.add(new Field("e"));
+        fieldList.add(new Field("f"));
+        fieldList.add(new Field("g"));
+        fieldList.add(new Field("h"));
+        schema.addFieldList(fieldList);
+        schema.getFormat().put("header", "false");
+        schema.getFormat().put("type", "CSV");
+        IOContext ctx = new IOContextBuilder()
+                .schema(schema)
+                .in(new ByteArrayInputStream(data.getBytes()))
+                .build();
+
+        try (RecordReader reader = RecordReaderFactory.build(schema)){
+            reader.open(ctx);
+            Record record = reader.read();
+        }
+
     }
 
 

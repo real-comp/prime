@@ -3,6 +3,7 @@ package com.realcomp.data.util;
 import com.realcomp.data.conversion.ConversionException;
 import com.realcomp.data.record.Record;
 import com.realcomp.data.record.io.*;
+import com.realcomp.data.schema.Schema;
 import com.realcomp.data.schema.SchemaException;
 import com.realcomp.data.schema.SchemaFactory;
 import com.realcomp.data.transform.TransformContext;
@@ -203,7 +204,7 @@ public class Reformat{
                         .withRequiredArg().describedAs("schema").required();
 
                 acceptsAll(Arrays.asList("os", "output-schema"), "output schema")
-                        .withRequiredArg().describedAs("schema").required();
+                        .withRequiredArg().describedAs("schema or 'json'").required();
 
                 accepts("in", "input file (default: STDIN)").withRequiredArg().describedAs("file");
                 accepts("out", "output file (default: STDOUT)").withRequiredArg().describedAs("file");
@@ -232,9 +233,20 @@ public class Reformat{
                         : new BufferedInputStream(System.in));
 
 
+                //Often, the Reformat tool is used to simply output a
+                Schema outputSchema = null;
+                if (options.valueOf("os").equals("json")){
+                    outputSchema = SchemaFactory.buildSchema(new FileInputStream((String) options.valueOf("is")));
+                    Map<String,String> format = new HashMap<>();
+                    format.put("type", "json");
+                    outputSchema.setFormat(format);
+                }
+                else{
+                    outputSchema = SchemaFactory.buildSchema(new FileInputStream((String) options.valueOf("os")));
+                }
+
                 IOContextBuilder outputBuilder = new IOContextBuilder();
-                outputBuilder.schema(
-                        SchemaFactory.buildSchema(new FileInputStream((String) options.valueOf("os"))));
+                outputBuilder.schema(outputSchema);
                 outputBuilder.out(
                         options.has("out")
                         ? new BufferedOutputStream(new FileOutputStream((String) options.valueOf("out")))

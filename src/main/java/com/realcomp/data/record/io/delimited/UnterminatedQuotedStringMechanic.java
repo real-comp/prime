@@ -17,7 +17,12 @@ public class UnterminatedQuotedStringMechanic {
 
     public UnterminatedQuotedStringMechanic(){
         fixes = new ArrayList<>();
-        fixes.add(new Fix(Pattern.compile("([^,])(\"\",\")"), "$1\\\\\"\",\""));
+
+        //replace ""," with \"","
+        fixes.add(new Fix(Pattern.compile("([^,\\\\\"])(\"\",\")"), "$1\\\\\"\",\""));
+
+        //replace single double-quote in entire line with two double-quotes
+        fixes.add(new Fix(Pattern.compile("^([^\"]+)([\"])([^\"]+)$"), "$1\"\"$3"));
     }
 
     public String repair(String hasProblem){

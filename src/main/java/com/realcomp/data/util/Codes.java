@@ -106,12 +106,15 @@ public class Codes{
         String translation = null;
         if (code != null){
             translation = codes.getProperty(code);
-            if (logMisses && translation == null){
-                if (cacheMisses && !missCache.contains(code)){
-                    logger.log(Level.INFO, "No [{0}] translation for code [{1}]", new Object[]{description, code});
-                    missCache.add(code);
+
+            if (translation == null){
+                if (cacheMisses){
+                    if (!missCache.contains(code)){
+                        logger.log(Level.INFO, "No [{0}] translation for code [{1}]", new Object[]{description, code});
+                        missCache.add(code);
+                    }
                 }
-                else{
+                else if (logMisses){
                     logger.log(Level.INFO, "No [{0}] translation for code [{1}]", new Object[]{description, code});
                 }
             }
