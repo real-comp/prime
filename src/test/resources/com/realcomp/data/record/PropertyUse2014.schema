@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rc:schema
+   xmlns:rc="http://www.real-comp.com/realcomp-data/schema/file-schema/1.2"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://www.real-comp.com/realcomp-data/schema/file-schema/1.2 http://www.real-comp.com/realcomp-data/schema/file-schema/1.2/file-schema.xsd"
+   name="PropertyUse2014">
+
+   <format type="fixed" header="false"/>
+   <after>
+        <trim/>
+   </after>
+   
+   <fields>
+    <field name="Account_Num" length="8">
+        <key/>
+    </field>
+    <field name="State_Use_Code" length="2"/>
+  </fields>
+</rc:schema>
+

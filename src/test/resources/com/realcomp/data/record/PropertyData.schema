@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rc:schema
+   xmlns:rc="http://www.real-comp.com/realcomp-data/schema/file-schema/1.2"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://www.real-comp.com/realcomp-data/schema/file-schema/1.2 http://www.real-comp.com/realcomp-data/schema/file-schema/1.2/file-schema.xsd"
+   name="PropertyData"
+   version="0.1">
+
+   <format type="|" header="true" quoteCharacter=""/>
+   <after>
+        <trim/>
+   </after>
+   
+   <fields>
+    <field name="RP">
+       <validateRegex regex="R|C|P|M"/>
+    </field>
+    <field name="Appraisal_Year"/>
+    <field name="Account_Num">
+        <key/>
+    </field>
+    <field name="Record_Type">
+        <validateRegex regex="AAAA"/>
+    </field>
+    <field name="Sequence_No"/>
+    <field name="PIDN"/>
+    <field name="Owner_Name"/>
+    <field name="Owner_Address"/>
+    <field name="Owner_CityState"/>
+    <field name="Owner_Zip"/>
+    <field name="Owner_Zip4"/>
+    <field name="Owner_CRRT"/>
+    <field name="Situs_Address"/>
+    <field name="Property_Class"/>
+    <field name="TAD_Map"/>
+    <field name="MAPSCO"/>
+    <field name="Exemption_Code"/>
+    <field name="State_Use_Code"/>
+    <field name="LegalDescription"/>
+    <field name="Notice_Date"/>
+    <field name="County"/>
+    <field name="City"/>
+    <field name="School"/>
+    <field name="Num_Special_Dist"/>
+    <field name="Spec1"/>
+    <field name="Spec2"/>
+    <field name="Spec3"/>
+    <field name="Spec4"/>
+    <field name="Spec5"/>
+    <field name="Deed_Date">
+        <validateRegex regex="|[0-9]{2}-[0-9]{2}-[12][0-9]{3}"/>
+    </field>
+    <field name="Deed_Book"/>
+    <field name="Deed_Page"/>
+    <field name="Land_Value"/>
+    <field name="Improvement_Value"/>
+    <field name="Total_Value"/>
+    <field name="Garage_Capacity"/>
+    <field name="Num_Bedrooms"/>
+    <field name="Num_Bathrooms"/>
+    <field name="Year_Built"/>
+    <field name="Living_Area"/>
+    <field name="Swimming_Pool_Ind"/>
+    <field name="ARB_Indicator"/>
+    <field name="Ag_Code"/>
+    <field name="Land_Acres"/>
+    <field name="Land_SqFt"/>
+    <field name="Ag_Acres"/>
+    <field name="Ag_Value"/>
+    <field name="Central_Heat_Ind"/>
+    <field name="Central_Ar_Ind"/>
+    <field name="Structure_Count"/>
+    <field name="From_Accts"/>
+    <field name="Appraisal_Date">
+        <validateRegex regex="[0-9]{2}-[0-9]{2}-[0-9]{4}"/>
+    </field>
+    <field name="Appraised_Value"/>
+    <field name="GIS_Link"/>
+    <field name="Instrument_No"/>
+    <field name="Overlap_Flag" description="No longer used">
+    	<validateRegex regex=" "/>
+    </field>
+  </fields>
+</rc:schema>
+

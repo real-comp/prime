@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rc:schema
+   xmlns:rc="http://www.real-comp.com/realcomp-data/schema/file-schema/1.2"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://www.real-comp.com/realcomp-data/schema/file-schema/1.2 http://www.real-comp.com/realcomp-data/schema/file-schema/1.2/file-schema.xsd"
+   name="PropertyData_Exemptions"
+   version="0.1">
+
+  <format header="true" type="|" quoteCharacter=""/>
+   <after>
+        <trim/>
+   </after>
+  <fields>
+    <field name="TaxYear"/>
+    <field name="Account_Num">
+        <key/>
+    </field>
+    <field name="GIS_Link"/>
+    <field name="Exemption"/>
+    <field name="ExemptionPct"/>
+  </fields>
+</rc:schema>

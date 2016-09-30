@@ -1,0 +1,2 @@
+RP|Appraisal_Year|Account_Num|Record_Type|Seq_Num|Street_Name|Street_Type|Pre_Dir|Post_Dir|Street_Num|Street_Num_Suffix|City|ZipCode|State
+C|2016|00000094|LOCA|000|BELKNAP                  |ST   |E |  |115   |   |FORT WORTH                      |76102     |TX

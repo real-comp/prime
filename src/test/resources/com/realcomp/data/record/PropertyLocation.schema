@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rc:schema
+   xmlns:rc="http://www.real-comp.com/realcomp-data/schema/file-schema/1.2"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://www.real-comp.com/realcomp-data/schema/file-schema/1.2 http://www.real-comp.com/realcomp-data/schema/file-schema/1.2/file-schema.xsd"
+   name="PropertyLocation"
+   version="0.1">
+
+  <format type="|" header="true" quoteCharacter=""/>
+  <after>
+    <trim/>
+  </after>
+  <fields>
+    <field name="RP">
+      <validateRegex regex="R|C|P|M"/>
+    </field>
+    <field name="Appraisal_Year"/>
+    <field name="Account_Num">
+        <key/>
+    </field>
+    <field name="Record_Type">
+        <validateRegex regex="LOCA"/>
+    </field>
+    <field name="Seq_Num"/>
+    <field name="Street_Name"/>
+    <field name="Street_Type"/>
+    <field name="Pre_Dir"/>
+    <field name="Post_Dir"/>
+    <field name="Street_Num"/>
+    <field name="Street_Num_Suffix"/>
+    <field name="City"/>
+    <field name="ZipCode"/>
+    <field name="State"/>
+  </fields>
+</rc:schema>
