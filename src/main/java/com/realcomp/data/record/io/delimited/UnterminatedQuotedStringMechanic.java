@@ -23,6 +23,10 @@ public class UnterminatedQuotedStringMechanic {
 
         //replace single double-quote in entire line with two double-quotes
         fixes.add(new Fix(Pattern.compile("^([^\"]+)([\"])([^\"]+)$"), "$1\"\"$3"));
+
+
+        //replace ,"\", with ,"\\",
+        fixes.add(new Fix(Pattern.compile(",\"\\\\\","), ",\"\\\\\\\\\","));
     }
 
     public String repair(String hasProblem){

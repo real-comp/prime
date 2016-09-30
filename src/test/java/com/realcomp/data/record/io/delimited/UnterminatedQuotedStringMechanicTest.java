@@ -31,6 +31,12 @@ public class UnterminatedQuotedStringMechanicTest {
         assertEquals(expected, mechanic.repair(expected));
 
 
+        problem = "2016,\"R006935\",\"180270000102003000\",\"180270000102003000\",\"R\",\"BARRETT DOYCE N\",\"\\\",\"\",\"\",\"216 S BAY DR\"";
+        expected = "2016,\"R006935\",\"180270000102003000\",\"180270000102003000\",\"R\",\"BARRETT DOYCE N\",\"\\\\\",\"\",\"\",\"216 S BAY DR\"";
+        assertEquals(expected, mechanic.repair(problem));
+        //if it is already escaped, don't escape it again
+        assertEquals(expected, mechanic.repair(expected));
+
     }
 
 }
