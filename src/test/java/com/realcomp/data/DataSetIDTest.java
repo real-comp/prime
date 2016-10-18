@@ -43,8 +43,5 @@ public class DataSetIDTest {
         id = DataSetID.parse("s3://rc-data-raw/dl/tx/txdps/20160103/PTXDPS_WEEKLYUPDATE_01032016_1.txt.gz");
         assertEquals("20160103", id.getVersion());
         assertEquals("PTXDPS_WEEKLYUPDATE_01032016_1.txt.gz", id.getName());
-
-
-
     }
 }

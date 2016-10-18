@@ -4,6 +4,7 @@ import com.realcomp.data.conversion.ConversionException;
 import com.realcomp.data.record.io.IOContext;
 import com.realcomp.data.schema.SchemaException;
 import com.realcomp.data.validation.ValidationException;
+
 import java.io.IOException;
 
 /**
@@ -24,7 +25,7 @@ public interface RecordViewWriter<T> extends AutoCloseable{
      * Open an OutputStream for writing. May be invoked multiple times with new output as needed.
      * close() is automatically invoked before each open();
      *
-     * @param in OutputStream to write to. Not null
+     * @param context IOContext to write to. Not null
      * @throws IOException
      * @throws SchemaException
      */
