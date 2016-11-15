@@ -1,12 +1,53 @@
-
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
-    <groupId>com.realcomp.data</groupId>
-    <artifactId>realcomp-data</artifactId>
+    <groupId>com.real-comp</groupId>
+    <artifactId>prime</artifactId>
     <packaging>jar</packaging>
-    <version>0.4.2-SNAPSHOT</version>
-    <name>realcomp-data</name>
+    <version>0.5.0-SNAPSHOT</version>
+    <name>prime</name>
+    <description>Data transformation tool</description>
+    <url>https://github.com/real-comp/prime</url>
+    <organization>
+        <name>Real-Comp</name>
+        <url>http://www.real-comp.com</url>
+    </organization>
+    <developers>
+        <developer>
+            <id>krenfro</id>
+            <name>Kyle Renfro</name>
+            <email>kylerenfro@gmail.com</email>
+        </developer>
+    </developers>
+    <licenses>
+        <license>
+            <name>Apache License, Version 2.0</name>
+            <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+            <comments>A business-friendly OSS license</comments>
+        </license>
+    </licenses>
+    <scm>
+        <connection>scm:git:git@github.com:real-comp/primes.git</connection>
+        <developerConnection>scm:git:git@github.com:real-comp/prime.git</developerConnection>
+        <url>git@github.com:real-comp/prime.git</url>
+        <tag>HEAD</tag>
+    </scm>
+    <distributionManagement>
+        <snapshotRepository>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+        </snapshotRepository>
+        <repository>
+            <id>ossrh</id>
+            <name>Nexus Staging Repository</name>
+            <url>http://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+        </repository>
+    </distributionManagement>
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
     <build>
         <plugins>
             <plugin>
@@ -33,7 +74,7 @@
                         <phase>compile</phase>
                         <configuration>
                             <processors>
-                                <processor>com.realcomp.data.annotation.processor.NoArgConstructorProcessor</processor>
+                                <processor>com.realcomp.prime.annotation.processor.NoArgConstructorProcessor</processor>
                             </processors>
                         </configuration>
                     </execution>
@@ -48,8 +89,8 @@
                     </descriptorRefs>
                     <archive>
                         <manifest>
-                            <mainClass>com.realcomp.data.util.Reformat</mainClass>
-                            <packageName>com.realcomp.data.util</packageName>
+                            <mainClass>com.realcomp.prime.util.Reformat</mainClass>
+                            <packageName>com.realcomp.prime.util</packageName>
                         </manifest>
                     </archive>
                 </configuration>
@@ -63,8 +104,82 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>org.sonatype.plugins</groupId>
+                <artifactId>nexus-staging-maven-plugin</artifactId>
+                <version>1.6.3</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <serverId>ossrh</serverId>
+                    <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+                    <autoReleaseAfterClose>true</autoReleaseAfterClose>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-release-plugin</artifactId>
+                <version>2.5</version>
+                <configuration>
+                    <autoVersionSubmodules>true</autoVersionSubmodules>
+                    <useReleaseProfile>false</useReleaseProfile>
+                    <releaseProfiles>release</releaseProfiles>
+                    <goals>deploy</goals>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
+    <profiles>
+        <profile>
+            <id>release</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <version>1.6</version>
+                        <executions>
+                            <execution>
+                                <id>sign-artifacts</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                                <configuration>
+                                    <keyname>277117C3</keyname>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-source-plugin</artifactId>
+                        <version>3.0.1</version>
+                        <executions>
+                            <execution>
+                                <id>attach-sources</id>
+                                <goals>
+                                    <goal>jar-no-fork</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <version>2.10.4</version>
+                        <executions>
+                            <execution>
+                                <id>attach-javadocs</id>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
     <dependencies>
         <dependency>
             <groupId>junit</groupId>
@@ -75,19 +190,12 @@
         <dependency>
             <groupId>org.reflections</groupId>
             <artifactId>reflections</artifactId>
-            <version>0.9.9-RC1</version>
+            <version>0.9.10</version>
         </dependency>
         <dependency>
-            <groupId>com.realcomp</groupId>
-            <artifactId>realcomp-data-annotations</artifactId>
-            <version>0.0.2</version>
-        </dependency>
-        <dependency>
-            <groupId>com.realcomp.names</groupId>
-            <artifactId>realcomp-names</artifactId>
-            <version>4.0.6</version>
-            <optional>true</optional>
-            <type>jar</type>
+            <groupId>com.real-comp</groupId>
+            <artifactId>prime-annotations</artifactId>
+            <version>0.0.4</version>
         </dependency>
         <dependency>
             <groupId>commons-io</groupId>
@@ -115,20 +223,5 @@
             <version>4.3</version>
         </dependency>
     </dependencies>
-    <distributionManagement>
-        <repository>
-            <id>nexus</id>
-            <url>https://nexus.real-comp.com/nexus/content/repositories/releases</url>
-        </repository>
-        <snapshotRepository>
-            <id>nexus</id>
-            <url>https://nexus.real-comp.com/nexus/content/repositories/snapshots</url>
-        </snapshotRepository>
-    </distributionManagement>
-    <scm>
-        <connection>scm:git:ssh://git@bitbucket.org/real-comp/realcomp-data.git</connection>
-        <developerConnection>scm:git:ssh://git@bitbucket.org/real-comp/realcomp-data.git</developerConnection>
-        <url>https://bitbucket.org/real-comp/realcomp-data</url>
-    </scm>
 </project>
 
