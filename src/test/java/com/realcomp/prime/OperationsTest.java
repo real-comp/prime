@@ -76,16 +76,16 @@ public class OperationsTest{
 
         try{
             Operations.getOperations(null, new Field());
-            fail("should have throws IAE");
+            fail("should have throws NPE");
         }
-        catch (IllegalArgumentException expected){
+        catch (NullPointerException expected){
         }
 
         try{
             Operations.getOperations(new Schema(), null);
-            fail("should have thrown IAE");
+            fail("should have thrown NPE");
         }
-        catch (IllegalArgumentException expected){
+        catch (NullPointerException expected){
         }
 
     }
