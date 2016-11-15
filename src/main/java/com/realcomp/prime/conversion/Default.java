@@ -2,7 +2,6 @@ package com.realcomp.prime.conversion;
 
 /**
  * emits the default value if the value is null or empty string
- * @author krenfro
  */
 @com.realcomp.prime.annotation.Converter("default")
 public class Default extends StringConverter implements NullValueConverter{

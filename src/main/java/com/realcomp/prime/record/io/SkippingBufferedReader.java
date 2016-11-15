@@ -11,7 +11,6 @@ import java.util.Queue;
 /**
  * Special BufferedReader that allows for the skipping of leading and trailing lines.
  *
- * @author krenfro
  */
 public class SkippingBufferedReader extends Reader{
 

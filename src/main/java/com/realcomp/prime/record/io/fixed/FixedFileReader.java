@@ -21,7 +21,6 @@ import java.util.logging.Logger;
 /**
  * There is an implicit Resize converter on all fields that runs after all 'after' operations.
  *
- * @author krenfro
  */
 public class FixedFileReader extends BaseRecordReader{
 

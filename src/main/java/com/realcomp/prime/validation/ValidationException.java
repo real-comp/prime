@@ -11,7 +11,6 @@ package com.realcomp.prime.validation;
  * by an object that does know, and can handle the problem.
  *
  *
- * @author krenfro
  */
 public class ValidationException extends Exception{
 

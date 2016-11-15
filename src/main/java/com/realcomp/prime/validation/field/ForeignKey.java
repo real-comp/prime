@@ -6,7 +6,6 @@ import com.realcomp.prime.validation.Severity;
 /**
  * Marks the value as a 'foreign key'.
  *
- * @author krenfro
  */
 @Validator("foreignKey")
 public class ForeignKey extends Key{

@@ -1,14 +1,14 @@
 package com.realcomp.prime.conversion;
 
-import java.util.Objects;
 import org.apache.commons.lang.StringUtils;
+
+import java.util.Objects;
 
 /**
  *
  * Converts a value to a String (toString), and left pads the value with some character(s) to a specified length.
  * Default pad character is a single space.
  *
- * @author krenfro
  */
 @com.realcomp.prime.annotation.Converter("leftPad")
 public class LeftPad extends SimpleConverter{

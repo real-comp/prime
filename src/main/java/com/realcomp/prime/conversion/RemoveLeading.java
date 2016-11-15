@@ -4,7 +4,6 @@ package com.realcomp.prime.conversion;
  * Remove any leading characters that match a value.
  * Simply a Replace converter with "^(" + value + ")+"as the regex and "" as the replacement.
  *
- * @author krenfro
  */
 @com.realcomp.prime.annotation.Converter("removeLeading")
 public class RemoveLeading extends SimpleConverter{

@@ -7,10 +7,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-/**
- *
- * @author krenfro
- */
+
 @XStreamAlias("relational-schema")
 @XStreamConverter(RelationalSchemaConverter.class)
 public class RelationalSchema{

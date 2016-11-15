@@ -13,7 +13,6 @@ import java.util.regex.Pattern;
 /**
  * Uses xStream, JavaBeans and reflection to dynamically serialize/de-serialize an Operation
  *
- * @author krenfro
  */
 public class FieldListConverter implements Converter{
 

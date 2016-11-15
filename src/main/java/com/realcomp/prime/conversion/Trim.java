@@ -1,9 +1,6 @@
 package com.realcomp.prime.conversion;
 
-/**
- *
- * @author krenfro
- */
+
 @com.realcomp.prime.annotation.Converter("trim")
 public class Trim extends StringConverter{
 

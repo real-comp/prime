@@ -8,7 +8,6 @@ import java.util.regex.Pattern;
  * Repairs unterminated quoted strings.
  * The csv parser trips on poorly formatted delimited records.
  *
- * @author krenfro
  */
 public class UnterminatedQuotedStringMechanic {
 

@@ -10,7 +10,6 @@ import java.util.Set;
 /**
  * A Table in a RelationalSchema
  *
- * @author krenfro
  */
 @XStreamAlias("table")
 public class Table{

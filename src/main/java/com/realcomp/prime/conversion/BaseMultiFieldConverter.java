@@ -5,10 +5,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-/**
- *
- * @author krenfro
- */
+
 public abstract class BaseMultiFieldConverter implements MultiFieldConverter{
 
     protected List<DataType> supportedTypes;

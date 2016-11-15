@@ -7,7 +7,6 @@ import java.util.regex.Pattern;
 /**
  * Extracts part of a string and returns one or more of the first tokens from a String.
  *
- * @author krenfro
  */
 @com.realcomp.prime.annotation.Converter("extractGroup")
 public class ExtractGroup extends StringConverter{

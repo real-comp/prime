@@ -27,7 +27,6 @@ import static org.junit.Assert.*;
  * It is often necessary to include special reserved xml characters
  * as parameters to operations.
  *
- * @author krenfro
  */
 public class DoubleQuoteTest{
 

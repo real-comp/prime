@@ -2,13 +2,10 @@ package com.realcomp.prime.validation;
 
 import com.realcomp.prime.Operation;
 
-/**
- *
- * @author krenfro
- */
+
 public interface Validator extends Operation{
 
-    static final Severity DEFAULT_SEVERITY = Severity.MEDIUM;
+    Severity DEFAULT_SEVERITY = Severity.MEDIUM;
 
     /**
      * Set the severity of this Validator.

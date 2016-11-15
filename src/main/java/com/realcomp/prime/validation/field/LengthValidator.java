@@ -5,10 +5,6 @@ import com.realcomp.prime.annotation.Validator;
 import com.realcomp.prime.conversion.ConversionException;
 import com.realcomp.prime.validation.ValidationException;
 
-/**
- *
- * @author krenfro
- */
 @Validator("validateLength")
 public class LengthValidator extends BaseFieldValidator{
 

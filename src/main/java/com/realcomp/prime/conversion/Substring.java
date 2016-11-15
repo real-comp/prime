@@ -5,7 +5,6 @@ import java.util.Objects;
 /**
  * behaves like String.substring(begin, end) Bad index will return empty-string.
  *
- * @author krenfro
  */
 @com.realcomp.prime.annotation.Converter("substring")
 public class Substring extends SimpleConverter{

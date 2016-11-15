@@ -5,10 +5,7 @@ import com.realcomp.prime.MultiFieldOperation;
 import com.realcomp.prime.record.Record;
 import java.util.List;
 
-/**
- *
- * @author krenfro
- */
+
 public interface MultiFieldConverter extends MultiFieldOperation{
 
     /**

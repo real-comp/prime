@@ -13,7 +13,6 @@ import java.io.IOException;
  *
  * Note: Implementors should ensure that their RecordWriter has a default empty constructor.
  *
- * @author krenfro
  */
 public interface RecordWriter extends AutoCloseable{
 

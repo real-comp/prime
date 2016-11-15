@@ -12,7 +12,6 @@ import java.util.List;
  * MultiFieldConverters and require other fields to be available in the Record before they can succeed.
  * MultiFieldConverters should be parsed after any non-MultiFieldConverters
  *
- * @author krenfro
  */
 public class ParsePlan extends ArrayList<Field>{
 

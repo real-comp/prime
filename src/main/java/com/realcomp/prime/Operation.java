@@ -1,10 +1,6 @@
 package com.realcomp.prime;
 
-/**
- *
- * @author krenfro
- */
-public interface Operation{
 
+public interface Operation{
     Operation copyOf();
 }

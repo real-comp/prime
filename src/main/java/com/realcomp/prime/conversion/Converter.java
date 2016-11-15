@@ -7,7 +7,6 @@ import java.util.Collection;
 /**
  * An Operation that converts the value of an Object in some way. The Object must be a supported DataType.
  *
- * @author krenfro
  */
 public interface Converter extends Operation{
 

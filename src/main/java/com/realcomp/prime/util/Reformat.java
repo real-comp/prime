@@ -26,7 +26,6 @@ import java.util.logging.Logger;
  * You can optionally write filtered records to a file.  The optional filter file will conform to the input schema,
  * and contain both records that failed on input, and those that failed on output.
  *
- * @author krenfro
  */
 public class Reformat{
 

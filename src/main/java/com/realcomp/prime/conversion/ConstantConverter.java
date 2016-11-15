@@ -1,9 +1,5 @@
 package com.realcomp.prime.conversion;
 
-/**
- *
- * @author krenfro
- */
 @com.realcomp.prime.annotation.Converter("constant")
 public class ConstantConverter extends SimpleConverter{
 

@@ -4,7 +4,6 @@ import com.realcomp.prime.Operation;
 
 /**
  *
- * @author krenfro
  */
 public class MockConverter extends ComplexConverter{
 

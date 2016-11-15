@@ -6,7 +6,6 @@ import com.realcomp.prime.DataType;
  * Special virtual Field used as a placeholder for operations that need to be executed before any of the schemas fields
  * have been processed.
  *
- * @author krenfro
  */
 public final class BeforeFirstField extends Field{
 

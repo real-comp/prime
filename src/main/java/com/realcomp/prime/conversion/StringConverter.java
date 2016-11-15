@@ -10,7 +10,6 @@ import java.util.Objects;
 /**
  * A Converter for the STRING prime DataType
  *
- * @author krenfro
  */
 public class StringConverter implements Converter{
 

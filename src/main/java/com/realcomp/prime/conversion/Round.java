@@ -9,8 +9,7 @@ import java.util.List;
  * Rounds, treating the value as a Double, to the nearest Long.
  *
  * @see Math#round(double);
- * @author krenfro
- *
+ *  *
  */
 @com.realcomp.prime.annotation.Converter("round")
 public class Round implements Converter{

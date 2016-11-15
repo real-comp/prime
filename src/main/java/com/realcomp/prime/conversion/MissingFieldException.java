@@ -1,9 +1,6 @@
 package com.realcomp.prime.conversion;
 
-/**
- *
- * @author krenfro
- */
+
 public class MissingFieldException extends ConversionException{
 
     private static final long serialVersionUID = 1L;

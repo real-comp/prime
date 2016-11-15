@@ -5,10 +5,6 @@ import com.realcomp.prime.transform.Transformer;
 import com.thoughtworks.xstream.XStream;
 import java.io.InputStream;
 
-/**
- *
- * @author krenfro
- */
 public class SchemaFactory{
 
 

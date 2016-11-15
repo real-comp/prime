@@ -6,7 +6,6 @@ import static org.junit.Assert.assertEquals;
 
 /**
  *
- * @author krenfro
  */
 public class DefaultConverterTest extends SimpleConverterTest{
 

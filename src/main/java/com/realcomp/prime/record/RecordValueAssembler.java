@@ -7,7 +7,6 @@ import java.util.*;
  * Assembles a value into a Map, creating any necessary parent elements specified by the key.
  *
  * @see RecordValueResolver
- * @author krenfro
  */
 public class RecordValueAssembler{
 

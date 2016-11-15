@@ -6,11 +6,8 @@ import com.realcomp.prime.schema.Field;
 import com.realcomp.prime.schema.Schema;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
-/**
- *
- * @author krenfro
- */
 public class Operations{
 
     /**
@@ -21,12 +18,8 @@ public class Operations{
      */
     public static List<Operation> getOperations(Schema schema, Field field){
 
-        if (schema == null){
-            throw new IllegalArgumentException("schema is null");
-        }
-        if (field == null){
-            throw new IllegalArgumentException("field is null");
-        }
+        Objects.requireNonNull(schema);
+        Objects.requireNonNull(field);
 
         List<Operation> operations = new ArrayList<>();
         List<Operation> fieldOps = field.getOperations();

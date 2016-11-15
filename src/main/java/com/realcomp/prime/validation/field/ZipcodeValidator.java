@@ -9,7 +9,6 @@ import java.util.regex.Pattern;
 /**
  * Validates a 5 or 10 digit zipcode.
  *
- * @author krenfro
  */
 @Validator("validateZipcode")
 public class ZipcodeValidator extends BaseFieldValidator{

@@ -9,10 +9,7 @@ import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- *
- * @author krenfro
- */
+
 public class IOContextBuilder{
 
     protected Schema schema;

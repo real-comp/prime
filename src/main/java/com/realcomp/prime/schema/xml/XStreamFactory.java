@@ -6,22 +6,18 @@ import com.realcomp.prime.conversion.ComplexConverter;
 import com.realcomp.prime.conversion.SimpleConverter;
 import com.realcomp.prime.conversion.Trim;
 import com.realcomp.prime.record.io.Format;
-import com.realcomp.prime.schema.Schema;
-import com.realcomp.prime.schema.RelationalSchema;
-import com.realcomp.prime.schema.Field;
-import com.realcomp.prime.schema.FieldList;
-import com.realcomp.prime.schema.Table;
+import com.realcomp.prime.schema.*;
 import com.realcomp.prime.transform.Transformer;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.StaxDriver;
-import java.util.Set;
 import org.reflections.Reflections;
+
+import java.util.Set;
 
 /**
  * Creates correctly configured XStream instances.
  *
  *
- * @author krenfro
  */
 public class XStreamFactory{
 

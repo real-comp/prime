@@ -8,7 +8,6 @@ import java.util.List;
 /**
  * A Converter for all DataTypes
  *
- * @author krenfro
  */
 public abstract class ComplexConverter implements Converter{
 

@@ -6,7 +6,6 @@ import java.util.regex.Pattern;
  * Replaces all occurrences of <i>regex</i> with <i>replacement</i>. Default <i>replacement</i> is the empty string.
  * Multiple passes will be performed until the regex is not found.
  *
- * @author krenfro
  */
 @com.realcomp.prime.annotation.Converter("replace")
 public class Replace extends SimpleConverter{

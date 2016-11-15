@@ -14,7 +14,6 @@ import java.util.Map.Entry;
 /**
  * Uses xStream, JavaBeans and reflection to dynamically serialize/de-serialize an Map&lt;String,String&gt;
  *
- * @author krenfro
  */
 public class AttributesConverter extends MapConverter{
 

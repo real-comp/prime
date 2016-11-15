@@ -9,7 +9,6 @@ import java.util.regex.Pattern;
 /**
  * A List of Fields
  *
- * @author krenfro
  */
 @XStreamConverter(FieldListConverter.class)
 public class FieldList implements List<Field>{

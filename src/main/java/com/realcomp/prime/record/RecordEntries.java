@@ -12,7 +12,6 @@ import java.util.logging.Logger;
  * Returns all (leaf) entries in a Record. The order of the entries is not defined.
  *
  *
- * @author krenfro
  */
 class RecordEntries{
 

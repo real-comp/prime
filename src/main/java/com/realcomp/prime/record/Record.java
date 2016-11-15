@@ -11,7 +11,6 @@ import java.util.*;
  * A Map with support for composite keys.
  *
  *
- * @author krenfro
  */
 @XmlRootElement
 public class Record implements Map<String, Object>, Serializable{

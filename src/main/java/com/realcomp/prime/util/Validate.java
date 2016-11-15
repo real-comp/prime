@@ -18,7 +18,6 @@ import joptsimple.OptionSet;
 /**
  * Validates a file against a schema
  *
- * @author krenfro
  */
 public class Validate{
 

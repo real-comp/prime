@@ -13,8 +13,6 @@ import java.util.List;
  *
  *
  * The format specific implementation should not write partial records.
- *
- * @author krenfro
  */
 public abstract class BaseRecordWriter extends BaseRecordReaderWriter implements RecordWriter{
 

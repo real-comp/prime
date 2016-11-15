@@ -5,9 +5,6 @@ import com.realcomp.prime.schema.SchemaException;
 import java.io.IOException;
 import java.util.logging.Logger;
 
-/**
- * @author krenfro
- */
 public abstract class BaseRecordReader extends BaseRecordReaderWriter implements RecordReader{
 
     private static final Logger logger = Logger.getLogger(BaseRecordReader.class.getName());

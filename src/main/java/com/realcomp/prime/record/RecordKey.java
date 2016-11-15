@@ -16,7 +16,6 @@ import java.util.regex.Pattern;
  *
  * </p>
  *
- * @author krenfro
  */
 public final class RecordKey{
 

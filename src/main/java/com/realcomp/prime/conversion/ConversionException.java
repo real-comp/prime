@@ -1,8 +1,6 @@
 package com.realcomp.prime.conversion;
 
-/**
- * @author krenfro
- */
+
 public class ConversionException extends Exception{
 
     private static final long serialVersionUID = -6194444803112488817L;

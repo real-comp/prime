@@ -1,9 +1,6 @@
 package com.realcomp.prime.schema;
 
-/**
- *
- * @author krenfro
- */
+
 public class SchemaException extends Exception{
 
     public SchemaException(){

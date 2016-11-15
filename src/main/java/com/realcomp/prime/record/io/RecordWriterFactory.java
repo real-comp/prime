@@ -8,10 +8,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
 
-/**
- *
- * @author krenfro
- */
 public class RecordWriterFactory{
 
     private static final Logger logger = Logger.getLogger(RecordWriterFactory.class.getName());

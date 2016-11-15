@@ -15,7 +15,6 @@ import java.util.logging.Logger;
 /**
  * Prints a schema for human consumption
  *
- * @author krenfro
  */
 public class SchemaPrettyPrinter{
 

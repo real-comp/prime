@@ -12,7 +12,6 @@ import java.util.Queue;
 /**
  * Wraps a RecordReader to provide a push-back feature to un-read Records.
  *
- * @author krenfro
  */
 public class PushBackRecordReader implements RecordReader{
 

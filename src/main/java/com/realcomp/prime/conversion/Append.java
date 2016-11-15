@@ -1,9 +1,6 @@
 package com.realcomp.prime.conversion;
 
-/**
- *
- * @author krenfro
- */
+
 @com.realcomp.prime.annotation.Converter("append")
 public class Append extends SimpleConverter implements NullValueConverter{
 

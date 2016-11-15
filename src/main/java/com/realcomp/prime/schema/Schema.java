@@ -14,10 +14,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.regex.Pattern;
 
-/**
- *
- * @author krenfro
- */
 @XStreamAlias("schema")
 public class Schema{
 

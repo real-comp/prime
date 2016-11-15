@@ -19,7 +19,6 @@ import java.util.Queue;
  * The append() should be followed by a single RecordReader.read() operation.
  *
  *
- * @author krenfro
  */
 public class AppendableByteArrayInputStream extends ByteArrayInputStream{
 

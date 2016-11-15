@@ -14,7 +14,6 @@ import java.util.logging.Logger;
 /**
  * Reads, dynamically, properties of a JavaBean.
  *
- * @author krenfro
  */
 public class DynamicPropertyGetter{
 
@@ -33,7 +32,7 @@ public class DynamicPropertyGetter{
     /**
      * @param bean not null
      * @return all valid properties of the specified Object
-     * @throws EncodingException
+     * @throws IntrospectionException
      */
     public Map<String, Object> getProperties(Object bean) throws IntrospectionException{
 

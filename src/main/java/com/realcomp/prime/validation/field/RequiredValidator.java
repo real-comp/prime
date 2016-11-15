@@ -9,7 +9,6 @@ import java.util.Map;
 /**
  * Validates the provided value is non-empty.
  *
- * @author krenfro
  */
 @Validator("required")
 public class RequiredValidator extends BaseFieldValidator{
@@ -38,7 +37,6 @@ public class RequiredValidator extends BaseFieldValidator{
                 }
                 break;
         }
-
     }
 
     @Override

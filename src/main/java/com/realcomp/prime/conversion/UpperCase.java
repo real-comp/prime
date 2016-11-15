@@ -1,9 +1,6 @@
 package com.realcomp.prime.conversion;
 
-/**
- *
- * @author krenfro
- */
+
 @com.realcomp.prime.annotation.Converter("upperCase")
 public class UpperCase extends StringConverter{
 

@@ -3,10 +3,7 @@ package com.realcomp.prime.conversion;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- *
- * @author krenfro
- */
+
 @com.realcomp.prime.annotation.Converter("formatPhone")
 public class FormatPhone extends SimpleConverter{
 

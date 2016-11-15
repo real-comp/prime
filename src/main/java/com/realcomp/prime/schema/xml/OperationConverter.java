@@ -22,7 +22,6 @@ import java.util.Set;
 /**
  * Uses xStream, JavaBeans and reflection to dynamically serialize/de-serialize an Operation
  *
- * @author krenfro
  */
 public class OperationConverter implements Converter{
 

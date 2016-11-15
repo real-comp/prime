@@ -1,21 +1,21 @@
 package com.realcomp.prime.schema;
 
-import com.realcomp.prime.schema.xml.DataTypeConverter;
 import com.realcomp.prime.DataType;
 import com.realcomp.prime.Operation;
+import com.realcomp.prime.schema.xml.DataTypeConverter;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
 import com.thoughtworks.xstream.annotations.XStreamConverter;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
-import java.util.ArrayList;
-import java.util.List;
+
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A named and typed field of a Schema.
  *
- * @author krenfro
  */
 @XStreamAlias("field")
 @XmlRootElement

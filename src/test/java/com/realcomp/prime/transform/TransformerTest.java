@@ -17,7 +17,6 @@ import static org.junit.Assert.*;
 
 /**
  *
- * @author krenfro
  */
 public class TransformerTest{
 

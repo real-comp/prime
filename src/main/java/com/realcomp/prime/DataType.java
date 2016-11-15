@@ -6,11 +6,11 @@ import com.realcomp.prime.conversion.RemoveLeading;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * The set of types supported in the prime data model.
  *
- * @author krenfro
  */
 public enum DataType{
 
@@ -45,9 +45,7 @@ public enum DataType{
      */
     public static DataType getDataType(Object value){
 
-        if (value == null){
-            throw new IllegalArgumentException("value is null");
-        }
+        Objects.requireNonNull(value);
 
         if (String.class.isAssignableFrom(value.getClass())){
             return STRING;
@@ -86,10 +84,7 @@ public enum DataType{
      */
     public Object coerce(Object value) throws ConversionException{
 
-        if (value == null){
-            throw new IllegalArgumentException("value is null");
-        }
-
+        Objects.requireNonNull(value);
         Object result = null;
 
         switch (this){

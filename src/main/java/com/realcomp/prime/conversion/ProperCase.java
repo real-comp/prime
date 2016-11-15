@@ -4,10 +4,7 @@ import java.util.HashMap;
 import java.util.PropertyResourceBundle;
 import java.util.ResourceBundle;
 
-/**
- *
- * @author krenfro
- */
+
 @com.realcomp.prime.annotation.Converter("properCase")
 public class ProperCase extends LeadCase{
 

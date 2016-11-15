@@ -9,7 +9,6 @@ import java.io.IOException;
 
 /**
  *
- * @author krenfro
  */
 public interface RecordViewWriter<T> extends AutoCloseable{
 

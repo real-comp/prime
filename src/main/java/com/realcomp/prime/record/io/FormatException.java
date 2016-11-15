@@ -2,10 +2,7 @@ package com.realcomp.prime.record.io;
 
 import com.realcomp.prime.schema.SchemaException;
 
-/**
- *
- * @author krenfro
- */
+
 public class FormatException extends SchemaException{
 
     public FormatException(){

@@ -6,7 +6,6 @@ import java.util.Objects;
  * Uses static variable to hold the sequence number.  This will cause problems if multiple
  * sequences are used in a schema.
  *
- * @author krenfro
  */
 @com.realcomp.prime.annotation.Converter("sequence")
 public class Sequence extends SimpleConverter implements NullValueConverter{

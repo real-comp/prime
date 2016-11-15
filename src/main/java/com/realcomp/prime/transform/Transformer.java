@@ -11,16 +11,14 @@ import com.realcomp.prime.schema.xml.FieldListConverter;
 import com.realcomp.prime.validation.ValidationException;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamConverter;
+
+import javax.annotation.Generated;
+import javax.xml.bind.annotation.XmlRootElement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
-import javax.annotation.Generated;
-import javax.xml.bind.annotation.XmlRootElement;
 
-/**
- *
- * @author krenfro
- */
+
 @XStreamAlias("transform")
 @XmlRootElement
 public class Transformer{

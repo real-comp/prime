@@ -9,8 +9,6 @@ import java.util.List;
  * Divide, treating arguments as Doubles.
  *
  *
- * @author krenfro
- *
  */
 @com.realcomp.prime.annotation.Converter("divide")
 public class Divide implements Converter{

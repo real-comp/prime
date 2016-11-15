@@ -4,9 +4,7 @@ import com.realcomp.prime.validation.Severity;
 import com.realcomp.prime.validation.Validator;
 
 /**
- * Base implementation of a Validator that handles the severity level
- *
- * @author krenfro
+ * Base implementation of a Validator that handles the severity level *
  */
 public abstract class BaseFieldValidator implements Validator{
 

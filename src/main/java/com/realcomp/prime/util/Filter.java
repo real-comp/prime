@@ -7,19 +7,19 @@ import com.realcomp.prime.schema.SchemaException;
 import com.realcomp.prime.schema.SchemaFactory;
 import com.realcomp.prime.validation.Severity;
 import com.realcomp.prime.validation.ValidationException;
+import joptsimple.OptionException;
+import joptsimple.OptionParser;
+import joptsimple.OptionSet;
+
 import java.io.*;
 import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import joptsimple.OptionException;
-import joptsimple.OptionParser;
-import joptsimple.OptionSet;
 
 /**
  * WARNING: This class does more than filter, it filters and runs the conversions!
  *
  *
- * @author krenfro
  */
 public class Filter{
 

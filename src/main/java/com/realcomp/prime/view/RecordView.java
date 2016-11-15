@@ -5,7 +5,6 @@ import com.realcomp.prime.record.Record;
 /**
  * A view converts a Record to/from an arbitrary type.
  *
- * @author krenfro
  */
 public interface RecordView<T>{
 

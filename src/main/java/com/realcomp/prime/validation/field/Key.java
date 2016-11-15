@@ -15,8 +15,6 @@ import com.realcomp.prime.validation.ValidationException;
  * For records with multiple keys, it may be important to specify an order so Records can be joined properly.
  * </p>
  *
- * @see com.realcomp.prime.hdfs.SequenceFileRecordWriter
- * @author krenfro
  */
 @Validator("key")
 public class Key extends BaseFieldValidator{

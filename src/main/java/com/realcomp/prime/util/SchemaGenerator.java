@@ -21,7 +21,6 @@ import java.util.logging.Logger;
  * Schema generator for delimited files.
  * Uses the first record in a delimited file to generate a schema.
  *
- * @author krenfro
  */
 public class SchemaGenerator{
 

@@ -6,7 +6,6 @@ import java.io.IOException;
 /**
  * A RecordProcessor that writes filtered records to a RecordWriter.
  * 
- * @author krenfro
  */
 public interface RecordFilter extends Closeable, RecordProcessor{
     

@@ -14,9 +14,6 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-/**
- * @author krenfro
- */
 public abstract class BaseRecordReaderWriter implements AutoCloseable{
 
     private static final Logger logger = Logger.getLogger(BaseRecordReaderWriter.class.getName());

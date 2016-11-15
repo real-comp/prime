@@ -9,7 +9,6 @@ import java.util.regex.Pattern;
 /**
  * Validates the provided value as non-empty.
  *
- * @author krenfro
  */
 @Validator("validateRegex")
 public class RegexValidator extends BaseFieldValidator{

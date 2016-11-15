@@ -7,10 +7,6 @@ import com.realcomp.prime.schema.SchemaException;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- *
- * @author krenfro
- */
 public class RecordReaderFactory{
 
     private static final Map<String, String> types;

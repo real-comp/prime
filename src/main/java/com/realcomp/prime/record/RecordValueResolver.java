@@ -10,7 +10,6 @@ import java.util.Stack;
  * A composite RecordKey can reference a value arbitrarily deep within a Record.
  *
  * @see RecordValueAssembler
- * @author krenfro
  */
 public class RecordValueResolver{
 

@@ -1,9 +1,5 @@
 package com.realcomp.prime.conversion;
 
-/**
- *
- * @author krenfro
- */
 @com.realcomp.prime.annotation.Converter("boolean")
 public class BooleanConverter extends SimpleConverter{
 

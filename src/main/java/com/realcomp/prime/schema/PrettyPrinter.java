@@ -12,7 +12,6 @@ import java.util.Map;
 /**
  * Pretty print the keys of Record with indentation.
  *
- * @author krenfro
  */
 public class PrettyPrinter{
 

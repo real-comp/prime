@@ -11,7 +11,6 @@ import java.util.Set;
  * Collection of formatting attributes with support for default values.
  *
  *
- * @author krenfro
  */
 @XStreamConverter(AttributesConverter.class)
 public class Format implements Map<String, String>{

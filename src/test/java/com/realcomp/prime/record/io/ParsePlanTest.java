@@ -13,7 +13,6 @@ import static org.junit.Assert.fail;
 
 /**
  *
- * @author krenfro
  */
 public class ParsePlanTest{
 

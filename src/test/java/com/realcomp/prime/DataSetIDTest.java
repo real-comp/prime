@@ -10,7 +10,6 @@ import static org.junit.Assert.assertTrue;
 
 /**
  *
- * @author krenfro
  */
 public class DataSetIDTest {
 

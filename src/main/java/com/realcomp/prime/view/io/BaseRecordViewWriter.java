@@ -8,7 +8,6 @@ import java.io.IOException;
 /**
  * Wraps a RecordWriter to read instances of an arbitrary class
  *
- * @author krenfro
  */
 public abstract class BaseRecordViewWriter<T> implements RecordViewWriter<T>{
 

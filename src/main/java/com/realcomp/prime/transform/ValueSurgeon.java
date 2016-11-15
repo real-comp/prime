@@ -16,7 +16,6 @@ import java.util.List;
 /**
  * Performs <i>Operations</i> on the value(s) of a field in a Record.
  *
- * @author krenfro
  */
 public class ValueSurgeon{
 

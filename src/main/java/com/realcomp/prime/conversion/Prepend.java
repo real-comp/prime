@@ -1,9 +1,5 @@
 package com.realcomp.prime.conversion;
 
-/**
- *
- * @author krenfro
- */
 @com.realcomp.prime.annotation.Converter("prepend")
 public class Prepend extends SimpleConverter{
 

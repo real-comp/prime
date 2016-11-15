@@ -17,7 +17,6 @@ import java.util.List;
  * Uses xStream, JavaBeans and reflection to dynamically serialize/de-serialize a
  * RelationalSchemaConverter
  *
- * @author krenfro
  */
 public class RelationalSchemaConverter implements Converter{
 

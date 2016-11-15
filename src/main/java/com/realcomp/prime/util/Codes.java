@@ -14,7 +14,6 @@ import java.util.logging.Logger;
  * Utility class for code translations.
  * Data loaded from properties files.
  *
- * @author krenfro
  */
 public class Codes{    
     

@@ -5,19 +5,23 @@ import com.realcomp.prime.conversion.ConversionException;
 import com.realcomp.prime.record.Record;
 import com.realcomp.prime.record.io.*;
 import com.realcomp.prime.record.io.delimited.DelimitedFileReader;
-import com.realcomp.prime.schema.*;
+import com.realcomp.prime.schema.Schema;
+import com.realcomp.prime.schema.SchemaException;
+import com.realcomp.prime.schema.SchemaFactory;
 import com.realcomp.prime.transform.TransformContext;
 import com.realcomp.prime.validation.Severity;
 import com.realcomp.prime.validation.ValidationException;
+import joptsimple.OptionException;
+import joptsimple.OptionParser;
+import joptsimple.OptionSet;
+
 import java.io.*;
-import java.util.*;
+import java.util.Arrays;
 import java.util.logging.Logger;
-import joptsimple.*;
 
 /**
  * Fixes unterminated escape characters in a delimited file.
  * 
- * @author krenfro
  */
 public class Escape{
 

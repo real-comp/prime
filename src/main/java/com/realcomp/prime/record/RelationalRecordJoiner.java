@@ -16,7 +16,6 @@ import java.util.logging.Logger;
  * Joins Records using a RelationalSchema and one or more Schemas
  *
  *
- * @author krenfro
  */
 public class RelationalRecordJoiner{
 

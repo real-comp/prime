@@ -16,7 +16,6 @@ import static org.junit.Assert.*;
  * If a field is defined as a numeric type, and the source is "",
  * it should be resolved as 'null' and not placed in the Record.
  *
- * @author krenfro
  */
 public class EmptyNumericFieldTest{
 

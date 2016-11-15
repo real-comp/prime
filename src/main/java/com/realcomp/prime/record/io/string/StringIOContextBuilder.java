@@ -5,10 +5,6 @@ import com.realcomp.prime.record.io.*;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-/**
- *
- * @author krenfro
- */
 public class StringIOContextBuilder extends IOContextBuilder{
 
     public StringIOContextBuilder(){

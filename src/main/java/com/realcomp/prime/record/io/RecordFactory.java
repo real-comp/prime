@@ -19,7 +19,6 @@ import java.util.logging.Logger;
  * Creates Records from a String[] using a Schema. The creation of this object is expensive, so you are encouraged to
  * reuse instances as much as possible.
  *
- * @author krenfro
  */
 public class RecordFactory{
 

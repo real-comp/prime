@@ -9,8 +9,6 @@ import java.util.List;
  * Multiply, treating arguments as Doubles.
  *
  *
- * @author krenfro
- *
  */
 @com.realcomp.prime.annotation.Converter("multiply")
 public class Multiply implements Converter{

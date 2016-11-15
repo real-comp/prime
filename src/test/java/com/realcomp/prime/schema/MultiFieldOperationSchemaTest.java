@@ -13,7 +13,6 @@ import org.junit.Test;
 
 /**
  *
- * @author krenfro
  */
 public class MultiFieldOperationSchemaTest{
 

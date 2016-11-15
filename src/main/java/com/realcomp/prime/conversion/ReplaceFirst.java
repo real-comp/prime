@@ -4,7 +4,6 @@ package com.realcomp.prime.conversion;
  * Replaces the first occurrence of <i>regex</i> with <i>replacement</i>. Default <i>replacement</i> is the empty
  * string.
  *
- * @author krenfro
  */
 @com.realcomp.prime.annotation.Converter("replaceFirst")
 public class ReplaceFirst extends SimpleConverter{

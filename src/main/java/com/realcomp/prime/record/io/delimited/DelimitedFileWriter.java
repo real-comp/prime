@@ -20,9 +20,6 @@ import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * @author krenfro
- */
 public class DelimitedFileWriter extends BaseRecordWriter{
 
     protected CSVWriter writer;

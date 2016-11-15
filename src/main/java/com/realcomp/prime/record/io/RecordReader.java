@@ -14,7 +14,6 @@ import java.util.Map;
  *
  * Note: Implementors should ensure that their RecordReader has a default empty constructor.
  *
- * @author krenfro
  */
 public interface RecordReader extends AutoCloseable{
 

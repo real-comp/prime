@@ -6,7 +6,6 @@ import com.realcomp.prime.record.io.*;
 /**
  * Unmodifiable context one-at-a-time String based I/O operations.
  *
- * @author krenfro
  */
 public class StringIOContext extends IOContext{
 

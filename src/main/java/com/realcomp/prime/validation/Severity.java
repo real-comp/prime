@@ -5,7 +5,6 @@ package com.realcomp.prime.validation;
  * This severity level allows ValidationExceptions to be thrown with an indicator of
  * how severe the problem is. Applications may choose to handle this severity in different ways.
  *
- * @author krenfro
  */
 public enum Severity{
 

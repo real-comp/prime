@@ -10,7 +10,6 @@ import java.util.List;
 /**
  * Guesses the delimiter for a '\n' delimited file. Currently only supports only CSV and TAB delimited.
  *
- * @author krenfro
  */
 public class DelimiterGuesser{
 

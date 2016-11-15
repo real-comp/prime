@@ -15,7 +15,6 @@ import java.util.logging.Logger;
 /**
  * Writes properties, dynamically, to a JavaBean
  *
- * @author krenfro
  */
 public class DynamicPropertySetter{
 
@@ -36,7 +35,7 @@ public class DynamicPropertySetter{
      * @param bean
      * @param properties to be applied
      * @return list of property keys not set because the bean did not expose the property.
-     * @throws DynamicPropertyException
+     * @throws IntrospectionException
      */
     public Set<String> setProperties(Object bean, Map<String, Object> properties) throws IntrospectionException{
 

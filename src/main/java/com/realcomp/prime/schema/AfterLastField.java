@@ -6,7 +6,6 @@ import com.realcomp.prime.DataType;
  * Special virtual Field used as a placeholder for operations that need to be executed after all the schemas fields have
  * been processed.
  *
- * @author krenfro
  */
 public final class AfterLastField extends Field{
 

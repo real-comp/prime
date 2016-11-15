@@ -8,10 +8,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.logging.Logger;
 
-/**
- *
- * @author krenfro
- */
+
 @com.realcomp.prime.annotation.Converter("lookup")
 public class Lookup extends StringConverter{
 

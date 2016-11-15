@@ -6,7 +6,6 @@ import com.thoughtworks.xstream.converters.enums.EnumSingleValueConverter;
 /**
  * Converter for the xStream XML serialization framework. Default DataType = STRING
  *
- * @author krenfro
  */
 public class DataTypeConverter extends EnumSingleValueConverter{
 

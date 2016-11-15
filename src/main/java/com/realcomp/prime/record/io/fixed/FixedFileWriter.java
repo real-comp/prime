@@ -22,10 +22,6 @@ import java.io.OutputStreamWriter;
 import java.util.List;
 import java.util.logging.Logger;
 
-/**
- *
- * @author krenfro
- */
 public class FixedFileWriter extends BaseRecordWriter{
 
     protected static final Logger logger = Logger.getLogger(BaseRecordWriter.class.getName());

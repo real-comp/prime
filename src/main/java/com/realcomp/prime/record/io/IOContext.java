@@ -12,7 +12,6 @@ import java.util.Map;
  * Unmodifiable context for I/O operations.
  *
  *
- * @author krenfro
  */
 public class IOContext implements Serializable, AutoCloseable{
 

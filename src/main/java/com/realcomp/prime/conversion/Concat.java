@@ -4,10 +4,6 @@ import com.realcomp.prime.record.Record;
 import com.realcomp.prime.record.RecordKeyException;
 import java.util.List;
 
-/**
- *
- * @author krenfro
- */
 @com.realcomp.prime.annotation.Converter("concat")
 public class Concat extends BaseMultiFieldConverter implements NullValueConverter{
 

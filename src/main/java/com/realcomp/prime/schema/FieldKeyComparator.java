@@ -8,7 +8,6 @@ import java.util.Comparator;
  * Orders Fields by their <i>key</i>'s index. Non-indexed keys are equal, and are stably sorted after indexed key
  * fields.
  *
- * @author krenfro
  */
 public class FieldKeyComparator implements Comparator<Field>{
 

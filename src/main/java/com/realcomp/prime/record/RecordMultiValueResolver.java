@@ -7,7 +7,6 @@ import java.util.Stack;
 
 /**
  * @see RecordValueResolver
- * @author krenfro
  */
 public class RecordMultiValueResolver{
 
