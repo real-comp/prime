@@ -5,9 +5,10 @@ A Java library and suite of command-line tools that facilitate data transformati
 This readme serves as a brief introduction to Prime and its high-level features.  You are encouraged
 to consult the wiki for more complete documentation.  (TODO)
 
-There are many tools for parsing and manipulating data from files.  If you simply need to extract the 5th and 10th
-fields from a CSV file, Prime is likely _not_ the best tool.  However, if you need to read values from a file that
-arrives every week and has undergone 3 layout changes in the past year, then Prime is a very good choice.
+There are _many_ tools available for parsing and manipulating data from files.  If you simply need to extract
+some arbitrary fields from a CSV file, Prime is likely _not_ the best tool.  However, if you need to read values
+from a file that arrives every week and has undergone 3 layout changes in the past year, then Prime is
+a very good choice.
 
 
 ## Data Types
@@ -55,11 +56,120 @@ assertEquals("Austin", record.get("location.city");
 ```
 
 
-
 ## Schema
 
+A schema describes the format of a file (CSV,TAB,FIXED,JSON,...) with optional validators and converters.  A schema is typically serialized
+to XML.  Schemas are fairly powerful and can handle:
+
+* Header records and other format specific features
+* Multiple formats within a single file
+* Validations of data in individual fields
+* Conversion of data in individual fields, or all fields.
+
+
+For a very simple CSV file:
+```csv
+name,faction,rank
+Optimus Prime,Autobot,Prime
+Bumblebee,Autobot,Car
+Megatron,Decepticon,Leader
+Starscream,Decepticon,Commander
+```
+
+We have a very simple Schema:
+```xml
+<rc:schema
+   xmlns:rc="http://www.real-comp.com/realcomp-data/schema/file-schema/1.2"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://www.real-comp.com/realcomp-data/schema/file-schema/1.2 http://www.real-comp.com/realcomp-data/schema/file-schema/1.2/file-schema.xsd">
+
+    <format type="CSV" header="true"/>
+
+    <fields>
+        <field name="name"/>
+        <field name="faction"/>
+        <field name="rank"/>
+    </fields>
+</rc:schema>
+
+```
+note: The XML namespaces reference realcomp-data, the internal name of this project, instead of _prime_.  This will be fixed at some point.  The realcomp-data schemas will continue to be hosted for backward compatibility.
+
+## Validators
+
+Validation of data in a file (or other source), is an important step to ensure
+ the quality of your data and detecting format changes over time.
+ 
+Prime ships with many useful validators, and you can add your own.
+
+| LengthValidator   | validate that a field has a specific length | &lt;validateLength min="1" max="10"/&gt; |
+| RequiredValidator | validate that a field is populated | &lt;required/&gt; |
+| LongRaneValidator | validate that a field has a value in a specific range. | &lt;validateLongRange min="0" max="100"/&gt; |
+| RegexValidator    | validate that a field matches a regular expression. | &lt;validateRegex regex="[0-9]{4}"/&gt; | 
+  
+Here is our schema with a validation defined:
+ ```xml
+ <rc:schema
+    xmlns:rc="http://www.real-comp.com/realcomp-data/schema/file-schema/1.2"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.real-comp.com/realcomp-data/schema/file-schema/1.2 http://www.real-comp.com/realcomp-data/schema/file-schema/1.2/file-schema.xsd">
+ 
+     <format type="CSV" header="true"/>
+ 
+     <fields>
+         <field name="name">
+             <required/>  <!-- our validator -->
+         </field>
+         <field name="faction"/>
+         <field name="rank"/>
+     </fields>
+ </rc:schema>
+ 
+ ```
 
 ## Converters
 
+Converters describe modifications that should be performed on your data.
 
-## Validators
+Prime ships with _many_ useful converters, and you can add your own.  
+Here are _some_ of the build-in converters.
+
+| Append      | append a value to a field | &lt;append value="!"/&gt; |
+| Trim        | trim leading and trailing whitespace | &lt;trim/&gt; | 
+| UpperCase   | convert lower-case letters to upper-case | &lt;upperCase/&gt; |
+| Concat      | combine fields | &lt;concat fields="name,rank"/&gt; |
+| CurrentDate | emit the current date | &lt;currentDate format="short"/&gt; |
+| LeftPad     | pad a field with a character to a length | &lt;leftPad with=" " length="100"/&gt; |
+| Default     | provide a default value for a field | &lt;default value="Autobots Roll Out!"/&gt; |
+| Divide      | divide a numeric value | &lt;divide divisor="100"/&gt;|
+| Replace     | replace one or more characters | &lt;replace regex="," replacement="-"/&gt; |
+| Sequence    | a monotonically increasing sequence number | &lt;sequence/&gt; |
+
+There are many more.
+
+Here is our example schema again with a few converters defined:
+ ```xml
+ <rc:schema
+    xmlns:rc="http://www.real-comp.com/realcomp-data/schema/file-schema/1.2"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.real-comp.com/realcomp-data/schema/file-schema/1.2 http://www.real-comp.com/realcomp-data/schema/file-schema/1.2/file-schema.xsd">
+ 
+     <format type="CSV" header="true"/>
+ 
+     <fields>
+         <field name="name">
+             <required/>
+             <trim/>
+             <upperCase/>             
+         </field>
+         <field name="faction"/>
+         <field name="rank">
+             <default value="none"/>
+         </field>
+     </fields>
+ </rc:schema>
+ 
+ ```
+ 
+ 
+

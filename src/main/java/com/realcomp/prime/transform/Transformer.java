@@ -12,7 +12,6 @@ import com.realcomp.prime.validation.ValidationException;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamConverter;
 
-import javax.annotation.Generated;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.ArrayList;
 import java.util.List;
@@ -203,7 +202,6 @@ public class Transformer{
     }
     
 
-    @Generated("NetBeans")
     @Override
     public boolean equals(Object obj){
         if (obj == null){
@@ -225,7 +223,6 @@ public class Transformer{
         return true;
     }
 
-    @Generated("NetBeans")
     @Override
     public int hashCode(){
         int hash = 5;
