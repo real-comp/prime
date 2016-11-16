@@ -179,7 +179,9 @@ Here is our example schema again with a few converters defined:
 ## Formats
 
 Prime supports CSV, TAB, and FIXED length files by default.
+
 JSON support is provided by https://github.com/real-comp/prime-json
+
 X-BASE (dbf) support is provided by https://github.com/real-comp/prime-xbase
 
 Support for other file formats can be added.
@@ -191,7 +193,6 @@ Usually, Prime reads and writes to files, but in general any Input/OutputStream 
 
 Armed with a basic understanding of Prime, I will highlight two utilities that are useful.
 
-Prime ships with a 
 
 ### Validation
 Validates a file against a schema.  As a general best practice - validate your source data against the 
