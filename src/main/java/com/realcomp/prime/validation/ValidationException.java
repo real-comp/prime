@@ -1,5 +1,10 @@
 package com.realcomp.prime.validation;
 
+import com.google.common.base.Optional;
+import com.realcomp.prime.record.Record;
+
+import java.util.Objects;
+
 /**
  * <p>An exception thrown when validation fails.</p>
  *
@@ -16,56 +21,77 @@ public class ValidationException extends Exception{
 
     private static final long serialVersionUID = -6194444803112488818L;
     private Severity severity = Severity.MEDIUM;
-    
-    public ValidationException(){
-        super();
-    }
+    private Optional<Record> record;
 
-    public ValidationException(String message, Object value){
-        this(buildMessage(message, value));
-    }
-
-    public ValidationException(String message, Object value, Severity severity){
-        this(message, value);
-        if (severity == null){
-            throw new IllegalArgumentException("severity is null");
-        }
-
-        this.severity = severity;
-    }
-
-    public ValidationException(String message){
-        super(message);
-    }
-
-    public ValidationException(String message, Throwable cause){
+    private ValidationException(String message, Object value, Record record, Severity severity, Throwable cause){
         super(message, cause);
     }
 
-    public ValidationException(Throwable cause){
-        super(cause);
+    public static class Builder{
+
+        private String message;
+        private Throwable cause;
+        private Severity severity = Severity.MEDIUM;
+        private Record record;
+        private Object value;
+
+        public Builder(){
+        }
+
+        public Builder(ValidationException original){
+            message = original.getMessage();
+            cause = original.getCause();
+            severity = original.getSeverity();
+            record = original.getRecord().get();
+        }
+
+        public Builder message(String message){
+            Objects.requireNonNull(message);
+            this.message = message;
+            return this;
+        }
+
+        public Builder cause(Throwable cause){
+            this.cause = cause;
+
+            return this;
+        }
+
+        public Builder severity(Severity severity){
+            if (severity != null){
+                this.severity = severity;
+            }
+            return this;
+        }
+
+        public Builder record(Record record){
+            this.record = record;
+            return this;
+        }
+
+        public Builder value(Object value){
+            this.value = value;
+            return this;
+        }
+
+        public ValidationException build(){
+            if (value != null){
+                String s = value.toString();
+                if (s.length() > 30){
+                    s = s.substring(0, 30);
+                }
+                message = String.format("%s [%s]", message, s);
+            }
+            return new ValidationException(message, value, record, severity, cause);
+        }
     }
 
     public Severity getSeverity(){
         return severity;
     }
 
-    public void setSeverity(Severity severity){
-        this.severity = severity;
+    public Optional<Record> getRecord(){
+        return record;
     }
 
-    private static String buildMessage(String message, Object value){
-        if (value == null){
-            return message;
-        }
-        else{
-            String s = value.toString();
-            if (s.length() > 30){
-                s = s.substring(0, 30);
-            }
-
-            return String.format("%s [%s]", message, s);
-        }
-    }   
-    
 }

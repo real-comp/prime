@@ -19,8 +19,8 @@ import java.util.logging.Logger;
 /**
  * WARNING: This class does more than filter, it filters and runs the conversions!
  *
- *
  */
+@Deprecated
 public class Filter{
 
     private static final Logger logger = Logger.getLogger(Filter.class.getName());

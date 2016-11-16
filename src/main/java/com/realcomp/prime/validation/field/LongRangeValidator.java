@@ -16,26 +16,31 @@ public class LongRangeValidator extends BaseFieldValidator{
     public void validate(Object value) throws ValidationException{
 
         if (value == null){
-            throw new ValidationException("cannot validate null Object");
+            throw new ValidationException.Builder().message("cannot validate null Object").severity(severity).build();
         }
         if (min > max){
-            throw new ValidationException(String.format("schema problem: min (%s) > max (%s)", min, max));
+            throw new ValidationException.Builder().message(String.format("schema problem: min (%s) > max (%s)", min, max)).build();
         }
 
         try{
             Long coerced = (Long) DataType.LONG.coerce(value);
 
             if (coerced < min){
-                throw new ValidationException(
-                        String.format("less than minimum value of %s", min), value, getSeverity());
+                throw new ValidationException.Builder()
+                        .message(String.format("less than minimum value of %s", min))
+                        .value(value)
+                        .severity(severity)
+                        .build();
             }
             else if (coerced > max){
-                throw new ValidationException(
-                        String.format("greater than maximum value of %s", max), value, getSeverity());
+                throw new ValidationException.Builder()
+                        .message(String.format("greater than maximum value of %s", max))
+                                .value(value)
+                                .severity(severity).build();
             }
         }
         catch (ConversionException ex){
-            throw new ValidationException(ex.getMessage(), value, getSeverity());
+            throw new ValidationException.Builder().message(ex.getMessage()).value(value).severity(severity).build();
         }
     }
 
