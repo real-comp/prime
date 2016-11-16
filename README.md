@@ -102,6 +102,8 @@ Validation of data in a file (or other source), is an important step to ensure
  
 Prime ships with many useful validators, and you can add your own.
 
+| Validator | Description | Example |
+| --------- | ----------- | ------- |
 | LengthValidator   | validate that a field has a specific length | &lt;validateLength min="1" max="10"/&gt; |
 | RequiredValidator | validate that a field is populated | &lt;required/&gt; |
 | LongRaneValidator | validate that a field has a value in a specific range. | &lt;validateLongRange min="0" max="100"/&gt; |
@@ -134,6 +136,8 @@ Converters describe modifications that should be performed on your data.
 Prime ships with _many_ useful converters, and you can add your own.  
 Here are _some_ of the build-in converters.
 
+| Converter | Description | Example |
+| --------- | ----------- | ------- |
 | Append      | append a value to a field | &lt;append value="!"/&gt; |
 | Trim        | trim leading and trailing whitespace | &lt;trim/&gt; | 
 | UpperCase   | convert lower-case letters to upper-case | &lt;upperCase/&gt; |
