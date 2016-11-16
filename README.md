@@ -26,7 +26,7 @@ Prime supports the following data types:
 
 ## Record
 
-A Record is the internal data model for Prime and is a fancy Java Map<String,Object>.  Values in Records are retrieved by
+A Record is the internal data model for Prime and is a fancy Java Map&lt;String,Object&gt.  Values in Records are retrieved by
 _name_ and the type of the stored values can be coerced.
 
 Here is an example of a Record with two String fields.  Notice the age field is being coerced from a String to an Integer.
