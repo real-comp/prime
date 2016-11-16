@@ -106,7 +106,7 @@ Prime ships with many useful validators, and you can add your own.
 | --------- | ----------- | ------- |
 | LengthValidator   | validate that a field has a specific length | &lt;validateLength min="1" max="10"/&gt; |
 | RequiredValidator | validate that a field is populated | &lt;required/&gt; |
-| LongRaneValidator | validate that a field has a value in a specific range. | &lt;validateLongRange min="0" max="100"/&gt; |
+| LongRangeValidator | validate that a field has a value in a specific range. | &lt;validateLongRange min="0" max="100"/&gt; |
 | RegexValidator    | validate that a field matches a regular expression. | &lt;validateRegex regex="[0-9]{4}"/&gt; | 
   
 Here is our schema with a validation defined:
