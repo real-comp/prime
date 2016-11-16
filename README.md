@@ -39,12 +39,12 @@ assertEquals(21, record.getInt("age"));
 ```
 
 Using internal Lists and Maps, a Record can represent a relational data model.  Here we have a simple Map of address
-information that is added to a Record.  Using the _fieldname.fieldname_ convention, values can be resolved from deep
+information that is added to a Record.  Using the _name1.name2_ convention, values can be resolved from deep
 within a Record.
 
 ```java
 Map<String,String> address = new HashMap<>();
-address.put("street", "13284 Pond Springs Rd Ste 101");
+address.put("street", "1234 Main St");
 address.put("city", "Austin");
 address.put("state", "TX");
 
@@ -93,7 +93,7 @@ We have a very simple Schema:
 </rc:schema>
 
 ```
-note: The XML namespaces reference realcomp-data, the internal name of this project, instead of _prime_.  This will be fixed at some point.  The realcomp-data schemas will continue to be hosted for backward compatibility.
+note: The XML namespaces reference realcomp-data, the old internal name of this project, instead of _prime_.  This will be fixed at some point.  The realcomp-data schemas will continue to be hosted for backward compatibility.
 
 ## Validators
 
@@ -176,4 +176,56 @@ Here is our example schema again with a few converters defined:
  ```
  
  
+## Formats
+
+Prime supports CSV, TAB, and FIXED length files by default.
+JSON support is provided by https://github.com/real-comp/prime-json
+X-BASE (dbf) support is provided by https://github.com/real-comp/prime-xbase
+
+Support for other file formats can be added.
+
+Usually, Prime reads and writes to files, but in general any Input/OutputStream can be used
+ as an input/output source.
+
+## Utilities
+
+Armed with a basic understanding of Prime, I will highlight two utilities that are useful.
+
+Prime ships with a 
+
+### Validation
+Validates a file against a schema.  As a general best practice - validate your source data against the 
+schema.  Detecting format issues early is a good thing.
+ 
+See src/main/resources for the input.schema, output.schema, and test.csv files used in this example.
+  
+```bash
+java -cp prime-0.5.0-jar-with-dependencies.jar com.realcomp.prime.util.Validate --in test.csv --is input.schema  
+```
+
+Problems will be reported on STDERR.
+The exit code will be 0 if the file validated, else 1.
+
+Note: Utilities works with STDIN/STDOUT.
+```bash
+cat test.csv | java -cp prime-0.5.0-jar-with-dependencies.jar com.realcomp.prime.util.Validate  --is input.schema  
+```
+
+### Reformat
+Often, you will be tasked to convert a source file to a different format.  The 
+Reformat utility is your friend here.
+
+Armed with the input.schema and output.schema:
+
+```bash
+cat test.csv | java -cp prime-0.5.0-jar-with-dependencies.jar com.realcomp.prime.util.Reformat --is input.schema --os output.schema
+"id","name","rank","faction"
+"1","OPTIMUS PRIME","Prime","GOOD"
+"2","BUMBLEBEE","Car","GOOD"
+"3","MEGATRON","Leader","BAD"
+"4","STARSCREAM","Commander","BAD"
+```
+Problems will be reported on STDERR.
+The exit code will be 0 if the file conversion was successful, else 1.
+
 
