@@ -8,12 +8,15 @@ import com.realcomp.prime.record.io.RecordReaderFactory;
 import com.realcomp.prime.schema.SchemaException;
 import com.realcomp.prime.schema.SchemaFactory;
 import com.realcomp.prime.validation.ValidationException;
-import java.io.*;
-import java.util.Arrays;
-import java.util.logging.Logger;
 import joptsimple.OptionException;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
+
+import java.io.BufferedInputStream;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.logging.Logger;
 
 /**
  * Validates a file against a schema
@@ -44,7 +47,7 @@ public class Validate{
             throw new IOException(ex.getMessage() + " at record " + lineNumber, ex);
         }
         catch (ValidationException ex){
-            throw new ValidationException(ex.getMessage() + " at record " + lineNumber, ex);
+            throw new ValidationException.Builder().message(ex.getMessage() + " at record " + lineNumber).cause(ex).build();
         }
         catch (ConversionException ex){
             throw new ConversionException(ex.getMessage() + " at record " + lineNumber, ex);

@@ -91,10 +91,11 @@ public class RecordFactory{
         Objects.requireNonNull(parsePlan);
         
         if (fieldList.size() != data.length){
-            throw new ValidationException(
-                    "The number of fields in schema does not match prime.",
-                    fieldList.size() + " != " + data.length,
-                    Severity.HIGH);
+            throw new ValidationException.Builder()
+                    .message("The number of fields in schema does not match data.")
+                    .value(fieldList.size() + " != " + data.length)
+                    .severity(Severity.HIGH)
+                    .build();
         }
         
         Record record = new Record();

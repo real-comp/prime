@@ -222,6 +222,22 @@ public class DelimitedFileReaderTest{
         reader.close();
 
 
+        //empty fields
+        data = ",,";
+        ctx = new IOContextBuilder(ctx)
+                .in(new ByteArrayInputStream(data.getBytes()))
+                .build();
+        reader.open(ctx);
+
+        record = reader.read();
+        assertNotNull(record);
+        assertEquals("", record.get("a"));
+        assertEquals("", record.get("b"));
+        assertEquals("", record.get("c"));
+        assertNull(reader.read());
+        reader.close();
+
+
     }
 
     /**

@@ -118,13 +118,13 @@ public class FixedFileReader extends BaseRecordReader{
     }
 
     /**
-     * Classify some prime and return the FieldList that should be used to parse the prime. If only one FieldList is
+     * Classify some prime and return the FieldList that should be used to parse the data. If only one FieldList is
      * defined, then it is returned. If multiple FieldLists are defined, then the first FieldList who's regex classifier
-     * matches the prime is returned
+     * matches the data is returned
      *
      * @param data not null
-     * @return the FieldList that should be used to parse the prime. never null
-     * @throws SchemaException if no defined layout supports the prime.
+     * @return the FieldList that should be used to parse the data. never null
+     * @throws SchemaException if no defined layout supports the data.
      */
     protected FieldList classify(String data) throws SchemaException{
 
@@ -155,10 +155,10 @@ public class FixedFileReader extends BaseRecordReader{
         assert(data != null);
 
         if (fields.size() != data.length){
-            throw new ValidationException(
+            throw new ValidationException.Builder().message(String.format(
                     "number of fields in schema does not match prime.",
-                    fields.size() + " != " + data.length,
-                    Severity.HIGH);
+                    fields.size() + " != " + data.length)).severity(Severity.HIGH).build();
+
         }
 
         return recordFactory.build(fields, data);
@@ -174,10 +174,10 @@ public class FixedFileReader extends BaseRecordReader{
         int actualLength = record.length();
 
         if (expectedLength != actualLength){
-            throw new ValidationException(
-                    String.format("Record length != expected length (%s != %s)", actualLength, expectedLength),
-                    record,
-                    Severity.HIGH);
+            throw new ValidationException.Builder()
+                    .message(String.format("Record length != expected length (%s != %s)", actualLength, expectedLength))
+                    .value(record)
+                    .severity(Severity.HIGH).build();
         }
 
         String[] result = new String[fields.size()];

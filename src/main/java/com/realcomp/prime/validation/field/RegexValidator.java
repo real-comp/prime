@@ -33,7 +33,7 @@ public class RegexValidator extends BaseFieldValidator{
     @Override
     public void validate(Object value) throws ValidationException{
         if (value == null){
-            throw new ValidationException("cannot validate null Object");
+            throw new ValidationException.Builder().message("cannot validate null Object").build();
         }
 
         boolean matches = pattern.matcher(value.toString()).matches();
@@ -41,10 +41,11 @@ public class RegexValidator extends BaseFieldValidator{
             matches = !matches;
         }
         if (!matches){
-            throw new ValidationException(
-                    String.format("pattern [%s] did not match", pattern.pattern()),
-                    value,
-                    getSeverity());
+            throw new ValidationException.Builder()
+                    .message(String.format("pattern [%s] did not match", pattern.pattern()))
+                    .value(value)
+                    .severity(getSeverity())
+                    .build();
         }
     }
 

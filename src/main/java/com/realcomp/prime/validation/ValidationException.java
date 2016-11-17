@@ -23,12 +23,13 @@ public class ValidationException extends Exception{
     private Severity severity = Severity.MEDIUM;
     private Optional<Record> record;
 
-    private ValidationException(String message, Object value, Record record, Severity severity, Throwable cause){
+    private ValidationException(String message, Record record, Severity severity, Throwable cause){
         super(message, cause);
+        this.severity = severity == null ? Severity.MEDIUM : severity;
+        this.record = Optional.fromNullable(record);
     }
 
     public static class Builder{
-
         private String message;
         private Throwable cause;
         private Severity severity = Severity.MEDIUM;
@@ -42,7 +43,9 @@ public class ValidationException extends Exception{
             message = original.getMessage();
             cause = original.getCause();
             severity = original.getSeverity();
-            record = original.getRecord().get();
+            if (original.getRecord().isPresent()){
+                record = original.getRecord().get();
+            }
         }
 
         public Builder message(String message){
@@ -82,7 +85,7 @@ public class ValidationException extends Exception{
                 }
                 message = String.format("%s [%s]", message, s);
             }
-            return new ValidationException(message, value, record, severity, cause);
+            return new ValidationException(message, record, severity, cause);
         }
     }
 

@@ -13,7 +13,7 @@ public interface Converter extends Operation{
     /**
      * In the normal case, if a converter is asked to convert a null value, it should return null. There are special
      * converters (Concat, Constant) that do allow a null input. This is necessary so new fields can be created based on
-     * the prime in other fields.
+     * the data in other fields.
      *
      * @param value the value to convert. may be null
      * @return the converted value

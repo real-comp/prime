@@ -100,12 +100,8 @@ public class Reformat{
                     logger.log(Level.INFO,
                            "filtered output: {0} : {1}",
                            new Object[]{out.getIOContext().getSchema().classify(record).toString(record), ex.getMessage()});
-                    if (error != null){
-                        logger.info("recording filtered record");
+                    if (error != null && ex.getRecord().isPresent()){
                         error.write(record);
-                    }
-                    else{
-                        logger.info("error is null");
                     }
                 }
                 else{
@@ -150,16 +146,8 @@ public class Reformat{
             catch (ValidationException ex){
                 if (filter){
                     logger.log(Level.INFO, "filtered input: {0}", new Object[]{ex.getMessage()});
-                    if (error != null && record != null){
-                        logger.log(Level.INFO, "writing to error");
-                        error.write(record);
-                        error.write(record);
-                    }
-                    else if (record == null){
-                        logger.log(Level.INFO, "record is null");
-                    }
-                    else{
-                        logger.log(Level.INFO, "error is null");
+                    if (error != null && ex.getRecord().isPresent()){
+                        error.write(ex.getRecord().get());
                     }
                     record = null;
                 }
