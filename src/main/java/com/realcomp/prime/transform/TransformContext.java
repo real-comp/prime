@@ -9,6 +9,7 @@ import com.realcomp.prime.validation.ValidationException;
 import com.realcomp.prime.validation.Validator;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -64,7 +65,7 @@ public class TransformContext{
         String message = String.format("%s for [%s] in record [%s]", new Object[]{ex.getMessage(), key, toString()});
 
         if (severity.ordinal() >= validationExceptionThreshold.ordinal()){
-            throw new ValidationException(message, ex);
+            throw new ValidationException.Builder(ex).message(message).record(record).cause(ex).build();
         }
         else{
             switch (severity){
@@ -86,9 +87,7 @@ public class TransformContext{
     }
 
     public void setRecord(Record record){
-        if (record == null){
-            throw new IllegalArgumentException("record is null");
-        }
+        Objects.requireNonNull(record);
         this.record = record;
     }
 
@@ -113,9 +112,7 @@ public class TransformContext{
     }
 
     public void setKey(String key){
-        if (key == null){
-            throw new IllegalArgumentException("key is null");
-        }
+        Objects.requireNonNull(key);
         this.key = key;
     }
 

@@ -14,10 +14,11 @@ public class LengthValidator extends BaseFieldValidator{
     @Override
     public void validate(Object value) throws ValidationException{
         if (value == null){
-            throw new ValidationException("cannot validate null Object");
+            throw new ValidationException.Builder().message("cannot validate null Object").build();
         }
         if (min > max){
-            throw new ValidationException(String.format("Schema problem: min (%s) > max (%s)", min, max));
+            throw new ValidationException.Builder()
+                .message(String.format("Schema problem: min (%s) > max (%s)", min, max)).build();
         }
 
         try{
@@ -25,16 +26,27 @@ public class LengthValidator extends BaseFieldValidator{
             int length = coerced.length();
 
             if (length < min){
-                throw new ValidationException(
-                        String.format("too short (min: %s)", min), value, getSeverity());
+                throw new ValidationException.Builder()
+                        .message(String.format("too short (min: %s)", min))
+                        .value(value)
+                        .severity(getSeverity())
+                        .build();
             }
             else if (length > max){
-                throw new ValidationException(
-                        String.format("too long (max: %s)", max), value, getSeverity());
+                throw new ValidationException.Builder()
+                        .message(String.format("too long (max: %s)", max))
+                        .value(value)
+                        .severity(getSeverity())
+                        .build();
             }
         }
         catch (ConversionException ex){
-            throw new ValidationException(ex.getMessage(), value, getSeverity());
+            throw new ValidationException.Builder()
+                .message(ex.getMessage())
+                .cause(ex)
+                .value(value)
+                .severity(getSeverity())
+                .build();
         }
     }
 

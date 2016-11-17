@@ -32,7 +32,7 @@ public class DelimitedFileReader extends BaseRecordReader{
     
     /**
      * When the schema describes a header, the skipped header record
-     * is parsed as a FieldList and used as a hint when parsing the prime in a file.
+     * is parsed as a FieldList and used as a hint when parsing the data in a file.
      * This hint is important only when there are multiple FieldLists described in a Schema.
      */
     private FieldList headerFieldList;
@@ -132,12 +132,12 @@ public class DelimitedFileReader extends BaseRecordReader{
     
     
     /**
-     * Classify some delimited prime and return the FieldList that should be used to parse the prime. If only one
+     * Classify some delimited prime and return the FieldList that should be used to parse the data. If only one
      * FieldList is defined, then it is returned. If multiple FieldLists are defined, then the first FieldList has the
-     * same number of fields as the prime is returned.
+     * same number of fields as the data is returned.
      *
      * @param data   not null
-     * @return the FieldList that should be used to parse the prime. never null
+     * @return the FieldList that should be used to parse the data. never null
      * @throws SchemaException if more than one FieldList is defined and there is ambiguity
      */
     protected FieldList classify(String[] data) throws SchemaException{
@@ -263,11 +263,12 @@ public class DelimitedFileReader extends BaseRecordReader{
         }
 
         if (fields.size() != data.length){
-            throw new ValidationException(
-                    String.format(
-                    "The number of fields in schema [%s] does not match number of fields in the prime [%s].",
-                    new Object[]{fields.size(), data.length}),
-                    Severity.HIGH);
+            throw new ValidationException.Builder()
+                    .message(String.format(
+                            "The number of fields in schema [%s] does not match number of fields in the data [%s].",
+                        new Object[]{fields.size(), data.length}))
+                    .severity(Severity.HIGH)
+                    .build();
         }
 
         return recordFactory.build(fields, data);

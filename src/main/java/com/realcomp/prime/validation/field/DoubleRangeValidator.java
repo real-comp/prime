@@ -24,30 +24,38 @@ public class DoubleRangeValidator extends BaseFieldValidator{
     @Override
     public void validate(Object value) throws ValidationException{
         if (value == null){
-            throw new ValidationException("cannot validate null Object");
+            throw new ValidationException.Builder().message("cannot validate null Object").build();
         }
         if (min > max){
-            throw new ValidationException(String.format("schema problem: min (%s) > max (%s)", min, max));
+            throw new ValidationException.Builder()
+                    .message(String.format("schema problem: min (%s) > max (%s)", min, max))
+                    .build();
         }
 
         try{
             Double coerced = (Double) DataType.DOUBLE.coerce(value);
-
             if (Double.compare(coerced, min) < 0d){
-                throw new ValidationException(
-                        String.format("less than minimum value of %s", min),
-                        value,
-                        getSeverity());
+                throw new ValidationException.Builder()
+                        .message(String.format("less than minimum value of %s", min))
+                        .value(value)
+                        .severity(getSeverity())
+                        .build();
             }
             else if (Double.compare(coerced, max) > 0d){
-                throw new ValidationException(
-                        String.format("greater than maximum value of %s", max),
-                        value,
-                        getSeverity());
+                throw new ValidationException.Builder()
+                        .message(String.format("greater than maximum value of %s", max))
+                        .value(value)
+                        .severity(getSeverity())
+                        .build();
             }
         }
         catch (ConversionException ex){
-            throw new ValidationException(ex.getMessage(), value, getSeverity());
+            throw new ValidationException.Builder()
+                    .message(ex.getMessage())
+                    .cause(ex)
+                    .value(value)
+                    .severity(getSeverity())
+                    .build();
         }
     }
 

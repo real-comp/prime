@@ -6,63 +6,61 @@ import com.realcomp.prime.schema.SchemaException;
 import com.realcomp.prime.schema.SchemaFactory;
 import com.realcomp.prime.validation.Severity;
 import com.realcomp.prime.validation.ValidationException;
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.IOException;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
-/**
- *
- */
+import java.io.*;
+
+import static org.junit.Assert.assertEquals;
+
+
 public class ReformatTest {
-
-    public ReformatTest() {
-    }
 
 
     @Test
-    public void reformatToSameSchema() throws IOException, SchemaException, ValidationException, ConversionException{
+    public void filterToFile() throws IOException, SchemaException, ValidationException, ConversionException{
 
         Reformat reformat = new Reformat();
-
         IOContextBuilder inputBuilder = new IOContextBuilder();
         inputBuilder.schema(
-                SchemaFactory.buildSchema(ReformatTest.class.getResourceAsStream("ReformatToSelfTest.schema")));
+                SchemaFactory.buildSchema(ReformatTest.class.getResourceAsStream("reformat-input.schema")));
         inputBuilder.in(
-                new BufferedInputStream(ReformatTest.class.getResourceAsStream("ReformatToSelf.tab")));
+                new BufferedInputStream(ReformatTest.class.getResourceAsStream("reformat-test.csv")));
 
-        File temp = File.createTempFile("ReformatTest-", ".tmp");
-        //temp.deleteOnExit();
+        File good = File.createTempFile("ReformatTest-", ".tmp");
+        good.deleteOnExit();
+
+        File bad = File.createTempFile("ReformatTest-", ".tmp");
+        bad.deleteOnExit();
 
         IOContextBuilder outputBuilder = new IOContextBuilder();
         outputBuilder.schema(
-                SchemaFactory.buildSchema(ReformatTest.class.getResourceAsStream("ReformatToSelfTest.schema")));
-        outputBuilder.out(new BufferedOutputStream(new FileOutputStream(temp)));
+                SchemaFactory.buildSchema(ReformatTest.class.getResourceAsStream("reformat-output.schema")));
+        outputBuilder.out(new BufferedOutputStream(new FileOutputStream(good)));
 
+        IOContextBuilder errorBuilder = new IOContextBuilder();
+        errorBuilder.schema(
+                SchemaFactory.buildSchema(ReformatTest.class.getResourceAsStream("reformat-input.schema")));
+        errorBuilder.out(new BufferedOutputStream(new FileOutputStream(bad)));
 
-        reformat.setFilter(true);
         inputBuilder.validationExceptionThreshold(Severity.MEDIUM);
         outputBuilder.validationExceptionThreshold(Severity.MEDIUM);
 
         reformat.setIn(inputBuilder.build());
         reformat.setOut(outputBuilder.build());
+        reformat.setErr(errorBuilder.build());
         reformat.reformat();
-        
 
-        BufferedReader reader = new BufferedReader(new FileReader(temp));
-        String s = reader.readLine();
-        int count = 0;
-        while (s != null){
-            count++;
-            s = reader.readLine();
-        }
-
-        assertEquals(798, count);
-
+        assertEquals(3, countLines(good));
+        assertEquals(3, countLines(bad));
     }
+
+    private int countLines(File file) throws IOException{
+        BufferedReader reader = new BufferedReader(new FileReader(file));
+        int count = 0;
+        while (reader.readLine() != null){
+            count++;
+        }
+        return count;
+    }
+
 }

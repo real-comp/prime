@@ -26,9 +26,9 @@ public class ValidationExceptionTest{
 
     @Test
     public void testSeverity(){
-        ValidationException ex = new ValidationException();
+        ValidationException ex = new ValidationException.Builder().build();
         assertEquals(Severity.getDefault(), ex.getSeverity());
-        ex.setSeverity(Severity.HIGH);
+        ex = new ValidationException.Builder().severity(Severity.HIGH).build();
         assertEquals(Severity.HIGH, ex.getSeverity());
     }
 }

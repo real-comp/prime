@@ -52,7 +52,7 @@ public class ValueSurgeon{
     }
 
     /**
-     * Perform the requested operation on the prime, optionally using the provided Record
+     * Perform the requested operation on the data, optionally using the provided Record
      * for multi-field operations.
      *
      * @param operation to be performed

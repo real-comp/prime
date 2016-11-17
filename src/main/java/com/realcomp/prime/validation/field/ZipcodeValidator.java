@@ -19,21 +19,26 @@ public class ZipcodeValidator extends BaseFieldValidator{
     public void validate(Object value) throws ValidationException{
 
         if (value == null){
-            throw new ValidationException("cannot validate null Object");
+            throw new ValidationException.Builder().message("cannot validate null Object").build();
         }
 
         try{
             String coerced = (String) DataType.STRING.coerce(value);
             if (!pattern.matcher(coerced).matches()){
-                throw new ValidationException(
-                        String.format("did not match pattern %s", pattern.pattern()),
-                        value,
-                        getSeverity());
+                throw new ValidationException.Builder()
+                        .message(String.format("did not match pattern %s", pattern.pattern()))
+                        .value(value)
+                        .severity(getSeverity())
+                        .build();
             }
         }
         catch (ConversionException ex){
-            throw new ValidationException(
-                    ex.getMessage(), value, getSeverity());
+            throw new ValidationException.Builder()
+                    .message(ex.getMessage())
+                    .cause(ex)
+                    .value(value)
+                    .severity(getSeverity())
+                    .build();
         }
     }
 

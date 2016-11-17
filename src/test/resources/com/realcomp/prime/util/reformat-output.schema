@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rc:schema
+    xmlns:rc="http://www.real-comp.com/realcomp-data/schema/file-schema/1.2"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.real-comp.com/realcomp-data/schema/file-schema/1.2 http://www.real-comp.com/realcomp-data/schema/file-schema/1.2/file-schema.xsd"
+    name="reformat-input">
+
+    <format type="CSV" header="false"/>
+
+    <fields>
+        <field name="a">
+            <required/>
+        </field>
+        <field name="b">
+            <validateRegex regex="b.*"/>
+        </field>
+        <field name="c"/>
+    </fields>
+</rc:schema>
+

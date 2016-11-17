@@ -11,6 +11,18 @@ from a file that arrives every week and has undergone 3 layout changes in the pa
 a very good choice.
 
 
+## Maven
+
+The release artifacts are in the Maven Central Repository.
+
+```xml
+<dependency>
+    <groupId>com.real-comp</groupId>
+    <artifactId>prime</artifactId>
+    <version>0.5.0</version>
+</dependency>      
+```
+
 ## Data Types
 
 Prime supports the following data types:
@@ -189,7 +201,7 @@ Support for other file formats can be added.
 Usually, Prime reads and writes to files, but in general any Input/OutputStream can be used
  as an input/output source.
 
-## Utilities
+## Command-Line Utilities
 
 Armed with a basic understanding of Prime, I will highlight two utilities that are useful.
 

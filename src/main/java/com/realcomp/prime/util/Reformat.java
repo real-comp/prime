@@ -100,12 +100,8 @@ public class Reformat{
                     logger.log(Level.INFO,
                            "filtered output: {0} : {1}",
                            new Object[]{out.getIOContext().getSchema().classify(record).toString(record), ex.getMessage()});
-                    if (error != null){
-                        logger.info("recording filtered record");
+                    if (error != null && ex.getRecord().isPresent()){
                         error.write(record);
-                    }
-                    else{
-                        logger.info("error is null");
                     }
                 }
                 else{
@@ -150,8 +146,8 @@ public class Reformat{
             catch (ValidationException ex){
                 if (filter){
                     logger.log(Level.INFO, "filtered input: {0}", new Object[]{ex.getMessage()});
-                    if (error != null && record != null){
-                        error.write(record);
+                    if (error != null && ex.getRecord().isPresent()){
+                        error.write(ex.getRecord().get());
                     }
                     record = null;
                 }
@@ -224,15 +220,15 @@ public class Reformat{
             else{
                 Reformat reformatter = new Reformat();
                 IOContextBuilder inputBuilder = new IOContextBuilder();
-                inputBuilder.schema(
-                        SchemaFactory.buildSchema(new FileInputStream((String) options.valueOf("is"))));
+                Schema inputSchema =
+                        SchemaFactory.buildSchema(new FileInputStream((String) options.valueOf("is")));
+                inputBuilder.schema(inputSchema);
                 inputBuilder.in(
                         options.has("in")
                         ? new BufferedInputStream(new FileInputStream((String) options.valueOf("in")))
                         : new BufferedInputStream(System.in));
 
 
-                //Often, the Reformat tool is used to simply output a
                 Schema outputSchema = null;
                 if (options.valueOf("os").equals("json")){
                     outputSchema = SchemaFactory.buildSchema(new FileInputStream((String) options.valueOf("is")));
@@ -260,12 +256,12 @@ public class Reformat{
 
                     String errorFile = (String) options.valueOf("f");
                     if (errorFile != null && !errorFile.isEmpty()){
-                        IOContextBuilder errorBuilder = new IOContextBuilder();
-                        errorBuilder.schema(
-                           SchemaFactory.buildSchema(new FileInputStream((String) options.valueOf("is"))));
-                        errorBuilder.out(new FileOutputStream(errorFile));
-                        errorBuilder.validationExceptionThreshold(Severity.LOW);
-                        reformatter.setErr(errorBuilder.build());
+                        IOContext errContext = new IOContextBuilder()
+                            .schema(new Schema(inputSchema))
+                            .out(new FileOutputStream(errorFile))
+                            .validationExceptionThreshold(Severity.LOW)
+                            .build();
+                        reformatter.setErr(errContext);
                     }
                 }
 
