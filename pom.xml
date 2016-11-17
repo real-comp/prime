@@ -28,7 +28,7 @@
         </license>
     </licenses>
     <scm>
-        <connection>scm:git:git@github.com:real-comp/primes.git</connection>
+        <connection>scm:git:git@github.com:real-comp/prime.git</connection>
         <developerConnection>scm:git:git@github.com:real-comp/prime.git</developerConnection>
         <url>git@github.com:real-comp/prime.git</url>
         <tag>HEAD</tag>
