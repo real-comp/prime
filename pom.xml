@@ -144,7 +144,7 @@
                                     <goal>sign</goal>
                                 </goals>
                                 <configuration>
-                                    <keyname>277117C3</keyname>
+                                    <keyname>kylerenfro@gmail.com</keyname>
                                 </configuration>
                             </execution>
                         </executions>
