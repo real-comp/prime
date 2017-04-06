@@ -196,7 +196,7 @@ public class Reformat{
         OptionParser parser = new OptionParser(){
             {
                 acceptsAll(Arrays.asList("is", "input-schema"), "input schema")
-                        .withRequiredArg().describedAs("schema").required();
+                        .withRequiredArg().describedAs("schema or 'json'").required();
 
                 acceptsAll(Arrays.asList("os", "output-schema"), "output schema")
                         .withRequiredArg().describedAs("schema or 'json'").required();
@@ -219,26 +219,35 @@ public class Reformat{
             }
             else{
                 Reformat reformatter = new Reformat();
-                IOContextBuilder inputBuilder = new IOContextBuilder();
-                Schema inputSchema =
-                        SchemaFactory.buildSchema(new FileInputStream((String) options.valueOf("is")));
-                inputBuilder.schema(inputSchema);
-                inputBuilder.in(
-                        options.has("in")
-                        ? new BufferedInputStream(new FileInputStream((String) options.valueOf("in")))
-                        : new BufferedInputStream(System.in));
-
-
+                Schema inputSchema = null;
                 Schema outputSchema = null;
-                if (options.valueOf("os").equals("json")){
+
+                if (options.valueOf("is").equals("json") && !options.valueOf("os").equals("json")){
+                    inputSchema = SchemaFactory.buildSchema(new FileInputStream((String) options.valueOf("os")));
+                    outputSchema = SchemaFactory.buildSchema(new FileInputStream((String) options.valueOf("os")));
+                    Map<String,String> format = new HashMap<>();
+                    format.put("type", "json");
+                    inputSchema.setFormat(format);
+                }
+                else if (!options.valueOf("is").equals("json") && options.valueOf("os").equals("json")){
+                    inputSchema = SchemaFactory.buildSchema(new FileInputStream((String) options.valueOf("is")));
                     outputSchema = SchemaFactory.buildSchema(new FileInputStream((String) options.valueOf("is")));
                     Map<String,String> format = new HashMap<>();
                     format.put("type", "json");
                     outputSchema.setFormat(format);
                 }
                 else{
+                    inputSchema = SchemaFactory.buildSchema(new FileInputStream((String) options.valueOf("is")));
                     outputSchema = SchemaFactory.buildSchema(new FileInputStream((String) options.valueOf("os")));
                 }
+
+                IOContextBuilder inputBuilder = new IOContextBuilder();
+                inputBuilder.schema(inputSchema);
+                inputBuilder.in(
+                        options.has("in")
+                        ? new BufferedInputStream(new FileInputStream((String) options.valueOf("in")))
+                        : new BufferedInputStream(System.in));
+
 
                 IOContextBuilder outputBuilder = new IOContextBuilder();
                 outputBuilder.schema(outputSchema);
