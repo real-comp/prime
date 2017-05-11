@@ -36,8 +36,14 @@ public class IOContext implements Serializable, AutoCloseable{
      */
     @Override
     public void close() throws IOException {
-        IOUtils.closeQuietly(in);
-        IOUtils.closeQuietly(out);
+        if (in != null){
+            IOUtils.closeQuietly(in);
+        }
+        if (out != null){
+            out.flush();
+            IOUtils.closeQuietly(out);
+        }
+
     }
 
     /**
