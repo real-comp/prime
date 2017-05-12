@@ -4,7 +4,7 @@
     <groupId>com.real-comp</groupId>
     <artifactId>prime</artifactId>
     <packaging>jar</packaging>
-    <version>0.5.4-SNAPSHOT</version>
+    <version>0.5.4</version>
     <name>prime</name>
     <description>Data transformation tool</description>
     <url>https://github.com/real-comp/prime</url>
@@ -31,7 +31,7 @@
         <connection>scm:git:git@github.com:real-comp/prime.git</connection>
         <developerConnection>scm:git:git@github.com:real-comp/prime.git</developerConnection>
         <url>git@github.com:real-comp/prime.git</url>
-        <tag>HEAD</tag>
+        <tag>prime-0.5.4</tag>
     </scm>
     <distributionManagement>
         <snapshotRepository>
