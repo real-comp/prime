@@ -14,7 +14,7 @@ import com.realcomp.prime.transform.TransformContext;
 import com.realcomp.prime.transform.ValueSurgeon;
 import com.realcomp.prime.validation.ValidationException;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
