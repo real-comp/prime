@@ -19,7 +19,7 @@ The release artifacts are in the Maven Central Repository.
 <dependency>
     <groupId>com.real-comp</groupId>
     <artifactId>prime</artifactId>
-    <version>0.5.2</version>
+    <version>0.5.5</version>
 </dependency>      
 ```
 
