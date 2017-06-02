@@ -187,14 +187,9 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.reflections</groupId>
-            <artifactId>reflections</artifactId>
-            <version>0.9.11</version>
-        </dependency>
-        <dependency>
             <groupId>com.real-comp</groupId>
             <artifactId>prime-annotations</artifactId>
-            <version>0.0.4</version>
+            <version>0.0.5</version>
         </dependency>
         <dependency>
             <groupId>commons-io</groupId>

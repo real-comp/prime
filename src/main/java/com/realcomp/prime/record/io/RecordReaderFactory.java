@@ -14,6 +14,8 @@ public class RecordReaderFactory{
     static{
         types = new HashMap<>();
         types.put("CSV", DelimitedFileReader.class.getName());
+        types.put("DELIM", DelimitedFileReader.class.getName());
+        types.put("DELIMITED", DelimitedFileReader.class.getName());
         types.put("TAB", DelimitedFileReader.class.getName());
         types.put("FIXED", FixedFileReader.class.getName());
         types.put("JSON", "com.realcomp.prime.record.io.json.JsonReader");

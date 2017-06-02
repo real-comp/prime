@@ -41,6 +41,7 @@ public class DelimitedFileReader extends BaseRecordReader{
         super();
         format.putDefault("header", "false");
         format.putDefault("type", "TAB");
+        format.putDefault("delimiter", "\t");
         format.putDefault("quoteCharacter", Character.toString(CSVParser.DEFAULT_QUOTE_CHARACTER));
         format.putDefault("escapeCharacter", Character.toString(CSVParser.DEFAULT_ESCAPE_CHARACTER));
         format.putDefault("strictQuotes", Boolean.toString(CSVParser.DEFAULT_STRICT_QUOTES));
@@ -52,6 +53,7 @@ public class DelimitedFileReader extends BaseRecordReader{
         super(copy);
         format.putDefault("header", "false");
         format.putDefault("type", "TAB");
+        format.putDefault("delimiter", "\t");
         format.putDefault("quoteCharacter", Character.toString(CSVParser.DEFAULT_QUOTE_CHARACTER));
         format.putDefault("escapeCharacter", Character.toString(CSVParser.DEFAULT_ESCAPE_CHARACTER));
         format.putDefault("strictQuotes", Boolean.toString(CSVParser.DEFAULT_STRICT_QUOTES));
@@ -279,9 +281,32 @@ public class DelimitedFileReader extends BaseRecordReader{
         String type = format.get("type");
         if (type.equalsIgnoreCase("TAB")){
             delimiter = '\t';
+            if (!format.get("delimiter").equals("\t")){
+                throw new IllegalArgumentException(
+                        "invalid type [" + type + "] with delimiter [" +
+                                format.get("delimiter") + "]. " +
+                                "You might want to set the type to 'DELIMITED'");
+            }
         }
         else if (type.equalsIgnoreCase("CSV")){
             delimiter = ',';
+            String d = format.get("delimiter");
+            //the default delimiter is tab - for backwards compatibility,
+            //don't override the delimiter if type = CSV
+            //allow type = CSV and a non-comma delimiter
+            if (d.length() == 1 && d.charAt(0) != '\t'){
+                delimiter = d.charAt(0);
+            }
+            else if (d.length() != 1){
+                throw new IllegalArgumentException("invalid type [" + type + "] with delimiter [" + d + "]. You might want to set the type to 'DELIMITED'");
+            }
+        }
+        else if (type.equalsIgnoreCase("DELIM") || type.equalsIgnoreCase("DELIMITED")){
+            String d = format.get("delimiter");
+            if (d.length() != 1){
+                throw new IllegalArgumentException("invalid type [" + type + "] with delimiter [" + d + "].  Only a single character delimiter is supported.");
+            }
+            delimiter = d.charAt(0);
         }
         else{
             if (type.length() != 1){

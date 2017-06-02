@@ -1,5 +1,6 @@
 package com.realcomp.prime.record.io;
 
+import com.realcomp.prime.record.io.delimited.DelimitedFileReader;
 import com.realcomp.prime.record.io.delimited.DelimitedFileWriter;
 import com.realcomp.prime.record.io.fixed.FixedFileWriter;
 import com.realcomp.prime.schema.Schema;
@@ -18,6 +19,8 @@ public class RecordWriterFactory{
         types = new HashMap<String, String>();
         types.put("CSV", DelimitedFileWriter.class.getName());
         types.put("TAB", DelimitedFileWriter.class.getName());
+        types.put("DELIM", DelimitedFileReader.class.getName());
+        types.put("DELIMITED", DelimitedFileReader.class.getName());
         types.put("FIXED", FixedFileWriter.class.getName());
         types.put("JSON", "com.realcomp.prime.record.io.json.JsonWriter");
         types.put("DBF",   "com.realcomp.prime.xbase.XBaseWriter");
