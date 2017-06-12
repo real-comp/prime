@@ -82,7 +82,6 @@ public class DelimitedFileWriter extends BaseRecordWriter{
     public void write(Record record)
             throws IOException, ValidationException, ConversionException, SchemaException{
 
-
         //optionally write header record
         if (!headerWritten && isHeader()){
             writeHeader();

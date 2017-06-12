@@ -8,6 +8,8 @@ import com.realcomp.prime.schema.SchemaException;
 import com.realcomp.prime.schema.SchemaFactory;
 import com.realcomp.prime.transform.TransformContext;
 import com.realcomp.prime.transform.Transformer;
+import com.realcomp.prime.validation.InputValidationException;
+import com.realcomp.prime.validation.OutputValidationException;
 import com.realcomp.prime.validation.Severity;
 import com.realcomp.prime.validation.ValidationException;
 import joptsimple.OptionException;
@@ -37,45 +39,49 @@ public class Reformat{
 
     private RecordReader in;
     private RecordWriter out;
-    private RecordWriter error;
+    private OutputStream error;
+    private RecordWriter errorWriter;
 
     public Reformat(){
         transformers = new ArrayList<>();
         constants = new HashMap<>();
     }
 
-    public void setIn(IOContext inputCtx) throws FormatException, SchemaException, IOException{
-        if (inputCtx == null){
-            throw new IllegalArgumentException("inputCtx is null");
-        }
-
+    public void setIn(IOContext inputCtx) throws SchemaException, IOException{
+        Objects.requireNonNull(inputCtx);
         in = RecordReaderFactory.build(inputCtx.getSchema());
         in.open(inputCtx);
     }
 
-    public void setOut(IOContext outputCtx) throws FormatException, SchemaException, IOException{
-        if (outputCtx == null){
-            throw new IllegalArgumentException("outputCtx is null");
-        }
-
+    public void setOut(IOContext outputCtx) throws SchemaException, IOException{
+        Objects.requireNonNull(outputCtx);
         out = RecordWriterFactory.build(outputCtx.getSchema());
         out.open(outputCtx);
     }
 
-    public void setErr(IOContext errorCtx) throws FormatException, SchemaException, IOException{
-        if (errorCtx == null){
-            throw new IllegalArgumentException("errorCtx is null");
-        }
-
-        error = RecordWriterFactory.build(errorCtx.getSchema());
-        error.open(errorCtx);
+    public void setErr(OutputStream err){
+        Objects.requireNonNull(err);
+        this.error = err;
         filter = true;
     }
 
 
+    private void initializeErrorRecordWriter() throws IOException, SchemaException{
+        if (error != null){
+            IOContext errContext = new IOContextBuilder()
+                    .schema(new Schema(in.getIOContext().getSchema()))
+                    .out(error)
+                    .validationExceptionThreshold(Severity.LOW)
+                    .build();
+            errorWriter = RecordWriterFactory.build(errContext.getSchema());
+            errorWriter.open(errContext);
+        }
+    }
+
     public void reformat()
             throws SchemaException, IOException, ValidationException, ConversionException{
 
+        initializeErrorRecordWriter();
         TransformContext ctx = new TransformContext();
         ctx.setValidationExceptionThreshold(in.getIOContext().getValidationExeptionThreshold());
 
@@ -100,8 +106,11 @@ public class Reformat{
                     logger.log(Level.INFO,
                            "filtered output: {0} : {1}",
                            new Object[]{out.getIOContext().getSchema().classify(record).toString(record), ex.getMessage()});
-                    if (error != null && ex.getRecord().isPresent()){
-                        error.write(record);
+                    if (error != null && ex instanceof OutputValidationException){
+                        OutputValidationException outputProblem = (OutputValidationException) ex;
+                        if (outputProblem.getRecord().isPresent()){
+                            errorWriter.write(record);
+                        }
                     }
                 }
                 else{
@@ -114,8 +123,8 @@ public class Reformat{
 
         in.close();
         out.close();
-        if (error != null){
-            error.close();
+        if (errorWriter != null){
+            errorWriter.close();
         }
     }
 
@@ -146,8 +155,12 @@ public class Reformat{
             catch (ValidationException ex){
                 if (filter){
                     logger.log(Level.INFO, "filtered input: {0}", new Object[]{ex.getMessage()});
-                    if (error != null && ex.getRecord().isPresent()){
-                        error.write(ex.getRecord().get());
+                    if (error != null && ex instanceof InputValidationException){
+                        InputValidationException inputProblem = (InputValidationException) ex;
+                        if (inputProblem.getRaw().isPresent()){
+                            error.write(inputProblem.getRaw().get().getBytes());
+                            error.write("\n".getBytes());
+                        }
                     }
                     record = null;
                 }
@@ -248,15 +261,12 @@ public class Reformat{
                         ? new BufferedInputStream(new FileInputStream((String) options.valueOf("in")))
                         : new BufferedInputStream(System.in));
 
-
                 IOContextBuilder outputBuilder = new IOContextBuilder();
                 outputBuilder.schema(outputSchema);
                 outputBuilder.out(
                         options.has("out")
                         ? new BufferedOutputStream(new FileOutputStream((String) options.valueOf("out")))
                         : new BufferedOutputStream(System.out));
-
-
 
                 if (options.has("f")){
                     reformatter.setFilter(true);
@@ -265,12 +275,7 @@ public class Reformat{
 
                     String errorFile = (String) options.valueOf("f");
                     if (errorFile != null && !errorFile.isEmpty()){
-                        IOContext errContext = new IOContextBuilder()
-                            .schema(new Schema(inputSchema))
-                            .out(new FileOutputStream(errorFile))
-                            .validationExceptionThreshold(Severity.LOW)
-                            .build();
-                        reformatter.setErr(errContext);
+                        reformatter.setErr(new BufferedOutputStream(new FileOutputStream(errorFile)));
                     }
                 }
 
@@ -280,7 +285,6 @@ public class Reformat{
                         reformatter.addConstantValue(constant.substring(0, pos), constant.substring(pos + 1));
                     }
                 }
-
 
                 for (Object t : options.valuesOf("t")){
                     reformatter.addTransformer(t.toString());

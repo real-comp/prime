@@ -65,7 +65,7 @@ public class TransformContext{
         String message = String.format("%s for [%s] in record [%s]", new Object[]{ex.getMessage(), key, toString()});
 
         if (severity.ordinal() >= validationExceptionThreshold.ordinal()){
-            throw new ValidationException.Builder(ex).message(message).record(record).cause(ex).build();
+            throw new ValidationException.Builder(ex).message(message).cause(ex).build();
         }
         else{
             switch (severity){

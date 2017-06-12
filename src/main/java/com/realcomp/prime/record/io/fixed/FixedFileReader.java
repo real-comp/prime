@@ -9,6 +9,7 @@ import com.realcomp.prime.schema.Field;
 import com.realcomp.prime.schema.FieldList;
 import com.realcomp.prime.schema.Schema;
 import com.realcomp.prime.schema.SchemaException;
+import com.realcomp.prime.validation.InputValidationException;
 import com.realcomp.prime.validation.Severity;
 import com.realcomp.prime.validation.ValidationException;
 import org.apache.commons.io.IOUtils;
@@ -103,8 +104,19 @@ public class FixedFileReader extends BaseRecordReader{
         String data = reader.readLine();
         if (data != null){
             FieldList fields = fieldListCount == 1 ? defaultFieldList : classify(data);
-            String[] parsed = parse(data, fields);
-            record = loadRecord(fields, parsed);
+            try{
+                String[] parsed = parse(data, fields);
+                record = loadRecord(fields, parsed);
+            }
+            catch(ValidationException ex){
+                if (ex instanceof InputValidationException){
+                    ((InputValidationException) ex).setRaw(data);
+                    throw ex;
+                }
+                else{
+                    throw new InputValidationException(ex, data);
+                }
+            }
         }
 
         if (record != null){

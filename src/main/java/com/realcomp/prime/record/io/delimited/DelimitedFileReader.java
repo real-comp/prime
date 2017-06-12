@@ -11,6 +11,7 @@ import com.realcomp.prime.record.io.SkippingBufferedReader;
 import com.realcomp.prime.schema.Field;
 import com.realcomp.prime.schema.FieldList;
 import com.realcomp.prime.schema.SchemaException;
+import com.realcomp.prime.validation.InputValidationException;
 import com.realcomp.prime.validation.Severity;
 import com.realcomp.prime.validation.ValidationException;
 import com.realcomp.prime.validation.field.RegexValidator;
@@ -102,7 +103,18 @@ public class DelimitedFileReader extends BaseRecordReader{
         String[] tokens;
         if (data != null){
             tokens = parse(data);
-            record = loadRecord(classify(tokens), tokens);
+            try{
+                record = loadRecord(classify(tokens), tokens);
+            }
+            catch(ValidationException ex){
+                if (ex instanceof InputValidationException){
+                    ((InputValidationException) ex).setRaw(data);
+                    throw ex;
+                }
+                else{
+                    throw new InputValidationException(ex, data);
+                }
+            }
         }
 
         if (record != null){

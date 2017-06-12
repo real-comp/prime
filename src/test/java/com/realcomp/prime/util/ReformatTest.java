@@ -37,17 +37,13 @@ public class ReformatTest {
                 SchemaFactory.buildSchema(ReformatTest.class.getResourceAsStream("reformat-output.schema")));
         outputBuilder.out(new BufferedOutputStream(new FileOutputStream(good)));
 
-        IOContextBuilder errorBuilder = new IOContextBuilder();
-        errorBuilder.schema(
-                SchemaFactory.buildSchema(ReformatTest.class.getResourceAsStream("reformat-input.schema")));
-        errorBuilder.out(new BufferedOutputStream(new FileOutputStream(bad)));
-
         inputBuilder.validationExceptionThreshold(Severity.MEDIUM);
         outputBuilder.validationExceptionThreshold(Severity.MEDIUM);
 
         reformat.setIn(inputBuilder.build());
         reformat.setOut(outputBuilder.build());
-        reformat.setErr(errorBuilder.build());
+        reformat.setErr(new BufferedOutputStream(new FileOutputStream(bad)));
+        reformat.setFilter(true);
         reformat.reformat();
 
         assertEquals(3, countLines(good));
