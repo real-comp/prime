@@ -9,7 +9,7 @@ import com.realcomp.prime.schema.Field;
 import com.realcomp.prime.schema.FieldList;
 import com.realcomp.prime.schema.Schema;
 import com.realcomp.prime.schema.SchemaException;
-import com.realcomp.prime.validation.InputValidationException;
+import com.realcomp.prime.validation.RawValidationException;
 import com.realcomp.prime.validation.Severity;
 import com.realcomp.prime.validation.ValidationException;
 import org.apache.commons.io.IOUtils;
@@ -109,12 +109,12 @@ public class FixedFileReader extends BaseRecordReader{
                 record = loadRecord(fields, parsed);
             }
             catch(ValidationException ex){
-                if (ex instanceof InputValidationException){
-                    ((InputValidationException) ex).setRaw(data);
+                if (ex instanceof RawValidationException){
+                    ((RawValidationException) ex).setRaw(data);
                     throw ex;
                 }
                 else{
-                    throw new InputValidationException(ex, data);
+                    throw new RawValidationException(ex, data);
                 }
             }
         }
@@ -130,7 +130,7 @@ public class FixedFileReader extends BaseRecordReader{
     }
 
     /**
-     * Classify some prime and return the FieldList that should be used to parse the data. If only one FieldList is
+     * Classify some data and return the FieldList that should be used to parse the data. If only one FieldList is
      * defined, then it is returned. If multiple FieldLists are defined, then the first FieldList who's regex classifier
      * matches the data is returned
      *
@@ -151,7 +151,7 @@ public class FixedFileReader extends BaseRecordReader{
             }
 
             if (match == null){
-                throw new SchemaException("The schema [" + schema.getName() + "] does not support the specified prime.");
+                throw new SchemaException("The schema [" + schema.getName() + "] does not support the specified data.");
             }
         }
 
@@ -168,7 +168,7 @@ public class FixedFileReader extends BaseRecordReader{
 
         if (fields.size() != data.length){
             throw new ValidationException.Builder().message(String.format(
-                    "number of fields in schema does not match prime.",
+                    "number of fields in schema does not match data.",
                     fields.size() + " != " + data.length)).severity(Severity.HIGH).build();
 
         }

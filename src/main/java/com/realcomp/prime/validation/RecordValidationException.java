@@ -7,11 +7,11 @@ import com.realcomp.prime.record.Record;
  * <p>Validation failure writing a Record.</p>
  * Validation problem information along with the actual Record that had the issue.
  */
-public class OutputValidationException extends ValidationException{
+public class RecordValidationException extends ValidationException{
 
     private Optional<Record> record;
 
-    public OutputValidationException(ValidationException original, Record record){
+    public RecordValidationException(ValidationException original, Record record){
         super(original);
         this.record = Optional.fromNullable(record);
     }

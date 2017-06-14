@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rc:schema
+    xmlns:rc="http://www.real-comp.com/realcomp-data/schema/file-schema/1.2"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.real-comp.com/realcomp-data/schema/file-schema/1.2 http://www.real-comp.com/realcomp-data/schema/file-schema/1.2/file-schema.xsd"
+    name="owner" version="1.0">
+
+    <format type="CSV" header="true"/>
+
+    <after>
+        <trim/>
+        <upperCase/>
+    </after>
+
+    <fields>
+        <field name="RecordType">
+            <validateRegex regex="[0-9]"/>
+        </field>
+        <field name="PropertyID" type="long">
+            <foreignKey/>
+        </field>
+        <field name="QuickRefID">
+            <validateRegex regex="[A-Z]{1,2}[0-9]+(-[0-9]+)?"/>
+        </field>
+        <field name="PropertyNumber"/>
+        <field name="OwnerID">
+            <key/>
+        </field>
+        <field name="OwnerQuickRefID">
+            <validateRegex regex="[A-Z]{0,2}[0-9]+"/>
+        </field>
+        <field name="OwnerPropertyNumber"/>
+        <field name="OwnerName"/>
+        <field name="Address1"/>
+        <field name="Address2"/>
+        <field name="Address3"/>
+        <field name="City"/>
+        <field name="State"/>
+        <field name="Zip"/>
+        <field name="OwnershipPercent" type="float"/>
+        <field name="ConfidentialOwner" type="boolean"/>
+        <field name="ExemptionList"/>
+        <field name="HSCapAdj" type="long"/>
+        <field name="CurrHSCapAdj" type="long"/>
+    </fields>
+    <fields name="wilco1" description="wilco owner with timestamp mid record" classifier="^[A-Z0-9\-\.]+,[A-Z0-9\-\.]+,[A-Z0-9\-\.]+,[A-Z0-9\-\.]+,[A-Z0-9\-\.]+,[A-Z0-9\-\.]+,[A-Z0-9\-\.]+,[A-Z0-9\-\.]+,[A-Z0-9\-\.]+,[A-Z0-9\-\.]+,[A-Z0-9\-\.]+,[A-Z0-9\-\.]+,[A-Z0-9\-\.]+,[A-Z0-9\-\.]+,[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}(.[0-9]{9})?.+$">
+        <field name="QuickRefID">
+            <validateRegex regex="[A-Z]{1,2}[0-9]+(-[0-9]+)?"/>
+        </field>
+        <field name="PropertyID" type="long">
+            <foreignKey/>
+        </field>
+        <field name="AdHocTaxYear"/>
+        <field name="PartyID"/>
+        <field name="PrimaryOwner">
+            <validateRegex regex="TRUE|FALSE"/>
+        </field>
+        <field name="PropertyOwnerID"/>
+        <field name="Address1"/>
+        <field name="Address2"/>
+        <field name="Address3"/>
+        <field name="AddressChgReason"/>
+        <field name="AddressChgReasonDesc"/>
+        <field name="AddressTypeKey"/>
+        <field name="City"/>
+        <field name="DefaultAddressID"/>
+        <field name="DateAddrChange">
+            <validateRegex regex="[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}(.[0-9]{9})?"/>
+        </field>
+    </fields>
+    <fields name="wilco2" description="wilco owner with no timestamp mid record"  classifier="^[A-Z0-9\-\.]+,[A-Z0-9\-\.]+,[A-Z0-9\-\.]+,[A-Z0-9\-\.]+,[A-Z0-9\-\.]+,[A-Z0-9\-\.]+,[A-Z0-9\-\.]+,[A-Z0-9\-\.]+,[A-Z0-9\-\.]+,[A-Z0-9\-\.]+,[A-Z0-9\-\.]+,[A-Z0-9\-\.]+,[A-Z0-9\-\.]+,[A-Z0-9\-\.]+,,.+$">
+        <field name="QuickRefID">
+            <validateRegex regex="[A-Z]{1,2}[0-9]+(-[0-9]+)?"/>
+        </field>
+        <field name="PropertyID" type="long">
+            <foreignKey/>
+        </field>
+        <field name="AdHocTaxYear"/>
+        <field name="PartyID"/>
+        <field name="PrimaryOwner">
+            <validateRegex regex="TRUE|FALSE"/>
+        </field>
+        <field name="PropertyOwnerID"/>
+        <field name="Address1"/>
+        <field name="Address2"/>
+        <field name="Address3"/>
+        <field name="AddressChgReason"/>
+        <field name="AddressChgReasonDesc"/>
+        <field name="AddressTypeKey"/>
+        <field name="City"/>
+        <field name="DefaultAddressID"/>
+        <field name="DateAddrChange"/>
+    </fields>
+    <fields description="Williamson owner update file">
+        <field name="QuickRefID">
+            <validateRegex regex="[A-Z]{1,2}[0-9]+(-[0-9]+)?"/>
+        </field>
+        <field name="PropertyID" type="long">
+            <foreignKey/>
+        </field>
+        <field name="AdHocTaxYear"/>
+        <field name="PartyID"/>
+        <field name="PrimaryOwner">
+            <validateRegex regex="True|TRUE|False|FALSE"/>
+        </field>
+        <field name="PropertyOwnerID"/>
+        <field name="Address1"/>
+        <field name="Address2"/>
+        <field name="Address3"/>
+        <field name="AddressChgReason"/>
+        <field name="AddressChgReasonDesc"/>
+        <field name="AddressTypeKey"/>
+        <field name="City"/>
+        <field name="DateAddrChange">
+            <validateRegex regex="[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}(.[0-9]{9})?"/>
+        </field>
+        <field name="ExemptionList"/>
+        <field name="IsUndeliverable"/>
+        <field name="MailingAddress"/>
+        <field name="NameFirst"/>
+        <field name="NameMiddle"/>
+        <field name="NameLast"/>
+        <field name="NameTitleKey"/>
+        <field name="NameSuffixKey"/>
+        <field name="OwnerID">
+            <key/>
+        </field>
+        <field name="FullName"/>
+        <field name="PropertyNumber"/>
+        <field name="OwnerQuickRefID">
+            <validateRegex regex="[A-Z]{0,2}[0-9]+"/>
+        </field>
+        <field name="PartyFlags"/>
+        <field name="OwnershipPercent" type="float"/>
+        <field name="State"/>
+        <field name="StreetDirectional"/>
+        <field name="StreetName"/>
+        <field name="StreetNumber"/>
+        <field name="StreetSuffix"/>
+        <field name="StreetSuffixDirectional"/>
+        <field name="UnitNumber"/>
+        <field name="UnitTypeKey"/>
+        <field name="Zip"/>
+        <field name="TxO_HSCapAdj"/>
+        <field name="IsSecured"/>
+        <field name="DataDate">
+            <validateRegex regex="[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}(.[0-9]{9})?"/>
+        </field>
+    </fields>
+
+
+</rc:schema>

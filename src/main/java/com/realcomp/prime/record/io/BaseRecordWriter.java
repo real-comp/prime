@@ -5,7 +5,7 @@ import com.realcomp.prime.record.Record;
 import com.realcomp.prime.schema.Field;
 import com.realcomp.prime.schema.FieldList;
 import com.realcomp.prime.schema.SchemaException;
-import com.realcomp.prime.validation.OutputValidationException;
+import com.realcomp.prime.validation.RecordValidationException;
 import com.realcomp.prime.validation.ValidationException;
 
 import java.io.IOException;
@@ -46,12 +46,12 @@ public abstract class BaseRecordWriter extends BaseRecordReaderWriter implements
             write(record, schema.classify(record));
         }
         catch(ValidationException ex){
-            if (ex instanceof OutputValidationException){
-                ((OutputValidationException) ex).setRecord(record);
+            if (ex instanceof RecordValidationException){
+                ((RecordValidationException) ex).setRecord(record);
                 throw ex;
             }
             else{
-                throw new OutputValidationException(ex, record);
+                throw new RecordValidationException(ex, record);
             }
         }
         count++;

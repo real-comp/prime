@@ -8,8 +8,8 @@ import com.realcomp.prime.schema.SchemaException;
 import com.realcomp.prime.schema.SchemaFactory;
 import com.realcomp.prime.transform.TransformContext;
 import com.realcomp.prime.transform.Transformer;
-import com.realcomp.prime.validation.InputValidationException;
-import com.realcomp.prime.validation.OutputValidationException;
+import com.realcomp.prime.validation.RawValidationException;
+import com.realcomp.prime.validation.RecordValidationException;
 import com.realcomp.prime.validation.Severity;
 import com.realcomp.prime.validation.ValidationException;
 import joptsimple.OptionException;
@@ -106,8 +106,8 @@ public class Reformat{
                     logger.log(Level.INFO,
                            "filtered output: {0} : {1}",
                            new Object[]{out.getIOContext().getSchema().classify(record).toString(record), ex.getMessage()});
-                    if (error != null && ex instanceof OutputValidationException){
-                        OutputValidationException outputProblem = (OutputValidationException) ex;
+                    if (error != null && ex instanceof RecordValidationException){
+                        RecordValidationException outputProblem = (RecordValidationException) ex;
                         if (outputProblem.getRecord().isPresent()){
                             errorWriter.write(record);
                         }
@@ -155,8 +155,8 @@ public class Reformat{
             catch (ValidationException ex){
                 if (filter){
                     logger.log(Level.INFO, "filtered input: {0}", new Object[]{ex.getMessage()});
-                    if (error != null && ex instanceof InputValidationException){
-                        InputValidationException inputProblem = (InputValidationException) ex;
+                    if (error != null && ex instanceof RawValidationException){
+                        RawValidationException inputProblem = (RawValidationException) ex;
                         if (inputProblem.getRaw().isPresent()){
                             error.write(inputProblem.getRaw().get().getBytes());
                             error.write("\n".getBytes());

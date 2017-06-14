@@ -11,7 +11,7 @@ import com.realcomp.prime.record.io.SkippingBufferedReader;
 import com.realcomp.prime.schema.Field;
 import com.realcomp.prime.schema.FieldList;
 import com.realcomp.prime.schema.SchemaException;
-import com.realcomp.prime.validation.InputValidationException;
+import com.realcomp.prime.validation.RawValidationException;
 import com.realcomp.prime.validation.Severity;
 import com.realcomp.prime.validation.ValidationException;
 import com.realcomp.prime.validation.field.RegexValidator;
@@ -104,15 +104,29 @@ public class DelimitedFileReader extends BaseRecordReader{
         if (data != null){
             tokens = parse(data);
             try{
-                record = loadRecord(classify(tokens), tokens);
+                FieldList fieldList = null;
+                try {
+                    //it is faster to match on the number of the tokens than the schema classifier system.
+                    fieldList = classify(tokens);
+                }
+                catch(SchemaException ex){
+                    try{
+                        fieldList = classify(data, tokens.length);
+                    }
+                    catch(SchemaException ignore){
+                        throw ex;
+                    }
+                }
+
+                record = loadRecord(fieldList, tokens);
             }
             catch(ValidationException ex){
-                if (ex instanceof InputValidationException){
-                    ((InputValidationException) ex).setRaw(data);
+                if (ex instanceof RawValidationException){
+                    ((RawValidationException) ex).setRaw(data);
                     throw ex;
                 }
                 else{
-                    throw new InputValidationException(ex, data);
+                    throw new RawValidationException(ex, data);
                 }
             }
         }
@@ -143,23 +157,58 @@ public class DelimitedFileReader extends BaseRecordReader{
         return tokens;
     }
 
-    
-    
+
+
     /**
-     * Classify some delimited prime and return the FieldList that should be used to parse the data. If only one
+     * Classify some data and return the FieldList that should be used to parse the data. If only one FieldList is
+     * defined, then it is returned. If multiple FieldLists are defined, then the first FieldList who's regex classifier
+     * matches the data is returned
+     *
+     * @param data not null
+     * @param numTokens number of tokens in the delimited raw data
+     * @return the FieldList that should be used to parse the data. never null
+     * @throws SchemaException if no defined layout supports the data.
+     */
+    protected FieldList classify(String data, int numTokens) throws SchemaException{
+
+        assert(data != null);
+        FieldList match = defaultFieldList;
+
+        if (fieldListCount > 1){
+            if (headerFieldList == null && isHeader()){
+                if (!reader.getSkipped().isEmpty()){
+                    List<String> skipped = reader.getSkipped();
+                    String header = skipped.get(skipped.size() - 1);
+                    headerFieldList = createFieldListFromHeader(header);
+                }
+            }
+            for (FieldList fieldList : getCandidateFieldLists(numTokens)){
+                if (fieldList.supports(data)){
+                    match = fieldList;
+                }
+            }
+
+            if (match == null){
+                throw new SchemaException("The schema [" + schema.getName() + "] does not support the specified data.");
+            }
+        }
+
+
+        return match;
+    }
+
+
+    /**
+     * Classify some delimited data and return the FieldList that should be used to parse the data. If only one
      * FieldList is defined, then it is returned. If multiple FieldLists are defined, then the first FieldList has the
      * same number of fields as the data is returned.
      *
-     * @param data   not null
+     * @param tokens   not null
      * @return the FieldList that should be used to parse the data. never null
      * @throws SchemaException if more than one FieldList is defined and there is ambiguity
      */
-    protected FieldList classify(String[] data) throws SchemaException{
-
-        if (data == null){
-            throw new IllegalArgumentException("prime is null");
-        }
-
+    protected FieldList classify(String[] tokens) throws SchemaException{
+        Objects.requireNonNull(tokens);
         FieldList match = defaultFieldList;
 
         if (fieldListCount > 1){            
@@ -170,9 +219,8 @@ public class DelimitedFileReader extends BaseRecordReader{
                     headerFieldList = createFieldListFromHeader(header);
                 }
             }
-            
-                      
-            List<FieldList> candidates = getCandidateFieldLists(data.length);            
+
+            List<FieldList> candidates = getCandidateFieldLists(tokens.length);
             if (candidates.size() == 1){
                 match = candidates.get(0);
             }
@@ -180,14 +228,12 @@ public class DelimitedFileReader extends BaseRecordReader{
                 throw new SchemaException(
                         "Ambiguous schema [" + schema.getName() + "]. "
                         + "Multiple field lists in the schema support records with "
-                        + data.length + " fields.");
+                        + tokens.length + " fields.");
             }
         }
-
         if (match == null){
-            throw new SchemaException("The schema [" + schema.getName() + "] does not support the specified prime.");
+            throw new SchemaException("The schema [" + schema.getName() + "] does not support the specified data.");
         }
-
         return match;
     }
     
@@ -279,7 +325,7 @@ public class DelimitedFileReader extends BaseRecordReader{
         if (fields.size() != data.length){
             throw new ValidationException.Builder()
                     .message(String.format(
-                            "The number of fields in schema [%s] does not match number of fields in the data [%s].",
+                            "Unable to match a FieldList for a record with [%s] fields.  ",
                         new Object[]{fields.size(), data.length}))
                     .severity(Severity.HIGH)
                     .build();

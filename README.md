@@ -232,7 +232,7 @@ Armed with the input.schema and output.schema:
 
 ```bash
 cat test.csv | java -cp prime-0.5.0-jar-with-dependencies.jar com.realcomp.prime.util.Reformat --is input.schema --os output.schema
-"id","name","rank","faction"
+"key","name","rank","faction"
 "1","OPTIMUS PRIME","Prime","GOOD"
 "2","BUMBLEBEE","Car","GOOD"
 "3","MEGATRON","Leader","BAD"

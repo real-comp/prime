@@ -7,77 +7,148 @@ import com.realcomp.prime.record.io.*;
 import com.realcomp.prime.schema.*;
 import com.realcomp.prime.validation.Severity;
 import com.realcomp.prime.validation.ValidationException;
+import joptsimple.OptionException;
+import joptsimple.OptionParser;
+import joptsimple.OptionSet;
+
 import java.io.*;
 import java.util.*;
-import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import joptsimple.*;
 
 
 public class SimpleGranularity{
 
     private static final Logger logger = Logger.getLogger(SimpleGranularity.class.getName());
 
-    private final Map<Object,Long> counts;
-    private final String key;
-    
-    public SimpleGranularity(String key){
+    private final Map<String, Entry> counts;
+    private final String fieldName;
+    private final Optional<String> key;
+    private final OutputStream out;
+
+    public SimpleGranularity(Schema inputSchema, String fieldName, OutputStream out){
+        Objects.requireNonNull(inputSchema);
+        Objects.requireNonNull(fieldName);
+        Objects.requireNonNull(out);
         counts = new HashMap<>();
-        this.key = key;
+        this.fieldName = fieldName;
+        key = getKeyFieldName(inputSchema);
+        this.out = out;
     }
-    
-    public void run(IOContext in, IOContext out)
+
+    /**
+     * @param schema
+     * @return the name of the first field marked as a 'key' in the provided Schema
+     */
+    private Optional<String> getKeyFieldName(Schema schema){
+        FieldList fieldList = schema.getDefaultFieldList();
+        if (fieldList == null){
+            fieldList = schema.getFieldLists().get(0);
+        }
+        for (Field field: fieldList){
+            if (field.isKey()){
+                return Optional.of(field.getName());
+            }
+        }
+
+        return Optional.empty();
+    }
+
+    private class Entry implements Comparable<Entry>{
+        private String value;
+        private long count;
+        private String key;
+
+        public Entry(String value){
+            this.value = value;
+            count = 1;
+        }
+
+
+        public String getValue(){
+            return value;
+        }
+
+        public void setValue(String value){
+            this.value = value;
+        }
+
+        public long getCount(){
+            return count;
+        }
+
+        public void setCount(long count){
+            this.count = count;
+        }
+
+        public String getKey(){
+            return key;
+        }
+
+        public void setKey(String key){
+            this.key = key;
+        }
+
+        public void inc(){
+            count++;
+        }
+
+        @Override
+        public int compareTo(Entry other){
+            return Long.compare(count, other.count);
+        }
+    }
+
+    public void add(Record record){
+        String value = record.get(fieldName, "null").toString();
+        Entry entry = counts.get(value);
+        if (entry == null){
+            entry = new Entry(value);
+            if (key.isPresent()){
+                entry.setKey(record.get(key.get(), "null").toString());
+            }
+            counts.put(value, entry);
+        }
+        else{
+            entry.inc();
+        }
+    }
+
+
+    private void writeResult()
+            throws SchemaException, IOException, ConversionException, ValidationException{
+
+        Schema outputSchema = buildOutputSchema();
+        try(RecordWriter writer = RecordWriterFactory.build(outputSchema);
+            IOContext outputCtx = new IOContextBuilder().schema(outputSchema).out(out).build()){
+
+            writer.open(outputCtx);
+            List<Entry> entries = new ArrayList<>();
+            entries.addAll(counts.values());
+            Collections.sort(entries);
+
+            for (Entry entry : entries){
+                Record record = new Record();
+                record.put(fieldName, entry.getValue());
+                record.put("count", entry.getCount());
+                record.put("key", entry.getKey());
+                writer.write(record);
+            }
+        }
+    }
+
+    public void run(IOContext in)
             throws SchemaException, IOException, ConversionException, ValidationException{
 
         RecordReader reader = RecordReaderFactory.build(in.getSchema());
         reader.open(in);
-        
         Record record = getNextRecord(reader);
         while (record != null){
-            
-            increment(record.get(key));
-            
+            add(record);
             record = getNextRecord(reader);
         }
-
         reader.close();
-        writeResult(out);
-
-        
-    }
-    
-    private void writeResult(IOContext out)
-            throws SchemaException, IOException, ConversionException, ValidationException{
-                
-        RecordWriter writer = RecordWriterFactory.build(out.getSchema());
-        writer.open(out);
-        String value = "count";
-        if (key.equals("count")){
-            value = "total";
-        }
-        for (Entry<Object,Long> entry: counts.entrySet()){
-            Record record = new Record();
-            record.put(key, entry.getKey());
-            record.put(value, entry.getValue());
-            writer.write(record);
-        }            
- 
-        writer.close();
-    }
-    
-    private void increment(Object key){
-        if (key == null){
-            key = "null";
-        }
-        Long count = counts.get(key);
-        if (count == null){
-            count = 1L;
-        }
-        else{
-            count += 1;
-        }
-        counts.put(key, count);
+        writeResult();
     }
 
     protected Record getNextRecord(RecordReader reader)
@@ -94,14 +165,43 @@ public class SimpleGranularity{
             }
             catch (ValidationException ex){
                 logger.log(Level.INFO,
-                           "filtered input record because: {0}",
-                           new Object[]{ex.getMessage()});
+                        "filtered input record because: {0}",
+                        new Object[]{ex.getMessage()});
 
                 record = null;
             }
         }
         return record;
     }
+
+    private Schema buildOutputSchema() throws SchemaException{
+
+        Schema outputSchema = new Schema();
+        Format format = new Format();
+        format.put("type", "TAB");
+        format.put("header", "true");
+        outputSchema.setFormat(format);
+
+        FieldList fieldList = new FieldList();
+        Field field = new Field(fieldName);
+        field.setType(DataType.STRING);
+        fieldList.add(field);
+
+        field = new Field("count");
+        field.setType(DataType.LONG);
+        fieldList.add(field);
+
+        if (key.isPresent()){
+            field = new Field("key");
+            field.setType(DataType.STRING);
+            fieldList.add(field);
+        }
+
+        outputSchema.addFieldList(fieldList);
+        return outputSchema;
+    }
+
+
 
     private static void printHelp(OptionParser parser){
         try{
@@ -111,34 +211,7 @@ public class SimpleGranularity{
         }
     }
 
-    private static Schema buildOutputSchema(Schema inputSchema, String field) throws SchemaException{
-        
-        Schema outputSchema = new Schema(inputSchema);
-        FieldList fieldList = outputSchema.getDefaultFieldList();
-        if (fieldList == null){
-            fieldList = outputSchema.getFieldLists().get(0);
-        }
-        
-        for (FieldList fields: inputSchema.getFieldLists()){
-            outputSchema.removeFieldList(fields);
-        }
-        
-        FieldList outputFieldList = new FieldList();        
-        outputFieldList.add(new Field(fieldList.get(field)));
-        
-        
-        String valueField = "count";
-        if (field.equals("count")){
-            valueField = "total";
-        }
-        
-        outputFieldList.add(new Field(valueField, DataType.LONG));
-        outputSchema.addFieldList(outputFieldList);
-        
-        return outputSchema;
-    }
-    
-    
+
     public static void main(String[] args){
 
         OptionParser parser = new OptionParser(){
@@ -164,25 +237,20 @@ public class SimpleGranularity{
             }
             else{
                 String field = (String) options.valueOf("f");
-                SimpleGranularity gran = new SimpleGranularity(field);
+                OutputStream out = options.has("out")
+                        ? new BufferedOutputStream(new FileOutputStream((String) options.valueOf("out")))
+                        : new BufferedOutputStream(System.out);
+
                 IOContextBuilder inputBuilder = new IOContextBuilder();
                 Schema inputSchema = SchemaFactory.buildSchema(new FileInputStream((String) options.valueOf("is")));
                 inputBuilder.schema(inputSchema);
                 inputBuilder.in(
                         options.has("in")
-                        ? new BufferedInputStream(new FileInputStream((String) options.valueOf("in")))
-                        : new BufferedInputStream(System.in));
+                                ? new BufferedInputStream(new FileInputStream((String) options.valueOf("in")))
+                                : new BufferedInputStream(System.in));
                 inputBuilder.validationExceptionThreshold(Severity.MEDIUM);
-
-                IOContextBuilder outputBuilder = new IOContextBuilder();
-                Schema outputSchema = buildOutputSchema(inputSchema, field);
-                outputBuilder.schema(outputSchema);
-                outputBuilder.out(
-                        options.has("out")
-                        ? new BufferedOutputStream(new FileOutputStream((String) options.valueOf("out")))
-                        : new BufferedOutputStream(System.out));
-                outputBuilder.validationExceptionThreshold(Severity.MEDIUM);
-                gran.run(inputBuilder.build(), outputBuilder.build());
+                SimpleGranularity gran = new SimpleGranularity(inputSchema, field, out);
+                gran.run(inputBuilder.build());
                 result = 0;
             }
         }

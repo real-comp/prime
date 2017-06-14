@@ -118,7 +118,7 @@ public class FieldList implements List<Field>{
 
     /**
      * @param data not null
-     * @return true if the classifier matches the specified prime; else false
+     * @return true if the classifier matches the specified data; else false
      */
     public boolean supports(String data){
         boolean supports = true;
