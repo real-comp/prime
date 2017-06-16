@@ -54,17 +54,11 @@ public class Codes{
 
     public Codes(String description, InputStream in) throws IOException{
         codes = new Properties();
-        Properties properties  = new Properties();
-        properties.load(in);
-        for (String key: properties.stringPropertyNames()){
-            if (!key.startsWith(COMMENT_PREFIX)){
-                codes.setProperty(key, properties.getProperty(key));
-            }
-        }
         missCache = new HashSet();
         if (description != null){
             this.description = description;
         }
+        load(in);
     }
 
     public Codes(InputStream in) throws IOException{
@@ -78,6 +72,18 @@ public class Codes{
         missCache = new HashSet();
         missCache.addAll(copy.missCache);
     }
+
+    public void load(InputStream in) throws IOException{
+        Properties properties  = new Properties();
+        properties.load(in);
+        codes.clear();
+        for (String key: properties.stringPropertyNames()){
+            if (!key.startsWith(COMMENT_PREFIX)){
+                codes.setProperty(key, properties.getProperty(key));
+            }
+        }
+    }
+
 
     public boolean isLogMisses(){
         return logMisses;
@@ -95,8 +101,6 @@ public class Codes{
         this.cacheMisses = cacheMisses;
     }
     
-    
-
     public Properties getCodes(){
         return codes;
     }
