@@ -2,17 +2,13 @@ package com.realcomp.prime.util;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Properties;
-import java.util.Set;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
  * Utility class for code translations.
- * Data loaded from properties files.
+ * Data loaded from Java Properties files.
  *
  */
 public class Codes{    
@@ -27,8 +23,15 @@ public class Codes{
     protected Set<String> missCache;
 
     public Codes(){
+        this("");
+    }
+
+    public Codes(String description){
         codes = new Properties();
         missCache = new HashSet();
+        if (description != null){
+            this.description = description;
+        }
     }
 
     public Codes(Properties properties){
@@ -93,6 +96,7 @@ public class Codes{
     }
 
     public void setDescription(String description){
+        Objects.requireNonNull(description);
         this.description = description;
     }
 
