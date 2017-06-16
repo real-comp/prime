@@ -34,7 +34,7 @@ public class Codes{
         }
     }
 
-    public Codes(Properties properties){
+    public Codes(String description, Properties properties){
         codes = new Properties();
         for (String key: properties.stringPropertyNames()){
             if (!key.startsWith(COMMENT_PREFIX)){
@@ -43,17 +43,16 @@ public class Codes{
         }
         this.codes.putAll(properties);
         missCache = new HashSet();
+        if (description != null){
+            this.description = description;
+        }
     }
 
-    public Codes(Codes copy){
-        this.codes = new Properties();
-        this.codes.putAll(copy.codes);
-        this.description = copy.description;
-        missCache = new HashSet();
-        missCache.addAll(copy.missCache);
+    public Codes(Properties properties){
+        this("", properties);
     }
 
-    public Codes(InputStream in) throws IOException{
+    public Codes(String description, InputStream in) throws IOException{
         codes = new Properties();
         Properties properties  = new Properties();
         properties.load(in);
@@ -63,6 +62,21 @@ public class Codes{
             }
         }
         missCache = new HashSet();
+        if (description != null){
+            this.description = description;
+        }
+    }
+
+    public Codes(InputStream in) throws IOException{
+        this("", in);
+    }
+
+    public Codes(Codes copy){
+        this.codes = new Properties();
+        this.codes.putAll(copy.codes);
+        this.description = copy.description;
+        missCache = new HashSet();
+        missCache.addAll(copy.missCache);
     }
 
     public boolean isLogMisses(){
