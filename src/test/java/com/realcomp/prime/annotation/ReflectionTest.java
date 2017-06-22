@@ -1,29 +1,27 @@
 package com.realcomp.prime.annotation;
 
 import com.realcomp.prime.validation.field.LengthValidator;
-import static org.junit.Assert.*;
+import io.github.lukehutch.fastclasspathscanner.FastClasspathScanner;
 import org.junit.Test;
 
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
-import org.reflections.Reflections;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
-/**
- *
- */
 public class ReflectionTest{
 
     @Test
     public void testValidatorAnnotations(){
-
-        //Configuration conf = new ConfigurationBuilder()
-        //       .setUrls(ClasspathHelper.getUrlsForPackagePrefix("com.realcomp.prime"));
-        //.setScanners(new TypeElementsScanner());
-
-        Reflections reflections = new Reflections("com.realcomp");
-        Set<Class<?>> annotated = reflections.getTypesAnnotatedWith(Validator.class);
+        List<Class> annotated = new ArrayList<>();
+        new FastClasspathScanner("com.realcomp")
+                .matchClassesWithAnnotation(Validator.class,
+                        c -> annotated.add(c))
+                .matchClassesWithAnnotation(Converter.class,
+                        c -> annotated.add(c))
+                .scan();
         assertFalse(annotated.isEmpty());
         assertTrue(annotated.contains(LengthValidator.class));
-
     }
 }

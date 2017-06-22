@@ -8,6 +8,8 @@ import com.thoughtworks.xstream.converters.MarshallingContext;
 import com.thoughtworks.xstream.converters.UnmarshallingContext;
 import com.thoughtworks.xstream.io.HierarchicalStreamReader;
 import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
+
+import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
 /**
@@ -15,6 +17,8 @@ import java.util.regex.Pattern;
  *
  */
 public class FieldListConverter implements Converter{
+
+    private static final Logger logger = Logger.getLogger(FieldListConverter.class.getName());
 
     @Override
     public boolean canConvert(Class type){
@@ -31,7 +35,7 @@ public class FieldListConverter implements Converter{
         
         Pattern classifier = fieldList.getClassifier();
         if (classifier != null && !classifier.equals(FieldList.DEFAULT_CLASSIFIER)){
-            writer.addAttribute("classifier", classifier.toString());            
+            writer.addAttribute("classifier", classifier.toString());
         }
 
         for (Field field : fieldList){
@@ -45,10 +49,13 @@ public class FieldListConverter implements Converter{
     public Object unmarshal(HierarchicalStreamReader reader, UnmarshallingContext uc){
 
         FieldList fieldList = new FieldList();
+
+        //The classifier attribute is the old classification mechanism and is deprecated
         String classifier = reader.getAttribute("classifier");
         if (classifier != null){
             fieldList.setClassifier(Pattern.compile(classifier));
         }
+
         String defaultFieldList = reader.getAttribute("default");
         if (defaultFieldList != null){
             fieldList.setDefault(Boolean.parseBoolean(defaultFieldList));

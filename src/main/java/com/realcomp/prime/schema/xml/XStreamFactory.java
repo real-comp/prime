@@ -10,9 +10,7 @@ import com.realcomp.prime.schema.*;
 import com.realcomp.prime.transform.Transformer;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.StaxDriver;
-import org.reflections.Reflections;
-
-import java.util.Set;
+import io.github.lukehutch.fastclasspathscanner.FastClasspathScanner;
 
 /**
  * Creates correctly configured XStream instances.
@@ -36,19 +34,6 @@ public class XStreamFactory{
      */
     public static XStream build(boolean pretty){
 
-        /*
-         * //use reflection to find all Validatior and Converter annotated classes.
-         * Configuration conf = new ConfigurationBuilder()
-         * .setUrls(ClasspathHelper.getUrlsForPackagePrefix("com.realcomp"));
-         * //.setScanners(new TypeElementsScanner());
-         */
-
-        Reflections reflections = new Reflections("com.realcomp");
-
-        //turn off INFO logging of Reflections
-        // Logger.getLogger(Reflections.class.getName());
-        // LoggingMXBean mxBean = LogManager.getLoggingMXBean();
-        // mxBean.setLoggerLevel(Reflections.class.getName(), Level.WARNING.getName());
 
         XStream xstream = pretty ? new XStream() : new XStream(new StaxDriver());
         xstream.processAnnotations(Schema.class);
@@ -68,23 +53,19 @@ public class XStreamFactory{
         xstream.registerConverter(new FieldListConverter());
         xstream.registerConverter(new AttributesConverter());
 
+        new FastClasspathScanner("com.realcomp")
+                .matchClassesWithAnnotation(Validator.class,
+                        c -> {
+                            xstream.alias(c.getAnnotation(Validator.class).value(), c);
+                            xstream.processAnnotations(c);
+                        })
+                .matchClassesWithAnnotation(Converter.class,
+                        c -> {
+                            xstream.alias(c.getAnnotation(Converter.class).value(), c);
+                            xstream.processAnnotations(c);
+                        })
+                .scan();
 
-        /* use reflection to get all classes on the classpath annotated as a validator or converter */
-        //Reflections reflections = new Reflections(conf);
-        Set<Class<?>> validators = reflections.getTypesAnnotatedWith(Validator.class);
-        Set<Class<?>> converters = reflections.getTypesAnnotatedWith(Converter.class);
-
-        for (Class c : validators){
-            Validator annotation = (Validator) c.getAnnotation(Validator.class);
-            xstream.alias(annotation.value(), c);
-            xstream.processAnnotations(c);
-        }
-
-        for (Class c : converters){
-            Converter annotation = (Converter) c.getAnnotation(Converter.class);
-            xstream.alias(annotation.value(), c);
-            xstream.processAnnotations(c);
-        }
 
         return xstream;
     }

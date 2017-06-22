@@ -1,7 +1,8 @@
 package com.realcomp.prime.validation;
 
-import com.google.common.base.Optional;
 import com.realcomp.prime.record.Record;
+
+import java.util.Optional;
 
 /**
  * <p>Validation failure writing a Record.</p>
@@ -13,13 +14,13 @@ public class RecordValidationException extends ValidationException{
 
     public RecordValidationException(ValidationException original, Record record){
         super(original);
-        this.record = Optional.fromNullable(record);
+        this.record = Optional.ofNullable(record);
     }
 
     public Optional<Record> getRecord() {return record; }
 
     public void setRecord(Record record){
-        this.record = Optional.fromNullable(record);
+        this.record = Optional.ofNullable(record);
     }
 
 }

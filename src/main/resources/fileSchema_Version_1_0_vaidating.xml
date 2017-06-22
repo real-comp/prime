@@ -34,11 +34,11 @@
         
     </fields>
     <classifiers>
-        <classifier regex="pattern">
+        <matchClassifier regex="pattern">
             <fields>
                 <field name=""/>
             </fields>
-        </classifier>
+        </matchClassifier>
     </classifiers>
 
 </rc:file-schema>

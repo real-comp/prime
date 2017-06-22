@@ -17,6 +17,7 @@ public class FieldList implements List<Field>{
     public static final Pattern DEFAULT_CLASSIFIER = Pattern.compile(".*");
 
     private List<Field> fields;
+
     private Pattern classifier;
     private String name;
     private boolean defaultList = false;
@@ -37,11 +38,6 @@ public class FieldList implements List<Field>{
         foreignKeys = new ArrayList<>();
     }
 
-    public FieldList(Pattern classifier){
-        this();
-        Objects.requireNonNull(classifier);
-        this.classifier = Pattern.compile(classifier.toString());
-    }
 
     public FieldList(FieldList copy){
         this();
@@ -50,13 +46,12 @@ public class FieldList implements List<Field>{
         }
         for (Field field : copy){
             fields.add(new Field(field));
-        }        
+        }
         if (copy.classifier != null){
             this.classifier = Pattern.compile(copy.classifier.toString());
         }
         this.name = copy.name;
         this.defaultList = copy.defaultList;
-        
         resetCachedValues();
     }
 
@@ -106,19 +101,24 @@ public class FieldList implements List<Field>{
         }
         return length;
     }
-            
-    
+
+    /**
+     * @return the Regex classification Pattern that must match the entire record.
+     */
     public Pattern getClassifier(){
         return classifier;
     }
 
+    /**
+     * @param classifier regex pattern to classify raw data against this FieldList
+     */
     public void setClassifier(Pattern classifier){
         this.classifier = classifier;
     }
 
-    /**
+     /**
      * @param data not null
-     * @return true if the classifier matches the specified data; else false
+     * @return true if the match pattern matches the specified data; else false
      */
     public boolean supports(String data){
         boolean supports = true;
@@ -415,42 +415,36 @@ public class FieldList implements List<Field>{
     }
 
     @Override
-    public int hashCode(){
-        int hash = 5;
-        hash = 47 * hash + Objects.hashCode(this.fields);
-        hash = 47 * hash + Objects.hashCode(this.classifier == null ? "" : this.classifier.toString());
-        hash = 47 * hash + Objects.hashCode(this.name);
-        hash = 47 * hash + (this.defaultList ? 1 : 0);
-        return hash;
+    public boolean equals(Object o){
+        if (this == o){
+            return true;
+        }
+        if (!(o instanceof FieldList)){
+            return false;
+        }
+
+        FieldList other = (FieldList) o;
+
+        if (defaultList != other.defaultList){
+            return false;
+        }
+        if (fields != null ? !fields.equals(other.fields) : other.fields != null){
+            return false;
+        }
+        if (!Objects.equals(this.classifier == null ? "" : this.classifier.toString(),
+                other.classifier == null ? "" : other.classifier.toString())){
+            return false;
+        }
+
+        return name != null ? name.equals(other.name) : other.name == null;
     }
 
     @Override
-    public boolean equals(Object obj){
-        if (obj == null){
-            return false;
-        }
-        if (getClass() != obj.getClass()){
-            return false;
-        }
-        final FieldList other = (FieldList) obj;
-        if (!Objects.equals(this.fields, other.fields)){
-            return false;
-        }
-        if (!Objects.equals(this.classifier == null ? "" : this.classifier.toString(), 
-                            other.classifier == null ? "" : other.classifier.toString())){
-            return false;
-        }
-        if (!Objects.equals(this.name, other.name)){
-            return false;
-        }
-        if (this.defaultList != other.defaultList){
-            return false;
-        }
-        return true;
+    public int hashCode(){
+        int result = fields != null ? fields.hashCode() : 0;
+        result = 31 * result + (classifier != null ? classifier.hashCode() : 0);
+        result = 31 * result + (name != null ? name.hashCode() : 0);
+        result = 31 * result + (defaultList ? 1 : 0);
+        return result;
     }
-    
-    
-    
-
-    
 }

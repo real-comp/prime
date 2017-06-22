@@ -14,7 +14,7 @@ public abstract class SimpleConverter implements Converter{
     protected List<DataType> supportedTypes;
 
     public SimpleConverter(){
-        supportedTypes = new ArrayList<DataType>();
+        supportedTypes = new ArrayList<>();
         supportedTypes.add(DataType.STRING);
         supportedTypes.add(DataType.BOOLEAN);
         supportedTypes.add(DataType.INTEGER);

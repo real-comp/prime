@@ -29,7 +29,7 @@
     </fields>
     
     
-    <fields classifier="[A-Z]{19}">
+    <fields matchClassifier="[A-Z]{19}">
         <field name="" type="int">
             <key/>
         </field>

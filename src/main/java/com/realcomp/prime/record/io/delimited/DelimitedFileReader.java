@@ -325,8 +325,8 @@ public class DelimitedFileReader extends BaseRecordReader{
         if (fields.size() != data.length){
             throw new ValidationException.Builder()
                     .message(String.format(
-                            "Unable to match a FieldList for a record with [%s] fields.  ",
-                        new Object[]{fields.size(), data.length}))
+                            "Unable to match a FieldList for a record with [%s] fields. ",
+                        new Object[]{data.length}))
                     .severity(Severity.HIGH)
                     .build();
         }

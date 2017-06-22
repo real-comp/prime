@@ -57,7 +57,8 @@ public class XStreamFileSchemaTest{
         schema.addBeforeOperation(new UpperCase());
         schema.addAfterOperation(new Trim());
 
-        FieldList typeB = new FieldList(Pattern.compile(".{19}"));
+        FieldList typeB = new FieldList();
+        typeB.setClassifier(Pattern.compile(".{19}"));
         typeB.add(new Field("pid", DataType.LONG, 10));
         typeB.add(new Field("zip5", DataType.INTEGER, 5));
         typeB.add(new Field("zip4", DataType.INTEGER, 4));
