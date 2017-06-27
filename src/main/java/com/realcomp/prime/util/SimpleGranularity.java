@@ -242,7 +242,21 @@ public class SimpleGranularity{
                         : new BufferedOutputStream(System.out);
 
                 IOContextBuilder inputBuilder = new IOContextBuilder();
-                Schema inputSchema = SchemaFactory.buildSchema(new FileInputStream((String) options.valueOf("is")));
+
+                Schema inputSchema;
+                if (options.valueOf("is").equals("json")){
+                    inputSchema = new Schema();
+                    Map<String,String> format = new HashMap<>();
+                    format.put("type", "json");
+                    inputSchema.setFormat(format);
+                    FieldList fields = new FieldList();
+                    fields.add(new Field(field));
+                    inputSchema.addFieldList(fields);
+                }
+                else{
+                    inputSchema = SchemaFactory.buildSchema(new FileInputStream((String) options.valueOf("is")));
+                }
+
                 inputBuilder.schema(inputSchema);
                 inputBuilder.in(
                         options.has("in")
