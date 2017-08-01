@@ -119,9 +119,9 @@ public class Field{
     }
 
     public void setLength(int length){
-        if (length <= 0){
+        if (length < 0){
             throw new IllegalArgumentException(
-                    String.format("length: %s is out of range: (>1)", length));
+                    String.format("length: %s is out of range: (>=0)", length));
         }
 
         this.length = length;
