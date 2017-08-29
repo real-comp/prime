@@ -88,7 +88,7 @@ public class SchemaGenerator{
         if (delimiter.equals("\t") || delimiter.equalsIgnoreCase("TAB")){
             format.put("type", "TAB");
         }
-        else if (delimiter.equalsIgnoreCase("CSV")){
+        else if (delimiter.equals(",") || delimiter.equalsIgnoreCase("CSV")){
             format.put("type", "CSV");
         }
         else{
