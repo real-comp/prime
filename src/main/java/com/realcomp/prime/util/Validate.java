@@ -26,6 +26,7 @@ public class Validate{
 
     private static final Logger logger = Logger.getLogger(Validate.class.getName());
     private boolean progress = false;
+    private long maxRecords = Long.MAX_VALUE;
 
     public void validate(IOContext context)
             throws SchemaException, IOException, ValidationException, ConversionException{
@@ -35,7 +36,7 @@ public class Validate{
 
         long lineNumber = 1;
         try{
-            while (reader.read() != null){
+            while (reader.read() != null && reader.getCount() < maxRecords){
                 lineNumber++;
                 
                 if (progress && lineNumber % 10000 == 0){
@@ -61,8 +62,14 @@ public class Validate{
     public void setProgress(boolean progress){
         this.progress = progress;
     }
-    
-    
+
+    public long getMaxRecords(){
+        return maxRecords;
+    }
+
+    public void setMaxRecords(long maxRecords){
+        this.maxRecords = maxRecords;
+    }
 
     private static void printHelp(OptionParser parser){
         try{

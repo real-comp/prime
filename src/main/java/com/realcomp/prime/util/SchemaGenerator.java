@@ -20,6 +20,7 @@ import java.util.logging.Logger;
 /**
  * Schema generator for delimited files.
  * Uses the first record in a delimited file to generate a schema.
+ * Escapes invalid characters in the header.
  *
  */
 public class SchemaGenerator{
@@ -101,12 +102,17 @@ public class SchemaGenerator{
         int count = 1;
         FieldList fieldList = new FieldList();
         for (String fieldName : fieldNames){
+            fieldName = escapeFieldName(fieldName);
             fieldList.add(new Field(fieldName.isEmpty() ? "FIELD" + count : fieldName));
             count++;
         }
         schema.addFieldList(fieldList);
 
         return schema;
+    }
+
+    protected String escapeFieldName(String original){
+        return original.replaceAll("\\.","_");
     }
 
     protected String clean(String dirty){
