@@ -268,17 +268,23 @@ public class DelimitedFileReader extends BaseRecordReader{
         }
         return candidates;
     }
-    
-    
-    
+
+
+    protected String escapeFieldName(String original){
+        return original.replaceAll("[.+]","_");
+    }
+
     protected FieldList createFieldListFromHeader(String header){
-        
         try{
             String[] tokens = parse(header);
             FieldList result = new FieldList();
-            for (String token: tokens){
-                Field field = new Field(token);
-                field.addOperation(new RegexValidator(token));
+            for (int x = 0; x < tokens.length; x++){
+                String fieldName = escapeFieldName(tokens[x]);
+                if (fieldName.isEmpty()){
+                    fieldName = "FIELD" + (x + 1);
+                }
+                Field field = new Field(fieldName);
+                field.addOperation(new RegexValidator(tokens[x]));
                 result.add(field);
             }
             return result;

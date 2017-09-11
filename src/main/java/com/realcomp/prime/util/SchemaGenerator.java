@@ -112,7 +112,7 @@ public class SchemaGenerator{
     }
 
     protected String escapeFieldName(String original){
-        return original.replaceAll("\\.","_");
+        return original.replaceAll("[.+]","_");
     }
 
     protected String clean(String dirty){
