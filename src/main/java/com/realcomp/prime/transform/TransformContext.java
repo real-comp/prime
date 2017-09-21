@@ -62,7 +62,7 @@ public class TransformContext{
     public void handleValidationException(Validator validator, ValidationException ex) throws ValidationException{
 
         Severity severity = validator.getSeverity();
-        String message = String.format("%s for [%s] in record [%s]", new Object[]{ex.getMessage(), key, toString()});
+        String message = String.format("%s for [%s] in record [%s]", ex.getMessage(), key, toString());
 
         if (severity.ordinal() >= validationExceptionThreshold.ordinal()){
             throw new ValidationException.Builder(ex).message(message).cause(ex).build();
@@ -150,10 +150,7 @@ public class TransformContext{
         if ((this.key == null) ? (other.key != null) : !this.key.equals(other.key)){
             return false;
         }
-        if (this.validationExceptionThreshold != other.validationExceptionThreshold){
-            return false;
-        }
-        return true;
+        return this.validationExceptionThreshold == other.validationExceptionThreshold;
     }
 
     @Override

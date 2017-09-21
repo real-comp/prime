@@ -55,10 +55,7 @@ public class FilterField implements RecordConverter{
             return false;
         }
         final FilterField other = (FilterField) obj;
-        if (!Objects.equals(this.field, other.field)){
-            return false;
-        }
-        return true;
+        return Objects.equals(this.field, other.field);
     }
     
     

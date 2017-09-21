@@ -121,10 +121,7 @@ public class IOContext implements Serializable, AutoCloseable{
         if (this.in != other.in && (this.in == null || !this.in.equals(other.in))){
             return false;
         }
-        if (this.out != other.out && (this.out == null || !this.out.equals(other.out))){
-            return false;
-        }
-        return true;
+        return this.out == other.out || (this.out != null && this.out.equals(other.out));
     }
 
     @Override

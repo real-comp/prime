@@ -59,10 +59,7 @@ public abstract class BaseMultiFieldConverter implements MultiFieldConverter{
             return false;
         }
         final BaseMultiFieldConverter other = (BaseMultiFieldConverter) obj;
-        if (this.fieldNames != other.fieldNames && (this.fieldNames == null || !this.fieldNames.equals(other.fieldNames))){
-            return false;
-        }
-        return true;
+        return this.fieldNames == other.fieldNames || (this.fieldNames != null && this.fieldNames.equals(other.fieldNames));
     }
 
     @Override

@@ -22,7 +22,7 @@ public interface RecordWriter extends AutoCloseable{
      * with adjustable Validator severity, allow for configurations where some validations are more important than
      * others.
      */
-    public static final Severity DEFAULT_VALIDATION_THREASHOLD = Severity.HIGH;
+    Severity DEFAULT_VALIDATION_THREASHOLD = Severity.HIGH;
 
     /**
      * write a Record

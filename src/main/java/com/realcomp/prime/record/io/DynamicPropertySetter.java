@@ -62,7 +62,7 @@ public class DynamicPropertySetter{
                 catch (Exception ex){
                     logger.log(Level.FINE,
                                String.format("Unable to set property [%s] on bean of class [%s]",
-                                             new Object[]{name, bean.getClass().getName()}),
+                                       name, bean.getClass().getName()),
                                ex);
                 }
             }
@@ -247,10 +247,6 @@ public class DynamicPropertySetter{
         if (name == null || value == null){
             return false;
         }
-        if (ignoredProperties.contains(name)){
-            return false;
-        }
-
-        return true;
+        return !ignoredProperties.contains(name);
     }
 }

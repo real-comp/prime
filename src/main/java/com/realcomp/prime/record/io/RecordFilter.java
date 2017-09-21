@@ -16,5 +16,5 @@ public interface RecordFilter extends Closeable, RecordProcessor{
      * @return number of records processed
      * @throws IOException 
      */
-    public abstract long filter(RecordReader reader, RecordWriter writer, RecordWriter filtered) throws IOException;
+    long filter(RecordReader reader, RecordWriter writer, RecordWriter filtered) throws IOException;
 }

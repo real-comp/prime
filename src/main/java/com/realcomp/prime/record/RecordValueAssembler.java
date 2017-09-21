@@ -106,7 +106,7 @@ public class RecordValueAssembler{
                     List list = (List) current;
                     if (list.size() <= 1 || key.isIndexed()){
                         ensureCapacity(list, key.isIndexed() ? key.getIndex() + 1 : 1);
-                        current = (Map<String, Object>) list.get(key.isIndexed() ? key.getIndex() : 0);
+                        current = list.get(key.isIndexed() ? key.getIndex() : 0);
                         if (current == null){
                             current = new HashMap<>();
                             list.set(key.isIndexed() ? key.getIndex() : 0, current);
@@ -125,7 +125,7 @@ public class RecordValueAssembler{
                 else{
                     throw new RecordValueException(
                             String.format("The value at key [%s] is a [%s] not a List as expected.",
-                                          new Object[]{key, type}));
+                                    key, type));
                 }
             }
         }

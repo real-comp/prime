@@ -57,9 +57,6 @@ public class Sequence extends SimpleConverter implements NullValueConverter{
             return false;
         }
         final Sequence other = (Sequence) obj;
-        if (!Objects.equals(this.start, other.start)){
-            return false;
-        }
-        return true;
+        return Objects.equals(this.start, other.start);
     }
 }

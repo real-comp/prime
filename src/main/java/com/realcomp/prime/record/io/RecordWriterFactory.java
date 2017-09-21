@@ -31,7 +31,7 @@ public class RecordWriterFactory{
         types.put(type, writerClass);
     }
 
-    public static RecordWriter build(Schema schema) throws FormatException, SchemaException{
+    public static RecordWriter build(Schema schema) throws SchemaException{
 
         return build(schema.getFormat());
     }

@@ -95,10 +95,7 @@ public class CurrentDate extends ComplexConverter{
             return false;
         }
         final CurrentDate other = (CurrentDate) obj;
-        if ((this.format == null) ? (other.format != null) : !this.format.equals(other.format)){
-            return false;
-        }
-        return true;
+        return (this.format == null) ? (other.format == null) : this.format.equals(other.format);
     }
 
     @Override

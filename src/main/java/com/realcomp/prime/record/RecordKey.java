@@ -182,13 +182,13 @@ public final class RecordKey{
     public String toString(){
         if (hasParent()){
             StringBuilder s = new StringBuilder();
-            s.append(index == null ? name : String.format("%s[%s]", new Object[]{name, index}));
+            s.append(index == null ? name : String.format("%s[%s]", name, index));
             s.insert(0, ".");
             s.insert(0, parent.toString()); //will recurse up the stack.
             return s.toString();
         }
         else{
-            return index == null ? name : String.format("%s[%s]", new Object[]{name, index});
+            return index == null ? name : String.format("%s[%s]", name, index);
         }
     }
 
@@ -207,10 +207,7 @@ public final class RecordKey{
         if ((this.name == null) ? (other.name != null) : !this.name.equals(other.name)){
             return false;
         }
-        if (this.index != other.index && (this.index == null || !this.index.equals(other.index))){
-            return false;
-        }
-        return true;
+        return this.index == other.index || (this.index != null && this.index.equals(other.index));
     }
 
     @Override

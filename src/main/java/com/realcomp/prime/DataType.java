@@ -27,7 +27,7 @@ public enum DataType{
     private RemoveLeading removeLeadingZeros;
     private String description;
 
-    private DataType(String description){
+    DataType(String description){
         this.description = description;
         booleanConverter = new BooleanConverter();
         removeLeadingZeros = new RemoveLeading("0");
@@ -38,7 +38,6 @@ public enum DataType{
     }
 
     /**
-     *
      * @param value
      * @return the DataType for the specified value
      * @throws IllegalArgumentException if the DataType for the value could not be determined.
@@ -275,7 +274,7 @@ public enum DataType{
             switch (DataType.getDataType(value)){
                 case STRING:
                     String s = (String) removeLeadingZeros.convert(value.toString().trim());
-                    result = ((Float) Float.parseFloat(s.isEmpty() ? "0" : s));
+                    result = Float.parseFloat(s.isEmpty() ? "0" : s);
                     break;
                 case INTEGER:
                     result = ((Integer) value).floatValue();

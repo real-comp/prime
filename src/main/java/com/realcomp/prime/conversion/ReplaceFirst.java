@@ -59,10 +59,7 @@ public class ReplaceFirst extends SimpleConverter{
         if ((this.regex == null) ? (other.regex != null) : !this.regex.equals(other.regex)){
             return false;
         }
-        if ((this.replacement == null) ? (other.replacement != null) : !this.replacement.equals(other.replacement)){
-            return false;
-        }
-        return true;
+        return (this.replacement == null) ? (other.replacement == null) : this.replacement.equals(other.replacement);
     }
 
     @Override

@@ -64,7 +64,7 @@ public class ValueSurgeon{
      * @throws MissingFieldException
      */
     protected Object operate(Operation operation, Object data, TransformContext context)
-            throws ConversionException, ValidationException, MissingFieldException{
+            throws ConversionException, ValidationException{
 
         Object result = data;
 

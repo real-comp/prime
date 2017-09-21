@@ -95,9 +95,6 @@ public class Substring extends SimpleConverter{
         if (!Objects.equals(this.begin, other.begin)){
             return false;
         }
-        if (!Objects.equals(this.end, other.end)){
-            return false;
-        }
-        return true;
+        return Objects.equals(this.end, other.end);
     }
 }

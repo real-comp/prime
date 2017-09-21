@@ -91,10 +91,7 @@ public class LongRangeValidator extends BaseFieldValidator{
         if (this.min != other.min){
             return false;
         }
-        if (this.max != other.max){
-            return false;
-        }
-        return true;
+        return this.max == other.max;
     }
 
     @Override

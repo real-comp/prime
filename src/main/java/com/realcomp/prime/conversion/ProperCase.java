@@ -152,7 +152,7 @@ public class ProperCase extends LeadCase{
     private String getExplicitCapitalization(String input){
         String retVal = null;
         if (input != null && !input.isEmpty()){
-            retVal = (String) specialWords.get(input);
+            retVal = specialWords.get(input);
         }
 
         if (retVal == null){

@@ -154,10 +154,7 @@ public class Format implements Map<String, String>{
         if (this.attributes != other.attributes && (this.attributes == null || !this.attributes.equals(other.attributes))){
             return false;
         }
-        if (this.defaults != other.defaults && (this.defaults == null || !this.defaults.equals(other.defaults))){
-            return false;
-        }
-        return true;
+        return this.defaults == other.defaults || (this.defaults != null && this.defaults.equals(other.defaults));
     }
 
     @Override

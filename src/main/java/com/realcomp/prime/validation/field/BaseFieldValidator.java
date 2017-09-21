@@ -29,10 +29,7 @@ public abstract class BaseFieldValidator implements Validator{
             return false;
         }
         final BaseFieldValidator other = (BaseFieldValidator) obj;
-        if (this.severity != other.severity){
-            return false;
-        }
-        return true;
+        return this.severity == other.severity;
     }
 
     @Override

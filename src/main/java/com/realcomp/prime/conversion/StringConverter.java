@@ -55,9 +55,6 @@ public class StringConverter implements Converter{
             return false;
         }
         final StringConverter other = (StringConverter) obj;
-        if (!Objects.equals(this.supportedTypes, other.supportedTypes)){
-            return false;
-        }
-        return true;
+        return Objects.equals(this.supportedTypes, other.supportedTypes);
     }
 }

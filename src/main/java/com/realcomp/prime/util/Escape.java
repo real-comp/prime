@@ -34,7 +34,7 @@ public class Escape{
     public Escape(){
     }
 
-    public void setIn(IOContext inputCtx) throws FormatException, SchemaException, IOException{
+    public void setIn(IOContext inputCtx) throws SchemaException, IOException{
         if (inputCtx == null){
             throw new IllegalArgumentException("inputCtx is null");
         }
@@ -47,7 +47,7 @@ public class Escape{
         in.open(inputCtx);
     }
 
-    public void setOut(IOContext outputCtx) throws FormatException, SchemaException, IOException{
+    public void setOut(IOContext outputCtx) throws SchemaException, IOException{
         if (outputCtx == null){
             throw new IllegalArgumentException("outputCtx is null");
         }
@@ -56,7 +56,7 @@ public class Escape{
         out.open(outputCtx);
     }
 
-    public void setErr(IOContext errorCtx) throws FormatException, SchemaException, IOException{
+    public void setErr(IOContext errorCtx) throws SchemaException, IOException{
         if (errorCtx == null){
             throw new IllegalArgumentException("errorCtx is null");
         }

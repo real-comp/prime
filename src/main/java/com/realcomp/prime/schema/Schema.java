@@ -486,10 +486,7 @@ public class Schema{
         if (this.afterLast != other.afterLast && (this.afterLast == null || !this.afterLast.equals(other.afterLast))){
             return false;
         }
-        if (this.fieldLists != other.fieldLists && (this.fieldLists == null || !this.fieldLists.equals(other.fieldLists))){
-            return false;
-        }
-        return true;
+        return this.fieldLists == other.fieldLists || (this.fieldLists != null && this.fieldLists.equals(other.fieldLists));
     }
 
     @Override

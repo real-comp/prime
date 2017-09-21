@@ -27,7 +27,7 @@ public class RecordReaderFactory{
         types.put(type, readerClass);
     }
 
-    public static RecordReader build(Schema schema) throws FormatException, SchemaException{
+    public static RecordReader build(Schema schema) throws SchemaException{
         return build(schema.getFormat());
     }
 

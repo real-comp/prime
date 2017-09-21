@@ -47,10 +47,7 @@ public class Prepend extends SimpleConverter{
             return false;
         }
         final Prepend other = (Prepend) obj;
-        if ((this.value == null) ? (other.value != null) : !this.value.equals(other.value)){
-            return false;
-        }
-        return true;
+        return (this.value == null) ? (other.value == null) : this.value.equals(other.value);
     }
 
     @Override

@@ -87,10 +87,7 @@ public class DoubleRangeValidator extends BaseFieldValidator{
         if (Double.doubleToLongBits(this.min) != Double.doubleToLongBits(other.min)){
             return false;
         }
-        if (Double.doubleToLongBits(this.max) != Double.doubleToLongBits(other.max)){
-            return false;
-        }
-        return true;
+        return Double.doubleToLongBits(this.max) == Double.doubleToLongBits(other.max);
     }
 
     @Override

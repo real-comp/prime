@@ -87,9 +87,6 @@ public class LeftPad extends SimpleConverter{
         if (this.length != other.length){
             return false;
         }
-        if (!Objects.equals(this.with, other.with)){
-            return false;
-        }
-        return true;
+        return Objects.equals(this.with, other.with);
     }
 }

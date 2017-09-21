@@ -226,10 +226,7 @@ public class Field{
         if (this.operations != other.operations && (this.operations == null || !this.operations.equals(other.operations))){
             return false;
         }
-        if (this.length != other.length){
-            return false;
-        }
-        return true;
+        return this.length == other.length;
     }
 
     @Override

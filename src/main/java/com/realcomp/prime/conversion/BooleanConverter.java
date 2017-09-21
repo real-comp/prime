@@ -173,10 +173,7 @@ public class BooleanConverter extends SimpleConverter{
         if ((this.falsy == null) ? (other.falsy != null) : !this.falsy.equals(other.falsy)){
             return false;
         }
-        if (this.caseSensitive != other.caseSensitive){
-            return false;
-        }
-        return true;
+        return this.caseSensitive == other.caseSensitive;
     }
 
     @Override

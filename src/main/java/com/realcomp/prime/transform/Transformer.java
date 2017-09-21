@@ -217,10 +217,7 @@ public class Transformer{
         if (this.after != other.after && (this.after == null || !this.after.equals(other.after))){
             return false;
         }
-        if (this.fields != other.fields && (this.fields == null || !this.fields.equals(other.fields))){
-            return false;
-        }
-        return true;
+        return this.fields == other.fields || (this.fields != null && this.fields.equals(other.fields));
     }
 
     @Override

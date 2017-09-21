@@ -98,9 +98,6 @@ public class RegexValidator extends BaseFieldValidator{
         if (!Objects.equals(this.regex, other.regex)){
             return false;
         }
-        if (!Objects.equals(this.inverse, other.inverse)){
-            return false;
-        }
-        return true;
+        return Objects.equals(this.inverse, other.inverse);
     }
 }

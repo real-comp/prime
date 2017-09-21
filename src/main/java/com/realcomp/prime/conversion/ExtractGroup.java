@@ -94,10 +94,7 @@ public class ExtractGroup extends StringConverter{
         if (!Objects.equals(this.regex, other.regex)){
             return false;
         }
-        if (!Objects.equals(this.group, other.group)){
-            return false;
-        }
-        return true;
+        return Objects.equals(this.group, other.group);
     }
 
 }

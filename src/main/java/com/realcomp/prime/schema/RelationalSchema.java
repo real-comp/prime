@@ -95,10 +95,7 @@ public class RelationalSchema{
         if ((this.version == null) ? (other.version != null) : !this.version.equals(other.version)){
             return false;
         }
-        if (this.tables != other.tables && (this.tables == null || !this.tables.equals(other.tables))){
-            return false;
-        }
-        return true;
+        return this.tables == other.tables || (this.tables != null && this.tables.equals(other.tables));
     }
 
     @Override

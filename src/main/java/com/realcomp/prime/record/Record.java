@@ -231,7 +231,7 @@ public class Record implements Map<String, Object>, Serializable{
 
     @Override
     public boolean containsKey(Object key){
-        return key == null ? false : keySet().contains(key.toString());
+        return key != null && keySet().contains(key.toString());
     }
 
     @Override
@@ -282,10 +282,7 @@ public class Record implements Map<String, Object>, Serializable{
             return false;
         }
         final Record other = (Record) obj;
-        if (this.data != other.data && (this.data == null || !this.data.equals(other.data))){
-            return false;
-        }
-        return true;
+        return this.data == other.data || (this.data != null && this.data.equals(other.data));
     }
 
     @Override

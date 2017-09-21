@@ -101,10 +101,7 @@ public class Lookup extends StringConverter{
         if (!Objects.equals(this.source, other.source)){
             return false;
         }
-        if (!Objects.equals(this.delimiter, other.delimiter)){
-            return false;
-        }
-        return true;
+        return Objects.equals(this.delimiter, other.delimiter);
     }
     
 }

@@ -61,9 +61,6 @@ public class Key extends BaseFieldValidator{
             return false;
         }
         final Key other = (Key) obj;
-        if (this.index != other.index && (this.index == null || !this.index.equals(other.index))){
-            return false;
-        }
-        return true;
+        return this.index == other.index || (this.index != null && this.index.equals(other.index));
     }
 }

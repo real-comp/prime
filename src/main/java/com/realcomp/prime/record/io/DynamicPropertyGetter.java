@@ -62,7 +62,7 @@ public class DynamicPropertyGetter{
         catch (Exception ex){
             logger.log(Level.FINE,
                        String.format("Unable to set property [%s] on bean of class [%s]",
-                                     new Object[]{pd.getName(), o.getClass().getName()}),
+                               pd.getName(), o.getClass().getName()),
                        ex);
         }
 
@@ -82,11 +82,7 @@ public class DynamicPropertyGetter{
         if (ignoredProperties.contains(name)){
             return false;
         }
-        if (isDefaultValue(value)){
-            return false;
-        }
-
-        return true;
+        return !isDefaultValue(value);
     }
 
     /**
@@ -97,10 +93,7 @@ public class DynamicPropertyGetter{
      */
     protected boolean isDefaultValue(Object value){
 
-        if (value instanceof Number && ((Number) value).equals(0)){
-            return true;
-        }
+        return value instanceof Number && value.equals(0);
 
-        return false;
     }
 }
