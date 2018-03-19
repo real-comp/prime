@@ -5,9 +5,16 @@ import java.util.regex.Pattern;
 
 public class DataSetID {
 
+    //prefix + type + geostate + geocounty + source + year + month + day + name;
+    protected static final Pattern SPLIT_ID_PATTERN = Pattern.compile(
+            "([A-Za-z0-9\\-_:]+)/([A-Za-z0-9\\-_]+)/([A-Za-z0-9\\-_]+)/([A-Za-z0-9\\-_]+)/([0-9]{4})/([0-9]{2})/([0-9]{2})/([_A-Za-z0-9\\. \\-_]+)");
+    protected static final Pattern SPLIT_PREFIXED_ID_PATTERN = Pattern.compile(
+            "(.*)/([A-Za-z0-9\\-_:]+)/([A-Za-z0-9\\-_]+)/([A-Za-z0-9\\-_]+)/([A-Za-z0-9\\-_]+)/([0-9]{4})/([0-9]{2})/([0-9]{2})/([A-Za-z0-9\\. \\-_]+)");
     //prefix + type + geography + source + version + name;
-    protected static final Pattern ID_PATTERN = Pattern.compile("([A-Za-z0-9\\-_:]+)/([A-Za-z0-9\\-_]+)/([A-Za-z0-9\\-_]+)/([0-9]+)/([_A-Za-z0-9\\. \\-_]+)");
-    protected static final Pattern PREFIXED_ID_PATTERN = Pattern.compile("(.*)/([A-Za-z0-9\\-_:]+)/([A-Za-z0-9\\-_]+)/([A-Za-z0-9\\-_]+)/([0-9]+)/([A-Za-z0-9\\. \\-_]+)");
+    protected static final Pattern ID_PATTERN = Pattern.compile(
+            "([A-Za-z0-9\\-_:]+)/([A-Za-z0-9\\-_]+)/([A-Za-z0-9\\-_]+)/([0-9]+)/([_A-Za-z0-9\\. \\-_]+)");
+    protected static final Pattern PREFIXED_ID_PATTERN = Pattern.compile(
+            "(.*)/([A-Za-z0-9\\-_:]+)/([A-Za-z0-9\\-_]+)/([A-Za-z0-9\\-_]+)/([0-9]+)/([A-Za-z0-9\\. \\-_]+)");
 
     protected String prefix;
     protected String type;
@@ -20,35 +27,63 @@ public class DataSetID {
     }
 
     public static DataSetID parse(String path){
-        Matcher matcher = ID_PATTERN.matcher(path);
-        boolean prefix = false;
+
+        Matcher matcher = SPLIT_ID_PATTERN.matcher(path);
+        boolean prefix = false, split = false;
         if (!matcher.matches()){
-            matcher = PREFIXED_ID_PATTERN.matcher(path);
+            matcher = SPLIT_PREFIXED_ID_PATTERN.matcher(path);
             if (matcher.matches()) {
                 prefix = true;
+                split = true;
+            } else {
+                matcher = ID_PATTERN.matcher(path);
+                if (!matcher.matches()){
+                    matcher = PREFIXED_ID_PATTERN.matcher(path);
+                    if (matcher.matches()) {
+                        prefix = true;
+                    } else {
+                        throw new IllegalArgumentException("Unable to parse [" + path + "] as a DataSetID");
+                    }
+                }
             }
-            else{
-                throw new IllegalArgumentException("Unable to parse [" + path + "] as a DataSetID");
-            }
-        }
-        DataSetID id = new DataSetID();
-        if (prefix){
-            id.setPrefix(matcher.group(1));
-            id.setType(matcher.group(2));
-            id.setGeography(matcher.group(3));
-            id.setSource(matcher.group(4));
-            id.setVersion(matcher.group(5));
-            id.setName(matcher.group(6));
-        }
-        else{
-            id.setPrefix("");
-            id.setType(matcher.group(1));
-            id.setGeography(matcher.group(2));
-            id.setSource(matcher.group(3));
-            id.setVersion(matcher.group(4));
-            id.setName(matcher.group(5));
+        } else {
+            split = true;
         }
 
+        DataSetID id = new DataSetID();
+        if(split) {
+            if (prefix) {
+                id.setPrefix(matcher.group(1));
+                id.setType(matcher.group(2));
+                id.setGeography(matcher.group(3) + matcher.group(4));
+                id.setSource(matcher.group(5));
+                id.setVersion(matcher.group(6) + matcher.group(7) + matcher.group(8));
+                id.setName(matcher.group(9));
+            } else {
+                id.setPrefix("");
+                id.setType(matcher.group(1));
+                id.setGeography(matcher.group(2) + matcher.group(3));
+                id.setSource(matcher.group(4));
+                id.setVersion(matcher.group(5) + matcher.group(6) + matcher.group(7));
+                id.setName(matcher.group(8));
+            }
+        } else {
+            if (prefix) {
+                id.setPrefix(matcher.group(1));
+                id.setType(matcher.group(2));
+                id.setGeography(matcher.group(3));
+                id.setSource(matcher.group(4));
+                id.setVersion(matcher.group(5));
+                id.setName(matcher.group(6));
+            } else {
+                id.setPrefix("");
+                id.setType(matcher.group(1));
+                id.setGeography(matcher.group(2));
+                id.setSource(matcher.group(3));
+                id.setVersion(matcher.group(4));
+                id.setName(matcher.group(5));
+            }
+        }
         return id;
     }
 
